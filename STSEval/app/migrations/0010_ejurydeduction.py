@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
                 ('deduction', models.DecimalField(decimal_places=3, max_digits=5)),
                 ('action', models.CharField(choices=[('Add', 'Add'), ('Edit', 'Edit'), ('Delete', 'Delete')], default='Add', max_length=6)),
                 ('editor', models.CharField(default='E', max_length=2)),
-                ('time_stamp', models.DateTimeField()),
+                ('time_stamp', models.BigIntegerField(blank=True,null=True)),
                 ('time_stamp_relative', models.IntegerField(default=0)),
                 ('routine', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='app.Routine')),
             ],

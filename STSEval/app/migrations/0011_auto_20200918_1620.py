@@ -11,29 +11,6 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AlterField(
-            model_name='ejurydeduction',
-            name='time_stamp',
-            field=models.BigIntegerField(),
-        ),
-        migrations.AlterField(
-            model_name='routine',
-            name='athlete_done_time',
-            field=models.BigIntegerField(blank=True, default=0),
-            preserve_default=False,
-        ),
-        migrations.AlterField(
-            model_name='routine',
-            name='d1_done_time',
-            field=models.BigIntegerField(blank=True, default=0),
-            preserve_default=False,
-        ),
-        migrations.AlterField(
-            model_name='routine',
-            name='start_time',
-            field=models.BigIntegerField(blank=True, default=0),
-            preserve_default=False,
-        ),
-        migrations.AlterField(
             model_name='routine',
             name='stream_video_id',
             field=models.CharField(blank=True, max_length=255),
