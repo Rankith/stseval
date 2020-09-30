@@ -17,16 +17,16 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='routine',
             name='d1_done_time',
-            field=models.DateTimeField(null=True),
+            field=models.BigIntegerField(blank=True,null=True),
         ),
         migrations.AlterField(
             model_name='routine',
             name='athlete_done_time',
-            field=models.DateTimeField(null=True),
+            field=models.BigIntegerField(blank=True,null=True),
         ),
         migrations.AlterField(
             model_name='routine',
             name='start_time',
-            field=models.DateTimeField(null=True),
+            field=models.BigIntegerField(blank=True,null=True),
         ),
     ]
