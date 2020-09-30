@@ -1,0 +1,45 @@
+<div id="divManageAthlete" align="center">
+    <input type="text" id="txtAthleteName" placeholder="Name" class="mb-3" style="width:180px" value="{{ath.name}}"><br/>
+    <select id="ddlAthleteLevel" data-mini="true" style="width:180px" class="mb-3" > 
+		<option value="">Level</option>
+		<option value="L4">4</option>
+		<option value="L5">5</option>
+		<option value="L6">6</option>
+		<option value="L7">7</option>
+		<option value="L8">8</option>
+		<option value="L9">9</option>
+		<option value="L10">10</option>
+		<option value="Elite">Elite</option>
+		<option value="NCAA">NCAA</option>
+		<option value="Fig">FIG</option>
+	</select><br/>
+    <input type="text" id="txtAthleteTeam" placeholder="Team" style="width:180px" class="mb-3"  value="{{ath.team}}"><br/>
+    <button href="#" id="btnAthleteFinish" type="button" class="btn btn-main" onclick="AthleteManageFinish()">{{type|title}}</button>
+</div>
+
+<script type="text/javascript">
+    var AthleteID = {{id}};
+    $("#ddlAthleteLevel").val("{{ath.level}}").change();
+</script>
+<script type="text/javascript">
+    
+    function AthleteManageFinish() {
+        if ($("#ddlAthleteLevel").val() != "") {
+            $.ajax({
+                url: "/athlete_create_update/",
+                data: {
+                    'id': AthleteID,
+                    'comp': SelectedComp,
+                    'disc': SelectedDisc,
+                    'name': $("#txtAthleteName").val(),
+                    'level': $("#ddlAthleteLevel").val(),
+                    'team': $("#txtAthleteTeam").val(),
+                },
+                success: function () {
+                    AthleteManageFinishParent();
+                }
+            });
+        }
+    
+    }
+</script>

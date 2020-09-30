@@ -1,0 +1,5 @@
+{% block content %}
+    {% for comp in comps %}
+        <div id="divComp{{comp.id}}" class="comp-list pb-2" onclick="CompClick({{comp.id}});">{{comp.name}}</div>
+    {% endfor %}
+{% endblock %}

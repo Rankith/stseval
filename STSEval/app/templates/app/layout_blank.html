@@ -1,0 +1,50 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STSEval</title>
+    {% load staticfiles %}
+    <link rel="stylesheet" type="text/css" href="{% static 'app/content/bootstrap.min.css' %}" />
+    <link rel="stylesheet" type="text/css" href="{% static 'app/content/site.css' %}" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
+    <script src="{% static 'app/scripts/modernizr-2.6.2.js' %}"></script>
+</head>
+
+<body>
+    <div id="divFullScreen">
+        <div id="divScreenContainer" class="container-fluid body-content">
+    {% block content %}{% endblock %}
+
+                <div align="center">STS Results &copy;2020</div>
+
+        </div>
+    </div>
+<div class="modal fade" id="modalMain" tabindex="-1" role="dialog" aria-labelledby="modalMainTitle" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header" style="padding-top:0;padding-bottom:0">
+          <div>
+        <h5 class="modal-title" id="modalMainTitle">Lookup By Group</h5>
+              </div>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="margin-left:inherit">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" id="modalMainBody">
+          <div id="modalBodyArea1"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    <script src="{% static 'app/scripts/jquery-1.10.2.js' %}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="{% static 'app/scripts/bootstrap.js' %}"></script>
+    <script src="{% static 'app/scripts/respond.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/js/bootstrap-select.min.js"></script>
+    <script>
+</script>
+{% block scripts %}{% endblock %}
+
+</body>
+</html>

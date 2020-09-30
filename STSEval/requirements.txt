@@ -1,1 +1,9 @@
-django >=1.9, <2
+django >= 2.1.6, < 3.0 
+docutils
+django-import-export
+stripe
+mysql-connector-python
+grpcio
+google-cloud-core
+google-cloud-firestore
+firebase-admin

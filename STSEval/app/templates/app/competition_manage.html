@@ -1,0 +1,23 @@
+<div id="divManageCompeition">
+    <input type="text" id="txtCompName" placeholder="Comp Name" value="{{name}}">
+    <button href="#" id="btnCompFinish" type="button" class="btn btn-main" onclick="CompManageFinish()">{{type|title}}</button>
+</div>
+
+<script type="text/javascript">
+    var CompID = {{id}};
+</script>
+<script type="text/javascript">
+    function CompManageFinish() {
+        $.ajax({
+            url: "/competition_create_update/",
+            data: {
+                'id': CompID,
+                'name': $("#txtCompName").val(),
+            },
+            success: function () {
+                CompManageFinishParent();
+            }
+        });
+    
+    }
+</script>

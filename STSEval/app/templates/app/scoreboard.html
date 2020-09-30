@@ -1,0 +1,233 @@
+{% extends "app/layout.html" %}
+
+{% block content %}
+{% load staticfiles %}
+<div id="LockBlackout" style="width:100%;height:100%;background-color:#000000;opacity: .2;position:fixed;z-index:103;display:none" onclick="HideDetails()"></div>
+<div id="DetailsArea" style="position:fixed;z-index:104;width:92%;top:200px;left:4%;display:none;align-content:center;text-align:center;overflow:auto;background-color: #1c1c24" >
+    <div id="DetailsHeader" style="font-weight:bold;font-size:18px"></div>
+</div>
+<div id="divResults" align="center" style="color:black;margin:auto" >
+    <div id="jsGrid" ></div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid.min.css" />
+<link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid-theme.min.css" />
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid.min.js"></script>
+<script type="text/javascript">
+    var Disc = "{{disc}}";
+    var ev = "{{event}}";
+    var CompName = "{{comp}}";
+    var Comp = "{{comp.id}}";
+    var token = "{{ csrf_token }}";
+
+    
+</script>
+<script type="text/javascript">
+    //const firebase = require("firebase");
+    var datahold;
+    var RoutineID = -1;
+    var Status = "";
+    var Videos = new Array();
+    var db = firebase.firestore();
+
+    db.collection("routines").doc(Comp + Disc + ev)
+        .onSnapshot(function (doc) {
+            SetBasedOnStatus(doc);
+        });
+    function SetBasedOnStatus(doc) {
+        if (doc.data() != undefined) {
+            
+            if (Status != doc.data().status || RoutineID != doc.data().routine) {
+                RoutineID = doc.data().routine
+                if (doc.data().status == "F" || Status == "" || doc.data().status == "N") {
+                    GetRoutineData();
+                }
+            }
+
+            //$("#divStatus").html(doc.data().stream + " | " + doc.data().status);
+        }
+    }
+    //GetRoutineData();
+    function GetRoutineData() {
+        $.ajax({
+            url: "/get_routines_by_DCE/",
+            type: "POST",
+            dataType: 'json',
+            headers: { "X-CSRFToken": token },
+            data: {
+                'Disc': Disc,
+                'Ev': ev,
+                'Comp':Comp,
+            },
+            success: function (data) {
+                UpdateRoutines(data)
+            }
+        });
+    }
+
+    function UpdateRoutines(data) {
+        console.log(data);
+        AverageD = 0;
+        AverageE = 0;
+        AverageTotal = 0;
+        MaxE = 0;
+        MaxD = 0;
+        MaxTotal = 0;
+        let TempGymnast = "";
+        let DataMod = data;
+
+        //$('#divShorthandResults').empty();
+        for (var i = 0; i < data.length; i++) {
+            /* if ($("#divR" + data[i]["id"]).length == 0)
+             {
+               //dont have it so add it
+               AddRoutine(data[i]);
+               LastID=data[i]["id"];
+             }*/
+            //TempGymnast = data[i]["Name"];
+
+           // if (TempGymnast != "null")
+            //    data[i]["Gymnast"] = TempGymnast;
+            data[i]["Level"] = data[i]["athlete__level"];
+            data[i]["Team"] = data[i]["athlete__team"];
+            //Videos[data[i]["id"]] = data[i]["stream_video_id"];
+           /* if (data[i]["Level"] == "L4" || data[i]["Level"] == "L5" || data[i]["Level"] == "L6" || data[i]["Level"] == "L7")
+                data[i]["Total"] = (parseFloat(data[i]["D"]) - parseFloat(data[i]["E"]));
+            else
+                data[i]["Total"] = (parseFloat(data[i]["D"]) + parseFloat(data[i]["E"]));*/
+            data[i]["Place"] = i + 1;
+            AverageD = AverageD + parseFloat(data[i]["score_d"]);
+            AverageE = AverageE + parseFloat(data[i]["score_e"]);
+            AverageTotal = AverageTotal + parseFloat(data[i]["score_final"]);
+            if (MaxE < parseFloat(data[i]["score_e"]))
+                MaxE = parseFloat(data[i]["score_e"]);
+            if (MaxD < parseFloat(data[i]["score_d"]))
+                MaxD = parseFloat(data[i]["score_d"]);
+            if (MaxTotal < parseFloat(data[i]["score_final"]))
+                MaxTotal = parseFloat(data[i]["score_final"]);
+
+            LastID = data[i]["id"];
+            /*for (let v = 1; v <= 4; v++) {
+                if (data[i]["E" + v] == "-1")
+                    DataMod[i]["E" + v] = "";
+                else {
+                    DataMod[i]["E" + v] = (Math.round(parseFloat(data[i]["E" + v]) * 1000) / 1000).toString();
+                    if (DataMod[i]["E" + v].length == 1)
+                        DataMod[i]["E" + v] += ".0";
+                }
+            }*/
+
+            /*  if (data[i]["E2"] == "-1")
+                DataMod[i]["E2"] = "";
+              if (data[i]["E3"] == "-1")
+                DataMod[i]["E3"] = "";
+              if (data[i]["E4"] == "-1")
+                DataMod[i]["E4"] = "";*/
+
+            /*DataMod[i]["E"] = (Math.round(parseFloat(data[i]["E"]) * 1000) / 1000).toString();
+            if (DataMod[i]["E"].length == 1)
+                DataMod[i]["E"] += ".0";
+
+            DataMod[i]["D"] = (Math.round(parseFloat(data[i]["D"]) * 1000) / 1000).toString();
+            if (DataMod[i]["D"].length == 1)
+                DataMod[i]["D"] += ".0";
+
+            DataMod[i]["Total"] = (Math.round(parseFloat(data[i]["Total"]) * 1000) / 1000).toString();
+            if (DataMod[i]["Total"].length == 1)
+                DataMod[i]["Total"] += ".0";*/
+
+
+        }
+
+        $("#jsGrid").jsGrid({
+            width: "100%",
+            height: "600px",
+            inserting: false,
+            editing: false,
+            sorting: true,
+            paging: false,
+
+            data: DataMod,
+
+            rowClick: RowClick,
+
+            fields: [
+                { name: "Place", title: "#", type: "number", width: 25 },
+                { name: "athlete__level", title: "Level", type: "text", width: 55 },
+                { name: "athlete__team", title: "Team", type: "text" },
+                { name: "athlete__name", title: "Gymnast", type: "text" },
+                { name: "score_d", title: "D-Score<hr class='jsgrid-hr'>Start Value", type: "number" },
+                { name: "score_e", title: "E-Score<hr class='jsgrid-hr'>Deductions", type: "number" },
+                { name: "score_e1", title: "E-1", type: "number" },
+                { name: "score_e2", title: "E-2", type: "number" },
+                { name: "score_e3", title: "E-3", type: "number" },
+                { name: "score_e4", title: "E-4", type: "number" },
+                { name: "score_final", title: "Final Score", type: "number" }
+            ]
+        });
+
+        AverageD = (AverageD / data.length).toFixed(3);
+        AverageE = (AverageE / data.length).toFixed(3);
+        AverageTotal = (AverageTotal / data.length).toFixed(3);
+
+    }
+
+    function RowClick(args) {
+        //console.log("Row Click");
+        console.log(args);
+        var d = args.item;
+        index = args.itemIndex;
+        //console.log(args.event);
+
+        ShowDetails(d["id"], d["Team"] + " - " + d["Level"] + " - " + d["Gymnast"], args.event);
+
+    }
+
+    function ShowDetails(IDIn, GymIn, ev) {
+
+        $("#DetailsArea").empty();
+        $("#DetailsArea").load("/d1/?routine=" + IDIn, function () {
+            $("#LockBlackout").show();
+            AnimateShow("DetailsArea", ev);
+        });
+        /*if (TrainName != "")
+            $("#DetailsArea").append("<div id='divDetails'><iframe src='master.php?id=" + IDIn + "&d=<?php echo $_GET['d'];?>&e=<?php echo $_GET['e'];?>&c=<?php echo $_GET['c'];?>&train=<?php echo $_GET['train'];?>&vid=" + Videos[IDIn] + "<?php if (isset($_GET['scoreboard'])) { echo ('&scoreboard=1');}?>' width='1600px' height='750px'>");
+        else
+            $("#DetailsArea").append("<div id='divDetails'><iframe src='master.php?id=" + IDIn + "&d=<?php echo $_GET['d'];?>&e=<?php echo $_GET['e'];?>&c=<?php echo $_GET['c'];?>&vid=" + Videos[IDIn] + "<?php if (isset($_GET['scoreboard'])) { echo ('&scoreboard=1');}?>' width='1600px' height='750px'>");
+        $("#DetailsHeader").text(GymIn);*/
+       
+        
+
+    }
+
+    function HideDetails() {
+        $("#LockBlackout").hide();
+        $("#DetailsArea").hide();
+        $("#DetailsArea").empty();
+
+    }
+
+    function AnimateShow(obj, ev) {
+        // position:fixed;z-index:104;width:92%;top:4%;left:4%;
+        $("#DetailsArea").height("auto");
+        var theight = $("#DetailsArea").height();
+
+        /*console.log(ev.pageX);
+        console.log(ev.pageY);
+        console.log($("#" + obj).offset().left);
+        console.log($("#" + obj).offset().top);*/
+        FurlX = ev.pageX;
+        FurlY = ev.pageY;
+        Furl = true;
+        $("#" + obj).width("1");
+        $("#" + obj).height("1");
+        $("#" + obj).show();
+        $("#" + obj).offset({ top: ev.pageY, left: ev.pageX });
+        $("#" + obj).animate({ width: '92%', left: '4%', top: '60px', height: theight });
+
+    }
+
+</script>
+{% endblock %}

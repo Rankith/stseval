@@ -4,7 +4,8 @@
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <Name>STSEval</Name>
     <RootNamespace>STSEval</RootNamespace>
-    <InterpreterId>MSBuild|env|$(MSBuildProjectFullPath)</InterpreterId>
+    <InterpreterId>MSBuild|env7|$(MSBuildProjectFullPath)</InterpreterId>
+    <WebBrowserPort>64820</WebBrowserPort>
   </PropertyGroup>
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -31,9 +32,27 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="app\admin.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="app\backends.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="app\firebase.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="app\forms.py" />
     <Compile Include="app\models.py" />
+    <Compile Include="app\templatetags\templateextras.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="app\templatetags\__init__.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="app\tests.py" />
+    <Compile Include="app\twitch.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="app\views.py" />
     <Compile Include="app\__init__.py" />
     <Compile Include="app\migrations\__init__.py" />
@@ -46,16 +65,49 @@
   <ItemGroup>
     <Folder Include="app\" />
     <Folder Include="app\migrations\" />
+    <Folder Include="app\static\app\scripts\wowza\" />
+    <Folder Include="app\templatetags\" />
     <Folder Include="app\static\" />
     <Folder Include="app\static\app\" />
     <Folder Include="app\static\app\content\" />
     <Folder Include="app\static\app\fonts\" />
+    <Folder Include="app\static\app\images\" />
+    <Folder Include="app\static\app\images\dots\" />
     <Folder Include="app\static\app\scripts\" />
     <Folder Include="app\templates\" />
     <Folder Include="app\templates\app\" />
     <Folder Include="STSEval\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="app\static\app\images\stseval21.svg" />
+    <Content Include="app\static\app\scripts\dots_area.js" />
+    <Content Include="app\static\app\scripts\wowza\AvMenu.js" />
+    <Content Include="app\static\app\scripts\wowza\play.js" />
+    <Content Include="app\static\app\scripts\wowza\publish.js" />
+    <Content Include="app\static\app\scripts\wowza\Settings.js" />
+    <Content Include="app\static\app\scripts\wowza\SoundMeter.js" />
+    <Content Include="app\static\app\scripts\wowza\WowzaMungeSDP.js" />
+    <Content Include="app\static\app\scripts\wowza\WowzaPeerConnectionPlay.js" />
+    <Content Include="app\static\app\scripts\wowza\WowzaPeerConnectionPublish.js" />
+    <Content Include="app\static\app\scripts\wowza\WowzaWebRTCPlay.js" />
+    <Content Include="app\static\app\scripts\wowza\WowzaWebRTCPublish.js" />
+    <Content Include="app\templates\app\accountability_report.html" />
+    <Content Include="app\templates\app\dev-view-play.html" />
+    <Content Include="app\templates\app\dev-view-publish.html" />
+    <Content Include="app\templates\app\dot_change.html" />
+    <Content Include="app\templates\app\dots_area.html" />
+    <Content Include="app\templates\app\athlete_list.html" />
+    <Content Include="app\templates\app\competition_manage.html" />
+    <Content Include="app\templates\app\athlete_manage.html" />
+    <Content Include="app\templates\app\competition_list.html" />
+    <Content Include="app\templates\app\layout_blank.html" />
+    <Content Include="app\templates\app\scoreboard.html" />
+    <Content Include="app\templates\app\evideo.html" />
+    <Content Include="app\templates\app\ejudge.html" />
+    <Content Include="app\templates\app\d1.html" />
+    <Content Include="app\templates\app\judge_select.html" />
+    <Content Include="app\templates\app\twitch_auth.html" />
+    <Content Include="app\templates\app\twitch_connect.html" />
     <Content Include="requirements.txt" />
     <Content Include="db.sqlite3" />
     <Content Include="app\static\app\content\bootstrap.css" />
@@ -80,8 +132,7 @@
     <Content Include="app\static\app\scripts\respond.js" />
     <Content Include="app\static\app\scripts\respond.min.js" />
     <Content Include="app\static\app\scripts\_references.js" />
-    <Content Include="app\templates\app\about.html" />
-    <Content Include="app\templates\app\contact.html" />
+    <Content Include="app\templates\app\manage.html" />
     <Content Include="app\templates\app\index.html" />
     <Content Include="app\templates\app\layout.html" />
     <Content Include="app\templates\app\login.html" />
@@ -93,6 +144,15 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Interpreter Include="env7\">
+      <Id>env7</Id>
+      <Version>3.7</Version>
+      <Description>env7 (Python 3.7 (32-bit))</Description>
+      <InterpreterPath>Scripts\python.exe</InterpreterPath>
+      <WindowsInterpreterPath>Scripts\pythonw.exe</WindowsInterpreterPath>
+      <PathEnvironmentVariable>PYTHONPATH</PathEnvironmentVariable>
+      <Architecture>X86</Architecture>
+    </Interpreter>
     <Interpreter Include="env\">
       <Id>env</Id>
       <Version>3.6</Version>

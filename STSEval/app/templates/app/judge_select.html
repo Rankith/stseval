@@ -1,0 +1,145 @@
+{% extends "app/layout.html" %}
+
+{% block content %}
+<div align="center" style="margin:10px;padding:0">
+
+	<div id="divCompetitions" style="display:inline-block;vertical-align: top;padding:3px;display:inline-block;margin-right:30px;">
+	<div id="divCompHeader" style="padding-bottom:5px;font-size:22px;font-weight:bold;text-align:center">Competition</div><br/>
+	<div id="divCompList"class="listbox"  style="width:200px;height:150px;"></div><br/>
+	</div>
+
+	<div id="divDisc" style="vertical-align: top;padding:3px;height:254px;display:inline-block;margin-right:30px;" class="ui-disabled">
+		<div id="divDiscHeader" style="padding-bottom:5px;font-size:22px;font-weight:bold;text-align:center">Discipline</div><br/>
+		<div id="divDiscList" class="listbox" style=";height:180px;">
+		<div id="divDiscMAG" name="divDiscMAG" class="disc-list" style="padding-bottom:5px" onclick="DiscClick('MAG');">MAG</div>
+		<div id="divDiscWAG" name="divDiscWAG" class="disc-list" style="padding-bottom:5px" onclick="DiscClick('WAG');">WAG</div>
+		<div id="divDiscRG" name="divDiscRG" style="padding-bottom:5px" onclick="DiscClick('RG');" class="ui-disabled disc-list">RG</div>
+		<div id="divDiscTRA" name="divDiscTRA" style="padding-bottom:5px" onclick="DiscClick('TRA');" class="ui-disabled disc-list">TRA</div>
+		<div id="divDiscACRO" name="divDiscACRO"  style="padding-bottom:5px" onclick="DiscClick('ACRO');" class="ui-disabled disc-list">ACRO</div>
+		<div id="divDiscAER" name="divDiscAER"  style="padding-bottom:5px" onclick="DiscClick('AER');" class="ui-disabled disc-list">AER</div>
+		</div>
+	</div>
+
+    <div id="divEvent" style="border: 0px solid grey;display:inline-block;vertical-align: top;padding:3px;height:217px;margin-right:30px" class="ui-disabled">
+             <div id="divEventHeader" style="padding-bottom:5px;font-size:22px;font-weight:bold;text-align:center">Event</div><br/>
+             <div id="divEventListHolder" class="listbox" style="height:170px;"></div>
+             <div id="divEventListMAG" class="listbox" style="height:170px;display:none;">
+                <div id="divEventMAGFX" name="divEventMAGFX" style="padding-bottom:1px" onclick="EventClick('FX');">FX</div>
+                <div id="divEventMAGPH" name="divEventMAGPH" style="padding-bottom:1px" onclick="EventClick('PH');">PH</div>
+                <div id="divEventMAGR" name="divEventMAGR" style="padding-bottom:1px" onclick="EventClick('R');">R</div>
+                <div id="divEventMAGV" name="divEventMAGV" style="padding-bottom:1px" onclick="EventClick('V');">V</div>
+                <div id="divEventMAGPB" name="divEventMAGPB" style="padding-bottom:1px" onclick="EventClick('PB');">PB</div>
+                <div id="divEventMAGHB" name="divEventMAGHB" style="padding-bottom:1px" onclick="EventClick('HB');">HB</div>
+             </div>
+             <div id="divEventListWAG" class="listbox" style="height:170px;display:none;">
+                <div id="divEventWAGV" name="divEventWAGV" style="padding-bottom:1px" onclick="EventClick('V');">V</div>
+                <div id="divEventWAGUB" name="divEventWAGUB" style="padding-bottom:1px" onclick="EventClick('UB');">UB</div>
+                <div id="divEventWAGBB" name="divEventWAGBB" style="padding-bottom:1px" onclick="EventClick('BB');">BB</div>
+                <div id="divEventWAGFX" name="divEventWAGFX" style="padding-bottom:1px" onclick="EventClick('FX');">FX</div>
+             </div>
+              <div id="divEventListTRA" class="listbox" style="height:170px;display:none;">
+                <div id="divEventTRATR" name="divEventTRATR" style="padding-bottom:1px" onclick="EventClick('TR');">TR</div>
+                <div id="divEventTRASY" name="divEventTRASY" style="padding-bottom:1px" onclick="EventClick('SY');">SY</div>
+                <div id="divEventTRATU" name="divEventTRATU" style="padding-bottom:1px" onclick="EventClick('TU');">TU</div>
+                <div id="divEventTRADM" name="divEventTRADM" style="padding-bottom:1px" onclick="EventClick('DM');">DM</div>
+             </div>
+               <div id="divEventListRG" class="listbox" style="height:170px;display:none;">
+                <div id="divEventRGI" name="divEventRGI" style="padding-bottom:1px" onclick="EventClick('I');">Individual</div>
+                <div id="divEventRGG" name="divEventRGG" style="padding-bottom:1px" onclick="EventClick('G');">Group</div>
+             </div>
+               <div id="divEventListACRO" class="listbox" style="height:170px;display:none;">
+                <div id="divEventACROP" name="divEventACROP" style="padding-bottom:1px" onclick="EventClick('P');">Pairs</div>
+                <div id="divEventACROG" name="divEventACROG" style="padding-bottom:1px" onclick="EventClick('G');">Group</div>
+                <div id="divEventACROT" name="divEventACROT" style="padding-bottom:1px" onclick="EventClick('T');">Trio</div>
+             </div>
+              <div id="divEventListAER" class="listbox" style="height:170px;display:none;">
+                <div id="divEventAERI" name="divEventAERI" style="padding-bottom:1px" onclick="EventClick('I');">Individual</div>
+             </div>
+           </div>
+
+    <div id="divJudges" style="border: 0px solid grey;display:inline-block;vertical-align: top;padding:3px;height:217px" class="ui-disabled">
+        <div id="divJudgesHeader" style="padding-bottom:5px;font-size:22px;font-weight:bold;text-align:center">Assignment</div><br/>
+            <div style="float:left">
+                <button href="#" id="btnD1Overview" type="button" class="btn btn-main" onclick="Login('d1')">D1</button>
+			    <br/><br/>
+                <button href="#" id="btnScoreBoard"   type="button" class="btn btn-main"  onclick="Login('scoreboard')">Scoreboard</button>
+            </div>
+            <div style="float:left;width:126px"> 
+              <button href="#" id="btnE1"   type="button" class="btn btn-main mb-2"  onclick="Login('ejudge1')">E1</button><br/>
+              <button href="#" id="btnE2" type="button" class="btn btn-main mb-2"  onclick="Login('ejudge2')">E2</button><br/>
+              <button href="#" id="btnE3" type="button" class="btn btn-main mb-2"  onclick="Login('ejudge3')">E3</button><br/>
+              <button href="#" id="btnE4" type="button" class="btn btn-main"  onclick="Login('ejudge4')">E4</button><br/>
+           </div>
+		    <div style="float:right;width:126px">
+		        <button href="#" id="btnEVideo1" type="button" class="btn btn-main mb-2"   onclick="Login('evideo1')">E1 Video</button><br/>
+			    <button href="#" id="btnEVideo2" type="button" class="btn btn-main mb-2"   onclick="Login('evideo2')">E2 Video</button><br/>
+			    <button href="#" id="btnEVideo3" type="button" class="btn btn-main mb-2"   onclick="Login('evideo3')">E3 Video</button><br/>
+			    <button href="#" id="btnEVideo4" type="button" class="btn btn-main mb-2"   onclick="Login('evideo4')">E4 Video</button><br/>
+		   </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript">
+    var SelectedComp = -1;
+    var SelectedDisc = -1;
+    var SelectedEvent = -1;
+    $("#divCompList").load("/competition_list/");
+
+    function Login(type) {
+        if (type == "scoreboard") {
+            window.location = "/tc/?c=" + SelectedComp + "&d=" + SelectedDisc + "&e=" + SelectedEvent + "&scoreboard=1";
+        }
+        else if (type.includes("ejudge")) {
+            window.location = "/ejudge/?c=" + SelectedComp + "&d=" + SelectedDisc + "&e=" + SelectedEvent + "&ej=" + type[type.length - 1];
+        }
+        else if (type.includes("evideo")) {
+            window.location = "/evideo/?c=" + SelectedComp + "&d=" + SelectedDisc + "&e=" + SelectedEvent + "&ej=" + type[type.length - 1];
+        }
+        else
+            window.location = "/" + type + "/?c=" + SelectedComp + "&d=" + SelectedDisc + "&e=" + SelectedEvent;
+    }
+
+    function DiscClick(id) {
+        $("#divEventListHolder").hide();
+        $('.disc-list').removeClass("ctxSelected");
+        $("#divDisc" + id).addClass("ctxSelected");
+        if (SelectedDisc != -1) {
+            $("#divDisc" + SelectedDisc).removeClass("ctxSelected");
+            $("#divEventList" + SelectedDisc).hide();
+            if (SelectedEvent != -1) {
+                $("#divEvent" + SelectedDisc + SelectedEvent).removeClass("ctxSelected");
+                $("#divJudges").addClass("ui-disabled");
+                SelectedEvent = -1;
+            }
+        }
+        $("#divEventList" + id).show();
+        SelectedDisc = id;
+        //$("#divDisc").show();
+        $("#divEvent").removeClass("ui-disabled");
+
+    }
+
+    function CompClick(CompIn) {
+        
+        $('.comp-list').removeClass("ctxSelected");
+        $("#divComp" + CompIn).addClass("ctxSelected");
+        SelectedComp = CompIn;
+        $("#divDisc").removeClass("ui-disabled");
+        if (SelectedDisc != -1)
+            DiscClick(SelectedDisc);
+    }
+
+    function EventClick(id) {
+        if (SelectedEvent != -1)
+            $("#divEvent" + SelectedDisc + SelectedEvent).removeClass("ctxSelected");
+        $("#divEvent" + SelectedDisc + id).addClass("ctxSelected");
+        SelectedEvent = id;
+        $("#divJudges").removeClass("ui-disabled");
+    }
+
+   
+</script>
+{% endblock %}

@@ -1,0 +1,349 @@
+{% extends "app/layout.html" %}
+
+{% block content %}
+{% load staticfiles %}
+<div id="AccountabilityReportBlackOut" style="width:100%;height:100%;background-color:#000000;opacity: .3;position:fixed;z-index:103;display:none" onclick="CloseAccountabilityReport()"></div>
+<div id="divAccountabilityReport" style="position:absolute;z-index:104;text-align:center;padding:5px;overflow:auto;display:none;background-color:rgb(97, 97, 106);color:white;top:10%;left:35%;width:40%"  class="rounded"></div>
+<div style="margin:10px;padding:0" align="center">
+    <div id="divHeader"></div>
+    <table>
+        <tr>
+            <td>
+                <div id="divTwitchPlayer" style="width:854px;height:480px"></div>
+            </td>
+            <td valign="top">
+                <div id="divScoreArea" style="padding-left:15px;padding-top:30px;" >
+                    <table cellspacing="0" cellpadding="0" border="0" style="font-size:0.75rem;width:270px">
+	                    <tr><td id="tdElements" align="right">Elements:</td><td><div id="lblElements"></div></td></tr>
+	                    <tr><td id="tdDifficulty" align="right">Base Score:</td><td><div id="lblDifficulty"></div></td></tr>
+	                    <tr><td id="tdGroups" align="right">Groups:</td><td><div id="lblGroups"></div></td></tr>
+	                    <tr><td id="tdBonus" align="right">Bonus:</td><td><div id="lblBonus"></div></td></tr>
+	                    <tr><td id="tdNeutralDed" align="right">Neutral Deductions:</td><td><div id="lblNeutralDed"></div></td></tr>
+	                    <tr><td id="tdDScore" align="right">D-Score:</td><td><div id="lblDScore"></div></td></tr>
+	                    <tr><td colspan="2" align="right"></td></tr>
+	                    <tr><td id="tdE1" align="right">E1 Execution:</td><td id="divET1">0.0</td></tr>
+	                    <tr><td id="tdE2" align="right">E2 Execution:</td><td id="divET2">0.0</td></tr>
+	                    <tr><td id="tdE3" align="right">E3 Execution:</td><td id="divET3">0.0</td></tr>
+	                    <tr><td id="tdE4" align="right">E4 Execution:</td><td id="divET4">0.0</td></tr>
+	                    <tr><td id="tdEScore" align="right">E-Score:</td><td id="divEScore">0.0</td></tr>
+	                    <tr><td align="right" style="height:10px"></td><td></td></tr>
+	                    <tr><td id="tdTotal" align="right">Final Score:</td><td id="divTotalScore">0.0</td></tr>
+	                </table>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+	            <div id="divDotsArea" class="DotsArea" style="width:854px;height:100px;">
+	                <div id="divRedLine" style="position:absolute;left:20px;top:0px;height:100px;border-left:1px solid red;width:1px;display:none"></div>
+	            </div>
+	        </td>
+	        <td align="left" style="vertical-align:top;">
+	            <div>
+	                <div id="divDotsAreaGlobal" style="position:relative;width:100px;height:100px;border-top:1px solid black;border-right:1px solid black;border-bottom:1px solid black;background-color:#373748;float:left">
+	   
+	                </div>
+	                <div id="divEJudges" align="left" style="float:left;padding-left:5px;padding-top:12px">
+	   
+		                <div style="float:left">
+		                    <table cellspacing="0" border="0" cellpadding="0">
+			                    <tr>
+			                        <td id="divJT1" style="width:30px;font-weight:bold"></td>
+			                        <td id="divE1N"></td>
+			                    </tr>
+			                    <tr>
+			                        <td id="divJT2" style="width:30px;font-weight:bold"></td>
+			                        <td id="divE2N"></td>
+			                    </tr>
+			                    <tr>
+			                        <td id="divJT3" style="width:30px;font-weight:bold"></td>
+			                        <td id="divE3N"></td>
+			                    </tr>
+			                    <tr>
+			                        <td id="divJT4" style="width:30px;font-weight:bold"></td>
+			                        <td id="divE4N"></td>
+			                    </tr>
+		                    </table>
+		                </div>
+	                </div>
+	                <div style="float:right;padding-left:5px">
+		               
+	                </div>
+	            </div>
+                <div style="float:right;padding-left:5px">
+	                <button href="#" id="btnAccountability" type="button" class="btn btn-main mb-2 ui-disabled" onclick="ViewAccountabilityReport()">Accountability Report</button>
+	            </div>
+            </td>
+        </tr>
+    </table> 
+ </div>
+{% endblock %}
+
+{% block scripts %}
+<script src= "https://player.twitch.tv/js/embed/v1.js"></script>
+<script src="{% static 'app/scripts/dots_area.js' %}?v=1"></script>
+<script type="text/javascript">
+    var Disc = "{{disc}}";
+    var ev = "{{event}}";
+    var CompName = "{{comp}}";
+    var Comp = "{{comp.id}}";
+    var D1Judge = "{{judges.d1}}";
+    var EJudges = new Array();
+    EJudges[1] = "{{judges.e1}}";
+    EJudges[2] = "{{judges.e2}}";
+    EJudges[3] = "{{judges.e3}}";
+    EJudges[4] = "{{judges.e4}}";
+    var DeductionsConfirmed = true;
+    var GymnastLevels = new Array();
+    var GymnastTeams = new Array();
+    var GymnastLabels = new Array();
+    {% for athlete in athletes %}
+        GymnastLevels[{{athlete.id}}] = "{{athlete.level}}";
+        GymnastTeams[{{athlete.id}}] = "{{athlete.team}}";
+        GymnastLabels[{{athlete.id}}] = "{{athlete}}";
+    {% endfor %}
+    var token = "{{ csrf_token }}";
+    var ThisJudge = {{ej}};
+
+</script>
+<script type="text/javascript">
+    //const firebase = require("firebase");
+    var datahold;
+    var RoutineID = -1;
+    var Status = "";
+    var SocringType;
+    var EJudgesDone = new Array();
+    var NumJudges = 0;
+
+    var db = firebase.firestore();
+    db.collection("routines").doc(Comp + Disc + ev)
+        .onSnapshot(function (doc) {
+            SetBasedOnStatus(doc);
+        });
+    SetDotsArea();
+    function SetBasedOnStatus(doc) {
+        if (doc.data() != undefined) {
+
+            if (Status != doc.data().status || RoutineID != doc.data().routine) {
+                RoutineID = doc.data().routine
+                if (doc.data().status == "N" || doc.data().status == "S" || Status == "") {
+                    SetDScoreType(doc.data().athlete_id);
+                    SetDScoreDefaults();
+                    Reset();
+                    $("#divHeader").html("<h2 style='display:inline'>" + doc.data().athlete + "</h2>");
+                    SetTwitchStream(doc.data().stream);
+                    Status = doc.data().status;
+                }
+                if (doc.data().status == "AD") {
+                    BuildDots(false);
+                    Status = doc.data().status;
+                }
+                if (doc.data().status == "RD") {
+                    BuildDots(false);
+                    LoadRoutine();
+                    Status = doc.data().status;
+                }
+                if (doc.data().status == "D" || doc.data().status == "F") {
+                    Reset();
+            }
+            else
+                CheckJudges(doc);
+            console.log("Current data: ", doc.data());
+           // $("#divStatus").html(doc.data().stream + " | " + doc.data().status);
+        }
+    }
+
+    
+    function SetJudges() {
+        NumJudges = 0;
+        for (var i = 1; i <= 4; i++) {
+            if (EJudges[i] != "" && EJudges[i] != " ") {
+                NumJudges++;
+                //if (TrainName != "")
+                //$("#divE" + i + "N").html(EJudges[i].substring(0, 2) + " " + EJudges[i].substring(2));
+                // else
+                $("#divE" + i + "N").html(EJudges[i]);
+                $("#divJT" + i).empty();
+                $("#divET" + i).show();
+                $("#tdE" + i).show();
+                $("#divET" + i).html('');
+                //AddJudge(i);
+                //}
+                //DedArrayJudges[i] = new Array();
+                //$("#divDotsArea").append("<div id='divJT" + i + "' style='position:absolute;right:5px;top:" + (((i*JudgeYOffset)-(DotSize/2))-2) + "px;font-size:14px;font-weight:bold'></div>");
+            }
+            else {
+                $("#divET" + i).hide();
+                $("#tdE" + i).hide();
+            }
+        }
+    }
+
+    function Reset() {
+        $("#divDotsArea").empty();
+        $("#divDotsAreaGlobal").empty();
+        $("#lblElements").html('');
+        $("#lblDifficulty").html('');
+        $("#lblGroups").html('');
+        $("#lblBonus").html('');
+        $("#lblNeutralDed").html('');
+        $("#lblDScore").html('');
+        $("#divET1").html('');
+        $("#divET2").html('');
+        $("#divET3").html('');
+        $("#divET4").html('');
+        $("#divEScore").html('');
+        $("#divTotalScore").html('');
+        $("#btnAccountability").addClass("ui-disabled");
+        SetJudges();
+    }
+
+     function CheckJudges(doc) {
+        if (RoutineID == doc.data().routine) {
+            let RedoDots = false;
+            console.log("Check Judges " + EJudgesDone[1] + " | " + doc.data().e1done);
+            if (EJudgesDone[1] != doc.data().e1done) {
+                EJudgesDone[1] = doc.data().e1done;
+                RedoDots = true;
+            }
+            if (EJudgesDone[2] != doc.data().e2done) {
+                EJudgesDone[2] = doc.data().e2done;
+                RedoDots = true;
+            }
+            if (EJudgesDone[3] != doc.data().e3done) {
+                EJudgesDone[3] = doc.data().e3done;
+                RedoDots = true;
+            }
+            if (EJudgesDone[4] != doc.data().e4done) {
+                EJudgesDone[4] = doc.data().e4done;
+                RedoDots = true;
+            }
+            if (RedoDots) {
+                BuildDots(false);
+                if (Status == "RD")
+                    LoadRoutine
+                
+            }
+        }
+    }
+
+    function SetTwitchStream(stream) {
+        $("#divTwitchPlayer").empty();
+        var options = {
+            width: VidWidth,
+            height: 480,
+            channel: stream,
+            parent: ["www.stseval.com"]
+        };
+        var player = new Twitch.Player("divTwitchPlayer", options);
+        player.setVolume(0.5);
+        //SetupRoutine(stream);
+
+    }
+
+    function SetDScoreType(AthleteIn) {
+        if (GymnastLevels[AthleteIn] == "L4" || GymnastLevels[AthleteIn] == "L5" || GymnastLevels[AthleteIn] == "L6" || GymnastLevels[AthleteIn] == "L7") {
+            ScoringType = "4567";
+        }
+        else if (GymnastLevels[AthleteIn] == "L8" || GymnastLevels[AthleteIn] == "L9" || GymnastLevels[AthleteIn] == "L10") {
+            ScoringType = "8910";
+        }
+        else//fig or elite
+        {
+            ScoringType = "FIG";
+        }
+    }
+
+    function LoadRoutine() {
+        $.ajax({
+            url: "/routine_get_info/",
+            type: "POST",
+            dataType: 'json',
+            headers: { "X-CSRFToken": token },
+            data: {
+                'routine': RoutineID,
+            },
+            success: function (data) {
+                console.log(data);
+                //SetDScoreType(data['athlete_id']);
+                //SetDScoreDefaults();
+                $("#lblElements").html(data['score_elements']);
+                $("#lblDifficulty").html(data['score_difficulty']);
+                $("#lblGroups").html(data['score_groups']);
+                $("#lblBonus").html(data['score_bonus']);
+                $("#lblNeutralDed").html(data['score_neutral']);
+                $("#lblDScore").html(data['score_d']);
+                $("#divET1").html(data['score_e1']);
+                $("#divET2").html(data['score_e2']);
+                $("#divET3").html(data['score_e3']);
+                $("#divET4").html(data['score_e4']);
+                $("#divEScore").html(data['score_e']);
+                $("#divTotalScore").html(data['score_final']);
+                $("#btnAccountability").removeClass("ui-disabled");
+
+            }
+        });
+    }
+
+    function SetDScoreDefaults() {
+        if (ScoringType == "4567") {
+            //console.log("Setting Scoring 4567");
+            $("#tdDifficulty").html("Base Score:");
+            $("#tdDScore").html("Start Value:");
+            $("#tdE1").html("E1 Deduction:");
+            $("#tdE2").html("E2 Deduction:");
+            $("#tdE3").html("E3 Deduction:");
+            $("#tdE4").html("E4 Deduction:");
+            $("#tdGroups").hide();
+            $("#lblGroups").hide();
+            $("#tdBonus").html("Bonus: ");
+            $("#tdEScore").html("Average Deduction: ");
+        }
+        else if (ScoringType == "8910") {
+            //console.log("Setting Scoring 8910");
+            if (ev == "FX" || ev == "HB")
+                $("#tdBonus").html("Connections and Bonus: ");
+            else
+                $("#tdBonus").html("Bonus: ");
+            $("#tdDifficulty").html("Difficulty:");
+            $("#tdE1").html("E1 Execution:");
+            $("#tdE2").html("E2 Execution:");
+            $("#tdE3").html("E3 Execution:");
+            $("#tdE4").html("E4 Execution:");
+            $("#tdDScore").html("D-Score:");
+            $("#tdEScore").html("E-Score: ");
+            $("#tdGroups").show();
+        }
+        else//fig or elite
+        {
+            //console.log("Setting Scoring FIG");
+            $("#tdDifficulty").html("Difficulty:");
+            $("#tdDScore").html("D-Score:");
+            $("#tdE1").html("E1 Execution:");
+            $("#tdE2").html("E2 Execution:");
+            $("#tdE3").html("E3 Execution:");
+            $("#tdE4").html("E4 Execution:");
+            $("#tdEScore").html("E-Score: ");
+            if (ev == "FX" || ev == "HB")
+                $("#tdBonus").html("Connections and Bonus: ");
+            else
+                $("#tdBonus").html("Bonus: ");
+            $("#tdGroups").show();
+        }
+    }
+
+    function ViewAccountabilityReport() {
+        $("#AccountabilityReportBlackOut").show();
+        $("#divAccountabilityReport").empty();
+        $("#divAccountabilityReport").load("/accountability_report/?routine=" + RoutineID, function () {
+            $("#divAccountabilityReport").slideDown();
+        });
+    }
+
+    function CloseAccountabilityReport() {
+        $("#AccountabilityReportBlackOut").hide();
+        $("#divAccountabilityReport").hide();
+    }
+
+</script>
+{% endblock %}

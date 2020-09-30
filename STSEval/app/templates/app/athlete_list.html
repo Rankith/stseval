@@ -1,0 +1,5 @@
+{% block content %}
+    {% for athlete in athletes %}
+        <div id="divAthlete{{athlete.id}}" class="ath-list pb-2" onclick="AthleteClick({{athlete.id}});">{{athlete}}</div>
+    {% endfor %}
+{% endblock %}

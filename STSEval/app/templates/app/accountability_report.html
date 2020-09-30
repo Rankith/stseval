@@ -1,0 +1,34 @@
+{% load staticfiles %}
+{% load templateextras %}
+<h1>Accountability Report</h1>
+{% if judging_time != 0 %}
+    Time Spent Judging: {{judging_time}} seconds.
+{% endif %}
+<h1>E-Jury Changes</h1>
+<div align="center">
+    {% if deductions|length > 0 %}
+        {% for deduction_list in deductions %}
+            {% ifchanged deduction_list.0.judge %}
+                </tr></table>
+                <table cellspacing="5"><tr><td></td><td width="150px" align="center">E{{deduction_list.0.judge}} {{deduction_list.0.name}}</td><td></td><td width="150px" align="center">D1 {{d1_name}}</td>
+            {% endifchanged %}
+            {% for d in deduction_list %}
+                {% ifchanged d.spot %}
+                    </td></tr><tr>
+                        <td>{{d.counter}} of {{counters|index:deduction_list.0.judge}}
+                {% endifchanged %}
+                {% ifchanged d.editor %}
+                    {% if d.editor == 'D' %}
+                        </td><td align="center"><img src='{% static 'app/images/dots/' %}arrow.svg' width='25px' /></td><td td align="center">
+                    {% else %}
+                        </td><td td align="center">
+                    {% endif %}
+                {% endifchanged %}
+                <img src='{% static 'app/images/dots/' %}e-{{d.deduction}}.svg' width='12px' height='12px' />
+            {% endfor %}
+        {% endfor %}</td></tr></table>
+    {% else %}
+    No E-Jury Changes
+    {% endif %}
+</div>
+ <div align="center"><br/><button id="btnAccountabilityClose" type="button" class="btn btn-main mb-2" onclick="CloseAccountabilityReport()">Close</button><br/><br/>STS Results &copy;2020</div>

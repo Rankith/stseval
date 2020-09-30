@@ -1,33 +1,25 @@
-{% extends "app/layout.html" %}
-
-{% block content %}
-
-<div class="jumbotron">
-    <h1>Django</h1>
-    <p class="lead">Django is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
-    <p><a href="https://www.djangoproject.com/" class="btn btn-primary btn-large">Learn more &raquo;</a></p>
-</div>
-
-<div class="row">
-    <div class="col-md-4">
-        <h2>Getting started</h2>
-        <p>
-            Django gives you a powerful, patterns-based way to build dynamic websites that
-            enables a clean separation of concerns and gives you full control over markup
-            for enjoyable, agile development.
-        </p>
-        <p><a class="btn btn-default" href="http://www.djangobook.com/en/2.0/index.html">Learn more &raquo;</a></p>
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>STSEval</title>
+        {% load staticfiles %}
+        <link rel="stylesheet" type="text/css" href="{% static 'app/content/bootstrap.min.css' %}" />
+        <link rel="stylesheet" type="text/css" href="{% static 'app/content/site.css' %}" />
+        <script src="{% static 'app/scripts/modernizr-2.6.2.js' %}"></script>
+    </head>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container-fluid justify-content-center">
+            <img src="{% static 'app/images/stseval21.svg' %}" style="height:42px">
+        </div>
     </div>
-    <div class="col-md-4">
-        <h2>Get more libraries</h2>
-        <p>The Python Package Index is a repository of software for the Python programming language.</p>
-        <p><a class="btn btn-default" href="https://pypi.org/">Learn more &raquo;</a></p>
+    <div class="container-fluid body-content">
+        <div align="center">
+            <a href="/manage/"><button id="btnAdmin" name="btnAdmin" type="button" class="btn btn-main mt-2" style="width:250px">Administrator</button></a><br/>
+             <a href="/judge_select/"><button id="btnJudge" name="btnJudge" type="button" class="btn btn-main mt-2" style="width:250px">Judge</button></a><br/>
+            <button id="btnSpectator" name="btnSpectator" type="button"class="btn btn-main ui-disabled mt-2" style="width:250px">Spectator</button><br/>
+             <div align="center">STS Results &copy; {{ year }}</div>
+        </div>
     </div>
-    <div class="col-md-4">
-        <h2>Microsoft Azure</h2>
-        <p>You can easily publish to Microsoft Azure using Visual Studio. Find out how you can host your application using a free trial today.</p>
-        <p><a class="btn btn-default" href="http://azure.microsoft.com">Learn more &raquo;</a></p>
-    </div>
-</div>
-
-{% endblock %}
+</html>

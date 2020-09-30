@@ -1,0 +1,423 @@
+{% extends "app/layout.html" %}
+
+{% block content %}
+{% load staticfiles %}
+{% include "app/dot_change.html" %}   
+<div align="center">
+    <table border="0" cellpadding="0" cellspacing="0"><tr>
+        <td width="" align="center">
+            <div id="divArtistryButtons" style="display:none">  
+                <button href="#" id="btnNormal"  type="button" class="btn btn-main" onclick="ArtistryToggle('Normal')">Normal</button>
+                <button href="#" id="btnArt"   type="button" class="btn btn-main" onclick="ArtistryToggle('Art')">Artistry</button>
+                <button href="#" id="btnComp"   type="button" class="btn btn-main" onclick="ArtistryToggle('Comp')" >Composition</button>
+                <button href="#" id="btnGlobal"   type="button" class="btn btn-main" onclick="ArtistryToggle('Global')" style="display:none" >Global</button>
+            </div>
+        </td>
+        <td width="" align="center">
+            <div id="divHeader"><h2 style="display:inline">{{this_judge}}</h2></div>
+            <div id="divTimerArea" style="padding-left:3px">
+                <div id="divTimer" style="margin:auto;text-align:center;" class="timer-red">WAITING FOR ROUTINE TO START</div>
+                <button href="#" id="btnConfirm" type="button" class="btn btn-main" onclick="ConfirmDeductions()" style="display:none"> Submit</button>
+            </div>
+            <div id="divScoreArea" style="padding-left:3px">
+                <table border="0" cellpadding="0" cellspacing="0"><tr>
+                    <td style="font-size:1.5em">Total Deductions:</td>
+                    <td><div id="divTotalDeductions" style="font-size:1.5em"></div></td>
+                </tr></table>
+            </div> 
+             </td>
+        <td width="" align="center"><button href="#" id="btnEdit"  type="button" class=" ml-4 btn btn-main ui-disabled" onclick="SwapToEdit()" style="display:none">Edit</button>
+        </td>
+    </tr></table>
+    <div id="divEdit" align="center"  style="flex-grow:1;display:none;justify-content:center">
+       
+
+        <div id="divConfirmedArea" style="display:none;font-size:2em;">
+            Sent to D1
+        </div>
+        <div id="divDotsArea" class="DotsArea" style="width:87%;height:50px;float:none"></div>
+        <div id="divDotsAreaGlobal" style="display:none;width:8%;position:relative;height:50px;border-top:1px solid black;border-right:1px solid black;border-bottom:1px solid black;background-color:#373748;float:left"></div>
+        <div id="divTouchEdit" style="font-size:2em;margin:auto">
+            TOUCH TO EDIT
+        </div>
+    </div>
+</div>
+<div id="divMain" align="center" style="flex-grow:1;display:flex;flex-direction:column">
+    <div id="divPhases" style="height:25%;width:80%;margin:auto;display:flex;justify-content:center;display:none">
+        <div id="divP1" style="padding-top:2.5%;border-bottom:2px solid;border-right:2px solid;flex-grow:1;display:flex;position:relative">
+            <button href="#" id="btnP1" type="button" class="btn btn-phase" style="background-color: green; color: white;width:100%" onclick="Phase(1)">Pre-Flight</button>
+            <div id="divPDots1" style="position:absolute;left:5%;top:60%"></div>
+        </div>
+        <div id="divP2" style="border-top:2px solid;flex-grow:1;display:flex;padding-bottom:2.5%;position:relative">
+            <button href="#" id="btnP2" type="button" class="btn btn-phase" onclick="Phase(2)" style=";width:100%">Table</button>
+            <div id="divPDots2" style="position:absolute;left:5%;top:35%"></div>
+        </div>
+        <div id="divP3" style="border-top:2px solid;flex-grow:1;display:flex;padding-bottom:2.5%;position:relative">
+            <button href="#" id="btnP3" type="button" class="btn btn-phase" onclick="Phase(3)" style=";width:100%">Post-Flight</button>
+            <div id="divPDots3" style="position:absolute;left:5%;top:35%"></div>
+        </div>
+        <div id="divP4" style="padding-top:2.5%;border-bottom:2px solid;border-left:2px solid;flex-grow:1;display:flex;position:relative">
+            <button href="#" id="btnP4" type="button" class="btn btn-phase" onclick="Phase(4)" style=";width:100%">Landing</button>
+            <div id="divPDots4" style="position:absolute;left:5%;top:60%"></div>
+        </div>
+    </div>
+    <div id="divDeduct" style="height:100%;display:flex;justify-content:center;flex-grow:1;color:black">
+        <div id="divDeduct1" class="div-button deduct-1 deduct-button ui-disabled" onclick="Deduct(1)">Deduct 0.1</div>
+        <div id="divDeductMiddle" style="display: flex; justify-content: center;flex-direction:column;flex-grow:1;color:black">
+            <div id="divDeduct10" class="div-button deduct-10 deduct-button ui-disabled" onclick="Deduct(10)">Deduct 1.0</div>
+            <div id="divDeduct5" style="flex-grow:2" class="div-button deduct-5 deduct-button ui-disabled" onclick="Deduct(5)">Deduct 0.5</div>
+        </div>
+        <div id="divDeduct3"  class="div-button deduct-3 deduct-button ui-disabled" onclick="Deduct(3)">Deduct 0.3</div>
+    </div>
+    <div id="divDeductArtMAGV" style="height:80%;display:none;justify-content:center;flex-grow:1;color:black">
+        <div id="divDeductArtMAGV1" class="div-button deduct-1 deduct-button ui-disabled" onclick="Deduct(1,-1,-1,'1')">Deduct 0.1</div>
+        <div id="divDeductMiddle" style="display: flex; justify-content: center;flex-direction:column;flex-grow:1;color:black">
+            <div id="divDeductArtMAGV10" class="div-button deduct-10 deduct-button ui-disabled" onclick="Deduct(10,-1,-1,'10')">Deduct 1.0</div>
+            <div id="divDeductArtMAGV5" style="flex-grow:2" class="div-button deduct-5 deduct-button ui-disabled" onclick="Deduct(5,-1,-1,'5')">Deduct 0.5</div>
+        </div>
+        <div id="divDeductArtMAGV3"  class="div-button deduct-3 deduct-button ui-disabled" onclick="Deduct(3,-1,-1,'3')">Deduct 0.3</div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src= "https://player.twitch.tv/js/embed/v1.js"></script>
+<script src="{% static 'app/scripts/dots_area.js' %}?v=1"></script>
+<script type="text/javascript">
+    var Disc = "{{disc}}";
+    var ev = "{{event}}";
+    var CompName = "{{comp}}";
+    var Comp = "{{comp.id}}";
+    var D1Judge = "{{judges.d1}}";
+    var EJudges = new Array();
+    EJudges[1] = "{{judges.e1}}";
+    EJudges[2] = "{{judges.e2}}";
+    EJudges[3] = "{{judges.e3}}";
+    EJudges[4] = "{{judges.e4}}";
+    var token = "{{ csrf_token }}";
+    var JudgeName = "{{this_judge}}";
+    var ej = {{ej}};
+
+</script>
+<script type="text/javascript">
+    var Judging = false;
+    var RoutineID = -1;
+    var DotChanging = -1;
+    var DotChangingArtistry;
+    var TimeAllowed = 20;
+    var TimeLeft = 0;
+    var DeductionsConfirmed = false;
+    var JudgeNumber;
+   
+    var VSwapTimer;
+    var HoldEventChange = false;
+    var ArtistryMode = "Normal";
+    var ArtistryAvail = false;
+    var ArtistryTaken = "";
+    var Status = "";
+    var TotalDeductions = 0;
+    var JudgeType = 'E';
+
+    DotSize = 36;
+    OnlyOneJudge = true;
+
+    var db = firebase.firestore();
+    db.collection("routines").doc(Comp + Disc + ev)
+        .onSnapshot(function (doc) {
+            //console.log(doc);
+            SetBasedOnStatus(doc);
+        });
+
+    SetupPage();
+
+    function SetBasedOnStatus(doc) {
+        if (doc.data() != undefined) {
+            if (Status != doc.data().status || RoutineID != doc.data().routine) {
+                RoutineID = doc.data().routine;
+                if (doc.data().status == "N" || doc.data().status == "D" || doc.data().status == "F") {
+                    console.log("reset");
+                    Reset();
+                }
+                else if (doc.data().status == "S") {
+                    console.log("start judging");
+                    StartJudging();
+                }
+                else if (doc.data().status == "AD") {
+                    console.log("athlete done");
+                    AthleteDone();
+                }
+                Status = doc.data().status;
+            }
+            console.log("Current data: ", doc.data());
+            //$("#divStatus").html(doc.data().stream + " | " + doc.data().status);
+        }
+    }
+
+
+    function SetEditMode(data) {
+        //console.log(data);
+        clearInterval(VSwapTimer);
+        TimeLeft = parseInt((TimeAllowed + 1) - (Date.now() - data['athlete_done_time']) / 1000);
+        $("#btnConfirm").show();
+        TimerCheck();
+        if (ev != "V") {
+            if (ArtistryAvail) {
+                if (ArtistryMode == "Normal")
+                    ArtistryToggle("Art");
+                //$("#btnArt").addClass("ui-disabled");
+
+                $("#btnNormal").hide();
+                $("#btnEdit").removeClass("ui-disabled");
+            }
+            else {
+                SwapToEdit();
+            }
+        }
+        else {
+            $("#btnEdit").removeClass("ui-disabled");
+        }
+    }
+    function SwapToEdit() {
+        $("#btnEdit").hide();
+
+        $("#divArtistryButtons").hide();
+        ArtistryMode = "Normal";
+        $("#divDotsArea").empty();
+        $("#divDotsAreaGlobal").empty();
+        $("#divMain").hide();
+        $("#divEdit").show();
+        BuildDots();
+    }
+
+    function BuildDots() {
+        $.ajax({
+            url: "/build_dots/",
+            type: "POST",
+            headers: { "X-CSRFToken": token },
+            data: {
+                'routine': RoutineID,
+                'judge': ej,
+                'width': $("#divDotsArea").width(),
+                'dot_size': DotSize,
+            },
+            success: function (data) {
+                $("#divDotsArea").empty();
+                $("#divDotsArea").html(data);
+                $("#divTotalDeductions").html(JudgeDeductions[ej]);
+                TotalDeductions = JudgeDeductions[ej];
+            }
+        });
+    }
+
+
+    function TimerCheck() {
+        if (Status == "AD" || Status == "RD") {
+            TimeLeft -= 1;
+            if (TimeLeft < 0)
+                TimeLeft = 0;
+            $("#divTimer").html(TimeLeft + " SECONDS").addClass("timer-yellow").removeClass("timer-green").removeClass("timer-red");
+            if (TimeLeft > 0) {
+                setTimeout(TimerCheck, 1000)
+            }
+            else {
+                ConfirmDeductions();
+                SwapToEdit();
+            }
+        }
+    }
+    function ConfirmDeductions() {
+        if (Status == "AD" || Status == "RD") {
+            DeductionsConfirmed = true;
+            //Judging = false;
+            $("#divConfirmedArea").show();
+            $("#divTouchEdit").hide();
+            $("#divTimerArea").hide();
+            RoutineConfirmDeductions();
+        }
+    }
+
+    function RoutineConfirmDeductions() {
+        $.ajax({
+            url: "/routine_ejudge_done/",
+            type: "POST",
+            headers: { "X-CSRFToken": token },
+            data: {
+                'routine': RoutineID,
+                'judge': ej,
+            },
+            success: function (data) {
+            }
+        });
+    }
+
+    function AthleteDone() {
+        GetRoutine();
+    }
+
+    function GetRoutine() {
+        $.ajax({
+            url: "/routine_get_info/",
+            type: "POST",
+            headers: { "X-CSRFToken": token },
+            data: {
+                'routine': RoutineID,
+            },
+            dataType: 'json',
+            success: function (data) {
+                RoutineLength = data['athlete_done_time'] - data['start_time']
+                SetEditMode(data);
+            }
+        });
+    }
+
+    function StartJudging() {
+        //DedArray = new Array();
+        if (!$("#divTimer").html().includes("SECONDS"))
+            $("#divTimer").html("ROUTINE IN PROGRESS").addClass("timer-green").removeClass("timer-yellow").removeClass("timer-red");
+        if (DotChanging == -1)
+            Lock_Close();
+        Judging = true;
+    }
+
+    function Lock_Close() {
+        $(".deduct-button").removeClass("ui-disabled");
+    }
+
+    function SetupPage() {
+        $("#divFullScreen").addClass("d-flex flex-column").css("height", "100vh");
+        $("#divScreenContainer").addClass("d-flex flex-column h-100");
+        if (ev == "V") {
+            $("#divDeduct").css("height", "80%");
+            $("#divPhases").css("display", "flex");
+            TimeAllowed = 45;
+            ArtistryAvail = true;
+            $("#btnArt").children().html("Dynamic")
+            //$("#btnArt").show();
+            $("#btnGlobal").hide();
+            $("#btnComp").hide();
+            $("#btnEdit").show();
+            $("#divDotsAreaGlobal").show();
+            $("#divDotsArea").css("float", "left");
+            $("#divDotsArea").css("margin-left", "2%");
+            $("#btnNormal").css('background-color', 'green');
+            $("#btnNormal").css('color', 'white');
+
+        }
+        if (Disc == "WAG" && ev != "UB") {
+            TimeAllowed = 30;
+            ArtistryAvail = true;
+            $("#divArtistryButtons").show();
+            // $("#btnArt").show();
+            $("#btnEdit").show();
+            $("#divDotsAreaGlobal").show();
+            $("#divDotsArea").css("float", "left");
+            $("#divDotsArea").css("margin-left", "2%");
+            $("#btnNormal").css('background-color', 'green');
+            $("#btnNormal").css('color', 'white');
+
+        }
+        document.getElementById('divDotsArea').addEventListener('click', NewDeduction);
+
+        clearInterval(VSwapTimer);
+    }
+
+    function Reset() {
+        ArtistryTaken = "";
+        HideArtETC();
+        $("#divDeduct").css("display", "flex");
+        $("#divTimer").html("");
+        $("#btnNormal").show();
+        ResetArtistryButtons();
+        $("#btnNormal").css('background-color', 'green');
+        $("#btnNormal").css('color', 'white');
+        ArtistryToggle("Normal");
+        $("#btnEdit").addClass("ui-disabled");
+
+        SetWaiting();
+        $("#divMain").show();
+        $("#divEdit").hide();
+        $("#divConfirmedArea").hide();
+        $("#divTouchEdit").show();
+        $("#divTimerArea").show();
+        $("#btnConfirm").hide();
+        DotChanging = -1;
+        Judging = false;
+        TimeLeft = 0;
+        ArtistryMode = "Normal";
+        clearInterval(VSwapTimer);
+        DeductionsConfirmed = false;
+        //$('#divShorthandPrev').empty();
+        OnElement = 1;
+        ExerciseCompleted = false;
+        DedArray = new Array();
+        DedArrayArtistry = new Array();
+        VDedPhases[1] = 0;
+        VDedPhases[2] = 0;
+        VDedPhases[3] = 0;
+        VDedPhases[4] = 0;
+        TotalDeductions = 0;
+        $("#divPDots1").empty();
+        $("#divPDots2").empty();
+        $("#divPDots3").empty();
+        $("#divPDots4").empty();
+        $("#divTotalDeductions").html(0);
+
+        if (ev == "V" || (Disc == "WAG" && ev != "UB")) {
+
+            $("#divArtistryButtons").show();
+            $("#btnArt").show();
+            $("#btnEdit").show();
+
+
+        }
+        if (ev == "V")
+            Phase(1);
+    }
+
+    function SetWaiting() {
+        $("#divTimer").html("WAITING FOR ROUTINE TO START").addClass("timer-red").removeClass("timer-yellow").removeClass("timer-green");
+        $(".deduct-button").addClass("ui-disabled");
+    }
+
+    function HideArtETC() {
+        $("#divDeductArt" + Disc + ev).hide();
+        $("#divDeductComp" + Disc + ev).hide();
+        $("#divDeductGlobal" + Disc + ev).hide();
+    }
+
+    function ResetArtistryButtons() {
+        $("#btnArt").removeClass("btn-phase-selected").addClass("btn-main");
+        $("#btnNormal").removeClass("btn-phase-selected").addClass("btn-main");
+        $("#btnComp").removeClass("btn-phase-selected").addClass("btn-main");
+        $("#btnGlobal").removeClass("btn-phase-selected").addClass("btn-main");
+    }
+
+
+    function ArtistryToggle(ModeIn) {
+
+        if (ArtistryMode != ModeIn) {
+            //clear and hide all
+            ResetArtistryButtons();
+            HideArtETC();
+            $("#divDeduct").hide();
+            //now color and load the one in
+            $("#btn" + ModeIn).addClass("btn-phase-selected").removeClass("btn-main");
+            ArtistryMode = ModeIn;
+            if (ArtistryMode == "Normal")
+                $("#divDeduct").css("display", "flex");
+            else
+                $("#divDeduct" + ModeIn + Disc + ev).css("display", "flex");
+
+        }
+
+    }
+
+    function Phase(phaseIn) {
+        $(".btn-phase-selected").removeClass("btn-phase-selected").addClass("btn-phase");
+        VPhase = phaseIn;
+        $("#btnP" + VPhase).removeClass("btn-phase").addClass("btn-phase-selected");
+    }
+
+</script>
+{% endblock %}

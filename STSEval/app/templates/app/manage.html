@@ -1,0 +1,455 @@
+{% extends "app/layout.html" %}
+
+{% block content %}
+<div align="center" style="margin:10px;padding:0">
+	<div id="divCompetitions" style="border: 1px solid grey;display:inline-block;vertical-align: top;padding:3px;display:inline-block;margin-right:30px;">
+	<div id="divCompHeader" style="padding-bottom:5px;font-size:22px;font-weight:bold;text-align:center">Competition</div><br/>
+	<div id="divCompList"class="listbox"  style="width:200px;height:150px;"></div><br/>
+	<div id="divCompButtonsArea">
+		<button href="#" id="btnCompAdd"  type="button" class="btn btn-main" data-toggle="modal" data-target="#modalMain" onclick="AddCompStart()">Add</button>
+		<button href="#" id="btnCompEdit"  type="button" class="btn btn-main" data-toggle="modal" data-target="#modalMain" onclick="EditCompStart()">Edit</button>
+		<button href="#" id="btnCompDelete"  type="button" class="btn btn-main" onclick="CompDelete()">Delete</button>
+		<br/>
+		<button href="#" id="btnCompCopy"  type="button" class="btn btn-main mt-2" onclick="CopyCompStart()">Copy</button>
+	</div>
+	</div>
+
+	<div id="divDisc" style="border: 1px solid grey;vertical-align: top;padding:3px;height:254px;display:inline-block;margin-right:30px;" class="ui-disabled">
+		<div id="divDiscHeader" style="padding-bottom:5px;font-size:22px;font-weight:bold;text-align:center">Discipline</div><br/>
+		<div id="divDiscList" class="listbox" style=";height:180px;">
+		<div id="divDiscMAG" name="divDiscMAG" class="disc-list" style="padding-bottom:5px" onclick="DiscClick('MAG');">MAG</div>
+		<div id="divDiscWAG" name="divDiscWAG" class="disc-list" style="padding-bottom:5px" onclick="DiscClick('WAG');">WAG</div>
+		<div id="divDiscRG" name="divDiscRG" style="padding-bottom:5px" onclick="DiscClick('RG');" class="ui-disabled disc-list">RG</div>
+		<div id="divDiscTRA" name="divDiscTRA" style="padding-bottom:5px" onclick="DiscClick('TRA');" class="ui-disabled disc-list">TRA</div>
+		<div id="divDiscACRO" name="divDiscACRO"  style="padding-bottom:5px" onclick="DiscClick('ACRO');" class="ui-disabled disc-list">ACRO</div>
+		<div id="divDiscAER" name="divDiscAER"  style="padding-bottom:5px" onclick="DiscClick('AER');" class="ui-disabled disc-list">AER</div>
+		</div>
+	</div>
+	   
+			
+
+	<div id="divJudges" style="border: 1px solid grey;vertical-align: top;padding:3px;width:275px;display:inline-block;margin-right:30px;" align="center" class="ui-disabled">
+		<div id="divJudgesHeader" style="padding-bottom:5px;font-size:22px;font-weight:bold;text-align:center">Judge Assignment</div>
+		<div style="width:100px"><select id="ddlEventJudge" onchange="EventClick()"></select></div><br/>
+		<table border="0" cellspacing="0" celllpadding="0" style="display:inline-block">
+		<tr>
+		<td></td>
+		<td align="center">Judge</td>
+		<td align="center">Affil</td>
+		</tr>
+		<tr>
+		<td align="right">D1</td>
+		<td><input type="text" id="txtD1Judge" placeholder="Name" style="width:150px;text-align:center;font-weight:bold;" onchange="FlagChange()"></input></td>
+		<td><input type="text" id="txtD1Affil" placeholder="Afill" style="width:50px;text-align:center;font-weight:bold;" onchange="FlagChange()"></input></td>
+		</tr>
+		<!--<tr>
+		<td align="right">D2</td>
+		<td><input type="text" id="txtD2Judge" placeholder="Name" style="width:150px;text-align:center;font-weight:bold;" onchange="FlagChange()"></input></td>
+		<td><input type="text" id="txtD2Affil" placeholder="Afill" style="width:50px;text-align:center;font-weight:bold;" onchange="FlagChange()"></input></td>
+		</tr>-->
+		<tr>
+		<td align="right">E1</td>
+		<td><input type="text" id="txtE1Judge" placeholder="Name" style="width:150px;text-align:center;font-weight:bold;" onchange="FlagChange()"></input></td>
+		<td><input type="text" id="txtE1Affil" placeholder="Afill" style="width:50px;text-align:center;font-weight:bold;" onchange="FlagChange()"></input></td>
+		</tr>
+		<tr>
+		<td align="right">E2</td>
+		<td><input type="text" id="txtE2Judge" placeholder="Name" style="width:150px;text-align:center;font-weight:bold;" onchange="FlagChange()"></input></td>
+		<td><input type="text" id="txtE2Affil" placeholder="Afill" style="width:50px;text-align:center;font-weight:bold;" onchange="FlagChange()"></input></td>
+		</tr>
+		<tr>
+		<td align="right">E3</td>
+		<td><input type="text" id="txtE3Judge" placeholder="Name" style="width:150px;text-align:center;font-weight:bold;" onchange="FlagChange()"></input></td>
+		<td><input type="text" id="txtE3Affil" placeholder="Afill" style="width:50px;text-align:center;font-weight:bold;" onchange="FlagChange()"></input></td>
+		</tr>
+		<tr>
+		<td align="right">E4</td>
+		<td><input type="text" id="txtE4Judge" placeholder="Name" style="width:150px;text-align:center;font-weight:bold;" onchange="FlagChange()"></input></td>
+		<td><input type="text" id="txtE4Affil" placeholder="Afill" style="width:50px;text-align:center;font-weight:bold;" onchange="FlagChange()"></input></td>
+		</tr>
+		<!--<tr>
+		<td align="right">TC</td>
+		<td><input type="text" id="txtOJudge" placeholder="Name" style="width:150px;text-align:center;font-weight:bold;" onchange="FlagChange()"></input></td>
+		<td><input type="text" id="txtOAffil" placeholder="Afill" style="width:50px;text-align:center;font-weight:bold;" onchange="FlagChange()"></input></td>
+		</tr>-->
+		</table>
+        <div class="d-flex"><button href="#" id="btnJudgeSave"  type="button" class="btn btn-main mr-2" onclick="JudgeSave()">Save</button>
+        <button href="#" id="btnJudgeCopy"   type="button" class="btn btn-main" onclick="JudgeCopy()">Copy To</button><div style="width:85px;display:inline-block"><select id="ddlEventCopy"></select></div>
+			   
+		
+	</div>
+	</div>
+
+<div id="divAthlete" style="border: 1px solid grey;vertical-align: top;padding:3px;width:220px;display:inline-block;margin-right:30px;" class="ui-disabled">
+		<div id="divAthleteHeader" style="padding-bottom:5px;font-size:22px;font-weight:bold;text-align:center">Gymnast</div><br/>
+		<div id="divAthleteList" class="listbox" style="width:200px;height:150px;"></div><br/>
+		<div id="divAthleteButtonsArea">
+		<button href="#" id="btnAthAdd"   type="button" class="btn btn-main"  data-toggle="modal" data-target="#modalMain" onclick="AddAthStart()">Add</button>
+		<button href="#" id="btnAthEdit"  type="button" class="btn btn-main" data-toggle="modal" data-target="#modalMain" onclick="EditAthStart()">Edit</button>
+		<button href="#" id="btnAthDelete"   type="button" class="btn btn-main" onclick="AthDelete()">Delete</button>
+	</div>
+	</div>
+		
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript">
+    var token = "{{ csrf_token }}";
+</script>
+<script type="text/javascript">
+    var SelectedComp = -1;
+    var SelectedDisc = -1;
+    var SelectedAthlete = -1;
+    var SelectedEvent = -1;
+    var Changed = false;
+    $("#divCompList").load("/competition_list/");
+
+    function CheckChange(ThingIn)
+    {
+        if (Changed)
+        {
+            if (confirm('You have unsaved changes to judges, are you sure you want to switch ' + ThingIn + '?'))
+            {
+                Changed = false;
+                return true;
+            }
+            else
+                return false;
+        }
+        return true;
+    }
+
+    function EventClick() {
+        console.log("Click");
+        //if ($("#ddlEventJudge").val() != SelectedEvent)        {
+            if (CheckChange("Events")) {
+                SelectedEvent = $("#ddlEventJudge").val();
+                $.ajax({
+                    url: "/judges_get/",
+                    data: {
+                        'comp': SelectedComp,
+                        'disc': SelectedDisc,
+                        'event': SelectedEvent,
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        FillJudges(data)
+                        Changed = false;
+                    }
+                });
+            }
+        //}
+    }
+
+    function JudgeSave() {
+        SelectedEvent = $("#ddlEventJudge").val();
+        $.ajax({
+            url: "/judges_update/",
+            type: "POST",
+            headers: { "X-CSRFToken": token },
+            data: {
+                'comp': SelectedComp,
+                'disc': SelectedDisc,
+                'event': SelectedEvent,
+                'd1': $("#txtD1Judge").val(),
+                'd1_affil': $("#txtD1Affil").val(),
+                'd2': $("#txtD2Judge").val(),
+                'd2_affil': $("#txtD2Affil").val(),
+                'e1': $("#txtE1Judge").val(),
+                'e1_affil': $("#txtE1Affil").val(),
+                'e2': $("#txtE2Judge").val(),
+                'e2_affil': $("#txtE2Affil").val(),
+                'e3': $("#txtE3Judge").val(),
+                'e3_affil': $("#txtE3Affil").val(),
+                'e4': $("#txtE4Judge").val(),
+                'e4_affil':$("#txtE4Affil").val(),
+            },
+            dataType: 'json',
+            success: function (data) {
+                Changed = false;
+            }
+        });
+    }
+
+    function JudgeCopy() {
+        SelectedEvent = $("#ddlEventCopy").val();
+        $.ajax({
+            url: "/judges_update/",
+            type: "POST",
+            headers: { "X-CSRFToken": token },
+            data: {
+                'comp': SelectedComp,
+                'disc': SelectedDisc,
+                'event': SelectedEvent,
+                'd1': $("#txtD1Judge").val(),
+                'd1_affil': $("#txtD1Affil").val(),
+                'd2': $("#txtD2Judge").val(),
+                'd2_affil': $("#txtD2Affil").val(),
+                'e1': $("#txtE1Judge").val(),
+                'e1_affil': $("#txtE1Affil").val(),
+                'e2': $("#txtE2Judge").val(),
+                'e2_affil': $("#txtE2Affil").val(),
+                'e3': $("#txtE3Judge").val(),
+                'e3_affil': $("#txtE3Affil").val(),
+                'e4': $("#txtE4Judge").val(),
+                'e4_affil':$("#txtE4Affil").val(),
+            },
+            dataType: 'json',
+            success: function (data) {
+                Changed = false;
+            }
+        });
+    }
+
+    function FillJudges(data) {
+        if (data["judges"][0] != undefined) {
+            info = data["judges"][0];
+            $("#txtD1Judge").val(info["d1"]);
+            $("#txtD1Affil").val(info["d1_affil"]);
+            $("#txtD2Judge").val(info["d2"]);
+            $("#txtD2Affil").val(info["d2_affil"]);
+            $("#txtE1Judge").val(info["e1"]);
+            $("#txtE1Affil").val(info["e1_affil"]);
+            $("#txtE2Judge").val(info["e2"]);
+            $("#txtE2Affil").val(info["e2_affil"]);
+            $("#txtE3Judge").val(info["e3"]);
+            $("#txtE3Affil").val(info["e3_affil"]);
+            $("#txtE4Judge").val(info["e4"]);
+            $("#txtE4Affil").val(info["e4_affil"]);
+        }
+        else {
+            $("#txtD1Judge").val("");
+            $("#txtD1Affil").val("");
+            $("#txtD2Judge").val("");
+            $("#txtD2Affil").val("");
+            $("#txtE1Judge").val("");
+            $("#txtE1Affil").val("");
+            $("#txtE2Judge").val("");
+            $("#txtE2Affil").val("");
+            $("#txtE3Judge").val("");
+            $("#txtE3Affil").val("");
+            $("#txtE4Judge").val("");
+            $("#txtE4Affil").val("");
+        }
+    }
+
+    function FlagChange()
+    {
+        Changed = true;
+    }
+
+    function AthleteClick(athIn) {
+        $('.ath-list').removeClass("ctxSelected");
+        $("#divAthlete" + athIn).addClass("ctxSelected");
+        SelectedAthlete = athIn;
+
+    }
+
+    function DiscClick(discIn) {
+        $('.disc-list').removeClass("ctxSelected");
+        $("#divDisc" + discIn).addClass("ctxSelected");
+        SelectedDisc = discIn;
+        $("#divJudges").removeClass("ui-disabled");
+        $("#divAthlete").removeClass("ui-disabled");
+        FillEventDD(discIn);
+        FillAthletes();
+    }
+
+
+
+    function FillEventDD(discIn)
+    {
+        $("#ddlEventJudge").empty();
+        if (discIn == "MAG")
+        {
+            $("#ddlEventJudge").append('<option value="FX">FX</option>');
+            $("#ddlEventJudge").append('<option value="PH">PH</option>');
+            $("#ddlEventJudge").append('<option value="R">R</option>');
+            $("#ddlEventJudge").append('<option value="V">V</option>');
+            $("#ddlEventJudge").append('<option value="PB">PB</option>');
+            $("#ddlEventJudge").append('<option value="HB">HB</option>');
+            $("#ddlEventJudge").val("FX").change();
+
+            $("#ddlEventCopy").append('<option value="FX">FX</option>');
+            $("#ddlEventCopy").append('<option value="PH">PH</option>');
+            $("#ddlEventCopy").append('<option value="R">R</option>');
+            $("#ddlEventCopy").append('<option value="V">V</option>');
+            $("#ddlEventCopy").append('<option value="PB">PB</option>');
+            $("#ddlEventCopy").append('<option value="HB">HB</option>');
+            $("#ddlEventCopy").val("FX").change();
+        }
+        else if (discIn == "WAG")
+        {
+            $("#ddlEventJudge").append('<option value="V">V</option>');
+            $("#ddlEventJudge").append('<option value="UB">UB</option>');
+            $("#ddlEventJudge").append('<option value="BB">BB</option>');
+            $("#ddlEventJudge").append('<option value="FX">FX</option>');
+            $("#ddlEventJudge").val("V").change();
+
+            $("#ddlEventCopy").append('<option value="V">V</option>');
+            $("#ddlEventCopy").append('<option value="UB">UB</option>');
+            $("#ddlEventCopy").append('<option value="BB">BB</option>');
+            $("#ddlEventCopy").append('<option value="FX">FX</option>');
+            $("#ddlEventCopy").val("V").change();
+        }
+        else if (discIn == "TRA")
+        {
+            $("#ddlEventJudge").append('<option value="TR">TR</option>');
+            $("#ddlEventJudge").append('<option value="SY">SY</option>');
+            $("#ddlEventJudge").append('<option value="TU">TU</option>');
+            $("#ddlEventJudge").append('<option value="DM">DM</option>');
+            $("#ddlEventJudge").val("TR").change();
+
+            $("#ddlEventCopy").append('<option value="TR">TR</option>');
+            $("#ddlEventCopy").append('<option value="SY">SY</option>');
+            $("#ddlEventCopy").append('<option value="TU">TU</option>');
+            $("#ddlEventCopy").append('<option value="DM">DM</option>');
+            $("#ddlEventCopy").val("TR").change();
+        }
+        else if (discIn == "RG")
+        {
+            $("#ddlEventJudge").append('<option value="I">Individual</option>');
+            $("#ddlEventJudge").append('<option value="G">Group</option>');
+            $("#ddlEventJudge").val("I").change();
+
+            $("#ddlEventCopy").append('<option value="I">Individual</option>');
+            $("#ddlEventCopy").append('<option value="G">Group</option>');
+            $("#ddlEventCopy").val("I").change();
+        }
+        else if (discIn == "ACRO")
+        {
+            $("#ddlEventJudge").append('<option value="P">Pairs</option>');
+            $("#ddlEventJudge").append('<option value="G">Group</option>');
+            $("#ddlEventJudge").append('<option value="T">Trio</option>');
+            $("#ddlEventJudge").val("P").change();
+
+            $("#ddlEventCopy").append('<option value="P">Pairs</option>');
+            $("#ddlEventCopy").append('<option value="G">Group</option>');
+            $("#ddlEventCopy").append('<option value="T">Trio</option>');
+            $("#ddlEventCopy").val("P").change();
+        }
+        else if (discIn = "AER")
+        {
+            $("#ddlEventJudge").append('<option value="I">Individual</option>');
+            $("#ddlEventJudge").val("I").change();
+
+            $("#ddlEventCopy").append('<option value="I">Individual</option>');
+            $("#ddlEventCopy").val("I").change();
+        }
+
+}
+
+    function DisableAll() {
+        $("#divDisc").addClass("ui-disabled");
+        $("#divJudges").addClass("ui-disabled");
+        $("#divAthlete").addClass("ui-disabled");
+    }
+
+    function CompClick(CompIn) {
+        
+        $('.comp-list').removeClass("ctxSelected");
+        $("#divComp" + CompIn).addClass("ctxSelected");
+        SelectedComp = CompIn;
+        $("#divDisc").removeClass("ui-disabled");
+        if (SelectedDisc != -1)
+            DiscClick(SelectedDisc);
+    }
+
+    function AddCompStart() {
+        $("#modalMainTitle").html("Add Competition");
+        $(".modal-dialog")
+        $("#modalBodyArea2").hide();
+        $("#modalBodyArea1").empty();
+        $("#modalBodyArea1").load("/competition_manage");
+
+        $("#modalBodyArea1").show();
+    }
+
+    function EditCompStart() {
+        if (SelectedComp != -1) {
+            $("#modalMainTitle").html("Edit Competition");
+            $(".modal-dialog")
+            $("#modalBodyArea2").hide();
+            $("#modalBodyArea1").empty();
+            $("#modalBodyArea1").load("/competition_manage/?id=" + SelectedComp);
+
+            $("#modalBodyArea1").show();
+        }
+    }
+    function CompDelete() {
+        if (SelectedComp != -1) {
+            $.ajax({
+                url: "/competition_delete/",
+                data: {
+                    'id': SelectedComp,
+                },
+                success: function () {
+                    $("#divCompList").load("/competition_list/"); 
+                    DisableAll();
+                }
+            });
+    
+        }
+    }
+
+    function CompManageFinishParent() {
+        $("#modalMain").modal('hide');
+        $("#divCompList").load("/competition_list/", function () {
+            console.log("comp finish " + SelectedComp);
+            if (SelectedComp != -1) 
+                CompClick(SelectedComp);
+        });
+        
+    }
+
+    function AddAthStart() {
+        $("#modalMainTitle").html("Add Athlete");
+        $(".modal-dialog")
+        $("#modalBodyArea2").hide();
+        $("#modalBodyArea1").empty();
+        $("#modalBodyArea1").load("/athlete_manage/");
+
+        $("#modalBodyArea1").show();
+    }
+    function EditAthStart() {
+        if (SelectedAthlete != -1) {
+            $("#modalMainTitle").html("Edit Athlete");
+            $(".modal-dialog")
+            $("#modalBodyArea2").hide();
+            $("#modalBodyArea1").empty();
+            $("#modalBodyArea1").load("/athlete_manage/?id=" + SelectedAthlete);
+
+            $("#modalBodyArea1").show();
+        }
+    }
+
+     function AthleteManageFinishParent() {
+        $("#modalMain").modal('hide');
+        $("#divAthleteList").load("/athlete_list/?comp="+ SelectedComp + "&disc=" + SelectedDisc, function () {
+            if (SelectedAthlete != -1)
+                AthleteClick(SelectedAthlete);
+        });
+        
+    }
+
+    function AthDelete() {
+        if (SelectedAthlete != -1) {
+            $.ajax({
+                url: "/athlete_delete/",
+                data: {
+                    'id': SelectedAthlete,
+                },
+                success: function () {
+                    FillAthletes();
+                }
+            });
+        }
+    }
+
+    function FillAthletes() {
+        $("#divAthleteList").load("/athlete_list/?comp="+ SelectedComp + "&disc=" + SelectedDisc);
+    }
+</script>
+{% endblock %}

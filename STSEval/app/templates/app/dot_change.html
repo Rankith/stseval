@@ -1,0 +1,44 @@
+{% load staticfiles %}
+<div id="divChangeDed" style="position:absolute;z-index:104;text-align:center;padding:5px;overflow:auto;display:none;background-color:rgb(97, 97, 106);color:white"  class="rounded">
+    <button type="button" class="close" aria-label="Close" style="margin-left:inherit" onclick="ChangeEjuryDone()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+    <div id="lblChangeDed">Change Deduction</div>
+    <div id="divChangeNormal">
+        <img src="{% static 'app/images/dots/' %}e-1.svg" width="36" height="36" onclick="DedClick(1)">
+        <img src="{% static 'app/images/dots/' %}e-3.svg" width="36" height="36" onclick="DedClick(3)">
+        <img src="{% static 'app/images/dots/' %}e-5.svg" width="36" height="36" onclick="DedClick(5)">
+        <img src="{% static 'app/images/dots/' %}e-10.svg" width="36" height="36" onclick="DedClick(10)">
+        <img src="{% static 'app/images/dots/' %}redx.svg"  height="36" onclick="DedClick(0)">
+    </div>
+    <div id="divChangeArtWAGV" style="display:none">
+        <img src="{% static 'app/images/dots/' %}e-1d.svg" width="36" height="36" onclick="DedClick(1)">
+        <img src="{% static 'app/images/dots/' %}e-3d.svg" width="36" height="36" onclick="DedClick(3)">
+        <img src="{% static 'app/images/dots/' %}e-5d.svg" width="36" height="36" onclick="DedClick(5)">
+        <img src="{% static 'app/images/dots/' %}e-10d.svg" width="36" height="36" onclick="DedClick(10)">
+        <img src="{% static 'app/images/dots/' %}redx.svg"  height="36" onclick="DedClick(0)">
+    </div>
+    <div id="divChangeArtMAGV" style="display:none">
+        <img src="{% static 'app/images/dots/' %}e-1d.svg" width="36" height="36" onclick="DedClick(1)">
+        <img src="{% static 'app/images/dots/' %}e-3d.svg" width="36" height="36" onclick="DedClick(3)">
+        <img src="{% static 'app/images/dots/' %}e-5d.svg" width="36" height="36" onclick="DedClick(5)">
+        <img src="{% static 'app/images/dots/' %}e-10d.svg" width="36" height="36" onclick="DedClick(10)">
+        <img src="{% static 'app/images/dots/' %}redx.svg"  height="36" onclick="DedClick(0)">
+    </div>
+    <div id="divChangeArtWAGBB" style="display:none">
+        <img src="{% static 'app/images/dots/' %}e-Cd.svg" width="36" height="36" onclick="DedClick('C')">
+        <img src="{% static 'app/images/dots/' %}e-Pd.svg" width="36" height="36" onclick="DedClick('P')">
+        <img src="{% static 'app/images/dots/' %}e-Vd.svg" width="36" height="36" onclick="DedClick('V')">
+        <img src="{% static 'app/images/dots/' %}e-Dd.svg" width="36" height="36" onclick="DedClick('D')">
+        <img src="{% static 'app/images/dots/' %}redx.svg"  height="36" onclick="DedClick(0)">
+    </div>
+    <div id="divChangeArtWAGFX" style="display:none">
+        <img src="{% static 'app/images/dots/' %}e-Ed.svg" width="36" height="36" onclick="DedClick('E')">
+        <img src="{% static 'app/images/dots/' %}e-Id.svg" width="36" height="36" onclick="DedClick('I')">
+        <img src="{% static 'app/images/dots/' %}e-Ad.svg" width="36" height="36" onclick="DedClick('A')">
+        <img src="{% static 'app/images/dots/' %}e-Td.svg" width="36" height="36" onclick="DedClick('T')">
+        <img src="{% static 'app/images/dots/' %}e-Dd.svg" width="36" height="36" onclick="DedClick('D')">
+        <img src="{% static 'app/images/dots/' %}redx.svg"  height="36" onclick="DedClick(0)">
+    </div>
+</div>
+<div id="DotsChangeBlackout" style="width:100%;height:100%;background-color:#000000;opacity: .3;position:fixed;z-index:103;display:none" onclick="ChangeEjuryDone()"></div>
