@@ -446,7 +446,7 @@
         });
     }
 
-    function SetDScore() {
+    function SetDScore(FinishRoutine = false) {
         CalculateScores();
         $.ajax({
             url: "/routine_set_score/",
@@ -468,6 +468,8 @@
                 'score_final': $("#divTotalScore").html(),
             },
             success: function (data) {
+                if (FinishRoutine)
+                    FinishRoutine();
             }
         });
         $("#btnFinish").removeClass("ui-disabled");
@@ -601,7 +603,7 @@
     }
 
     function FinishRoutineClick() {
-        FinishRoutine();
+        SetDScore(true);
         Status = status.BLANK;
         Reset();
     }
