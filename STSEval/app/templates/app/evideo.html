@@ -120,7 +120,9 @@
         .onSnapshot(function (doc) {
             SetBasedOnStatus(doc);
         });
+
     SetDotsArea();
+
     function SetBasedOnStatus(doc) {
         if (doc.data() != undefined) {
 
@@ -145,15 +147,16 @@
                 }
                 if (doc.data().status == "D" || doc.data().status == "F") {
                     Reset();
+                }
+                else
+                    CheckJudges(doc);
+                console.log("Current data: ", doc.data());
+                // $("#divStatus").html(doc.data().stream + " | " + doc.data().status);
             }
-            else
-                CheckJudges(doc);
-            console.log("Current data: ", doc.data());
-           // $("#divStatus").html(doc.data().stream + " | " + doc.data().status);
         }
     }
 
-    
+
     function SetJudges() {
         NumJudges = 0;
         for (var i = 1; i <= 4; i++) {
@@ -198,7 +201,7 @@
         SetJudges();
     }
 
-     function CheckJudges(doc) {
+    function CheckJudges(doc) {
         if (RoutineID == doc.data().routine) {
             let RedoDots = false;
             console.log("Check Judges " + EJudgesDone[1] + " | " + doc.data().e1done);
@@ -222,7 +225,7 @@
                 BuildDots(false);
                 if (Status == "RD")
                     LoadRoutine
-                
+
             }
         }
     }
