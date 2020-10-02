@@ -31,7 +31,7 @@ function Deduct(deduction, ej_in = -1, spot_in = -1, artistry_type='') {
     if (this_spot == -1) {//live click so use backend time and vibrate
         TotalDeductions += deduction / 10;
         VibrateDeduction(deduction);
-        $("#divTotalDeductions").html(TotalDeductions);
+        $("#divTotalDeductions").html(TotalDeductions.toFixed(1));
     }
     if (ev == "V")//dumb vault things
     {
