@@ -90,7 +90,7 @@
 
     function Login(type) {
         if (type == "scoreboard") {
-            window.location = "/tc/?c=" + SelectedComp + "&d=" + SelectedDisc + "&e=" + SelectedEvent + "&scoreboard=1";
+            window.location = "/scoreboard/?c=" + SelectedComp + "&d=" + SelectedDisc + "&e=" + SelectedEvent + "&scoreboard=1";
         }
         else if (type.includes("ejudge")) {
             window.location = "/ejudge/?c=" + SelectedComp + "&d=" + SelectedDisc + "&e=" + SelectedEvent + "&ej=" + type[type.length - 1];
