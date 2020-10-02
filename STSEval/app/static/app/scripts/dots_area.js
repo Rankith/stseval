@@ -72,7 +72,7 @@ function BuildDots(CalcScoreAfter = false) {
         headers: { "X-CSRFToken": token },
         data: {
             'routine': RoutineID,
-            'width': $("#divDotsArea").width(),
+            'width': Math.round($("#divDotsArea").width()),
             'dot_size': DotSize,
             'e1done': EJudgesDone[1],
             'e2done': EJudgesDone[2],
