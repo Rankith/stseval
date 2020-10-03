@@ -81,6 +81,8 @@
   <ItemGroup>
     <Content Include="app\static\app\images\stseval21.svg" />
     <Content Include="app\static\app\scripts\dots_area.js" />
+    <Content Include="app\static\app\scripts\firebase_rtc_consumer.js" />
+    <Content Include="app\static\app\scripts\firebase_rtc_broadcaster.js" />
     <Content Include="app\static\app\scripts\wowza\AvMenu.js" />
     <Content Include="app\static\app\scripts\wowza\play.js" />
     <Content Include="app\static\app\scripts\wowza\publish.js" />
@@ -100,6 +102,8 @@
     <Content Include="app\templates\app\competition_manage.html" />
     <Content Include="app\templates\app\athlete_manage.html" />
     <Content Include="app\templates\app\competition_list.html" />
+    <Content Include="app\templates\app\firebase_rtc_consumer.html" />
+    <Content Include="app\templates\app\firebase_rtc_broadcaster.html" />
     <Content Include="app\templates\app\layout_blank.html" />
     <Content Include="app\templates\app\scoreboard.html" />
     <Content Include="app\templates\app\evideo.html" />

@@ -643,3 +643,14 @@ def wowza_broadcast(request):
 
 def wowza_play(request):
     return render(request,'app/dev-view-play.html')
+
+def firebase_rtc_consumer(request):
+    return render(request,'app/firebase_rtc_consumer.html')
+
+def streaming_send_message(request):
+    if request.POST.get('mode') != 'candidate':
+        app.firebase.streaming_set(request.POST.get('mode'),request.POST.get('type'),request.POST.get('sdp'),request.POST.get('id'))
+    else:
+        app.firebase.add_candidate(request.POST.get('candidate'),request.POST.get('sdpMid'),request.POST.get('sdpMLineIndex'),request.POST.get('usernameFragment'),request.POST.get('id'))
+
+    return HttpResponse(status=200)

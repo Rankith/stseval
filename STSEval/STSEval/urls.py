@@ -56,6 +56,8 @@ urlpatterns = [
     path('scoreboard/', views.scoreboard, name='scoreboard'),
     path('wowza_broadcast/', views.wowza_broadcast, name='wowza_broadcast'),
     path('wowza_play/', views.wowza_play, name='wowza_play'),
+    path('firebase_rtc_consumer/', views.firebase_rtc_consumer, name='firebase_rtc_consumer'),
+    path('streaming_send_message/', views.streaming_send_message, name='streaming_send_message'),
     #url(r'^login/$',
     #    django.contrib.auth.views.login,
     #    {

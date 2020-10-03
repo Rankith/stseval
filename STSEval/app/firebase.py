@@ -41,3 +41,26 @@ def routine_set_stream(cde,routine):
         u'e3done':False,
         u'e4done':False,
     },merge=True)
+
+def streaming_set(mode,type,sdp,id):
+    db = firestore.Client()
+
+    doc_ref = db.collection(u'rooms').document(id)
+    doc_ref.set({
+        mode: {
+            u'type':type,
+            u'sdp':sdp
+            }
+        }
+        ,merge=True)
+
+def add_candidate(candidate,sdpMid,sdpMLineIndex,usernameFragment,id):
+    db = firestore.Client()
+
+    doc_ref = db.collection(u'rooms').document(id).collection('calleeCandidates')
+    doc_ref.add({u'candidate':candidate,
+                 u'sdpMid':sdpMid,
+                 u'sdpMLineIndex':sdpMLineIndex,
+                 u'usernameFragment':usernameFragment
+                 }
+        )
