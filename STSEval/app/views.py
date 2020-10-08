@@ -16,6 +16,7 @@ from decimal import Decimal
 from streaming.models import WowzaStream
 from django.conf import settings
 from binascii import a2b_base64
+import os
 
 def loginview(request):
     if request.method == 'POST':
