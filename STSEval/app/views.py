@@ -288,8 +288,8 @@ def routine_delete(request):
 
     routine.save()
 
-    if os.path.exists('/' + settings.MEDIA_ROOT + '/routine_videos/' + routine.id + '.webm'):
-        os.remove('/' + settings.MEDIA_ROOT + '/routine_videos/' + routine.id + '.webm')
+    if os.path.exists('/' + settings.MEDIA_ROOT + '/routine_videos/' + str(routine.id) + '.webm'):
+        os.remove('/' + settings.MEDIA_ROOT + '/routine_videos/' + str(routine.id) + '.webm')
 
     app.firebase.routine_set_status(str(routine.competition.id) + routine.disc + routine.event,routine)
 
