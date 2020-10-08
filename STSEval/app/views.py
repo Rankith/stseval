@@ -642,7 +642,7 @@ def scoreboard(request):
     return render(request,'app/scoreboard.html',context)
 
 def save_video(request):
-    output = open(settings.MEDIA_ROOT + '/routine_videos/' + request.POST.get('video-filename'), 'wb+')
+    output = open('/' + settings.MEDIA_ROOT + '/routine_videos/' + request.POST.get('video-filename'), 'wb+')
     #output.write(request.FILES.get('video-blob').file.read())
     for chunk in request.FILES['video-blob'].chunks():
         output.write(chunk)
