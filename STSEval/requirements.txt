@@ -9,3 +9,4 @@ google-cloud-firestore
 firebase-admin
 django-storages
 boto3
+requests

@@ -13,6 +13,9 @@ from app.twitch import TwitchAPI
 import app.firebase
 from time import time
 from decimal import Decimal
+from streaming.models import WowzaStream
+from django.conf import settings
+from binascii import a2b_base64
 
 def loginview(request):
     if request.method == 'POST':
@@ -638,19 +641,17 @@ def scoreboard(request):
     }
     return render(request,'app/scoreboard.html',context)
 
+def save_video(request):
+    output = open(settings.MEDIA_ROOT + '/routine_videos/' + request.POST.get('video-filename'), 'wb+')
+    #output.write(request.FILES.get('video-blob').file.read())
+    for chunk in request.FILES['video-blob'].chunks():
+        output.write(chunk)
+    output.close()
+  
+    return HttpResponse(status=200)
+
 def wowza_broadcast(request):
     return render(request,'app/dev-view-publish.html')
 
 def wowza_play(request):
     return render(request,'app/dev-view-play.html')
-
-def firebase_rtc_consumer(request):
-    return render(request,'app/firebase_rtc_consumer.html')
-
-def streaming_send_message(request):
-    if request.POST.get('mode') != 'candidate':
-        app.firebase.streaming_set(request.POST.get('mode'),request.POST.get('type'),request.POST.get('sdp'),request.POST.get('id'))
-    else:
-        app.firebase.add_candidate(request.POST.get('candidate'),request.POST.get('sdpMid'),request.POST.get('sdpMLineIndex'),request.POST.get('usernameFragment'),request.POST.get('id'))
-
-    return HttpResponse(status=200)

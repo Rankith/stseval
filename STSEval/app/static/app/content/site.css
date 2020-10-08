@@ -243,3 +243,14 @@ input[type="checkbox"].input-validation-error {
     color: #3cf93c;
     font-size: 2em
 }
+
+#player-video,
+#publisher-video {
+    width: 100% !important;
+    height: auto !important;
+    background: #EEEEEE;
+    border-radius: 10px;
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+}

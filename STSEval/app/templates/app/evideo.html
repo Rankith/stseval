@@ -9,7 +9,10 @@
     <table>
         <tr>
             <td>
-                <div id="divTwitchPlayer" style="width:854px;height:480px"></div>
+                <!--<div id="divTwitchPlayer" style="width:854px;height:480px"></div>-->
+                <div id="play-video-container" style="width:854px;min-height:480px">
+                            <video id="player-video" autoplay playsinline muted controls></video>
+                        </div>
             </td>
             <td valign="top">
                 <div id="divScoreArea" style="padding-left:15px;padding-top:30px;" >
@@ -79,11 +82,20 @@
         </tr>
     </table> 
  </div>
+<div id="play-settings" style="display:none">
+    <form id="play-settings-form">
+        <input type="text" class="form-control" id="playSdpURL" name="playSdpURL" maxlength="1024" placeholder="wss://[ssl-certificate-domain-name]/webrtc-session.json">     
+        <input type="text" class="form-control" id="playApplicationName" name="playApplicationName" maxlength="256">       
+        <input type="text" class="form-control" id="playStreamName" name="playStreamName" maxlength="256">    
+    </form>
+    <button id="play-toggle" type="button" class="btn btn-main mb-2" style="display:none">Wozwa Hack</button>
+</div>
 {% endblock %}
 
 {% block scripts %}
 <script src= "https://player.twitch.tv/js/embed/v1.js"></script>
 <script src="{% static 'app/scripts/dots_area.js' %}?v=1"></script>
+<script type="module" src="{% static 'app/scripts/wowza/play.js' %}"></script>
 <script type="text/javascript">
     var Disc = "{{disc}}";
     var ev = "{{event}}";
@@ -135,7 +147,7 @@
                     SetDScoreDefaults();
                     Reset();
                     $("#divHeader").html("<h2 style='display:inline'>" + doc.data().athlete + "</h2>");
-                    SetTwitchStream(doc.data().stream);
+                    SetupStream(doc.data().stream);
                     Status = doc.data().status;
                 }
                 if (doc.data().status == "AD") {
@@ -238,6 +250,44 @@
             }
         }
     }
+
+    async function GetStreamInfo() {
+        const result = await $.ajax({
+            url: "/streaming/get_stream_connection_info/",
+            type: "POST",
+            headers: { "X-CSRFToken": token },
+            data: {
+                 'comp': Comp,
+                'disc': Disc,
+                'event': ev,
+            },
+            dataType: 'json',
+            success: function (data) {
+               
+            }
+        });
+        console.log(result);
+         return result;
+    }
+   function SetupStream() {
+        GetStreamInfo().then((result) => {
+            $("#playSdpURL").val(result["sdp_url"]);
+            $("#playApplicationName").val(result["application_name"]);
+            $("#playStreamName").val(result["stream_name"]);
+            $("#play-toggle").click();
+        });
+
+    //WowzaSetStream()
+    /*$("#divTwitchPlayer").empty();
+    var options = {
+        width: VidWidth,
+        height: 480,
+        channel: $("#txtVideoURL").val(),
+        parent: ["www.stseval.com"]
+    };
+    player = new Twitch.Player("divTwitchPlayer", options);
+    player.setVolume(0.5);*/
+}
 
     function SetTwitchStream(stream) {
         $("#divTwitchPlayer").empty();

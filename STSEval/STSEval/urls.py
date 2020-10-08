@@ -3,7 +3,7 @@ Definition of urls for STSEval.
 """
 
 from datetime import datetime
-from django.conf.urls import url
+from django.urls import include
 from django.urls import path
 import django.contrib.auth.views
 from django.contrib import admin
@@ -56,8 +56,8 @@ urlpatterns = [
     path('scoreboard/', views.scoreboard, name='scoreboard'),
     path('wowza_broadcast/', views.wowza_broadcast, name='wowza_broadcast'),
     path('wowza_play/', views.wowza_play, name='wowza_play'),
-    path('firebase_rtc_consumer/', views.firebase_rtc_consumer, name='firebase_rtc_consumer'),
-    path('streaming_send_message/', views.streaming_send_message, name='streaming_send_message'),
+    path('save_video/', views.save_video, name='save_video'),
+    path('streaming/', include('streaming.urls')),
     #url(r'^login/$',
     #    django.contrib.auth.views.login,
     #    {

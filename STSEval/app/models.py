@@ -105,7 +105,7 @@ class EJuryDeduction(models.Model):
     judge = models.IntegerField()
     deduction = models.IntegerField()
     editor = models.CharField(max_length=2,default='E')
-    time_stamp = models.BigIntegerField()
+    time_stamp = models.BigIntegerField(blank=True,null=True)
     time_stamp_relative = models.IntegerField(default=0)
     artistry_type = models.CharField(max_length=10,blank=True,default='')
     ADD = 'Add'

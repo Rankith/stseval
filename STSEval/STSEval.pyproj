@@ -57,6 +57,18 @@
     <Compile Include="app\__init__.py" />
     <Compile Include="app\migrations\__init__.py" />
     <Compile Include="manage.py" />
+    <Compile Include="streaming\admin.py" />
+    <Compile Include="streaming\apps.py" />
+    <Compile Include="streaming\exceptions.py" />
+    <Compile Include="streaming\migrations\__init__.py" />
+    <Compile Include="streaming\models.py" />
+    <Compile Include="streaming\tests.py" />
+    <Compile Include="streaming\urls.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="streaming\views.py" />
+    <Compile Include="streaming\wowza.py" />
+    <Compile Include="streaming\__init__.py" />
     <Compile Include="STSEval\__init__.py" />
     <Compile Include="STSEval\settings.py" />
     <Compile Include="STSEval\urls.py" />
@@ -76,6 +88,10 @@
     <Folder Include="app\static\app\scripts\" />
     <Folder Include="app\templates\" />
     <Folder Include="app\templates\app\" />
+    <Folder Include="streaming\" />
+    <Folder Include="streaming\migrations\" />
+    <Folder Include="streaming\templates\" />
+    <Folder Include="streaming\templates\streaming\" />
     <Folder Include="STSEval\" />
   </ItemGroup>
   <ItemGroup>
@@ -83,6 +99,7 @@
     <Content Include="app\static\app\scripts\dots_area.js" />
     <Content Include="app\static\app\scripts\firebase_rtc_consumer.js" />
     <Content Include="app\static\app\scripts\firebase_rtc_broadcaster.js" />
+    <Content Include="app\static\app\scripts\RecordRTC.js" />
     <Content Include="app\static\app\scripts\wowza\AvMenu.js" />
     <Content Include="app\static\app\scripts\wowza\play.js" />
     <Content Include="app\static\app\scripts\wowza\publish.js" />
@@ -94,6 +111,8 @@
     <Content Include="app\static\app\scripts\wowza\WowzaWebRTCPlay.js" />
     <Content Include="app\static\app\scripts\wowza\WowzaWebRTCPublish.js" />
     <Content Include="app\templates\app\accountability_report.html" />
+    <Content Include="app\templates\app\camera_old.html" />
+    <Content Include="app\templates\app\camera.html" />
     <Content Include="app\templates\app\dev-view-play.html" />
     <Content Include="app\templates\app\dev-view-publish.html" />
     <Content Include="app\templates\app\dot_change.html" />
@@ -141,6 +160,7 @@
     <Content Include="app\templates\app\layout.html" />
     <Content Include="app\templates\app\login.html" />
     <Content Include="app\templates\app\loginpartial.html" />
+    <Content Include="streaming\templates\streaming\index.html" />
   </ItemGroup>
   <ItemGroup>
     <None Include="readme.html">

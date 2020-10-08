@@ -29,7 +29,7 @@
 	            </tr>
 	            <tr>
                     <td colspan="2">
-                        <div id="divTwitchPlayer" style="width:854px;height:480px"></div>
+                        <!--<div id="divTwitchPlayer" style="width:854px;height:480px"></div>-->
 	                    <video id="VideoPlayer" width="640" height="480" controls="controls" icons="none" style="display:none"  webkit-playsinline>
 		                    <source src="" type='video/webm; codecs="vp8.0, vorbis"'/>
 		                    Your browser does not support the video tag.
@@ -39,6 +39,9 @@
 		                    <source src="" type='video/webm; codecs="vp8.0, vorbis"'/>
 		                    Your browser does not support the video tag.
 	                    </video>
+                        <div id="play-video-container" style="width:854px;min-height:480px">
+                            <video id="player-video" autoplay playsinline muted controls></video>
+                        </div>
 	                </td>
                 </tr>
             </table>
@@ -48,6 +51,7 @@
             <div style="padding-left:15px;padding-top:30px">
                 {% if loadroutine == '' %}
                     <button id="btnJudgesReady" type="button" class="btn btn-main mb-2" onclick="JudgesReadyClick()">Judges Ready</button>
+                    
                     <button id="btnStartJudging" type="button" class="btn btn-main mb-2" onclick="StartJudgingClick()">Start Judging</button>
 	                <button id="btnRestartD" type="button" class="btn btn-main mb-2" onclick="RestartD()" style="display:none">Judge D</button>
 	                <button id="btnRestartE" type="button" class="btn btn-main mb-2" onclick="RestartE()" style="display:none">Judge E</button>
@@ -159,11 +163,22 @@
     </tr>
 </table>
 </div>
+<div id="play-settings" style="display:none">
+    <form id="play-settings-form">
+        <input type="text" class="form-control" id="playSdpURL" name="playSdpURL" maxlength="1024" placeholder="wss://[ssl-certificate-domain-name]/webrtc-session.json">     
+        <input type="text" class="form-control" id="playApplicationName" name="playApplicationName" maxlength="256">       
+        <input type="text" class="form-control" id="playStreamName" name="playStreamName" maxlength="256">    
+    </form>
+    <button id="play-toggle" type="button" class="btn btn-main mb-2" style="display:none">Wozwa Hack</button>
+</div>
 {% endblock %}
 
 {% block scripts %}
 <script src= "https://player.twitch.tv/js/embed/v1.js"></script>
 <script src="{% static 'app/scripts/dots_area.js' %}?v=1"></script>
+<script type="module" src="{% static 'app/scripts/wowza/play.js' %}"></script>
+<script src="https://www.webrtc-experiment.com/EBML.js"></script> 
+<script src="{% static 'app/scripts/RecordRTC.js' %}"></script>
 <script type="text/javascript">
     var Comp = "{{comp.id}}";
     var CompName = "{{comp}}";
@@ -210,6 +225,7 @@
     var JudgeDeductions = new Array();
     var JudgeType = 'D';
     var player;
+    var Recorder
 
     var RoutineID;
 
@@ -357,6 +373,7 @@
     }
 
     function JudgesReadyClick(Syncing = false) {
+        //window.WowzaWebRTCPlay.stop();
         SetupStream();
         console.log(Syncing);
         if (!Syncing)
@@ -367,8 +384,10 @@
     }
 
     function StartJudgingClick(Syncing = false) {
-        if (!Syncing)
+        if (!Syncing) {
             RoutineStartJudging();
+            StartRecording();
+        }
         $("#btnStartJudging").hide();
         $("#btnJudgesReady").addClass('ui-disabled');
         $("#txtVideoURL").addClass('ui-disabled');
@@ -376,11 +395,53 @@
         $("#btnExerciseDone").show();
         $("#btnNuke").removeClass('ui-disabled');
         Status = status.STARTED;
+        
+    }
+
+    function StartRecording() {
+        recorder = RecordRTC(document.getElementById('player-video').srcObject, {
+            type: 'video'
+        });
+        recorder.startRecording();
+    }
+
+    function StopRecording() {
+        recorder.stopRecording(function () {
+            getSeekableBlob(recorder.getBlob(), function(seekableBlob) {
+            //videoElement.src = URL.createObjectURL(seekableBlob);
+                console.log(seekableBlob);
+                //document.getElementById('VideoPlayer').src = URL.createObjectURL(seekableBlob);
+               // $("#VideoPlayer").show();
+                var formData = new FormData();
+                formData.append('video-filename', RoutineID + '.webm');
+                formData.append('video-blob', seekableBlob);
+                $.ajax({
+                    type: 'POST',
+                    url: '/save_video/',
+                    data: formData,
+                    headers: { "X-CSRFToken": token },
+                    processData: false,
+                    contentType: false
+                }).done(function(data) {
+                       console.log(data);
+                });
+           // recorder.stream.stop();
+            //recorder.destroy();
+            //recorder = null;
+        
+           });
+           
+           
+           
+            //invokeSaveAsDialog(blob);
+        });
     }
 
     function ExerciseDoneClick(Syncing = false, CalcScoreAfter = false) {
-        if (!Syncing)
+        if (!Syncing) {
             RoutineAthleteDone();
+            StopRecording();
+        }
         else
             BuildDots(CalcScoreAfter);
         $(".entrybox").removeClass('ui-disabled');
@@ -685,18 +746,43 @@
             }
         });
     }
-
-    function SetupStream() {
-        $("#divTwitchPlayer").empty();
-        var options = {
-            width: VidWidth,
-            height: 480,
-            channel: $("#txtVideoURL").val(),
-            parent: ["www.stseval.com"]
-        };
-        player = new Twitch.Player("divTwitchPlayer", options);
-        player.setVolume(0.5);
+     async function GetStreamInfo() {
+        const result = await $.ajax({
+            url: "/streaming/get_stream_connection_info/",
+            type: "POST",
+            headers: { "X-CSRFToken": token },
+            data: {
+                'comp': Comp,
+                'disc': Disc,
+                'event': ev,
+            },
+            dataType: 'json',
+            success: function (data) {
+               
+            }
+        });
+        console.log(result);
+         return result;
     }
+   function SetupStream() {
+        GetStreamInfo().then((result) => {
+            $("#playSdpURL").val(result["sdp_url"]);
+            $("#playApplicationName").val(result["application_name"]);
+            $("#playStreamName").val(result["stream_name"]);
+            $("#play-toggle").click();
+        });
+
+    //WowzaSetStream()
+    /*$("#divTwitchPlayer").empty();
+    var options = {
+        width: VidWidth,
+        height: 480,
+        channel: $("#txtVideoURL").val(),
+        parent: ["www.stseval.com"]
+    };
+    player = new Twitch.Player("divTwitchPlayer", options);
+    player.setVolume(0.5);*/
+}
 
     function LoadVideo(id,start,end) {
         $("#divTwitchPlayer").empty();

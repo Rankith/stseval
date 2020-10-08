@@ -192,7 +192,7 @@ $(document).ready(() => {
 
   const updatePublisher = () => {
     let publishSettings = Settings.mapFromForm(Settings.serializeArrayFormValues($( "#publish-settings-form" )));
-    Settings.saveToCookie(publishSettings);
+    //Settings.saveToCookie(publishSettings);
     return update(publishSettings);
   }
 
@@ -260,7 +260,7 @@ $(document).ready(() => {
     if (!state.pendingPublish)
     {
       state.publishing = false;
-      $("#publish-toggle").html("Publish");
+      $("#publish-toggle").html("Start");
       $("#video-live-indicator-live").hide();
       $("#video-live-indicator-error").hide();
       $("#publish-settings-form :input").prop("disabled", false);
@@ -329,31 +329,41 @@ $(document).ready(() => {
       }
       else
       {
-        try {
-          hideErrorPanel()
-          updatePublisher().then(()=>{
-            setPendingPublish(true);
-            start();
+          CheckStreamStatus().then((state) => {
+              if (state != "started") {
+                  ResetLoading();
+                  $('#modalLoading').modal('show');
+              }
+              else {
+                  try {
+                      hideErrorPanel()
+                      updatePublisher().then(() => {
+                          setPendingPublish(true);
+                          start();
+                      });
+                  } catch (e) {
+                      errorHandler(e);
+                  }
+              }
+                  
           });
-        }catch(e){
-          errorHandler(e);
-        }
+       
       }
     });
   }
 
   const initFormAndSettings = () => {
-    let pageParams = Settings.mapFromCookie(state.settings);
-    pageParams = Settings.mapFromQueryParams(pageParams);
-    Settings.updateForm(pageParams);
-    if (pageParams.frameSize != null && pageParams.frameSize !== '' && pageParams.frameSize !== 'default')
+    //let pageParams = Settings.mapFromCookie(state.settings);
+    //pageParams = Settings.mapFromQueryParams(pageParams);
+   // Settings.updateForm(pageParams);
+    /*if (pageParams.frameSize != null && pageParams.frameSize !== '' && pageParams.frameSize !== 'default')
     {
       updateFrameSize(pageParams.frameSize.split('x'));
     }
     if (browserDetails.browser === 'safari')
     {
       $("#videoCodec option[value='VP9']").remove();
-    }
+    }*/
   }
   initFormAndSettings();
   init(onPublishPeerConnected,onPublishPeerConnectionFailed,onPublishPeerConnectionStopped,errorHandler,onSoundMeter);

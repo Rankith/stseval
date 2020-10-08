@@ -105,7 +105,7 @@ const copyTextToClipboard = (text,message) => {
 let Settings = {
   serializeArrayFormValues: serializeArrayFormValues,
   saveToCookie: saveToCookie,
-  mapFromCookie: mapFromCookie,
+  /*mapFromCookie: mapFromCookie,*/
   mapFromQueryParams: mapFromQueryParams,
   mapFromForm: mapFromForm,
   updateForm: updateForm,

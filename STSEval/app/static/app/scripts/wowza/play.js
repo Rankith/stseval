@@ -122,13 +122,16 @@ const initListeners = () => {
   $("#play-toggle").click((e) => {
     if (state.playing)
     {
-      WowzaWebRTCPlay.stop();
+        WowzaWebRTCPlay.stop();
+        let playSettings = Settings.mapFromForm(Settings.serializeArrayFormValues($("#play-settings-form")));
+        //Settings.saveToCookie(playSettings);
+        start(playSettings);
     }
     else
     {
-      let playSettings = Settings.mapFromForm(Settings.serializeArrayFormValues($( "#play-settings-form" )));
-      Settings.saveToCookie(playSettings);
-      start(playSettings);
+        let playSettings = Settings.mapFromForm(Settings.serializeArrayFormValues($("#play-settings-form")));
+        //Settings.saveToCookie(playSettings);
+        start(playSettings);
     }
   });
 }
@@ -136,9 +139,9 @@ const initListeners = () => {
 const initFormAndSettings = () => {
   $("#player-video").hide();
   $("#play-video-container").css("background-color","rgba(102, 102, 102, 1)")
-  let pageParams = Settings.mapFromCookie(state.settings);
-  pageParams = Settings.mapFromQueryParams(pageParams);
-  Settings.updateForm(pageParams);
+ // let pageParams = Settings.mapFromCookie(state.settings);
+  //pageParams = Settings.mapFromQueryParams(pageParams);
+  //Settings.updateForm(pageParams);
 }
 initFormAndSettings();
 init(errorHandler,onPlayPeerConnected,onPlayPeerConnectionStopped);
