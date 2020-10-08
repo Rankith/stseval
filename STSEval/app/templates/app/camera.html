@@ -39,27 +39,18 @@
 
 
 <div align="center">
- <div class="row justify-content-center" id="transcoder-warning" style="display:none;">
-        <div class="col-12 alert alert-warning p-2 text-center">
-        Please visit <a href="https://cloud.wowza.com">cloud.wowza.com</a> to start your live stream.
-        </div>
-    </div>
-    <div class="row justify-content-center invisible mt-3" id="error-panel">
-        <div class="col-10 alert alert-danger alert-dismissible p-2">
-        <button id="error-panel-close" type="button" class="close" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-        <div id="error-messages">&nbsp;</div>
-        </div>
-    </div>
+ 
     <div class="container-fluid mt-3" id="publish-content">
         <div class="row justify-content-center">
-        <div class="col-md-8 col-sm-12">
+        <div class="col-md-8 col-sm-10">
             <div id="publish-video-container">
             <video id="publisher-video" autoplay playsinline muted controls></video>
             <div id="video-live-indicator">
                 <span id="video-live-indicator-live" class="badge badge-pill badge-danger" style="display:none;">LIVE</span>
                 <span id="video-live-indicator-error" class="badge badge-pill badge-warning" style="display:none;">ERROR</span>
+            </div>
+            <div id="video-controls" class="video-controls">
+                <button id="publish-toggle" type="button" class="btn btn-main">Start</button>
             </div>
             </div>
         </div>
@@ -221,11 +212,24 @@
         </div>
     </div>
 
-  		<button id="publish-toggle" type="button" class="btn btn-main">Start</button>
+  		
   	<div>
   		<span id="sdpDataTag"></span>
   	</div>
+    <div class="row justify-content-center" id="transcoder-warning" style="display:none;">
+        <div class="col-12 alert alert-warning p-2 text-center">
+        Please visit <a href="https://cloud.wowza.com">cloud.wowza.com</a> to start your live stream.
+        </div>
     </div>
+    <div class="row justify-content-center invisible mt-3" id="error-panel">
+        <div class="col-10 alert alert-danger alert-dismissible p-2">
+        <button id="error-panel-close" type="button" class="close" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+        <div id="error-messages">&nbsp;</div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block scripts %}

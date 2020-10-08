@@ -9,8 +9,6 @@
 		<button href="#" id="btnCompAdd"  type="button" class="btn btn-main" data-toggle="modal" data-target="#modalMain" onclick="AddCompStart()">Add</button>
 		<button href="#" id="btnCompEdit"  type="button" class="btn btn-main" data-toggle="modal" data-target="#modalMain" onclick="EditCompStart()">Edit</button>
 		<button href="#" id="btnCompDelete"  type="button" class="btn btn-main" onclick="CompDelete()">Delete</button>
-		<br/>
-		<button href="#" id="btnCompCopy"  type="button" class="btn btn-main mt-2" onclick="CopyCompStart()">Copy</button>
 	</div>
 	</div>
 
@@ -387,6 +385,10 @@
                 },
                 success: function () {
                     $("#divCompList").load("/competition_list/"); 
+                    Changed = false;
+                    $('.ath-list').removeClass("ctxSelected");
+                    SelectedDisc = -1;
+                    $('.disc-list').removeClass("ctxSelected");
                     DisableAll();
                 }
             });
