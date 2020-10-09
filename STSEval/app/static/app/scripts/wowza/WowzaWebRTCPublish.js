@@ -212,6 +212,8 @@ const getUserMedia = (mediaKind) =>
 
     async function getUserMediaSuccess(stream)
     {
+        console.log('getUserMediaSuccess ' + mediaKind);
+        console.log(stream);
       if (mediaKind === 'audio' && savedVideoTracks.length > 0)
       {
         let videoTracksToRemove = stream.getVideoTracks();
@@ -280,9 +282,11 @@ const getUserMedia = (mediaKind) =>
       await setState(newState);
       resolve(newState);
     }
-
+     
     if (navigator.mediaDevices.getUserMedia)
     {
+        console.log("getting media");
+        console.log(currentState.constraints);
       navigator.mediaDevices.getUserMedia(currentState.constraints)
         .then(getUserMediaSuccess)
         .catch(errorHandler);
@@ -296,6 +300,7 @@ const getUserMedia = (mediaKind) =>
     }
     else
     {
+       
       errorHandler({message:"Your browser does not support WebRTC"});
       reject();
     }
@@ -376,6 +381,7 @@ function setVideoEnabled(enabled) {
 }
 
 function getDisplayStream() {
+    console.log("getting stream");
   return new Promise((resolve,reject) => {
     let savedStream = getState().stream;
     function getDisplaySuccess(stream,constraints) {
@@ -386,6 +392,7 @@ function getDisplayStream() {
       }
       try
       {
+          console.log("set stream");
         getState().videoElementPublish.srcObject = stream;
         newState['ready'] = true;
       }
@@ -417,13 +424,15 @@ function getDisplayStream() {
 const setCamera = (id) =>
 {
   console.log("WowzaWebRTC.setCamera: " + id);
+    
   if (id === 'screen') 
   {
     getDisplayStream()
     .then((stream) => {
       let currentState = getState();
       setEnabled("audio",currentState.audioEnabled);
-      setEnabled("video",currentState.videoEnabled);
+        setEnabled("video", currentState.videoEnabled);
+        //stream.getVideoTracks().forEach(track => track.stop());
       stream.getVideoTracks()[0].onended = function () {
         let endedState = getState();
         if (endedState.cameras.length > 0)
@@ -449,12 +458,14 @@ const setCamera = (id) =>
     {
       constraints.video = {};
     }
-    constraints.video = Object.assign({},constraints.video,{deviceId: id});
+      constraints.video = Object.assign({}, constraints.video, { deviceId: id });
+      console.log("getting this video stream");
     setState({constraints:constraints})
     .then(()=>{
       getUserMedia('video')
       .then((stream) => {
-        let currentState = getState();
+          let currentState = getState();
+          //stream.getVideoTracks().forEach(track => track.stop());
         setEnabled("audio",currentState.audioEnabled);
         setEnabled("video",currentState.videoEnabled);
         if (WowzaPeerConnectionPublish.isStarted())
