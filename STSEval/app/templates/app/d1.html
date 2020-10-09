@@ -11,13 +11,6 @@
     <tr>
 	    <td valign="top">
             <table cellspacing="0" cellpadding="0" border="0">
-                {% if loadroutine == '' %}
-                    <tr>
-                        <td>
-                            <input type="text" id="txtVideoURL" style="width:300px;max-width:none" placeholder="Stream Name">
-                        </td>
-	                </tr>
-                {% endif %}
 	            <tr>
 	                <td colspan="2">
                         <select id="ddlAthlete" class="selectpicker form-control" data-live-search="true" data-style="btn-main" data-header="Select Gymnast" title="Select Gymnast" onchange="GymnastChanged()">
@@ -39,7 +32,7 @@
 		                    <source src="" type='video/webm; codecs="vp8.0, vorbis"'/>
 		                    Your browser does not support the video tag.
 	                    </video>
-                        <div id="play-video-container" style="width:854px;min-height:480px">
+                        <div id="play-video-container" style="width:854px;min-height:480px;max-height:720px">
                             <video id="player-video" autoplay playsinline muted controls></video>
                         </div>
 	                </td>
@@ -202,6 +195,7 @@
     var FirstGymnast = "{{athletes.first.id}}";
     var JudgeName = "{{this_judge}}";
     var token = "{{ csrf_token }}";
+    var VideoLocation = "/media/routine_videos/";
 
 </script>
 <script type="text/javascript">
@@ -261,7 +255,7 @@
             if (doc.data().status == status.NEW || doc.data().status == status.STARTED || doc.data().status == status.ATHLETE_DONE || doc.data().status == status.REVIEW_DONE) {
                 //new
                 RoutineID = doc.data().routine;
-                $("#txtVideoURL").val(doc.data().stream);
+                //$("#txtVideoURL").val(doc.data().stream);
                 $("#ddlAthlete").val(doc.data().athlete_id).change();
                 JudgesReadyClick(true);
                 EJudgesDone[1] = doc.data().e1done;
@@ -360,7 +354,7 @@
         $("#btnExerciseDone").hide();
         $("#btnNuke").addClass('ui-disabled');
         $("#btnJudgesReady").removeClass('ui-disabled');
-        $("#txtVideoURL").removeClass('ui-disabled');
+        //$("#txtVideoURL").removeClass('ui-disabled');
         $("#divDotsArea").empty();
         $("#divDotsAreaGlobal").empty();
         $(".entrybox").addClass('ui-disabled');
@@ -377,7 +371,7 @@
         SetupStream();
         console.log(Syncing);
         if (!Syncing)
-            SetupRoutine($("#txtVideoURL").val())
+            SetupRoutine("");
         $("#btnStartJudging").removeClass('ui-disabled');
         $("#btnNuke").addClass('ui-disabled');
         Status = status.NEW;
@@ -390,7 +384,7 @@
         }
         $("#btnStartJudging").hide();
         $("#btnJudgesReady").addClass('ui-disabled');
-        $("#txtVideoURL").addClass('ui-disabled');
+        //$("#txtVideoURL").addClass('ui-disabled');
         $("#ddlAthlete").addClass('ui-disabled');
         $("#btnExerciseDone").show();
         $("#btnNuke").removeClass('ui-disabled');
@@ -499,7 +493,7 @@
                 $("#divEScore").html(data['score_e']);
                 $("#divTotalScore").html(data['score_final']);
                 $("#divHeader").html("<h2 style='display:inline'>" + GymnastLabels[data['athlete_id']] + "</h2>");
-                LoadVideo(data['stream_video_id'], data['stream_start_time'],data['stream_end_time']);
+                LoadVideo();
                 BuildDots(false);
                 $("#btnAccountability").removeClass("ui-disabled");
                
@@ -507,7 +501,7 @@
         });
     }
 
-    function SetDScore(FinishRoutine = false) {
+    function SetDScore(CompleteRoutine = false) {
         CalculateScores();
         $.ajax({
             url: "/routine_set_score/",
@@ -529,8 +523,11 @@
                 'score_final': $("#divTotalScore").html(),
             },
             success: function (data) {
-                if (FinishRoutine)
+                if (CompleteRoutine) {
                     FinishRoutine();
+                    Status = status.BLANK;
+                    Reset();
+                }
             }
         });
         $("#btnFinish").removeClass("ui-disabled");
@@ -665,8 +662,7 @@
 
     function FinishRoutineClick() {
         SetDScore(true);
-        Status = status.BLANK;
-        Reset();
+       
     }
 
     function DeleteRoutine() {
@@ -784,7 +780,7 @@
     player.setVolume(0.5);*/
 }
 
-    function LoadVideo(id,start,end) {
+    /*function LoadVideo(id,start,end) {
         $("#divTwitchPlayer").empty();
         var options = {
             width: VidWidth,
@@ -798,7 +794,16 @@
         player.addEventListener(Twitch.Player.READY, function(){
              CheckIfVideoReady(end);
         }, false);
-     }
+    }*/
+
+    function LoadVideo() {
+        
+        let vp = document.getElementById("player-video");
+        vp.pause();
+        vp.currentTime = 0;
+        vp.src = VideoLocation + RoutineID + ".webm";
+        vp.load();
+    }
 
     function CheckIfVideoReady(end) {
         setTimeout(function () {

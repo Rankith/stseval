@@ -138,7 +138,7 @@ const initListeners = () => {
 
 const initFormAndSettings = () => {
   $("#player-video").hide();
-  $("#play-video-container").css("background-color","rgba(102, 102, 102, 1)")
+  //$("#play-video-container").css("background-color","rgba(102, 102, 102, 1)")
  // let pageParams = Settings.mapFromCookie(state.settings);
   //pageParams = Settings.mapFromQueryParams(pageParams);
   //Settings.updateForm(pageParams);
