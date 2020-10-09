@@ -534,7 +534,7 @@ def build_dots(request):
             else:
                 posx = (d.time_stamp_relative/1000) /(routine_length/1000)
                 posx = posx * (width-padding-padding)
-                posx = posx - (dot_size/2)
+                #posx = posx - (dot_size/2)
                 posx = posx + padding
             posy = j_offset*y_offset
             posy = posy - (dot_size/2)

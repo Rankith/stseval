@@ -23,8 +23,7 @@
 	            <tr>
                     <td colspan="2">
                         <!--<div id="divTwitchPlayer" style="width:854px;height:480px"></div>-->
-	                    <video id="VideoPlayer" width="640" height="480" controls="controls" icons="none" style="display:none"  webkit-playsinline>
-		                    <source src="" type='video/webm; codecs="vp8.0, vorbis"'/>
+	                    <video id="video-playback"  style="width:854px;min-height:480px;max-height:720px;display:none" muted controls webkit-playsinline>
 		                    Your browser does not support the video tag.
 	                    </video>
 
@@ -100,8 +99,9 @@
                 </tr></table>
 	        </div>
 	        <div id="divDotsArea" class="DotsArea" style="width:640px;height:100px;">
-	            <div id="divRedLine" style="position:absolute;left:20px;top:0px;height:100px;border-left:1px solid red;width:1px;display:none"></div>
+	           
 	        </div>
+            
 	    </td>
 	    <td align="left" style="vertical-align:top;">
 	        <div id="divSpeedSpacer" align="right" style="height:33px;display:none">  
@@ -220,7 +220,8 @@
     var JudgeType = 'D';
     var player;
     var Recorder
-
+    var RedLineInterval;
+    var EditableDots = true;
     var RoutineID;
 
     SetupPage();
@@ -244,7 +245,10 @@
         });
     }
     else {
+        EditableDots = false;
         RoutineID = LoadRot;
+        $("#video-playback").show();
+        $("#play-video-container").hide();
         LoadRoutine();
     }
 
@@ -379,7 +383,7 @@
 
     function StartJudgingClick(Syncing = false) {
         if (!Syncing) {
-            RoutineStartJudging();
+            //RoutineStartJudging();
             StartRecording();
         }
         $("#btnStartJudging").hide();
@@ -397,10 +401,12 @@
             type: 'video'
         });
         recorder.startRecording();
+        RoutineStartJudging();
     }
 
     function StopRecording() {
         recorder.stopRecording(function () {
+            RoutineAthleteDone();
             getSeekableBlob(recorder.getBlob(), function(seekableBlob) {
             //videoElement.src = URL.createObjectURL(seekableBlob);
                 console.log(seekableBlob);
@@ -433,7 +439,7 @@
 
     function ExerciseDoneClick(Syncing = false, CalcScoreAfter = false) {
         if (!Syncing) {
-            RoutineAthleteDone();
+            
             StopRecording();
         }
         else
@@ -798,11 +804,25 @@
 
     function LoadVideo() {
         
-        let vp = document.getElementById("player-video");
+        let vp = document.getElementById("video-playback");
         vp.pause();
         vp.currentTime = 0;
         vp.src = VideoLocation + RoutineID + ".webm";
         vp.load();
+        vp.play();
+        
+    }
+
+    function UpdateRedLine()
+    {
+         let vp = document.getElementById("video-playback");
+        let posx;
+	    posx = vp.currentTime / vp.duration; //the time / total time for a fraction
+
+	    posx = posx*(VidWidth-10);
+	    posx += 5;
+	    $("#divRedLine").css({left: posx});
+ 
     }
 
     function CheckIfVideoReady(end) {

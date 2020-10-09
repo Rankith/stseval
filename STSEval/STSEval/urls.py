@@ -8,6 +8,9 @@ from django.urls import path
 import django.contrib.auth.views
 from django.contrib import admin
 from django.contrib.auth.views import LoginView, LogoutView
+from django.conf.urls.static import static
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from django.conf import settings
 
 from app import forms, views
 
@@ -83,3 +86,4 @@ urlpatterns = [
     # Uncomment the next line to enable the admin:
     # url(r'^admin/', include(admin.site.urls)),
 ]
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

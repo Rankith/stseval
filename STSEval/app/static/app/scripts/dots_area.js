@@ -90,7 +90,12 @@ function BuildDots(CalcScoreAfter = false) {
             }
             if (CalcScoreAfter && Status != "AD")
                 GetDScore();
-
+            /*if (LoadRot != "") {
+                if (ev != "V") {
+                    RedLineInterval = setInterval("UpdateRedLine()", 100);
+                    $("#divRedLine").show();
+                }
+            }*/
             //$("#divTotalDeductions").html(JudgeDeductions[ej]);
             //TotalDeductions = JudgeDeductions[ej];
         }
@@ -155,7 +160,7 @@ function NewDeduction(e) {
 }
 
 function ChangeEjury(dot, artistry = false) {
-    if (!DeductionsConfirmed) {
+    if (!DeductionsConfirmed  && EditableDots) {
         ChangeDedAddMode = false;
 
         if (artistry) {

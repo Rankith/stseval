@@ -28,20 +28,22 @@
 <script type="text/javascript">
     //const firebase = require("firebase");
     var datahold;
-    var RoutineID = -1;
+    var ScoreboardRoutineID = -1;
     var Status = "";
     var Videos = new Array();
     var db = firebase.firestore();
 
     db.collection("routines").doc(Comp + Disc + ev)
         .onSnapshot(function (doc) {
-            SetBasedOnStatus(doc);
+            console.log("scoreboard");
+            SetBasedOnStatusScoreboard(doc);
         });
-    function SetBasedOnStatus(doc) {
+    function SetBasedOnStatusScoreboard(doc) {
         if (doc.data() != undefined) {
-            
-            if (Status != doc.data().status || RoutineID != doc.data().routine) {
-                RoutineID = doc.data().routine
+            console.log("Status: " + Status + " | " + doc.data().status);
+            console.log("Routine: " + ScoreboardRoutineID + " | " + doc.data().routine);
+            if (Status != doc.data().status || ScoreboardRoutineID != doc.data().routine) {
+                ScoreboardRoutineID = doc.data().routine
                 if (doc.data().status == "F" || Status == "" || doc.data().status == "N") {
                     GetRoutineData();
                 }

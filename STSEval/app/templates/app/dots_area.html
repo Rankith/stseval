@@ -13,7 +13,7 @@
         {% endfor %}
     </div>
 {% endif %}
-
+ <div id="divRedLine" style="position:absolute;left:20px;top:0px;height:100px;border-left:1px solid red;width:1px;display:none"></div>
 <script type="text/javascript">
     {% for k,v in judge_totals.items %}
         JudgeDeductions[{{k}}] = {{v}};
