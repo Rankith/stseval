@@ -96,9 +96,6 @@ class Routine(models.Model):
     athlete_done_time = models.BigIntegerField(blank=True,null=True)
     d1_done_time = models.BigIntegerField(blank=True,null=True)
     stream = models.CharField(max_length=255)
-    stream_video_id = models.CharField(max_length=255,blank=True,null=True)
-    stream_start_time = models.IntegerField(default=0)
-    stream_end_time = models.IntegerField(default=0)
 
 class EJuryDeduction(models.Model):
     routine = models.ForeignKey(Routine, on_delete=models.CASCADE)

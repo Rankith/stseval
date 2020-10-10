@@ -210,7 +210,7 @@ def mark_stream(request):
     return HttpResponse(status=200)
 
 def routine_setup(request):
-    routine = Routine(competition_id=request.POST.get('comp'),disc=request.POST.get('disc'),event=request.POST.get('event'),athlete_id=request.POST.get('athlete'),stream=request.POST.get('stream'))
+    routine = Routine(competition_id=request.POST.get('comp'),disc=request.POST.get('disc'),event=request.POST.get('event'),athlete_id=request.POST.get('athlete'))
     judges = Judge.objects.filter(competition_id=request.POST.get('comp'),disc=request.POST.get('disc'),event=request.POST.get('event')).first()
     routine.e1_name = judges.e1
     routine.e2_name = judges.e2
@@ -218,7 +218,7 @@ def routine_setup(request):
     routine.e4_name = judges.e4
     routine.d1_name = judges.d1
     routine.save()
-    app.firebase.routine_set_stream(request.POST.get('comp') + request.POST.get('disc') + request.POST.get('event'),routine)
+    app.firebase.routine_setup(request.POST.get('comp') + request.POST.get('disc') + request.POST.get('event'),routine)
 
     resp = {'routine':routine.id}
     return JsonResponse(resp)
@@ -228,18 +228,16 @@ def routine_start_judging(request):
     routine.status = Routine.STARTED
     routine.athlete_id=request.POST.get('athlete')
 
-    try:
-        api = TwitchAPI()
-        position,vid_id = api.mark_stream('Routine ' + str(routine.id) + ' start')
-    except:
-        position = 0
-        vid_id = 0
+    #try:
+        #api = TwitchAPI()
+        #position,vid_id = api.mark_stream('Routine ' + str(routine.id) + ' start')
+    #except:
+        #position = 0
+        #vid_id = 0
 
     mili = int(time() * 1000)
     routine.start_time = mili
 
-    routine.stream_start_time = position - 5
-    routine.stream_video_id = vid_id
     routine.save()
     app.firebase.routine_set_status(request.POST.get('comp') + request.POST.get('disc') + request.POST.get('event'),routine)
 
@@ -249,17 +247,16 @@ def routine_athlete_done(request):
     routine = Routine.objects.filter(competition_id=request.POST.get('comp'),disc=request.POST.get('disc'),event=request.POST.get('event')).order_by('-id').first()
     routine.status = Routine.ATHLETE_DONE
 
-    try:
-        api = TwitchAPI()
-        position,vid_id = api.mark_stream('Routine ' + str(routine.id) + ' end')
-    except:
-        position = 0
-        vid_id = 0
+    #try:
+        #api = TwitchAPI()
+        #position,vid_id = api.mark_stream('Routine ' + str(routine.id) + ' end')
+   # except:
+        #position = 0
+        #vid_id = 0
 
     mili = int(time() * 1000)
     routine.athlete_done_time = mili
 
-    routine.stream_end_time = position
     routine.save()
     app.firebase.routine_set_status(request.POST.get('comp') + request.POST.get('disc') + request.POST.get('event'),routine)
 
@@ -473,6 +470,7 @@ def build_dots(request):
     padding = int(request.POST.get('padding',17))
     dot_size = int(request.POST.get('dot_size',12))
     y_offset = int(request.POST.get('y_offset',20))
+    delay=250
     #e1done = request.POST.get('e1done','true')
     #e2done = request.POST.get('e2done','true')
     #e3done = request.POST.get('e3done','true')
@@ -532,7 +530,7 @@ def build_dots(request):
                 posx = posx + padding
                 vault_phases[int(str(d.time_stamp_relative)[0])] += 1
             else:
-                posx = (d.time_stamp_relative/1000) /(routine_length/1000)
+                posx = ((d.time_stamp_relative + delay)/1000) /(routine_length/1000)
                 posx = posx * (width-padding-padding)
                 #posx = posx - (dot_size/2)
                 posx = posx + padding

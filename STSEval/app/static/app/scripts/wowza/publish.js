@@ -37,7 +37,7 @@ $(document).ready(() => {
       onStateChanged: (newState) => {
         console.log("WowzaWebRTCPublish.onStateChanged");
         console.log(JSON.stringify(newState));
-
+        UpdateStreamStatus(newState.connectionState);
         // LIVE / ERROR Indicator
         if (newState.connectionState === 'connected')
         {

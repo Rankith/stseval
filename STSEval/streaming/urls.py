@@ -14,5 +14,6 @@ urlpatterns = [
     path('stop_stream/', views.stop_stream, name='streaming/stop_stream'),
     path('get_state/', views.get_state, name='streaming/get_state'),
     path('get_stats/', views.get_stats, name='streaming/get_stats'),
+    path('update_stream_status/', views.update_stream_status, name='streaming/update_stream_status'),
     path('camera/', views.camera, name='camera'),
 ]

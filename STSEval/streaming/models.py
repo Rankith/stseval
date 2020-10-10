@@ -11,3 +11,15 @@ class WowzaStream(models.Model):
     sdp_url = models.CharField(max_length=255)
     application_name = models.CharField(max_length=20)
     stream_name = models.CharField(max_length=20)
+    STARTED = 'started'
+    STARTING = 'starting'
+    STOPPED = 'stopped'
+    LIVE = 'live'
+    STATUS = [
+        (STARTED,'started'),
+        (STARTING,'starting'),
+        (STOPPED,'stopped'),
+        (LIVE,'live'),
+        ]
+    status = models.CharField(max_length=10,choices=STATUS,default=STOPPED)
+    connected = models.BooleanField(default=False)

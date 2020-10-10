@@ -283,6 +283,42 @@
         }
     }
 
+    function UpdateStreamStatus(status) {
+         $.ajax({
+            url: "/streaming/update_stream_status/",
+            type: "POST",
+            headers: { "X-CSRFToken": token },
+            data: {
+                'comp': Comp,
+                'disc': Disc,
+                'event': ev,
+                'status':status,
+            },
+            dataType: 'json',
+            success: function (data) {
+               
+            }
+        });
+    }
+
+    async function CheckStreamStats() {
+        const result = await $.ajax({
+            url: "/streaming/get_stats/",
+            type: "POST",
+            headers: { "X-CSRFToken": token },
+            data: {
+                'comp': Comp,
+                'disc': Disc,
+                'event': ev,
+            },
+            dataType: 'json',
+            success: function (data) {
+               
+            }
+        });
+        return result;
+    }
+
     function StartStreamBackendClick() {
         //check state
         CheckStreamStatus().then(state => {

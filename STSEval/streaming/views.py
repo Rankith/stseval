@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpRequest,JsonResponse,HttpResponse
 from streaming.wowza import LiveStreams, WOWZA_API_KEY, WOWZA_ACCESS_KEY
 from streaming.models import WowzaStream
+import app.firebase
 
 # Create your views here.
 def camera(request):
@@ -71,21 +72,26 @@ def create_camera_stream(request):
 
 def get_stream_connection_info(request):
     stream = WowzaStream.objects.filter(competition_id=request.POST.get('comp'),disc=request.POST.get('disc'),event=request.POST.get('event')).first()
-
+    app.firebase.routine_set_stream(request.POST.get('comp') + request.POST.get('disc') + request.POST.get('event'),stream.id)
+    #app.firebase.set_stream(request.POST.get('comp') + request.POST.get('disc') + request.POST.get('event'),stream)
     return JsonResponse({
-        "sdp_url":stream.sdp_url,
-        "application_name":stream.application_name,
-        "stream_name":stream.stream_name
+        "stream":stream.id,
     },safe=False)
 
 def start_stream(request):
     stream = WowzaStream.objects.filter(competition_id=request.POST.get('comp'),disc=request.POST.get('disc'),event=request.POST.get('event')).first()
+    
     wowza_instance = LiveStreams(
         api_key = WOWZA_API_KEY,
         access_key = WOWZA_ACCESS_KEY
     )
     response = wowza_instance.start(stream.stream_id)
-
+    try:
+        stream.status = response['live_stream']['state']
+    except:
+        stream.status = WowzaStream.STOPPED
+    stream.save()
+    app.firebase.set_stream(stream)
     return JsonResponse(response,safe=False)
 
 def stop_stream(request):
@@ -105,8 +111,31 @@ def get_state(request):
         access_key = WOWZA_ACCESS_KEY
     )
     response = wowza_instance.info(stream.stream_id,'state')
+    try:
+        if stream.status != response['live_stream']['state']:
+            stream.status = response['live_stream']['state']
+            stream.save()
+            app.firebase.set_stream_status(stream.id,stream.status)
+    except:
+        stream.status = WowzaStream.STOPPED
+        stream.save()
 
     return JsonResponse(response,safe=False)
+
+def update_stream_status(request):
+    stream = WowzaStream.objects.filter(competition_id=request.POST.get('comp'),disc=request.POST.get('disc'),event=request.POST.get('event')).first()
+    status = request.POST.get('status')
+
+    if status=="connected":
+        stream.connected = True
+        stream.status = WowzaStream.STARTED
+    else:
+         stream.connected = False
+    stream.save()
+    app.firebase.set_stream(stream)
+
+    return HttpResponse(status=200)
+
 
 def get_stats(request):
     stream = WowzaStream.objects.filter(competition_id=request.POST.get('comp'),disc=request.POST.get('disc'),event=request.POST.get('event')).first()
@@ -115,5 +144,18 @@ def get_stats(request):
         access_key = WOWZA_ACCESS_KEY
     )
     response = wowza_instance.info(stream.stream_id,'stats')
+    try:
+        if response['live_stream']['connected']['value'] == 'Yes':
+            connected = True
+        else:
+            connected = False
+        if stream.connected != connected:
+            stream.connected = connected
+            stream.save()
+            app.firebase.set_stream_connected(stream.id,stream.connected)
+    except:
+        stream.connected = False
+        stream.save()
+
 
     return JsonResponse(response,safe=False)

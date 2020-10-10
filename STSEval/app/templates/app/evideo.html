@@ -10,7 +10,9 @@
         <tr>
             <td>
                 <!--<div id="divTwitchPlayer" style="width:854px;height:480px"></div>-->
-                <div id="play-video-container" style="width:854px;min-height:480px;max-height:720px">
+                 
+                <div id="play-video-container" style="width:854px;min-height:480px;max-height:720px" class="d-flex align-items-center justify-content-center">
+                            <div id="player-waiting"><h1>Waiting for Camera</h1></div>
                             <video id="player-video" autoplay playsinline muted controls></video>
                         </div>
             </td>
@@ -96,6 +98,7 @@
 <script src= "https://player.twitch.tv/js/embed/v1.js"></script>
 <script src="{% static 'app/scripts/dots_area.js' %}?v=1"></script>
 <script type="module" src="{% static 'app/scripts/wowza/play.js' %}?v=1"></script>
+<script src="{% static 'app/scripts/stream_listener.js' %}"></script>
 <script type="text/javascript">
     var Disc = "{{disc}}";
     var ev = "{{event}}";
@@ -139,7 +142,6 @@
 
     function SetBasedOnStatus(doc) {
         if (doc.data() != undefined) {
-
             if (Status != doc.data().status || RoutineID != doc.data().routine) {
                 RoutineID = doc.data().routine
                 if (doc.data().status == "N" || doc.data().status == "S" || Status == "") {
@@ -147,7 +149,7 @@
                     SetDScoreDefaults();
                     Reset();
                     $("#divHeader").html("<h2 style='display:inline'>" + doc.data().athlete + "</h2>");
-                    SetupStream(doc.data().stream);
+                    //SetupStream(doc.data().stream);
                     Status = doc.data().status;
                 }
                 if (doc.data().status == "AD") {
@@ -169,6 +171,7 @@
             }
             else
                 CheckJudges(doc);
+            CheckStream(doc);
             console.log("Current data: ", doc.data());
         }
     }

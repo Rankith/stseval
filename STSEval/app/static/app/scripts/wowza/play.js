@@ -75,7 +75,8 @@ const onPlayPeerConnected = () => {
   $("#play-toggle").html("Stop");
   $("#play-settings-form :input").prop("disabled", true);
   $("#play-settings-form :button").prop("disabled", false);
-  $('#player-video').show();
+    $('#player-video').show();
+    $('#player-waiting').hide();
   //$("#play-video-container").css("background-color","rgba(102, 102, 102, 0)")
 }
 
@@ -83,7 +84,8 @@ const onPlayPeerConnectionStopped = () => {
   state.playing = false;
   $("#play-toggle").html("Play");
   $("#play-settings-form :input").prop("disabled", false);
-  $('#player-video').hide();
+    $('#player-video').hide();
+    $('#player-waiting').show();
  // $("#play-video-container").css("background-color","rgba(102, 102, 102, 1)")
 }
 

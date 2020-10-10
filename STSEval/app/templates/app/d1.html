@@ -31,7 +31,8 @@
 		                    <source src="" type='video/webm; codecs="vp8.0, vorbis"'/>
 		                    Your browser does not support the video tag.
 	                    </video>
-                        <div id="play-video-container" style="width:854px;min-height:480px;max-height:720px">
+                        <div id="play-video-container" style="width:854px;min-height:480px;max-height:720px" class="d-flex align-items-center justify-content-center">
+                            <div id="player-waiting"><h1>Waiting for Camera</h1></div>
                             <video id="player-video" autoplay playsinline muted controls></video>
                         </div>
 	                </td>
@@ -172,6 +173,7 @@
 <script type="module" src="{% static 'app/scripts/wowza/play.js' %}?v=1"></script>
 <script src="https://www.webrtc-experiment.com/EBML.js"></script> 
 <script src="{% static 'app/scripts/RecordRTC.js' %}"></script>
+<script src="{% static 'app/scripts/stream_listener.js' %}"></script>
 <script type="text/javascript">
     var Comp = "{{comp.id}}";
     var CompName = "{{comp}}";
@@ -223,10 +225,12 @@
     var RedLineInterval;
     var EditableDots = true;
     var RoutineID;
+    var db = firebase.firestore();
+   
 
     SetupPage();
     if (LoadRot == '') {
-        var db = firebase.firestore();
+        SetupStream();
         var docRef = db.collection("routines").doc(Comp + Disc + ev);
         docRef.get().then(function (doc) {
             if (doc.exists) {
@@ -242,6 +246,7 @@
 
         docRef.onSnapshot(function (doc) {
             CheckJudges(doc);
+            CheckStream(doc);
         });
     }
     else {
@@ -252,9 +257,20 @@
         LoadRoutine();
     }
 
+   
     function SetBasedOnStatus(doc) {
         if (doc.data() != undefined) {
             console.log("Set Based On Status");
+            //CheckStream(doc);
+            /*Stream = doc.data().stream;
+            if (Stream != "") {
+                //var db = firebase.firestore();
+                console.log("Setup Setting Stream Listener To " + Stream);
+                StreamListener = db.collection("streams").doc(Stream).onSnapshot(function (doc) {
+                    HandleStreamChanges(doc);
+                });
+            }*/
+
             //cascade status so it does them in order.
             if (doc.data().status == status.NEW || doc.data().status == status.STARTED || doc.data().status == status.ATHLETE_DONE || doc.data().status == status.REVIEW_DONE) {
                 //new
@@ -302,30 +318,32 @@
     }
 
     function CheckJudges(doc) {
-        if (RoutineID == doc.data().routine) {
-            let RedoDots = false;
-            console.log("Check Judges " + EJudgesDone[1] + " | " + doc.data().e1done);
-            if (EJudgesDone[1] != doc.data().e1done) {
-                EJudgesDone[1] = doc.data().e1done;
-                RedoDots = true;
-            }
-            if (EJudgesDone[2] != doc.data().e2done) {
-                EJudgesDone[2] = doc.data().e2done;
-                RedoDots = true;
-            }
-            if (EJudgesDone[3] != doc.data().e3done) {
-                EJudgesDone[3] = doc.data().e3done;
-                RedoDots = true;
-            }
-            if (EJudgesDone[4] != doc.data().e4done) {
-                EJudgesDone[4] = doc.data().e4done;
-                RedoDots = true;
-            }
-            if (RedoDots) {
-                if (Status == "AD")
-                    BuildDots(false);
-                else
-                    BuildDots(true);
+        if (doc.data().routine != undefined) {
+            if (RoutineID == doc.data().routine) {
+                let RedoDots = false;
+                console.log("Check Judges " + EJudgesDone[1] + " | " + doc.data().e1done);
+                if (EJudgesDone[1] != doc.data().e1done) {
+                    EJudgesDone[1] = doc.data().e1done;
+                    RedoDots = true;
+                }
+                if (EJudgesDone[2] != doc.data().e2done) {
+                    EJudgesDone[2] = doc.data().e2done;
+                    RedoDots = true;
+                }
+                if (EJudgesDone[3] != doc.data().e3done) {
+                    EJudgesDone[3] = doc.data().e3done;
+                    RedoDots = true;
+                }
+                if (EJudgesDone[4] != doc.data().e4done) {
+                    EJudgesDone[4] = doc.data().e4done;
+                    RedoDots = true;
+                }
+                if (RedoDots) {
+                    if (Status == "AD")
+                        BuildDots(false);
+                    else
+                        BuildDots(true);
+                }
             }
         }
     }
@@ -372,10 +390,10 @@
 
     function JudgesReadyClick(Syncing = false) {
         //window.WowzaWebRTCPlay.stop();
-        SetupStream();
+        //SetupStream();
         console.log(Syncing);
         if (!Syncing)
-            SetupRoutine("");
+            SetupRoutine();
         $("#btnStartJudging").removeClass('ui-disabled');
         $("#btnNuke").addClass('ui-disabled');
         Status = status.NEW;
@@ -730,7 +748,7 @@
         });
     }
 
-    function SetupRoutine(stream) {
+    function SetupRoutine() {
         $.ajax({
             url: "/routine_setup/",
             type: "POST",
@@ -739,7 +757,6 @@
                 'comp': Comp,
                 'disc': Disc,
                 'event': ev,
-                'stream': stream,
                 'athlete': $("#ddlAthlete").val()
             },
             dataType: 'json',
@@ -767,11 +784,12 @@
          return result;
     }
    function SetupStream() {
-        GetStreamInfo().then((result) => {
-            $("#playSdpURL").val(result["sdp_url"]);
+       GetStreamInfo().then((result) => {
+
+            /*$("#playSdpURL").val(result["sdp_url"]);
             $("#playApplicationName").val(result["application_name"]);
             $("#playStreamName").val(result["stream_name"]);
-            $("#play-toggle").click();
+            $("#play-toggle").click();*/
         });
 
     //WowzaSetStream()

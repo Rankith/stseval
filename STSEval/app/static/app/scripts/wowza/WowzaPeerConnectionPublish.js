@@ -180,7 +180,8 @@ function wsConnect(url) {
   }
 
   wsConnection.onclose = function () {
-    console.log("WowzaPeerConnectionPublish.wsConnection.onclose");
+      console.log("WowzaPeerConnectionPublish.wsConnection.onclose");
+      //CheckStreamStats();
   }
 
   wsConnection.onerror = function (error) {
