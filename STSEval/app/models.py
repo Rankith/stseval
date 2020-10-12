@@ -96,6 +96,9 @@ class Routine(models.Model):
     athlete_done_time = models.BigIntegerField(blank=True,null=True)
     d1_done_time = models.BigIntegerField(blank=True,null=True)
     stream = models.CharField(max_length=255)
+    def routine_length(self):
+        return self.athlete_done_time - self.start_time
+
 
 class EJuryDeduction(models.Model):
     routine = models.ForeignKey(Routine, on_delete=models.CASCADE)

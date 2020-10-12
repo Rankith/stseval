@@ -433,6 +433,10 @@ def deduct(request):
     if relative_time == -1:
         relative_time = mili - routine.start_time
 
+    if routine.athlete_done_time != None:
+        relative_time = routine.routine_length()-100
+    
+
     ded = EJuryDeduction(routine=routine,judge=judge,deduction=deduction,action=action,editor=editor,time_stamp=mili,time_stamp_relative=relative_time,artistry_type=artistry_type)
     ded.save()
     return HttpResponse(status=200) 
@@ -470,7 +474,7 @@ def build_dots(request):
     padding = int(request.POST.get('padding',17))
     dot_size = int(request.POST.get('dot_size',12))
     y_offset = int(request.POST.get('y_offset',20))
-    delay=250
+    delay=0
     #e1done = request.POST.get('e1done','true')
     #e2done = request.POST.get('e2done','true')
     #e3done = request.POST.get('e3done','true')
@@ -532,7 +536,7 @@ def build_dots(request):
             else:
                 posx = ((d.time_stamp_relative + delay)/1000) /(routine_length/1000)
                 posx = posx * (width-padding-padding)
-                #posx = posx - (dot_size/2)
+                posx = posx - (dot_size/2)
                 posx = posx + padding
             posy = j_offset*y_offset
             posy = posy - (dot_size/2)
@@ -645,7 +649,7 @@ def scoreboard(request):
     return render(request,'app/scoreboard.html',context)
 
 def save_video(request):
-    output = open('/' + settings.MEDIA_ROOT + '/routine_videos/' + request.POST.get('video-filename'), 'wb+')
+    output = open(settings.MEDIA_ROOT + '/routine_videos/' + request.POST.get('video-filename'), 'wb+')
     #output.write(request.FILES.get('video-blob').file.read())
     for chunk in request.FILES['video-blob'].chunks():
         output.write(chunk)

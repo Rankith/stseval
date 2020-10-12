@@ -23,14 +23,11 @@
 	            <tr>
                     <td colspan="2">
                         <!--<div id="divTwitchPlayer" style="width:854px;height:480px"></div>-->
-	                    <video id="video-playback"  style="width:854px;min-height:480px;max-height:720px;display:none" muted controls webkit-playsinline onclick="this.paused ? this.play() : this.pause();">
+	                    <video id="video-playback"  style="width:854px;min-height:480px;max-height:720px;display:none" muted controls webkit-playsinline onclick="PlayerClick()">
 		                    Your browser does not support the video tag.
 	                    </video>
 
-	                    <video id="VideoPlayerCapture" width="640" height="480" controls="controls" icons="none"  webkit-playsinline style="display:none">
-		                    <source src="" type='video/webm; codecs="vp8.0, vorbis"'/>
-		                    Your browser does not support the video tag.
-	                    </video>
+	                    
                         <div id="play-video-container" style="width:854px;min-height:480px;max-height:720px" class="d-flex align-items-center justify-content-center">
                             <div id="player-waiting"><h1>Waiting for Camera</h1></div>
                             <video id="player-video" autoplay playsinline muted controls style="display:none"></video>
@@ -70,7 +67,7 @@
 	                    <tr><td id="tdTotal" align="right">Final Score:</td><td id="divTotalScore">0.0</td></tr>
 	                </table>
                 {% else %}
-                    <table cellspacing="0" cellpadding="0" border="0" style="font-size:0.75rem;width:270px">
+                    <table cellspacing="0" cellpadding="0" border="0" style="font-size:0.75rem">
 	                    <tr><td id="tdElements" align="right">Elements:</td><td><div id="lblElements"></div></td></tr>
 	                    <tr><td id="tdDifficulty" align="right">Base Score:</td><td><div id="lblDifficulty"></div></td></tr>
 	                    <tr><td id="tdGroups" align="right">Groups:</td><td><div id="lblGroups"></div></td></tr>
@@ -143,12 +140,11 @@
 	            </div>
 	            <div style="float:right;padding-left:5px">
                     {% if loadroutine == '' %}
-	                    <button href="#" id="btnFinish" type="button" class="btn btn-main mb-2 ui-disabled" onclick="FinishRoutineClick()" >Routine Complete</button>
-	                    <button href="#" id="btnAccountability" type="button" class="btn btn-main mb-2 ui-disabled" onclick="ViewAccountabilityReport()">Accountability Report</button>
-	                    <br/>
+	                    <button href="#" id="btnFinish" type="button" class="btn btn-main mb-2 ui-disabled" onclick="FinishRoutineClick()" >Routine Complete</button><br/>
+	                    <button href="#" id="btnAccountability" type="button" class="btn btn-main mb-2 ui-disabled" onclick="ViewAccountabilityReport()">Accountability Report</button><br/>
 	                    <button href="#" id="btnNuke"  type="button" class="btn btn-main mb-2 ui-disabled" onclick="DeleteRoutineClick()">Delete Routine</button>
                     {% else %}
-	                    <button href="#" id="btnAccountability" type="button" class="btn btn-main mb-2" onclick="ViewAccountabilityReport()">Accountability Report</button>
+	                    <button href="#" id="btnAccountability" type="button" class="btn btn-main mb-2" onclick="ViewAccountabilityReport()">Accountability Report</button><br/>
 	                    <button href="#" id="btnCloseMain" type="button" class="btn btn-main mb-2" onclick="HideDetails()">Close</button>
                     {% endif  %}
 	            </div>
@@ -349,6 +345,14 @@
                 }
             }
         }
+    }
+
+    function PlayerClick() {
+        //console.log("paused: " + document.getElementById('video-playback').paused);
+        if (document.getElementById('video-playback').paused)
+            document.getElementById('video-playback').play();
+        else
+            document.getElementById('video-playback').pause();
     }
 
     function SetupPage() {
