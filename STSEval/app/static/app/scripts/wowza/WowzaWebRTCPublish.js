@@ -190,7 +190,8 @@ const getUserMedia = (mediaKind) =>
     if (currentState.stream != null)
     {
       savedAudioTracks = currentState.stream.getAudioTracks();
-      savedVideoTracks = currentState.stream.getVideoTracks();
+        savedVideoTracks = currentState.stream.getVideoTracks();
+        currentState.stream.getVideoTracks().forEach(track => track.stop());
     }
 
     if (mediaKind !== 'video')
@@ -285,8 +286,8 @@ const getUserMedia = (mediaKind) =>
      
     if (navigator.mediaDevices.getUserMedia)
     {
-        console.log("getting media");
-        console.log(currentState.constraints);
+        //console.log("getting media");
+        //console.log(currentState.constraints);
       navigator.mediaDevices.getUserMedia(currentState.constraints)
         .then(getUserMediaSuccess)
         .catch(errorHandler);
@@ -470,8 +471,9 @@ const setCamera = (id) =>
         setEnabled("video",currentState.videoEnabled);
         if (WowzaPeerConnectionPublish.isStarted())
         {
-          stop();
-          start();
+            stop();
+            setTimeout(() => { start(); }, 1000)
+          //start();
         }
         if (callbacks.onCameraChanged != null)
         {
