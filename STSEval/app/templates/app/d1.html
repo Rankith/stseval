@@ -530,7 +530,7 @@
                 $("#divTotalScore").html(data['score_final']);
                 $("#divHeader").html("<h2 style='display:inline'>" + GymnastLabels[data['athlete_id']] + "</h2>");
                 LoadVideo();
-                BuildDots(false);
+                BuildDots(false,'1');
                 $("#btnAccountability").removeClass("ui-disabled");
                
             }
@@ -568,6 +568,11 @@
         });
         $("#btnFinish").removeClass("ui-disabled");
         $("#btnAccountability").removeClass("ui-disabled");
+    }
+
+    function PlayerJump(jump) {
+        let vp = document.getElementById("video-playback");
+        vp.currentTime = jump;
     }
 
     function CalculateScores() {

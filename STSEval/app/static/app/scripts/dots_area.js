@@ -65,7 +65,7 @@ function Deduct(deduction, ej_in = -1, spot_in = -1, artistry_type='') {
     });
 }
 
-function BuildDots(CalcScoreAfter = false) {
+function BuildDots(CalcScoreAfter = false, PlaybackOnly = '0') {
     $.ajax({
         url: "/build_dots/",
         type: "POST",
@@ -78,6 +78,7 @@ function BuildDots(CalcScoreAfter = false) {
             'e2done': EJudgesDone[2],
             'e3done': EJudgesDone[3],
             'e4done': EJudgesDone[4],
+            'playback_only': PlaybackOnly,
         },
         success: function (data) {
             $("#divDotsArea").empty();

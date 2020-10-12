@@ -474,6 +474,7 @@ def build_dots(request):
     padding = int(request.POST.get('padding',17))
     dot_size = int(request.POST.get('dot_size',12))
     y_offset = int(request.POST.get('y_offset',20))
+    playback_only = request.POST.get('playback_only','0')
     delay=0
     #e1done = request.POST.get('e1done','true')
     #e2done = request.POST.get('e2done','true')
@@ -521,6 +522,7 @@ def build_dots(request):
                     opacity=0.3
             else:
                 j_offset = 1
+            jumppos=-1
             if d.artistry_type != '':
                 posx = (dot_size/8)
                 posx = posx + ((dot_size + (dot_size/8))*artistry_amounts[j_offset])
@@ -535,6 +537,7 @@ def build_dots(request):
                 vault_phases[int(str(d.time_stamp_relative)[0])] += 1
             else:
                 posx = ((d.time_stamp_relative + delay)/1000) /(routine_length/1000)
+                jumppos=d.time_stamp_relative/1000
                 posx = posx * (width-padding-padding)
                 posx = posx - (dot_size/2)
                 posx = posx + padding
@@ -556,6 +559,7 @@ def build_dots(request):
                 "id":d.id,
                 "artistry_type":d.artistry_type,
                 "opacity":opacity,
+                "jumppos":jumppos,
                 }
             if d.artistry_type == '':
                 deduction_list.append(ded)
@@ -570,7 +574,8 @@ def build_dots(request):
         'dot_size':dot_size,
         'judge_totals':judge_totals,
         'vault_phases':vault_phases,
-        'artistry_deductions':artistry_list
+        'artistry_deductions':artistry_list,
+        'playback_only':playback_only
     }
     return render(request,'app/dots_area.html',context)
 
