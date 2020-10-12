@@ -23,7 +23,7 @@
 	            <tr>
                     <td colspan="2">
                         <!--<div id="divTwitchPlayer" style="width:854px;height:480px"></div>-->
-	                    <video id="video-playback"  style="width:854px;min-height:480px;max-height:720px;display:none" muted controls webkit-playsinline>
+	                    <video id="video-playback"  style="width:854px;min-height:480px;max-height:720px;display:none" muted controls webkit-playsinline onclick="this.paused ? this.play() : this.pause();">
 		                    Your browser does not support the video tag.
 	                    </video>
 
