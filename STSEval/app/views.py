@@ -434,7 +434,7 @@ def deduct(request):
         relative_time = mili - routine.start_time
 
     if routine.athlete_done_time != None:
-        relative_time = routine.routine_length()-100
+        relative_time = routine.routine_length()-50
     
 
     ded = EJuryDeduction(routine=routine,judge=judge,deduction=deduction,action=action,editor=editor,time_stamp=mili,time_stamp_relative=relative_time,artistry_type=artistry_type)
@@ -651,7 +651,7 @@ def scoreboard(request):
     return render(request,'app/scoreboard.html',context)
 
 def save_video(request):
-    output = open(settings.MEDIA_ROOT + '/routine_videos/' + request.POST.get('video-filename'), 'wb+')
+    output = open('/' + settings.MEDIA_ROOT + '/routine_videos/' + request.POST.get('video-filename'), 'wb+')
     #output.write(request.FILES.get('video-blob').file.read())
     for chunk in request.FILES['video-blob'].chunks():
         output.write(chunk)
