@@ -538,6 +538,8 @@ def build_dots(request):
                 posx = posx * (width-padding-padding)
                 posx = posx - (dot_size/2)
                 posx = posx + padding
+                if posx > (width - (dot_size/2) - padding):
+                    posx = (width - (dot_size/2) - padding)
             posy = j_offset*y_offset
             posy = posy - (dot_size/2)
             if d.action == EJuryDeduction.EDIT:
