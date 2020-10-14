@@ -5,75 +5,47 @@
 {% include "app/dot_change.html" %}
 <div id="AccountabilityReportBlackOut" style="width:100%;height:100%;background-color:#000000;opacity: .3;position:fixed;z-index:103;display:none" onclick="CloseAccountabilityReport()"></div>
 <div id="divAccountabilityReport" style="position:absolute;z-index:104;text-align:center;padding:5px;overflow:auto;display:none;background-color:rgb(97, 97, 106);color:white;top:10%;left:35%;width:40%"  class="rounded"></div>
-<div align="center">
+<div style="margin:10px;padding:0" align="center">
 <div id="divHeader"></div>
 <div class="row no-gutters">
-    <div class="col-xl-8 col-12" align="right">
-        <div align="right">
-            <div style="max-width:854px">
-                <select id="ddlAthlete" style="max-width:854px" class="selectpicker form-control" data-live-search="true" data-style="btn-main" data-header="Select Gymnast" title="Select Gymnast" onchange="GymnastChanged()">
-                    {% for athlete in athletes %}
-                        <option value="{{athlete.id}}">{{athlete}}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <video id="video-playback"  style="max-width:854px;max-height:720px;display:none;width:100%" muted controls webkit-playsinline>
-		        Your browser does not support the video tag.
-	        </video>
-            <div id="play-video-container" style="max-width:854px;max-height:720px;width:100%" class="d-flex align-items-center justify-content-center">
-                <div id="player-waiting" style="height:480px" class="align-items-center"><h1>Waiting for Camera</h1></div>
-                <video id="player-video" autoplay playsinline muted controls style="display:none"></video>
-            </div>
-                    
-            <div id="divSpeedSlider" align="right" style="width:100%;height:33px;display:none">
-	            <table><tr>
-	                <td>Video Review Speed:</td>
-	                <td align="left" width="320px"> <input style="z-index:102" id="sldSpeed" type="range" data-style="none" data-theme="b" data-highlight="true" min="0" max="1.25" value="1" step=".25" onchange="ChangeVideoSpeed(this.value)" /></td>
-	                <td align="left" width="90px"><div style="display:inline" id="range">Full</div></td>
-                </tr></table>
-	        </div>
-            <div id="divDotsHolder" style="position:relative;max-width:852px;height:100px;display:flex">
-	            <div id="divDotsArea" class="DotsArea flex-grow-1" style="max-width:852px;height:100px;">
-	           
-	            </div>
-                 <div id="divDotsAreaGlobal" style="position:relative;width:100px;height:100px;border-top:1px solid black;border-right:1px solid black;border-bottom:1px solid black;background-color:#373748;float:left">
-	   
-	            </div>    
-                <div id="divEJudges" align="left" style="float:left;padding-left:5px;padding-top:5px;position:absolute;top:0px;left:0px;">
-	   
-		            <div>
-		                <table cellspacing="0" border=0 cellpadding="0">
-			                <tr>
-                                <td><input type="checkbox" id="chkE1" data-role="none" style="display:none" onclick="EJudgeCheckCalc(1)"></td>
-			                    <!--<td id="divJT1" style="width:30px;font-weight:bold"></td>-->
-			                    <td id="divE1N">&nbsp;E1</td>
-			                </tr>
-			                <tr>
-                                <td><input type="checkbox" id="chkE2" data-role="none" style="display:none" onclick="EJudgeCheckCalc(2)"></td>
-			                        <!--<td id="divJT2" style="width:30px;font-weight:bold"></td>-->
-			                    <td id="divE2N">&nbsp;E2</td>
-			                </tr>
-			                <tr>
-                                <td><input type="checkbox" id="chkE3" data-role="none" style="display:none" onclick="EJudgeCheckCalc(3)"></td>
-			                        <!--<td id="divJT3" style="width:30px;font-weight:bold"></td>-->
-			                    <td id="divE3N">&nbsp;E3</td>
-			                </tr>
-			                <tr>
-                                <td><input type="checkbox" id="chkE4" data-role="none" style="display:none" onclick="EJudgeCheckCalc(4)"></td>
-			                        <!--<td id="divJT4" style="width:30px;font-weight:bold"></td>-->
-			                    <td id="divE4N">&nbsp;E4</td>
-			                </tr>
-		                </table>
-		            </div>
-                     
-	        </div>
-        </div>
-        </div>
+    <div class="col-md-8 col-12">
+
     </div>
-    <div class="col-xl-4 col-12" align="left">
-        <div class="ml-4">
+</div>
+<table id="Highest"  border="0" cellpadding="0" cellspacing="0" style="">
+    <tr>
+	    <td valign="top">
+            <table cellspacing="0" cellpadding="0" border="0">
+	            <tr>
+	                <td colspan="2">
+                        <select id="ddlAthlete" class="selectpicker form-control" data-live-search="true" data-style="btn-main" data-header="Select Gymnast" title="Select Gymnast" onchange="GymnastChanged()">
+                            {% for athlete in athletes %}
+                                <option value="{{athlete.id}}">{{athlete}}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+	            </tr>
+	            <tr>
+                    <td colspan="2">
+                        <!--<div id="divTwitchPlayer" style="width:854px;height:480px"></div>-->
+	                    <video id="video-playback"  style="width:854px;min-height:480px;max-height:720px;display:none" muted controls webkit-playsinline>
+		                    Your browser does not support the video tag.
+	                    </video>
+
+	                    
+                        <div id="play-video-container" style="width:854px;min-height:480px;max-height:720px" class="d-flex align-items-center justify-content-center">
+                            <div id="player-waiting"><h1>Waiting for Camera</h1></div>
+                            <video id="player-video" autoplay playsinline muted controls style="display:none"></video>
+                        </div>
+	                </td>
+                </tr>
+            </table>
+	  
+        </td>
+        <td valign="top">
+            <div style="padding-left:15px;padding-top:30px">
                 {% if loadroutine == '' %}
-                    <button id="btnJudgesReady" type="button" class="btn btn-main mb-2" onclick="JudgesReadyClick()">Judges Ready</button><br/>
+                    <button id="btnJudgesReady" type="button" class="btn btn-main mb-2" onclick="JudgesReadyClick()">Judges Ready</button>
                     
                     <button id="btnStartJudging" type="button" class="btn btn-main mb-2" onclick="StartJudgingClick()">Start Judging</button>
 	                <button id="btnRestartD" type="button" class="btn btn-main mb-2" onclick="RestartD()" style="display:none">Judge D</button>
@@ -83,7 +55,7 @@
 		            <button id="btnStopRecording" type="button" class="btn btn-main mb-2" onclick="StopRecording()" style="display:none">Stop Recording</button>
 		            <button id="btnStartPlayBack" type="button" class="btn btn-main mb-2" onclick="StartPlayBack()" style="display:none">Playback</button>
 
-                    <table cellspacing="0" cellpadding="0" border="0" style="font-size:0.75rem;">
+                    <table cellspacing="0" cellpadding="0" border="0" style="font-size:0.75rem;width:270px">
 	                    <tr><td id="tdElements" align="right">Elements:</td><td><input type="text" id="txtElements" placeholder="Elements" class="ui-disabled entrybox" onkeypress="return isNumberKey(event)" ></td></tr>
 	                    <tr><td id="tdDifficulty" align="right">Base Score:</td><td><input type="text" id="txtDifficulty" placeholder="Difficulty" class="ui-disabled entrybox"  onkeypress="return isNumberKey(event)" ></td></tr>
 	                    <tr><td id="tdGroups" align="right">Groups:</td><td><input type="text" id="txtGroups" placeholder="Groups" class="ui-disabled entrybox"  onkeypress="return isNumberKey(event)" ></td></tr>
@@ -117,25 +89,74 @@
 	                    <tr><td id="tdTotal" align="right">Final Score:</td><td id="divTotalScore">0.0</td></tr>
 	                </table>
                 {% endif %}
-            <div id="divSpeedSpacer" align="right" style="height:33px;display:none">  
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td>
+	        <div id="divSpeedSlider" align="right" style="width:100%;height:33px;display:none">
+	            <table><tr>
+	                <td>Video Review Speed:</td>
+	                <td align="left" width="320px"> <input style="z-index:102" id="sldSpeed" type="range" data-style="none" data-theme="b" data-highlight="true" min="0" max="1.25" value="1" step=".25" onchange="ChangeVideoSpeed(this.value)" /></td>
+	                <td align="left" width="90px"><div style="display:inline" id="range">Full</div></td>
+                </tr></table>
+	        </div>
+	        <div id="divDotsArea" class="DotsArea" style="width:640px;height:100px;">
+	           
+	        </div>
+            
+	    </td>
+	    <td align="left" style="vertical-align:top;">
+	        <div id="divSpeedSpacer" align="right" style="height:33px;display:none">  
                 <a data-mini="true" data-role="button" href="#" onclick="SetBoardStrikeClick(); return false" id="btnSetBoardStrike" style="display:inline-block">Set Board Strike</a>
             </div>
-            <br/>
 	        <div>
-	            <div>
+	            <div id="divDotsAreaGlobal" style="position:relative;width:100px;height:100px;border-top:1px solid black;border-right:1px solid black;border-bottom:1px solid black;background-color:#373748;float:left">
+	   
+	            </div>
+	            <div id="divEJudges" align="left" style="float:left;padding-left:5px;padding-top:12px">
+	   
+		            <div style="float:left">
+		                <table cellspacing="0" border=0 cellpadding="0">
+			                <tr>
+			                    <td id="divJT1" style="width:30px;font-weight:bold"></td>
+			                    <td id="divE1N">{{judges.e1}}</td>
+			                </tr>
+			                <tr>
+			                    <td id="divJT2" style="width:30px;font-weight:bold"></td>
+			                    <td id="divE2N">{{judges.e2}}</td>
+			                </tr>
+			                <tr>
+			                    <td id="divJT3" style="width:30px;font-weight:bold"></td>
+			                    <td id="divE3N">{{judges.e3}}</td>
+			                </tr>
+			                <tr>
+			                    <td id="divJT4" style="width:30px;font-weight:bold"></td>
+			                    <td id="divE4N">{{judges.e4}}</td>
+			                </tr>
+		                </table>
+		            </div>
+		            <div style="float:right">
+		                <div id="divE1"><input type="checkbox" id="chkE1" data-role="none" style="display:none" onclick="EJudgeCheckCalc(1)"></div>
+		                <div id="divE2"><input type="checkbox" id="chkE2" data-role="none" style="display:none"  onclick="EJudgeCheckCalc(2)"></div>
+		                <div id="divE3"><input type="checkbox" id="chkE3" data-role="none" style="display:none"  onclick="EJudgeCheckCalc(3)"></div>
+		                <div id="divE4"><input type="checkbox" id="chkE4" data-role="none" style="display:none"  onclick="EJudgeCheckCalc(4)"></div>
+		            </div>
+	            </div>
+	            <div style="float:right;padding-left:5px">
                     {% if loadroutine == '' %}
-	                    <button href="#" id="btnFinish" type="button" class="btn btn-main mb-2 ui-disabled" style="width:200px" onclick="FinishRoutineClick()" >Routine Complete</button><br/>
-	                    <button href="#" id="btnAccountability" type="button" class="btn btn-main mb-2 ui-disabled" style="width:200px" onclick="ViewAccountabilityReport()">Accountability Report</button><br/>
-	                    <button href="#" id="btnNuke"  type="button" class="btn btn-main mb-2 ui-disabled" style="width:200px" onclick="DeleteRoutineClick()">Delete Routine</button>
+	                    <button href="#" id="btnFinish" type="button" class="btn btn-main mb-2 ui-disabled" onclick="FinishRoutineClick()" >Routine Complete</button><br/>
+	                    <button href="#" id="btnAccountability" type="button" class="btn btn-main mb-2 ui-disabled" onclick="ViewAccountabilityReport()">Accountability Report</button><br/>
+	                    <button href="#" id="btnNuke"  type="button" class="btn btn-main mb-2 ui-disabled" onclick="DeleteRoutineClick()">Delete Routine</button>
                     {% else %}
-	                    <button href="#" id="btnAccountability" type="button" class="btn btn-main mb-2" style="width:200px" onclick="ViewAccountabilityReport()">Accountability Report</button><br/>
-	                    <button href="#" id="btnCloseMain" type="button" class="btn btn-main mb-2" style="width:200px" onclick="HideDetails()">Close</button>
+	                    <button href="#" id="btnAccountability" type="button" class="btn btn-main mb-2" onclick="ViewAccountabilityReport()">Accountability Report</button><br/>
+	                    <button href="#" id="btnCloseMain" type="button" class="btn btn-main mb-2" onclick="HideDetails()">Close</button>
                     {% endif  %}
 	            </div>
 	        </div>
-        </div>
-        
-    </div>
+        </td>
+    </tr>
+</table>
 </div>
 <div id="play-settings" style="display:none">
     <form id="play-settings-form">
@@ -353,7 +374,7 @@
 
        
         SetDotsArea();
-        //$("#divDotsArea").width(VidWidth - VideoLossRight);
+        $("#divDotsArea").width(VidWidth - VideoLossRight);
         document.getElementById('divDotsArea').addEventListener('click', NewDeduction);
         $("#divHeader").html("<h2 style='display:inline'>" + D1Judge + "</h2>");
 
@@ -514,7 +535,6 @@
                 $("#divTotalScore").html(data['score_final']);
                 $("#divHeader").html("<h2 style='display:inline'>" + GymnastLabels[data['athlete_id']] + "</h2>");
                 LoadVideo();
-                console.log($("#divDotsArea").width());
                 BuildDots(false,'1');
                 $("#btnAccountability").removeClass("ui-disabled");
                
@@ -888,10 +908,10 @@
             $("#tdDifficulty").html("Base Score:");
             $("#tdDScore").html("Start Value:");
             $("#btnSetDScore").children(0).children(0).text("Set Start Value");
-            $("#tdE1").html(EJudges[1] + " Deduction:");
-            $("#tdE2").html(EJudges[2] + " Deduction:");
-            $("#tdE3").html(EJudges[3] + " Deduction:");
-            $("#tdE4").html(EJudges[4] + " Deduction:");
+            $("#tdE1").html("E1 Deduction:");
+            $("#tdE2").html("E2 Deduction:");
+            $("#tdE3").html("E3 Deduction:");
+            $("#tdE4").html("E4 Deduction:");
             $("#txtDifficulty").val('9.5');
             $("#txtElements").val('8');
             $("#txtBonus").val('0.0');
@@ -910,10 +930,10 @@
                 $("#tdBonus").html("Bonus: ");
             $("#tdDifficulty").html("Difficulty:");
             $("#btnSetDScore").children(0).children(0).text("Set D-Score");
-            $("#tdE1").html(EJudges[1] + " Execution:");
-            $("#tdE2").html(EJudges[2] + " Execution:");
-            $("#tdE3").html(EJudges[3] + " Execution:");
-            $("#tdE4").html(EJudges[4] + " Execution:");
+            $("#tdE1").html("E1 Execution:");
+            $("#tdE2").html("E2 Execution:");
+            $("#tdE3").html("E3 Execution:");
+            $("#tdE4").html("E4 Execution:");
             $("#tdDScore").html("D-Score:");
             $("#txtDifficulty").val('0.0');
             $("#txtBonus").val('0.0');
@@ -975,8 +995,8 @@
                 //if (TrainName != "")
                 //$("#divE" + i + "N").html(EJudges[i].substring(0, 2) + " " + EJudges[i].substring(2));
                 // else
-                //$("#divE" + i + "N").html(EJudges[i]);
-                //$("#divJT" + i).empty();
+                $("#divE" + i + "N").html(EJudges[i]);
+                $("#divJT" + i).empty();
                 $("#chkE" + i).show();
                 $("#chkE" + i).prop('checked', true);
                 $("#divET" + i).show();
@@ -996,14 +1016,14 @@
     function RemoveJudge(j) {
         $("#chkE" + j).prop('checked', false);
         $("#divE" + j + "N").addClass("LineThroughRed");
-        //$("#divJT" + j).addClass("LineThroughRed");
+        $("#divJT" + j).addClass("LineThroughRed");
         $("#divET" + j).hide();
         $("#tdE" + j).hide();
     }
 
     function AddJudge(j) {
         $("#divE" + j + "N").removeClass("LineThroughRed");
-        //$("#divJT" + j).removeClass("LineThroughRed");;
+        $("#divJT" + j).removeClass("LineThroughRed");;
         $("#divET" + j).show();
         $("#tdE" + j).show();
     }

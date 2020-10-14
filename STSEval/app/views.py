@@ -473,8 +473,9 @@ def build_dots(request):
     width = int(request.POST.get('width',854))
     padding = int(request.POST.get('padding',17))
     dot_size = int(request.POST.get('dot_size',12))
-    y_offset = int(request.POST.get('y_offset',20))
+    y_offset = int(request.POST.get('y_offset',22))
     playback_only = request.POST.get('playback_only','0')
+    initial_offset = int(request.POST.get('initial_offset',15))
     delay=0
     #e1done = request.POST.get('e1done','true')
     #e2done = request.POST.get('e2done','true')
@@ -538,12 +539,13 @@ def build_dots(request):
             else:
                 posx = ((d.time_stamp_relative + delay)/1000) /(routine_length/1000)
                 jumppos=d.time_stamp_relative/1000
-                posx = posx * (width-padding-padding)
-                posx = posx - (dot_size/2)
-                posx = posx + padding
-                if posx > (width - (dot_size/2) - padding):
-                    posx = (width - (dot_size/2) - padding)
-            posy = j_offset*y_offset
+                posx = posx*100
+                #posx = posx * (width-padding-padding)
+                #posx = posx - ((dot_size/2)/width)
+                #posx = posx + padding
+                #if posx > (width - (dot_size/2) - padding):
+                    #posx = (width - (dot_size/2) - padding)
+            posy = (j_offset-1)*y_offset + initial_offset
             posy = posy - (dot_size/2)
             if d.action == EJuryDeduction.EDIT:
                 image = 'e-' + str(d.deduction) + 'e.svg'

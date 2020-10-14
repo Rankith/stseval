@@ -105,7 +105,7 @@ function BuildDots(CalcScoreAfter = false, PlaybackOnly = '0') {
 
 
 function NewDeduction(e) {
-    if (!DeductionsConfirmed) {
+    if (!DeductionsConfirmed && (Status == undefined || Status == "AD" || Status == "RD")) {
         DotChangingArtistry = false;
         var rect = e.target.getBoundingClientRect();
         var x = e.clientX - rect.left;
