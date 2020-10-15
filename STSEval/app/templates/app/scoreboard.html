@@ -3,12 +3,21 @@
 {% block content %}
 {% load staticfiles %}
 <div id="LockBlackout" style="width:100%;height:100%;background-color:#000000;opacity: .2;position:fixed;z-index:103;display:none" onclick="HideDetails()"></div>
-<div id="DetailsArea" style="position:fixed;z-index:104;width:92%;top:200px;left:4%;display:none;align-content:center;text-align:center;overflow:auto;background-color: #1c1c24" >
+<div id="DetailsArea" style="position:fixed;z-index:104;width:92%;top:4%;left:4%;display:none;align-content:center;text-align:center;overflow:auto;background-color: #1c1c24" >
     <div id="DetailsHeader" style="font-weight:bold;font-size:18px"></div>
 </div>
 <div id="divResults" align="center" style="color:black;margin:auto" >
+    <div class="d-flex">
+        {% for ev in events %}
+            <div class="flex-grow-1">
+                <button id="btn{{ev}}" type="button" class="btn btn-event{% if ev|lower == event|lower %}-selected{% endif %} mb-2" onclick="SwapEvent('{{ev|upper}}')"><img src="{% static 'app/images/' %}{{ev|lower}}-white.svg" height="45px"/></button>
+            </div>
+        {% endfor %}
+       
+    </div>
     <div id="jsGrid" ></div>
 </div>
+<div id="desktopTest" class="d-none d-lg-block"></div>
 {% endblock %}
 
 {% block scripts %}
@@ -68,6 +77,10 @@
                 UpdateRoutines(data)
             }
         });
+    }
+
+    function SwapEvent(evIn) {
+        window.location = "/scoreboard/?c=" + Comp + "&d=" + Disc + "&e=" + evIn;
     }
 
     function UpdateRoutines(data) {
@@ -183,8 +196,9 @@
         var d = args.item;
         index = args.itemIndex;
         //console.log(args.event);
-
         ShowDetails(d["id"], d["Team"] + " - " + d["Level"] + " - " + d["Gymnast"], args.event);
+       
+        
 
     }
 
@@ -193,7 +207,14 @@
         $("#DetailsArea").empty();
         $("#DetailsArea").load("/d1/?routine=" + IDIn, function () {
             $("#LockBlackout").show();
-            AnimateShow("DetailsArea", ev);
+             if ($('#desktopTest').is(':hidden')) {
+            // device is small
+                 $("#DetailsArea").show();
+                 $("#DetailsArea").css("height","92%");
+                } else {
+                    AnimateShow("DetailsArea", ev);
+                }
+            
         });
         /*if (TrainName != "")
             $("#DetailsArea").append("<div id='divDetails'><iframe src='master.php?id=" + IDIn + "&d=<?php echo $_GET['d'];?>&e=<?php echo $_GET['e'];?>&c=<?php echo $_GET['c'];?>&train=<?php echo $_GET['train'];?>&vid=" + Videos[IDIn] + "<?php if (isset($_GET['scoreboard'])) { echo ('&scoreboard=1');}?>' width='1600px' height='750px'>");
@@ -228,7 +249,7 @@
         $("#" + obj).height("1");
         $("#" + obj).show();
         $("#" + obj).offset({ top: ev.pageY, left: ev.pageX });
-        $("#" + obj).animate({ width: '92%', left: '4%', top: '60px', height: theight });
+        $("#" + obj).animate({ width: '92%', left: '4%', top: '4%', height: theight }, 500, function () {  });
 
     }
 

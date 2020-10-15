@@ -271,3 +271,46 @@ input[type="checkbox"].input-validation-error {
     border-radius: 10px;
     padding-bottom: 5px;
 }
+
+.btn-event {
+    /*border: 1px solid #2489CE {c-bup-border}*/;
+    background-color: #373747;
+    font-weight: bold;
+    color: #ffffff /*{c-bup-color}*/;
+    border: 0px;
+    border-radius: 0rem !important;
+    width:100%;
+}
+
+.btn-event:hover {
+    background-color: #313184;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#313184), to(#8282c4));
+    background-image: -webkit-linear-gradient(top, #313184, #8282c4);
+    background-image: -moz-linear-gradient(top, #313184, #8282c4);
+    background-image: -ms-linear-gradient(top, #313184, #8282c4);
+    background-image: -o-linear-gradient(top, #313184, #8282c4);
+    background-image: linear-gradient(to bottom, #313184, #8282c4);
+    filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#313184, endColorstr=#8282c4);
+    font-weight: bold;
+    color: #ffffff /*{c-bup-color}*/;
+    border: 0px;
+}
+
+.btn-event-selected {
+    font-weight: bold;
+    color: #ffffff /*{c-bup-color}*/;
+    border: 0px;
+    border-radius: 0rem !important;
+    width: 100%;
+    background-color: #313184;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#313184), to(#8282c4));
+    background-image: -webkit-linear-gradient(top, #313184, #8282c4);
+    background-image: -moz-linear-gradient(top, #313184, #8282c4);
+    background-image: -ms-linear-gradient(top, #313184, #8282c4);
+    background-image: -o-linear-gradient(top, #313184, #8282c4);
+    background-image: linear-gradient(to bottom, #313184, #8282c4);
+    filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#313184, endColorstr=#8282c4);
+    font-weight: bold;
+    color: #ffffff /*{c-bup-color}*/;
+    border: 0px;
+}

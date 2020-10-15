@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="14.69875mm"
+   height="7.0251889mm"
+   viewBox="0 0 14.69875 7.0251889"
+   version="1.1"
+   id="svg9930"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)"
+   sodipodi:docname="hb-white.svg">
+  <defs
+     id="defs9924" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="3.959798"
+     inkscape:cx="39.16481"
+     inkscape:cy="17.864085"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     scale-x="0.7"
+     inkscape:pagecheckerboard="true" />
+  <metadata
+     id="metadata9927">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-79.599521,-171.75896)">
+    <path
+       inkscape:export-ydpi="299.81744"
+       inkscape:export-xdpi="299.81744"
+       style="opacity:1;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:0.14061041"
+       d="m 85.439021,173.19675 -0.25579,0.2264 5.3e-4,0.1029 v 3.7763 c 0.003,0.013 -0.005,0.035 0.004,0.044 h 0.31329 l 0.0126,-3.8198 0.0898,-0.079 2.84989,0.2091 0.0357,0.045 c -1.8e-4,1.1602 -0.0101,2.2846 -0.0107,3.4448 l 5.29e-4,0.035 h 0.23569 v -3.516 l -0.117869,-0.1855 c -0.16174,-0.012 -0.32367,-0.029 -0.48547,-0.043 z"
+       id="path9001-2"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ccccccccccccccccc"
+       inkscape:export-filename="C:\Users\Hiram\eval21-38-scoreboard.png" />
+  </g>
+</svg>

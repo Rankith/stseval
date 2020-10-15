@@ -647,6 +647,21 @@ def scoreboard(request):
     comp = Competition.objects.get(pk=comp)
     judges = Judge.objects.filter(competition_id=comp,disc=disc,event=event)
     athletes = Athlete.objects.filter(competition_id=request.GET.get('c'),disc=request.GET.get('d'))
+    events = []
+    if disc == "MAG":
+        events.append('fx')
+        events.append('ph')
+        events.append('r')
+        events.append('v')
+        events.append('pb')
+        events.append('hb')
+        events.append('aa')
+    elif disc == "WAG":
+        events.append('v')
+        events.append('ub')
+        events.append('bb')
+        events.append('fx')
+        events.append('aa')
     context = {
         'title': 'Scoreboard - ' + event + ' ' + comp.name,
         'judges':judges[0],
@@ -654,6 +669,7 @@ def scoreboard(request):
         'disc':disc,
         'event':event,
         'comp':comp,
+        'events':events,
     }
     return render(request,'app/scoreboard.html',context)
 
