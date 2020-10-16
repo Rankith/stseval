@@ -6,24 +6,24 @@
     <title>STS Live Gym</title>
     {% load staticfiles %}
     <link rel="stylesheet" type="text/css" href="{% static 'app/content/bootstrap.min.css' %}" />
-    <link rel="stylesheet" type="text/css" href="{% static 'app/content/site.css' %}?v=1.1" />
+    <link rel="stylesheet" type="text/css" href="{% static 'app/content/site.css' %}?v=1.2" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-select@1.13.14/dist/css/bootstrap-select.min.css">
     <script src="{% static 'app/scripts/modernizr-2.6.2.js' %}"></script>
 </head>
 
 <body>
     <div id="divFullScreen">
-        <div class="navbar navbar-inverse navbar-fixed-top navbar-expand-xl">
+        <div class="navbar navbar-inverse navbar-fixed-top navbar-expand-xl" style="padding:.0rem 1rem">
             <div class="container-fluid">
                 <div class="row no-gutters w-100 align-items-center">
                     <div class="col-3">
                         <div>
-                            <img src="{% static 'app/images/stslivegym-white.svg' %}" style="height:38px">
+                            <img src="{% static 'app/images/stslivegym-white.svg' %}" style="height:35px">
                         </div>
                     </div>
                     <div class="col-6" align="center">
                         <div>
-                            <h2 id="title">{{title}}</h2>
+                            <h3 id="title">{{title}}</h3>
                         </div>
                     </div>
                     <div class="col-3" align="right">

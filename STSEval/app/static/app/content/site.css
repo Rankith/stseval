@@ -314,3 +314,24 @@ input[type="checkbox"].input-validation-error {
     color: #ffffff /*{c-bup-color}*/;
     border: 0px;
 }
+
+.status-dot {
+    height: 25px;
+    width: 25px;
+    color: #8e8e8e;
+    border-radius: 50%;
+    border: 2px solid;
+    display: inline-block;
+}
+
+.status-dot-red {
+    background-color: #fb5050
+}
+
+.status-dot-yellow {
+    background-color: yellow;
+}
+
+.status-dot-green {
+    background-color: #3cf93c
+}

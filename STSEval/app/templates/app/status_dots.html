@@ -1,0 +1,22 @@
+<span id="dot-red" class="status-dot mr-2"></span>
+<span id="dot-yellow" class="status-dot mr-2"></span>
+<span id="dot-green" class="status-dot"></span>
+
+<script type="text/javascript">
+    function StatusDotsRed() {
+        $("#dot-red").addClass("status-dot-red");
+        $("#dot-yellow").removeClass("status-dot-yellow");
+        $("#dot-green").removeClass("status-dot-green");
+    }
+    function StatusDotsYellow() {
+        $("#dot-red").removeClass("status-dot-red");
+        $("#dot-yellow").addClass("status-dot-yellow");
+        $("#dot-green").removeClass("status-dot-green");
+    }
+    function StatusDotsGreen() {
+        $("#dot-red").removeClass("status-dot-red");
+        $("#dot-yellow").removeClass("status-dot-yellow");
+        $("#dot-green").addClass("status-dot-green");
+    }
+
+</script>

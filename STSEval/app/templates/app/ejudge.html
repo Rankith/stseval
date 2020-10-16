@@ -3,44 +3,52 @@
 {% block content %}
 {% load staticfiles %}
 {% include "app/dot_change.html" %}   
-<div align="center">
-    <table border="0" cellpadding="0" cellspacing="0"><tr>
-        <td width="" align="center">
-            <div id="divArtistryButtons" style="display:none">  
-                <button href="#" id="btnNormal"  type="button" class="btn btn-main" onclick="ArtistryToggle('Normal')">Normal</button>
-                <button href="#" id="btnArt"   type="button" class="btn btn-main" onclick="ArtistryToggle('Art')">Artistry</button>
-                <button href="#" id="btnComp"   type="button" class="btn btn-main" onclick="ArtistryToggle('Comp')" >Composition</button>
-                <button href="#" id="btnGlobal"   type="button" class="btn btn-main" onclick="ArtistryToggle('Global')" style="display:none" >Global</button>
-            </div>
-        </td>
-        <td width="" align="center">
-            <div id="divHeader"><h2 style="display:inline">{{this_judge}}</h2></div>
-            <div id="divTimerArea" style="padding-left:3px">
-                <div id="divTimer" style="margin:auto;text-align:center;" class="timer-red">WAITING FOR ROUTINE TO START</div>
-                <button href="#" id="btnConfirm" type="button" class="btn btn-main" onclick="ConfirmDeductions()" style="display:none"> Submit</button>
-            </div>
-            <div id="divScoreArea" style="padding-left:3px">
-                <table border="0" cellpadding="0" cellspacing="0"><tr>
-                    <td style="font-size:1.5em">Total Deductions:</td>
-                    <td><div id="divTotalDeductions" style="font-size:1.5em"></div></td>
-                </tr></table>
-            </div> 
-             </td>
-        <td width="" align="center"><button href="#" id="btnEdit"  type="button" class=" ml-4 btn btn-main ui-disabled" onclick="SwapToEdit()" style="display:none">Edit</button>
-        </td>
-    </tr></table>
-    <div id="divEdit" align="center"  style="flex-grow:1;display:none;justify-content:center">
-       
-
-        <div id="divConfirmedArea" style="display:none;font-size:2em;">
-            Sent to D1
-        </div>
-        <div id="divDotsArea" class="DotsArea" style="width:87%;height:50px;float:none"></div>
-        <div id="divDotsAreaGlobal" style="display:none;width:8%;position:relative;height:50px;border-top:1px solid black;border-right:1px solid black;border-bottom:1px solid black;background-color:#373748;float:left"></div>
-        <div id="divTouchEdit" style="font-size:2em;margin:auto">
-            TOUCH TO EDIT
+<div align="center" class="d-flex">
+    <div style="flex:1" align="left"> 
+        <div class="pt-2">
+            {% include "app/status_dots.html" %}  
         </div>
     </div>
+    <div align="center" class="flex-grow-1">
+        <table border="0" cellpadding="0" cellspacing="0"><tr>
+            <td width="" align="center">
+                <div id="divArtistryButtons" style="display:none">  
+                    <button href="#" id="btnNormal"  type="button" class="btn btn-main" onclick="ArtistryToggle('Normal')">Normal</button>
+                    <button href="#" id="btnArt"   type="button" class="btn btn-main" onclick="ArtistryToggle('Art')">Artistry</button>
+                    <button href="#" id="btnComp"   type="button" class="btn btn-main" onclick="ArtistryToggle('Comp')" >Composition</button>
+                    <button href="#" id="btnGlobal"   type="button" class="btn btn-main" onclick="ArtistryToggle('Global')" style="display:none" >Global</button>
+                </div>
+            </td>
+            <td width="" align="center">
+                <div id="divHeader"><h3 style="display:inline">{{this_judge}}</h3></div>
+                <div id="divTimerArea" style="padding-left:3px">
+                    <div id="divTimer" style="margin:auto;text-align:center;" class="timer-red">WAITING TO START</div>
+                    <button href="#" id="btnConfirm" type="button" class="btn btn-main" onclick="ConfirmDeductions()" style="display:none"> Submit</button>
+                </div>
+                <div id="divScoreArea" style="padding-left:3px">
+                    <table border="0" cellpadding="0" cellspacing="0"><tr>
+                        <td style="font-size:1.5em">Total Deductions:</td>
+                        <td><div id="divTotalDeductions" style="font-size:1.5em"></div></td>
+                    </tr></table>
+                </div> 
+                 </td>
+            <td width="" align="center"><button href="#" id="btnEdit"  type="button" class=" ml-4 btn btn-main ui-disabled" onclick="SwapToEdit()" style="display:none">Edit</button>
+            </td>
+        </tr></table>
+        <div id="divEdit" align="center"  style="flex-grow:1;display:none;justify-content:center">
+       
+
+            <div id="divConfirmedArea" style="display:none;font-size:2em;">
+                Sent to D1
+            </div>
+            <div id="divDotsArea" class="DotsArea" style="width:87%;height:50px;float:none"></div>
+            <div id="divDotsAreaGlobal" style="display:none;width:8%;position:relative;height:50px;border-top:1px solid black;border-right:1px solid black;border-bottom:1px solid black;background-color:#373748;float:left"></div>
+            <div id="divTouchEdit" style="font-size:2em;margin:auto">
+                TOUCH TO EDIT
+            </div>
+        </div>
+    </div>
+    <div style="flex:1"></div>
 </div>
 <div id="divMain" align="center" style="flex-grow:1;display:flex;flex-direction:column">
     <div id="divPhases" style="height:25%;width:80%;margin:auto;display:flex;justify-content:center;display:none">
@@ -219,6 +227,7 @@
             if (TimeLeft < 0)
                 TimeLeft = 0;
             $("#divTimer").html(TimeLeft + " SECONDS").addClass("timer-yellow").removeClass("timer-green").removeClass("timer-red");
+            StatusDotsYellow();
             if (TimeLeft > 0) {
                 setTimeout(TimerCheck, 1000)
             }
@@ -275,8 +284,10 @@
 
     function StartJudging() {
         //DedArray = new Array();
-        if (!$("#divTimer").html().includes("SECONDS"))
+        if (!$("#divTimer").html().includes("SECONDS")) {
             $("#divTimer").html("ROUTINE IN PROGRESS").addClass("timer-green").removeClass("timer-yellow").removeClass("timer-red");
+            StatusDotsGreen();
+        }
         if (DotChanging == -1)
             Lock_Close();
         Judging = true;
@@ -329,6 +340,7 @@
         HideArtETC();
         $("#divDeduct").css("display", "flex");
         $("#divTimer").html("");
+        StatusDotsRed();
         $("#btnNormal").show();
         ResetArtistryButtons();
         $("#btnNormal").css('background-color', 'green');
@@ -378,7 +390,8 @@
     }
 
     function SetWaiting() {
-        $("#divTimer").html("WAITING FOR ROUTINE TO START").addClass("timer-red").removeClass("timer-yellow").removeClass("timer-green");
+        $("#divTimer").html("WAITING TO START").addClass("timer-red").removeClass("timer-yellow").removeClass("timer-green");
+        StatusDotsRed();
         $(".deduct-button").addClass("ui-disabled");
     }
 
