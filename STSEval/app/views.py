@@ -433,7 +433,7 @@ def deduct(request):
     if relative_time == -1:
         relative_time = mili - routine.start_time
 
-    if routine.athlete_done_time != None:
+    if routine.athlete_done_time != None and routine.event != 'V':
         relative_time = routine.routine_length()-50
     
 
@@ -531,11 +531,14 @@ def build_dots(request):
             elif routine.event == "V":
                 posx = int(str(d.time_stamp_relative)[0]) - 1 #get first digit and subtract one
                 posx = posx * ((width)/4)#multiply by 1/4 the total width
+                if posx == 0:
+                    posx = 25#so the judge name doesnt obscure it
                 #posx = posx + dot_size/2
                 posx_adjust = int(str(d.time_stamp_relative)[1]) * (dot_size + (dot_size/4)) #get second digit
                 posx = posx + posx_adjust
                 posx = posx + padding
                 vault_phases[int(str(d.time_stamp_relative)[0])] += 1
+                posx = 'left:' + str(posx)
             else:
                 posx = ((d.time_stamp_relative + delay)/1000) /(routine_length/1000)
                 jumppos=d.time_stamp_relative/1000
@@ -543,8 +546,13 @@ def build_dots(request):
                 #posx = posx * (width-padding-padding)
                 #posx = posx - ((dot_size/2)/width)
                 #posx = posx + padding
-                #if posx > (width - (dot_size/2) - padding):
-                    #posx = (width - (dot_size/2) - padding)
+                if posx >= 90:
+                    posx = 100 - posx
+                    if posx <= 0:
+                        posx = 1
+                    posx = 'right:' + str(posx)
+                else:
+                    posx = 'left:' + str(posx)
             posy = (j_offset-1)*y_offset + initial_offset
             posy = posy - (dot_size/2)
             if d.action == EJuryDeduction.EDIT:

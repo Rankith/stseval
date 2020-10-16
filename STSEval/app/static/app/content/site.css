@@ -48,6 +48,14 @@ body {
     border-color: #2963b9ff;
 }
 
+.btn-main-selected {
+    /*border: 1px solid #2489CE {c-bup-border}*/;
+    background-color: green;
+    font-weight: bold;
+    color: #ffffff /*{c-bup-color}*/;
+    border: 0px;
+}
+
 .btn-main:hover {
     background-color: #7898cb;
     background-image: -webkit-gradient(linear, left top, left bottom, from(#7898cb), to(#0044aa));
@@ -64,43 +72,47 @@ body {
 
 .btn-phase {
     /*border: 1px solid #2489CE {c-bup-border}*/;
-    background-color: #2963b9ff;
-    background-image: -webkit-gradient(linear, left top, left bottom, from( #2963b9ff), to(#0044aa));
-    background-image: -webkit-linear-gradient(top, #2963b9ff, #0044aa);
-    background-image: -moz-linear-gradient(top, #2963b9ff, #0044aa);
-    background-image: -ms-linear-gradient(top, #2963b9ff, #0044aa);
-    background-image: -o-linear-gradient(top, #2963b9ff, #0044aa);
-    background-image: linear-gradient(to bottom, #2963b9ff, #0044aa);
-    filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#2963b9ff, endColorstr=#0044aa);
+    background-color: #373747;
     font-weight: bold;
     color: #ffffff /*{c-bup-color}*/;
     border: 0px;
-    border-radius: 0px !important;
-}
-
-.btn-phase-selected {
-    /*border: 1px solid #2489CE {c-bup-border}*/;
-    background-color: green;
-    font-weight: bold;
-    color: #ffffff /*{c-bup-color}*/;
-    border: 0px;
-    border-radius: 0px !important;
+    border-radius: 0rem !important;
+    width: 100%;
 }
 
 .btn-phase:hover {
-    background-color: #7898cb;
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#7898cb), to(#0044aa));
-    background-image: -webkit-linear-gradient(top, #7898cb, #0044aa);
-    background-image: -moz-linear-gradient(top, #7898cb, #0044aa);
-    background-image: -ms-linear-gradient(top, #7898cb, #0044aa);
-    background-image: -o-linear-gradient(top, #7898cb, #0044aa);
-    background-image: linear-gradient(to bottom, #7898cb, #0044aa);
-    filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#7898cb, endColorstr=#0044aa);
+    background-color: #313184;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#313184), to(#8282c4));
+    background-image: -webkit-linear-gradient(top, #313184, #8282c4);
+    background-image: -moz-linear-gradient(top, #313184, #8282c4);
+    background-image: -ms-linear-gradient(top, #313184, #8282c4);
+    background-image: -o-linear-gradient(top, #313184, #8282c4);
+    background-image: linear-gradient(to bottom, #313184, #8282c4);
+    filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#313184, endColorstr=#8282c4);
     font-weight: bold;
     color: #ffffff /*{c-bup-color}*/;
     border: 0px;
-    border-radius: 0px !important;
 }
+
+.btn-phase-selected {
+    font-weight: bold;
+    color: #ffffff /*{c-bup-color}*/;
+    border: 0px;
+    border-radius: 0rem !important;
+    width: 100%;
+    background-color: #313184;
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#313184), to(#8282c4));
+    background-image: -webkit-linear-gradient(top, #313184, #8282c4);
+    background-image: -moz-linear-gradient(top, #313184, #8282c4);
+    background-image: -ms-linear-gradient(top, #313184, #8282c4);
+    background-image: -o-linear-gradient(top, #313184, #8282c4);
+    background-image: linear-gradient(to bottom, #313184, #8282c4);
+    filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#313184, endColorstr=#8282c4);
+    font-weight: bold;
+    color: #ffffff /*{c-bup-color}*/;
+    border: 0px;
+}
+
 
 .entrybox {
     font-size: .75rem !important;
@@ -230,17 +242,17 @@ input[type="checkbox"].input-validation-error {
 }
 
 .timer-red {
-    color: #fb5050;
+    color: #ff0000;
     font-size: 2em
 }
 
 .timer-yellow {
-    color: yellow;
+    color: #ffcc00;
     font-size: 2em
 }
 
 .timer-green {
-    color: #3cf93c;
+    color: #37c837;
     font-size: 2em
 }
 
@@ -325,13 +337,13 @@ input[type="checkbox"].input-validation-error {
 }
 
 .status-dot-red {
-    background-color: #fb5050
+    background-color: #ff0000;
 }
 
 .status-dot-yellow {
-    background-color: yellow;
+    background-color: #ffcc00;
 }
 
 .status-dot-green {
-    background-color: #3cf93c
+    background-color: #37c837;
 }

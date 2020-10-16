@@ -56,7 +56,7 @@
 <div id="divMain" align="center" style="flex-grow:1;display:flex;flex-direction:column">
     <div id="divPhases" style="height:25%;width:80%;margin:auto;display:flex;justify-content:center;display:none">
         <div id="divP1" style="padding-top:2.5%;border-bottom:2px solid;border-right:2px solid;flex-grow:1;display:flex;position:relative">
-            <button href="#" id="btnP1" type="button" class="btn btn-phase" style="background-color: green; color: white;width:100%" onclick="Phase(1)">Pre-Flight</button>
+            <button href="#" id="btnP1" type="button" class="btn btn-phase-selected" style="color: white;width:100%" onclick="Phase(1)">Pre-Flight</button>
             <div id="divPDots1" style="position:absolute;left:5%;top:60%"></div>
         </div>
         <div id="divP2" style="border-top:2px solid;flex-grow:1;display:flex;padding-bottom:2.5%;position:relative">
@@ -244,6 +244,7 @@
         if (Status == "AD" || Status == "RD") {
             DeductionsConfirmed = true;
             //Judging = false;
+            StatusDotsRed();
             $("#divConfirmedArea").show();
             $("#divTouchEdit").hide();
             $("#divTimerArea").hide();
@@ -405,10 +406,10 @@
     }
 
     function ResetArtistryButtons() {
-        $("#btnArt").removeClass("btn-phase-selected").addClass("btn-main");
-        $("#btnNormal").removeClass("btn-phase-selected").addClass("btn-main");
-        $("#btnComp").removeClass("btn-phase-selected").addClass("btn-main");
-        $("#btnGlobal").removeClass("btn-phase-selected").addClass("btn-main");
+        $("#btnArt").removeClass("btn-main-selected").addClass("btn-main");
+        $("#btnNormal").removeClass("btn-main-selected").addClass("btn-main");
+        $("#btnComp").removeClass("btn-main-selected").addClass("btn-main");
+        $("#btnGlobal").removeClass("btn-main-selected").addClass("btn-main");
     }
 
 
@@ -420,7 +421,7 @@
             HideArtETC();
             $("#divDeduct").hide();
             //now color and load the one in
-            $("#btn" + ModeIn).addClass("btn-phase-selected").removeClass("btn-main");
+            $("#btn" + ModeIn).addClass("btn-main-selected").removeClass("btn-main");
             ArtistryMode = ModeIn;
             if (ArtistryMode == "Normal")
                 $("#divDeduct").css("display", "flex");

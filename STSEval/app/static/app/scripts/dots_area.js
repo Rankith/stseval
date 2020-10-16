@@ -23,7 +23,8 @@ function SetDotsArea() {
         $("#divDotsAreaGlobal").hide();
 }
 
-function Deduct(deduction, ej_in = -1, spot_in = -1, artistry_type='') {
+function Deduct(deduction, ej_in = -1, spot_in = -1, artistry_type = '') {
+    //console.log("deduct: " + deduction + " | " + ev + " | " + VPhase)
     let this_ej = ej_in;
     let this_spot = spot_in;
     if (this_ej == -1)
