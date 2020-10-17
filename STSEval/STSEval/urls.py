@@ -60,6 +60,7 @@ urlpatterns = [
     path('wowza_broadcast/', views.wowza_broadcast, name='wowza_broadcast'),
     path('wowza_play/', views.wowza_play, name='wowza_play'),
     path('save_video/', views.save_video, name='save_video'),
+    path('set_judges_participating/', views.set_judges_participating, name='set_judges_participating'),
     path('streaming/', include('streaming.urls')),
     #url(r'^login/$',
     #    django.contrib.auth.views.login,

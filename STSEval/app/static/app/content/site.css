@@ -347,3 +347,7 @@ input[type="checkbox"].input-validation-error {
 .status-dot-green {
     background-color: #37c837;
 }
+
+.judge-strike {
+    text-decoration:line-through;
+}

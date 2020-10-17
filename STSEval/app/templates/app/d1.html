@@ -40,8 +40,7 @@
 	   
 	            </div>    
                 <div id="divEJudges" align="left" style="float:left;padding-left:5px;padding-top:5px;position:absolute;top:0px;left:0px;">
-	   
-		            <div>
+	  		        <div>
 		                <table cellspacing="0" border=0 cellpadding="0">
 			                <tr>
                                 <td><input type="checkbox" id="chkE1" data-role="none" style="display:none" onclick="EJudgeCheckCalc(1)"></td>
@@ -65,9 +64,8 @@
 			                </tr>
 		                </table>
 		            </div>
-                     
-	        </div>
-        </div>
+	            </div>
+            </div>
         </div>
     </div>
     <div class="col-xl-4 col-12" align="left">
@@ -90,7 +88,7 @@
 	                    <tr><td id="tdBonus" align="right">Bonus:</td><td><input type="text" id="txtBonus" placeholder="Bonus" class="ui-disabled entrybox" onkeypress="return isNumberKey(event)" ></td></tr>
 	                    <tr><td id="tdNeutralDed" align="right">Neutral Deductions:</td><td><input type="text" id="txtNeutralDed" placeholder="Neutral Ded." class="ui-disabled entrybox" onkeypress="return isNumberKey(event)" ></td></tr>
 	                    <tr><td id="tdDScore" align="right" style="text-decoration:underline">D-Score:</td><td><div id="lblDScore" style="text-decoration:underline"></div></td></tr>
-	                    <tr><td colspan="2" align="right"><a href="#" id="btnSetDScore" type="button" class="btn btn-main mb-2 mt-2 ui-disabled" onclick="SetDScore()" style="font-size:1rem">Set D-Score</a></td></tr>
+	                    <tr><td colspan="2" align="right"><a href="#" id="btnSetDScore" type="button" class="btn btn-main mb-2 mt-2 ui-disabled" onclick="SetDScoreClick()" style="font-size:1rem">Set D-Score</a></td></tr>
 	                    <tr><td id="tdE1" align="right">E1 Execution:</td><td id="divET1">0.0</td></tr>
 	                    <tr><td id="tdE2" align="right">E2 Execution:</td><td id="divET2">0.0</td></tr>
 	                    <tr><td id="tdE3" align="right">E3 Execution:</td><td id="divET3">0.0</td></tr>
@@ -199,6 +197,7 @@
     var DeductionsConfirmed = false;
     var TCApproved = false;
     var JudgeDeductions = new Array();
+    var EJudgesInclude = new Array();
     var JudgeType = 'D';
     var player;
     var Recorder
@@ -246,6 +245,9 @@
         $("#video-playback").show();
         $("#play-video-container").hide();
         $("#play-video-container").removeClass("d-flex");
+        for (var i = 1; i <= 4; i++) {
+            $("#chkE" + i).addClass("ui-disabled");
+        }
         LoadRoutine();
        // console.log("hide stuff");
         // $("#play-video-container").hide();
@@ -276,6 +278,11 @@
                 EJudgesDone[2] = doc.data().e2done;
                 EJudgesDone[3] = doc.data().e3done;
                 EJudgesDone[4] = doc.data().e4done;
+                EJudgesInclude[1] = doc.data().e1include;
+                EJudgesInclude[2] = doc.data().e2include;
+                EJudgesInclude[3] = doc.data().e3include;
+                EJudgesInclude[4] = doc.data().e4include;
+                SetJudgeChecks();
             }
             if (doc.data().status == status.STARTED || doc.data().status == status.ATHLETE_DONE || doc.data().status == status.REVIEW_DONE) {
                 //started
@@ -342,6 +349,53 @@
         }
     }
 
+    function SetJudgeChecks() {
+        for (var i = 1; i <= 4; i++) {
+            $("#chkE" + i).prop("checked", EJudgesInclude[i]);
+            JudgeStrike(i);
+        }
+    }
+
+    function JudgeStrike(j) {
+        if ($("#chkE" + j).prop("checked")) {
+            $("#divE" + j + "N").removeClass("judge-strike");
+            $("#tdE" + j).show();
+            $("#divET" + j).show();
+        }
+        else {
+            $("#divE" + j + "N").addClass("judge-strike");
+            $("#tdE" + j).hide();
+            $("#divET" + j).hide();
+        }
+    }
+
+    function EJudgeCheckCalc(j) {
+        if (RoutineID != 0)
+            SetJudgesParticipating();
+        EJudgesInclude[j] = $("#chkE" + j).prop("checked");
+        JudgeStrike(j);
+        if (Status == status.REVIEW_DONE || Status == status.FINISHED)
+            CalculateScores();
+    }
+
+    function SetJudgesParticipating() {
+         $.ajax({
+            type: 'POST',
+            url: '/set_judges_participating/',
+            dataType: 'json',
+            headers: { "X-CSRFToken": token },
+            data: {
+                'routine': RoutineID,
+                'e1': $("#chkE1").prop("checked"),
+                'e2': $("#chkE2").prop("checked"),
+                'e3': $("#chkE3").prop("checked"),
+                'e4': $("#chkE4").prop("checked")
+            },
+            success: function (data) {
+            }
+        });
+    }
+
     
 
     function SetupPage() {
@@ -382,6 +436,10 @@
         document.getElementById('lblDScore').innerHTML = "";
         document.getElementById('divEScore').innerHTML = "";
         document.getElementById('divTotalScore').innerHTML = "";
+        for (var i = 1; i <= 4; i++) {
+            $("#tdE" + i).removeClass("judge-strike");
+            $("#divET" + i).removeClass("judge-strike");
+        }
     }
 
     function JudgesReadyClick(Syncing = false) {
@@ -510,6 +568,10 @@
                 $("#divET2").html(data['score_e2']);
                 $("#divET3").html(data['score_e3']);
                 $("#divET4").html(data['score_e4']);
+                $("#chkE1").prop('checked',data['e1_include']);
+                $("#chkE2").prop('checked',data['e2_include']);
+                $("#chkE3").prop('checked',data['e3_include']);
+                $("#chkE4").prop('checked',data['e4_include']);
                 $("#divEScore").html(data['score_e']);
                 $("#divTotalScore").html(data['score_final']);
                 $("#divHeader").html("<h2 style='display:inline'>" + GymnastLabels[data['athlete_id']] + "</h2>");
@@ -517,9 +579,15 @@
                 console.log($("#divDotsArea").width());
                 BuildDots(false,'1');
                 $("#btnAccountability").removeClass("ui-disabled");
+                CalculateScores();
                
             }
         });
+    }
+
+    function SetDScoreClick() {
+        Status = status.REVIEW_DONE;
+        SetDScore();
     }
 
     function SetDScore(CompleteRoutine = false) {
@@ -644,15 +712,24 @@
     function CalcDeductions(Against) {
         var ETotal = 0;
         var EScores = new Array();
+        let high = -1;
+        let low = -1;
+        let highest = 0;
+        let lowest = 1000;
         JudgesCounting = 0;
         //console.log("Deductions:");
         for (var j = 1; j <= 4; j++) {
             EScores[j] = -1;
             //console.log(j + " : " + $("#chkE" + j).prop('checked'));
+            //if ($("#chkE" + j).prop('checked')) {
             if ($("#chkE" + j).prop('checked')) {
-                if (JudgeDeductions[j] != undefined) {
+                if (JudgeDeductions[j] == undefined)
+                    JudgeDeductions[j] = 0;
+                if (EJudges[j] != "") {
                     $("#tdE" + j).show();
                     $("#divET" + j).show();
+                    $("#tdE" + j).removeClass("judge-strike");
+                    $("#divET" + j).removeClass("judge-strike");
                     //console.log(JudgeTotals[j]);
                     if (Against != -1)
                         EScores[j] = parseFloat(Against - JudgeDeductions[j]).toPrecision(2);
@@ -660,6 +737,14 @@
                         EScores[j] = parseFloat(JudgeDeductions[j]).toPrecision(2);
                     $("#divET" + j).html(EScores[j])
                     JudgesCounting += 1;
+                    if (parseFloat(JudgeDeductions[j]).toPrecision(2) > highest) {
+                        highest = parseFloat(JudgeDeductions[j]);
+                        high = j;
+                    }
+                    if (parseFloat(JudgeDeductions[j]).toPrecision(2) < highest) {
+                        lowest = parseFloat(JudgeDeductions[j]);
+                        low = j;
+                    }
                     ETotal += JudgeDeductions[j];
                 }
                 else {
@@ -674,6 +759,15 @@
         }
         if (JudgesCounting == 0)
             JudgesCounting = 1;
+        if (JudgesCounting == 4) {
+            //discard top and bottom
+            ETotal = ETotal - lowest - highest;
+            JudgesCounting = 2;
+            $("#tdE" + high).addClass("judge-strike");
+            $("#divET" + high).addClass("judge-strike");
+             $("#tdE" + low).addClass("judge-strike");
+            $("#divET" + low).addClass("judge-strike");
+        }
         ETotal = ETotal / (JudgesCounting);
         return ETotal;
     }
@@ -982,6 +1076,7 @@
                 $("#divET" + i).show();
                 $("#tdE" + i).show();
                 $("#divET" + i).html('');
+                $("#divE" + i + "N").removeClass("judge-strike");
                 AddJudge(i);
                 //}
                 //DedArrayJudges[i] = new Array();
@@ -990,6 +1085,7 @@
             else {
                 $("#divET" + i).hide();
                 $("#tdE" + i).hide();
+                $("#divE" + i + "N").hide();
             }
         }
     }
@@ -1010,6 +1106,12 @@
     function SetJudgesDone(statusIn) {
         for (var i = 1; i <= 4; i++) {
             EJudgesDone[i] = statusIn;
+        }
+    }
+
+    function SetJudgesInclude(statusIn) {
+        for (var i = 1; i <= 4; i++) {
+            EJudgesInclude[i] = statusIn;
         }
     }
 

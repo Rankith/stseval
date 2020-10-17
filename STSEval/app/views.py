@@ -16,6 +16,7 @@ from decimal import Decimal
 from streaming.models import WowzaStream
 from django.conf import settings
 from binascii import a2b_base64
+import distutils.util
 import os
 
 def loginview(request):
@@ -363,6 +364,18 @@ def routine_set_score(request):
     app.firebase.routine_set_status(str(routine.competition.id) + routine.disc + routine.event,routine)
 
     return HttpResponse(status=200)
+
+def set_judges_participating(request):
+    routine = Routine.objects.get(pk=request.POST.get('routine'))
+    routine.e1_include = bool(distutils.util.strtobool(request.POST.get('e1')))
+    routine.e2_include = bool(distutils.util.strtobool(request.POST.get('e2')))
+    routine.e3_include = bool(distutils.util.strtobool(request.POST.get('e3')))
+    routine.e4_include = bool(distutils.util.strtobool(request.POST.get('e4')))
+    
+    routine.save()
+    app.firebase.routine_set_ejudge_include(str(routine.competition.id) + routine.disc + routine.event,routine)
+    return HttpResponse(status=200)
+
 
 def ejudge(request):
     comp = request.GET.get('c')

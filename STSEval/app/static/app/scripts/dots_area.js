@@ -92,6 +92,8 @@ function BuildDots(CalcScoreAfter = false, PlaybackOnly = '0') {
             }
             if (CalcScoreAfter && Status != "AD")
                 GetDScore();
+            if (PlaybackOnly == '1')
+                CalculateScores();
             /*if (LoadRot != "") {
                 if (ev != "V") {
                     RedLineInterval = setInterval("UpdateRedLine()", 100);

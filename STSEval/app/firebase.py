@@ -40,6 +40,21 @@ def routine_setup(cde,routine):
         u'e2done':False,
         u'e3done':False,
         u'e4done':False,
+        u'e1include':True,
+        u'e2include':True,
+        u'e3include':True,
+        u'e4include':True,
+    },merge=True)
+
+def routine_set_ejudge_include(cde,routine):
+    db = firestore.Client()
+
+    doc_ref = db.collection(u'routines').document(str(cde))
+    doc_ref.set({
+        u'e1include':routine.e1_include,
+        u'e2include':routine.e2_include,
+        u'e3include':routine.e3_include,
+        u'e4include':routine.e4_include,
     },merge=True)
 
 def routine_set_stream(cde,stream):
