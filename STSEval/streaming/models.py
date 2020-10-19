@@ -1,10 +1,11 @@
 from django.db import models
 import datetime
 import app
+from management.models import Session
 
 # Create your models here.
 class WowzaStream(models.Model):
-    competition = models.ForeignKey(app.models.Competition, on_delete=models.CASCADE,default=None,null=True)
+    session = models.ForeignKey(Session, on_delete=models.CASCADE,default=None,null=True)
     disc = models.CharField(max_length=10,default='MAG')
     event = models.CharField(max_length=10,default='FX')
     stream_id = models.CharField(max_length=50)

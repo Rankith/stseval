@@ -3,7 +3,7 @@ Definition of models.
 """
 
 from django.db import models
-from management.models import Competition, Athlete, Judge
+from management.models import Competition, Athlete, Judge, Session
 
 # Create your models here.
 class Twitch(models.Model):
@@ -19,7 +19,7 @@ class StreamMarkers(models.Model):
     position_seconds_end = models.IntegerField(default=0)
     
 class Routine(models.Model):
-    competition = models.ForeignKey(Competition, on_delete=models.CASCADE)
+    session = models.ForeignKey(Session, on_delete=models.CASCADE,default=None,null=True)
     disc = models.CharField(max_length=10)
     event = models.CharField(max_length=10)
     athlete = models.ForeignKey(Athlete, on_delete=models.SET_NULL,null=True)

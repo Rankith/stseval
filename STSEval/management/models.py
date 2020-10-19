@@ -17,18 +17,21 @@ class Competition(models.Model):
     def __str__(self):
        return self.name
 
+class Session(models.Model):
+    competition = models.ForeignKey(Competition, on_delete=models.CASCADE,default=None,null=True)
+    name = models.CharField(max_length=75)
+    time = models.TimeField()
+
 class Athlete(models.Model):
-     competition = models.ForeignKey(Competition, on_delete=models.CASCADE)
-     disc = models.CharField(max_length=10)
-     name = models.CharField(max_length=50)
-     team = models.CharField(max_length=50,blank=True)
-     level = models.CharField(max_length=10)
-     def __str__(self):
-       return self.team + " - " + self.level + " - " + self.name
+    session = models.ForeignKey(Session, on_delete=models.CASCADE)
+    name = models.CharField(max_length=50)
+    team = models.CharField(max_length=50,blank=True)
+    level = models.CharField(max_length=10)
+    def __str__(self):
+        return self.team + " - " + self.level + " - " + self.name
 
 class Judge(models.Model):
-    competition = models.ForeignKey(Competition, on_delete=models.CASCADE)
-    disc = models.CharField(max_length=10)
+    session = models.ForeignKey(Session, on_delete=models.CASCADE)
     event = models.CharField(max_length=10)
     d1 = models.CharField(max_length=50,blank=True)
     d1_affil = models.CharField(max_length=10,blank=True)
