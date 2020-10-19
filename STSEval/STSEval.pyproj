@@ -57,6 +57,13 @@
     <Compile Include="app\__init__.py" />
     <Compile Include="app\migrations\__init__.py" />
     <Compile Include="manage.py" />
+    <Compile Include="management\admin.py" />
+    <Compile Include="management\apps.py" />
+    <Compile Include="management\migrations\__init__.py" />
+    <Compile Include="management\models.py" />
+    <Compile Include="management\tests.py" />
+    <Compile Include="management\views.py" />
+    <Compile Include="management\__init__.py" />
     <Compile Include="streaming\admin.py" />
     <Compile Include="streaming\apps.py" />
     <Compile Include="streaming\exceptions.py" />
@@ -91,6 +98,10 @@
     <Folder Include="app\static\app\scripts\" />
     <Folder Include="app\templates\" />
     <Folder Include="app\templates\app\" />
+    <Folder Include="management\" />
+    <Folder Include="management\migrations\" />
+    <Folder Include="management\templates\" />
+    <Folder Include="management\templates\management\" />
     <Folder Include="streaming\" />
     <Folder Include="streaming\migrations\" />
     <Folder Include="streaming\templates\" />
@@ -146,6 +157,7 @@
     <Content Include="app\templates\app\judge_select.html" />
     <Content Include="app\templates\app\twitch_auth.html" />
     <Content Include="app\templates\app\twitch_connect.html" />
+    <Content Include="management\templates\management\index.html" />
     <Content Include="requirements.txt" />
     <Content Include="db.sqlite3" />
     <Content Include="app\static\app\content\bootstrap.css" />

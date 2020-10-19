@@ -8,7 +8,8 @@ from django.template import RequestContext
 from datetime import datetime
 from .forms import SignUpForm,LoginForm
 from django.contrib.auth import authenticate, login
-from app.models import Competition,Judge,Athlete,Twitch,Routine,EJuryDeduction
+from app.models import Twitch,Routine,EJuryDeduction
+from management.models import Competition,Judge,Athlete
 from app.twitch import TwitchAPI
 import app.firebase
 from time import time
