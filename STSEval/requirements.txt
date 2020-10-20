@@ -10,3 +10,4 @@ firebase-admin
 django-storages
 boto3
 requests
+apscheduler

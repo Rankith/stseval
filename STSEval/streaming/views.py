@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from datetime import datetime,timezone
 from django.http import HttpRequest,JsonResponse,HttpResponse
 from streaming.wowza import LiveStreams, WOWZA_API_KEY, WOWZA_ACCESS_KEY
 from streaming.models import WowzaStream
@@ -90,6 +91,7 @@ def start_stream(request):
         stream.status = response['live_stream']['state']
     except:
         stream.status = WowzaStream.STOPPED
+    stream.last_connected = datetime.now(timezone.utc)
     stream.save()
     app.firebase.set_stream(stream)
     return JsonResponse(response,safe=False)
@@ -101,6 +103,13 @@ def stop_stream(request):
         access_key = WOWZA_ACCESS_KEY
     )
     response = wowza_instance.stop(stream.stream_id)
+
+    try:
+        stream.status = response['live_stream']['state']
+    except:
+        stream.status = WowzaStream.STARTED
+    stream.save()
+    app.firebase.set_stream(stream)
 
     return JsonResponse(response,safe=False)
 

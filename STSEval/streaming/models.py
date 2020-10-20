@@ -1,4 +1,5 @@
 from django.db import models
+import datetime
 import app
 
 # Create your models here.
@@ -23,3 +24,4 @@ class WowzaStream(models.Model):
         ]
     status = models.CharField(max_length=10,choices=STATUS,default=STOPPED)
     connected = models.BooleanField(default=False)
+    last_connected = models.DateTimeField(default=datetime.datetime.now)

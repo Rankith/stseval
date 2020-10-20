@@ -63,6 +63,9 @@
     <Compile Include="streaming\migrations\__init__.py" />
     <Compile Include="streaming\models.py" />
     <Compile Include="streaming\tests.py" />
+    <Compile Include="streaming\updater.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="streaming\urls.py">
       <SubType>Code</SubType>
     </Compile>
