@@ -1,0 +1,46 @@
+<div id="divManageCompeition" align="center">
+    <div class="row no-gutters">
+        <div class="col-6">
+            COMPETITION NAME<br/>
+            <input type="text" id="txtCompName" placeholder="Comp Name" class="management-input" value="{{name}}">
+        </div>
+        <div class="col-4">
+            COMPETITION TYPE<br/>
+            <select id="ddlCompType" class="selectpicker" data-style="btn-main">
+                {% for v,t in types %}
+                    <option value="{{v}}" {% if comp_type == v %} selected="selected"{% endif %}>{{t}}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-2">
+            DATE<br/>
+            <input type="date" id="txtDate" placeholder="Date" class="management-input" value="{{date}}">
+        </div>
+    </div>
+    <br/>
+    <button href="#" id="btnCompFinish" type="button" class="btn btn-main" onclick="CompManageFinish()">{{type|title}}</button>
+    <button href="#" id="btnCompCancel" type="button" class="btn btn-red" data-dismiss="modal">Cancel</button>
+</div>
+
+<script type="text/javascript">
+    var CompID = {{id}};
+</script>
+<script type="text/javascript">
+    $('.selectpicker').selectpicker();
+    function CompManageFinish() {
+        $.ajax({
+            url: "/management/competition_create_update/",
+            data: {
+                'id': CompID,
+                'name': $("#txtCompName").val(),
+                'type': $("#ddlCompType").val(),
+                'date': $("#txtDate").val(),
+                'disc': SelectedDisc,
+            },
+            success: function () {
+                CompManageFinishParent();
+            }
+        });
+    
+    }
+</script>

@@ -1,0 +1,218 @@
+{% extends "app/layout.html" %}
+
+{% block content %}
+<div align="center" style="margin:10px;padding:0">
+    <div id="divDisc" style="vertical-align: top;padding:3px;height:254px;display:inline-block;margin-right:30px;">
+		<div id="divDiscHeader" style="padding-bottom:5px;font-size:22px;font-weight:bold;text-align:center">Discipline</div><br/>
+		<div id="divDiscList" class="listbox" style=";height:180px;">
+		<div id="divDiscMAG" name="divDiscMAG" class="disc-list" style="padding-bottom:5px" onclick="DiscClick('MAG');">MAG</div>
+		<div id="divDiscWAG" name="divDiscWAG" class="disc-list" style="padding-bottom:5px" onclick="DiscClick('WAG');">WAG</div>
+		<div id="divDiscRG" name="divDiscRG" style="padding-bottom:5px" onclick="DiscClick('RG');" class="ui-disabled disc-list">RG</div>
+		<div id="divDiscTRA" name="divDiscTRA" style="padding-bottom:5px" onclick="DiscClick('TRA');" class="ui-disabled disc-list">TRA</div>
+		<div id="divDiscACRO" name="divDiscACRO"  style="padding-bottom:5px" onclick="DiscClick('ACRO');" class="ui-disabled disc-list">ACRO</div>
+		<div id="divDiscAER" name="divDiscAER"  style="padding-bottom:5px" onclick="DiscClick('AER');" class="ui-disabled disc-list">AER</div>
+		</div>
+	</div>
+
+	<div id="divCompetitions" style="display:inline-block;vertical-align: top;padding:3px;display:inline-block;margin-right:30px;" class="ui-disabled">
+	    <div id="divCompHeader" style="padding-bottom:5px;font-size:22px;font-weight:bold;text-align:center">Competition</div><br/>
+	    <div id="divCompList"class="listbox"  style="width:400px;height:150px;"></div><br/>
+	    <div id="divCompButtonsArea">
+		    <button href="#" id="btnCompAdd"  type="button" class="btn btn-main" data-toggle="modal" data-target="#modalMain" onclick="AddCompStart()">Add</button>
+		    <button href="#" id="btnCompEdit"  type="button" class="btn btn-main" data-toggle="modal" data-target="#modalMain" onclick="EditCompStart()">Edit</button>
+		    <button href="#" id="btnCompDelete"  type="button" class="btn btn-main" onclick="CompDelete()">Delete</button>
+	    </div>
+	</div>
+
+    <div id="divSessions" style="vertical-align: top;padding:3px;width:220px;display:inline-block;margin-right:30px;" class="ui-disabled">
+		<div id="divSessionHeader" style="padding-bottom:5px;font-size:22px;font-weight:bold;text-align:center">Session</div><br/>
+		<div id="divSessionList" class="listbox" style="width:200px;height:150px;"></div><br/>
+		<div id="divASessionButtonsArea">
+		<button href="#" id="btnAthAdd"   type="button" class="btn btn-main"  data-toggle="modal" data-target="#modalMain" onclick="AddSessionStart()">Add</button>
+		<button href="#" id="btnAthEdit"  type="button" class="btn btn-main" data-toggle="modal" data-target="#modalMain" onclick="EditSessionStart()">Edit</button>
+		<button href="#" id="btnAthDelete"   type="button" class="btn btn-main" onclick="AthDelete()">Delete</button>
+	</div>
+	</div>
+		
+    </div>
+
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript">
+    var token = "{{ csrf_token }}";
+</script>
+<script type="text/javascript">
+    var SelectedComp = -1;
+    var SelectedDisc = -1;
+    var SelectedAthlete = -1;
+    var SelectedEvent = -1;
+    var Changed = false;
+   
+
+    function CheckChange(ThingIn)
+    {
+        if (Changed)
+        {
+            if (confirm('You have unsaved changes to judges, are you sure you want to switch ' + ThingIn + '?'))
+            {
+                Changed = false;
+                return true;
+            }
+            else
+                return false;
+        }
+        return true;
+    }
+
+    function EventClick() {
+        console.log("Click");
+        //if ($("#ddlEventJudge").val() != SelectedEvent)        {
+            if (CheckChange("Events")) {
+                SelectedEvent = $("#ddlEventJudge").val();
+                $.ajax({
+                    url: "/judges_get/",
+                    data: {
+                        'comp': SelectedComp,
+                        'disc': SelectedDisc,
+                        'event': SelectedEvent,
+                    },
+                    dataType: 'json',
+                    success: function (data) {
+                        FillJudges(data)
+                        Changed = false;
+                    }
+                });
+            }
+        //}
+    }   
+
+    function SessionClick(sesIn) {
+        $('.session-list').removeClass("ctxSelected");
+        $("#divSession" + sesIn).addClass("ctxSelected");
+        SelectedSession = sesIn;
+
+    }
+
+    function DiscClick(discIn) {
+        $('.disc-list').removeClass("ctxSelected");
+        $("#divDisc" + discIn).addClass("ctxSelected");
+        SelectedDisc = discIn;
+        $("#divCompetitions").removeClass("ui-disabled");
+        $("#divCompList").load("/management/competition_list/?disc=" + SelectedDisc);
+    }
+
+
+    function DisableAll() {
+        //$("#divDisc").addClass("ui-disabled");
+        $("#divCompetitions").addClass("ui-disabled");
+        $("#divSessions").addClass("ui-disabled");
+    }
+
+    function CompClick(CompIn) {
+        
+        $('.comp-list').removeClass("ctxSelected");
+        $("#divComp" + CompIn).addClass("ctxSelected");
+        SelectedComp = CompIn;
+        $("#divSessions").removeClass("ui-disabled");
+        FillSession();
+    }
+
+    function AddCompStart() {
+        $("#modalMainTitle").html("Add Competition");
+        $(".modal-dialog")
+        $("#modalBodyArea2").hide();
+        $("#modalBodyArea1").empty();
+        $("#modalBodyArea1").load("/management/competition_manage");
+
+        $("#modalBodyArea1").show();
+    }
+
+    function EditCompStart() {
+        if (SelectedComp != -1) {
+            $("#modalMainTitle").html("Edit Competition");
+            $(".modal-dialog")
+            $("#modalBodyArea2").hide();
+            $("#modalBodyArea1").empty();
+            $("#modalBodyArea1").load("/management/competition_manage/?id=" + SelectedComp);
+
+            $("#modalBodyArea1").show();
+        }
+    }
+    function CompDelete() {
+        if (SelectedComp != -1) {
+            $.ajax({
+                url: "/management/competition_delete/",
+                data: {
+                    'id': SelectedComp,
+                },
+                success: function () {
+                    $("#divCompList").load("/management/competition_list/?disc=" + SelectedDisc); 
+                    Changed = false;
+                    $('.session-list').removeClass("ctxSelected");
+                    $("#divSessions").addClass('ui-disabled');
+                }
+            });
+    
+        }
+    }
+
+    function CompManageFinishParent() {
+        $("#modalMain").modal('hide');
+        $("#divCompList").load("/management/competition_list/?disc=" +SelectedDisc, function () {
+            console.log("comp finish " + SelectedComp);
+            if (SelectedComp != -1) 
+                CompClick(SelectedComp);
+        });
+        
+    }
+
+    function AddSessionStart() {
+        $("#modalMainTitle").html("ADD SESSION");
+        $(".modal-dialog")
+        $("#modalBodyArea2").hide();
+        $("#modalBodyArea1").empty();
+        $("#modalBodyArea1").load("/management/session_manage/");
+
+        $("#modalBodyArea1").show();
+    }
+    function EditSessionStart() {
+        if (SelectedAthlete != -1) {
+            $("#modalMainTitle").html("EDIT SESSION");
+            $(".modal-dialog")
+            $("#modalBodyArea2").hide();
+            $("#modalBodyArea1").empty();
+            $("#modalBodyArea1").load("/management/session_manage/?id=" + SelectedSession);
+
+            $("#modalBodyArea1").show();
+        }
+    }
+
+     function SessionManageFinishParent() {
+        $("#modalMain").modal('hide');
+        $("#divAthleteList").load("/management/session_list/?comp="+ SelectedComp, function () {
+            if (SelectedAthlete != -1)
+                AthleteClick(SelectedAthlete);
+        });
+        
+    }
+
+    function SessionDelete() {
+        if (SelectedAthlete != -1) {
+            $.ajax({
+                url: "management/session_delete/",
+                data: {
+                    'id': SelectedAthlete,
+                },
+                success: function () {
+                    FillAthletes();
+                }
+            });
+        }
+    }
+
+    function FillSession() {
+        $("#divAthleteList").load("/management/session_list/?comp="+ SelectedComp);
+    }
+</script>
+{% endblock %}

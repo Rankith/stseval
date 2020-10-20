@@ -12,7 +12,7 @@ class Competition(models.Model):
         (DUAL,'Dual'),
         (INTRASQUAD,'Intrasquad'),
         ]
-    status = models.CharField(max_length=2,choices=COMPETITION_TYPE,default=TOURNAMENT)
+    type = models.CharField(max_length=2,choices=COMPETITION_TYPE,default=TOURNAMENT)
     date = models.DateField()
     def __str__(self):
        return self.name

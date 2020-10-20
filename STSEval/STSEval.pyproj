@@ -59,9 +59,11 @@
     <Compile Include="manage.py" />
     <Compile Include="management\admin.py" />
     <Compile Include="management\apps.py" />
+    <Compile Include="management\forms.py" />
     <Compile Include="management\migrations\__init__.py" />
     <Compile Include="management\models.py" />
     <Compile Include="management\tests.py" />
+    <Compile Include="management\urls.py" />
     <Compile Include="management\views.py" />
     <Compile Include="management\__init__.py" />
     <Compile Include="streaming\admin.py" />
@@ -143,10 +145,11 @@
     <Content Include="app\templates\app\status_dots.html" />
     <Content Include="app\templates\app\dot_change.html" />
     <Content Include="app\templates\app\dots_area.html" />
-    <Content Include="app\templates\app\athlete_list.html" />
-    <Content Include="app\templates\app\competition_manage.html" />
-    <Content Include="app\templates\app\athlete_manage.html" />
-    <Content Include="app\templates\app\competition_list.html" />
+    <Content Include="management\templates\management\athlete_list.html" />
+    <Content Include="management\templates\management\competition_form.html" />
+    <Content Include="management\templates\management\competition_manage.html" />
+    <Content Include="management\templates\management\athlete_manage.html" />
+    <Content Include="management\templates\management\competition_list.html" />
     <Content Include="app\templates\app\firebase_rtc_consumer.html" />
     <Content Include="app\templates\app\firebase_rtc_broadcaster.html" />
     <Content Include="app\templates\app\layout_blank.html" />
@@ -158,6 +161,7 @@
     <Content Include="app\templates\app\twitch_auth.html" />
     <Content Include="app\templates\app\twitch_connect.html" />
     <Content Include="management\templates\management\index.html" />
+    <Content Include="management\templates\management\setup_judges.html" />
     <Content Include="requirements.txt" />
     <Content Include="db.sqlite3" />
     <Content Include="app\static\app\content\bootstrap.css" />
@@ -182,7 +186,7 @@
     <Content Include="app\static\app\scripts\respond.js" />
     <Content Include="app\static\app\scripts\respond.min.js" />
     <Content Include="app\static\app\scripts\_references.js" />
-    <Content Include="app\templates\app\manage.html" />
+    <Content Include="management\templates\management\setup_competition.html" />
     <Content Include="app\templates\app\index.html" />
     <Content Include="app\templates\app\layout.html" />
     <Content Include="app\templates\app\login.html" />

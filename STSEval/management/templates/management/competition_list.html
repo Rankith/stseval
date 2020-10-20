@@ -1,0 +1,10 @@
+{% block content %}
+    {% for comp in comps %}
+        <div id="divComp{{comp.id}}" onclick="CompClick({{comp.id}});"class="row no-gutters comp-list">
+            <div class="col-6 pl-2" align="left">{{comp.name}}</div>
+            <div class="col-3" align="center">{{comp.get_type_display}}</div>
+            <div class="col-3 pr-2" align="right">{{comp.date|date:'Y.m.d'}}</div>
+        </div>
+        
+    {% endfor %}
+{% endblock %}

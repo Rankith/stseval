@@ -2,17 +2,7 @@
 
 {% block content %}
 <div align="center" style="margin:10px;padding:0">
-	<div id="divCompetitions" style="border: 1px solid grey;display:inline-block;vertical-align: top;padding:3px;display:inline-block;margin-right:30px;">
-	<div id="divCompHeader" style="padding-bottom:5px;font-size:22px;font-weight:bold;text-align:center">Competition</div><br/>
-	<div id="divCompList"class="listbox"  style="width:200px;height:150px;"></div><br/>
-	<div id="divCompButtonsArea">
-		<button href="#" id="btnCompAdd"  type="button" class="btn btn-main" data-toggle="modal" data-target="#modalMain" onclick="AddCompStart()">Add</button>
-		<button href="#" id="btnCompEdit"  type="button" class="btn btn-main" data-toggle="modal" data-target="#modalMain" onclick="EditCompStart()">Edit</button>
-		<button href="#" id="btnCompDelete"  type="button" class="btn btn-main" onclick="CompDelete()">Delete</button>
-	</div>
-	</div>
-
-	<div id="divDisc" style="border: 1px solid grey;vertical-align: top;padding:3px;height:254px;display:inline-block;margin-right:30px;" class="ui-disabled">
+    <div id="divDisc" style="vertical-align: top;padding:3px;height:254px;display:inline-block;margin-right:30px;">
 		<div id="divDiscHeader" style="padding-bottom:5px;font-size:22px;font-weight:bold;text-align:center">Discipline</div><br/>
 		<div id="divDiscList" class="listbox" style=";height:180px;">
 		<div id="divDiscMAG" name="divDiscMAG" class="disc-list" style="padding-bottom:5px" onclick="DiscClick('MAG');">MAG</div>
@@ -23,10 +13,18 @@
 		<div id="divDiscAER" name="divDiscAER"  style="padding-bottom:5px" onclick="DiscClick('AER');" class="ui-disabled disc-list">AER</div>
 		</div>
 	</div>
-	   
-			
 
-	<div id="divJudges" style="border: 1px solid grey;vertical-align: top;padding:3px;width:275px;display:inline-block;margin-right:30px;" align="center" class="ui-disabled">
+	<div id="divCompetitions" style="display:inline-block;vertical-align: top;padding:3px;display:inline-block;margin-right:30px;" class="ui-disabled">
+	    <div id="divCompHeader" style="padding-bottom:5px;font-size:22px;font-weight:bold;text-align:center">Competition</div><br/>
+	    <div id="divCompList"class="listbox"  style="width:200px;height:150px;"></div><br/>
+	    <div id="divCompButtonsArea">
+		    <button href="#" id="btnCompAdd"  type="button" class="btn btn-main" data-toggle="modal" data-target="#modalMain" onclick="AddCompStart()">Add</button>
+		    <button href="#" id="btnCompEdit"  type="button" class="btn btn-main" data-toggle="modal" data-target="#modalMain" onclick="EditCompStart()">Edit</button>
+		    <button href="#" id="btnCompDelete"  type="button" class="btn btn-main" onclick="CompDelete()">Delete</button>
+	    </div>
+	</div>
+
+	<div id="divJudges" style="vertical-align: top;padding:3px;width:275px;display:inline-block;margin-right:30px;" align="center" class="ui-disabled">
 		<div id="divJudgesHeader" style="padding-bottom:5px;font-size:22px;font-weight:bold;text-align:center">Judge Assignment</div>
 		<div style="width:100px"><select id="ddlEventJudge" onchange="EventClick()"></select></div><br/>
 		<table border="0" cellspacing="0" celllpadding="0" style="display:inline-block">
@@ -78,7 +76,7 @@
 	</div>
 	</div>
 
-<div id="divAthlete" style="border: 1px solid grey;vertical-align: top;padding:3px;width:220px;display:inline-block;margin-right:30px;" class="ui-disabled">
+<div id="divAthlete" style="vertical-align: top;padding:3px;width:220px;display:inline-block;margin-right:30px;" class="ui-disabled">
 		<div id="divAthleteHeader" style="padding-bottom:5px;font-size:22px;font-weight:bold;text-align:center">Gymnast</div><br/>
 		<div id="divAthleteList" class="listbox" style="width:200px;height:150px;"></div><br/>
 		<div id="divAthleteButtonsArea">
@@ -102,7 +100,7 @@
     var SelectedAthlete = -1;
     var SelectedEvent = -1;
     var Changed = false;
-    $("#divCompList").load("/competition_list/");
+    $("#divCompList").load("/management/competition_list/");
 
     function CheckChange(ThingIn)
     {
@@ -250,10 +248,7 @@
         $('.disc-list').removeClass("ctxSelected");
         $("#divDisc" + discIn).addClass("ctxSelected");
         SelectedDisc = discIn;
-        $("#divJudges").removeClass("ui-disabled");
-        $("#divAthlete").removeClass("ui-disabled");
-        FillEventDD(discIn);
-        FillAthletes();
+        $("#divCompetitions").removeClass("ui-disabled");
     }
 
 
@@ -352,8 +347,12 @@
         $("#divComp" + CompIn).addClass("ctxSelected");
         SelectedComp = CompIn;
         $("#divDisc").removeClass("ui-disabled");
-        if (SelectedDisc != -1)
-            DiscClick(SelectedDisc);
+        $("#divJudges").removeClass("ui-disabled");
+        $("#divAthlete").removeClass("ui-disabled");
+        FillEventDD(discIn);
+        FillAthletes();
+        //if (SelectedDisc != -1)
+            //DiscClick(SelectedDisc);
     }
 
     function AddCompStart() {
@@ -361,7 +360,7 @@
         $(".modal-dialog")
         $("#modalBodyArea2").hide();
         $("#modalBodyArea1").empty();
-        $("#modalBodyArea1").load("/competition_manage");
+        $("#modalBodyArea1").load("/management/competition_manage");
 
         $("#modalBodyArea1").show();
     }
@@ -372,7 +371,7 @@
             $(".modal-dialog")
             $("#modalBodyArea2").hide();
             $("#modalBodyArea1").empty();
-            $("#modalBodyArea1").load("/competition_manage/?id=" + SelectedComp);
+            $("#modalBodyArea1").load("/management/competition_manage/?id=" + SelectedComp);
 
             $("#modalBodyArea1").show();
         }
@@ -385,7 +384,7 @@
                     'id': SelectedComp,
                 },
                 success: function () {
-                    $("#divCompList").load("/competition_list/"); 
+                    $("#divCompList").load("/management/competition_list/"); 
                     Changed = false;
                     $('.ath-list').removeClass("ctxSelected");
                     SelectedDisc = -1;
@@ -412,7 +411,7 @@
         $(".modal-dialog")
         $("#modalBodyArea2").hide();
         $("#modalBodyArea1").empty();
-        $("#modalBodyArea1").load("/athlete_manage/");
+        $("#modalBodyArea1").load("/management/athlete_manage/");
 
         $("#modalBodyArea1").show();
     }
@@ -422,7 +421,7 @@
             $(".modal-dialog")
             $("#modalBodyArea2").hide();
             $("#modalBodyArea1").empty();
-            $("#modalBodyArea1").load("/athlete_manage/?id=" + SelectedAthlete);
+            $("#modalBodyArea1").load("/management/athlete_manage/?id=" + SelectedAthlete);
 
             $("#modalBodyArea1").show();
         }
@@ -430,7 +429,7 @@
 
      function AthleteManageFinishParent() {
         $("#modalMain").modal('hide');
-        $("#divAthleteList").load("/athlete_list/?comp="+ SelectedComp + "&disc=" + SelectedDisc, function () {
+        $("#divAthleteList").load("/management/athlete_list/?comp="+ SelectedComp + "&disc=" + SelectedDisc, function () {
             if (SelectedAthlete != -1)
                 AthleteClick(SelectedAthlete);
         });
@@ -452,7 +451,7 @@
     }
 
     function FillAthletes() {
-        $("#divAthleteList").load("/athlete_list/?comp="+ SelectedComp + "&disc=" + SelectedDisc);
+        $("#divAthleteList").load("/management/athlete_list/?comp="+ SelectedComp + "&disc=" + SelectedDisc);
     }
 </script>
 {% endblock %}

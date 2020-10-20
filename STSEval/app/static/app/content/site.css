@@ -113,6 +113,15 @@ body {
     border: 0px;
 }
 
+.btn-red {
+    /*border: 1px solid #2489CE {c-bup-border}*/;
+    background-color: #dc3545;
+    font-weight: bold;
+    color: #ffffff /*{c-bup-color}*/;
+    border: 0px;
+    border-color: #dc3545;
+}
+
 
 .entrybox {
     font-size: .75rem !important;
@@ -350,4 +359,9 @@ input[type="checkbox"].input-validation-error {
 
 .judge-strike {
     text-decoration:line-through;
+}
+
+.management-input {
+    width: 100% !important;
+    max-width:none !important;
 }
