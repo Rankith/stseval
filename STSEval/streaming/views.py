@@ -137,6 +137,7 @@ def update_stream_status(request):
 
     if status=="connected":
         stream.connected = True
+        stream.last_connected = datetime.now(timezone.utc)
         stream.status = WowzaStream.STARTED
     else:
          stream.connected = False
@@ -160,6 +161,8 @@ def get_stats(request):
             connected = False
         if stream.connected != connected:
             stream.connected = connected
+            if connected:
+                stream.last_connected = datetime.now(timezone.utc)
             stream.save()
             app.firebase.set_stream_connected(stream.id,stream.connected)
     except:

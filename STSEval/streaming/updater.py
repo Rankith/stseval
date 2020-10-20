@@ -9,7 +9,7 @@ def start():
     scheduler.start()
 
 def check_and_stop_streams():
-    AUTO_SHUTOFF = 900#15 minutes
+    AUTO_SHUTOFF = 60#15 minutes
     streams = WowzaStream.objects.filter(status=WowzaStream.STARTED)
     wowza_instance = LiveStreams(
         api_key = WOWZA_API_KEY,
@@ -19,6 +19,7 @@ def check_and_stop_streams():
         response = wowza_instance.info(s.stream_id,'stats')
         con = response["live_stream"]["connected"]["value"]
         if con == 'No':
+            s.connected = False
             time_off = datetime.now(timezone.utc) - s.last_connected
             if time_off.seconds > AUTO_SHUTOFF:
                 try:
@@ -29,7 +30,8 @@ def check_and_stop_streams():
                         s.status = WowzaStream.STARTED
                 except:
                     s.status = WowzaStream.STOPPED
-                s.save()
+            s.save()
         else:
+            s.connected = True
             s.last_connected = datetime.now(timezone.utc)
             s.save()
