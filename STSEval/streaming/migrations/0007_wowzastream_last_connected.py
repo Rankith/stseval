@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('streaming', '0005_wowzastream_connected'),
+        ('streaming', '0006_auto_20201019_1132'),
     ]
 
     operations = [
