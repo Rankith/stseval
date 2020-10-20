@@ -9,7 +9,7 @@ def start():
     scheduler.start()
 
 def check_and_stop_streams():
-    AUTO_SHUTOFF = 60#15 minutes
+    AUTO_SHUTOFF = 900#15 minutes
     streams = WowzaStream.objects.filter(status=WowzaStream.STARTED)
     wowza_instance = LiveStreams(
         api_key = WOWZA_API_KEY,
