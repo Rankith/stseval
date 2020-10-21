@@ -1,0 +1,22 @@
+<form id="form" action="/management/session_form/" method="post">
+    {% csrf_token %}
+    <div id="divManageSession" align="center">
+        <div class="row">
+            <div class="col-8">
+                SESSION NAME<br/>
+                {{ form.name }}<br/>
+                {{form.name.errors}}
+            </div>
+            <div class="col-4">
+                SESSION TIME<br/>
+                {{ form.time }}<br/>
+                {{form.time.errors}}
+            </div>
+        </div>
+        {{form.competition}}
+        <br/>
+        <input type="hidden" id="id" name="id" value="{{id}}" />
+        <input type="submit" href="#" id="btnSessionFinish" class="btn btn-main" value="Save">
+        <button href="#" id="btnSessionCancel" type="button" class="btn btn-red" data-dismiss="modal">Cancel</button>
+    </div>
+</form>

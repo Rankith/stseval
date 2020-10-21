@@ -370,3 +370,6 @@ input[type="checkbox"].input-validation-error {
     width:100px;
     margin-bottom:.5rem;
 }
+.errorList {
+    color:red;
+}

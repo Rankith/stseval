@@ -134,7 +134,7 @@
 
     function AddCompStart() {
         $("#modalMainDoc").addClass("modal-lg");
-        $("#modalMainTitle").html("Add Competition");
+        $("#modalMainTitle").html("ADD COMPETITION");
         $(".modal-dialog")
         $("#modalBodyArea2").hide();
         $("#modalBodyArea1").empty();
@@ -148,7 +148,7 @@
     function EditCompStart() {
         if (SelectedComp != -1) {
             $("#modalMainDoc").addClass("modal-lg");
-            $("#modalMainTitle").html("Edit Competition");
+            $("#modalMainTitle").html("EDIT COMPETITION");
             $(".modal-dialog")
             $("#modalBodyArea2").hide();
             $("#modalBodyArea1").empty();
@@ -180,6 +180,7 @@
     }
 
     function AttachCompForm() {
+        console.log("attach");
         var frm = $('#form');
         $("#id_disc").val(SelectedDisc);
         $('.selectpicker').selectpicker();
@@ -190,23 +191,27 @@
                 url: frm.attr('action'),
                 data: frm.serialize(),
                 success: function (data) {
-                    CompManageFinishParent();
+                    if (data != "") {
+                        $("#modalBodyArea1").empty();
+                        $("#modalBodyArea1").html(data);
+                        AttachCompForm();
+                        //console.log("Error");
+                    }
+                    else {
+                        CompManageFinishParent();
+                    }
                 },
                 error: function(data) {
-                    $("#modalBodyArea1").empty();
-                    $("#modalBodyArea1").load("/management/competition_form/?id=" + SelectedComp, function () {
-                        AttachCompForm();
-                    });
+                    
                 }
             });
             return false;
         });
     }
 
-        function AttachSessionForm() {
+    function AttachSessionForm() {
         var frm = $('#form');
-        $("#id_disc").val(SelectedDisc);
-        $('.selectpicker').selectpicker();
+        $("#id_competition").val(SelectedComp);
         frm.submit(function () {
             console.log("forming");
             $.ajax({
@@ -214,10 +219,17 @@
                 url: frm.attr('action'),
                 data: frm.serialize(),
                 success: function (data) {
-                    SessionManageFinishParent();
+                    if (data != "") {
+                        $("#modalBodyArea1").empty();
+                        $("#modalBodyArea1").html(data);
+                        AttachSessionForm();
+                        //console.log("Error");
+                    }
+                    else {
+                        SessionManageFinishParent();
+                    }
                 },
                 error: function(data) {
-                    console.log("wat");
                 }
             });
             return false;
@@ -240,7 +252,9 @@
         $(".modal-dialog")
         $("#modalBodyArea2").hide();
         $("#modalBodyArea1").empty();
-        $("#modalBodyArea1").load("/management/session_manage/");
+        $("#modalBodyArea1").load("/management/session_form/", function () {
+            AttachSessionForm();
+        });
 
         $("#modalBodyArea1").show();
     }
@@ -251,7 +265,9 @@
             $(".modal-dialog")
             $("#modalBodyArea2").hide();
             $("#modalBodyArea1").empty();
-            $("#modalBodyArea1").load("/management/session_manage/?id=" + SelectedSession);
+            $("#modalBodyArea1").load("/management/session_form/?id=" + SelectedSession, function () {
+                AttachSessionForm();
+            });
 
             $("#modalBodyArea1").show();
         }

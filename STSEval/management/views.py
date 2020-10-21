@@ -2,7 +2,7 @@ from django.shortcuts import render,redirect
 from django.http import HttpRequest,JsonResponse,HttpResponse
 from django.template import RequestContext
 from datetime import datetime
-from .forms import CompetitionForm
+from .forms import CompetitionForm,SessionForm
 from .models import Competition,Session,Athlete
 
 # Create your views here.
@@ -31,7 +31,7 @@ def competition_form(request):
             form.save()
             return HttpResponse(status=200)
         else:
-            return HttpResponse(status=404)
+            return render(request, 'management/competition_form.html', {'form': form,'id':id})
     else:
         id = request.GET.get('id',-1)
         if id != -1:
@@ -90,6 +90,26 @@ def session_list(request):
         'sessions':sessions,
     }
     return render(request, 'management/session_list.html', context)
+
+def session_form(request):
+    if request.method == 'POST':
+        id = request.POST.get('id','-1')
+        if id != '-1':
+            form = SessionForm(request.POST,instance=Session.objects.get(pk=id))
+        else:
+            form = SessionForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponse(status=200)
+        else:
+            return render(request, 'management/session_form.html', {'form': form,'id':id})
+    else:
+        id = request.GET.get('id',-1)
+        if id != -1:
+            form = SessionForm(instance=Session.objects.get(pk=id))
+        else:
+            form = SessionForm()
+        return render(request, 'management/session_form.html', {'form': form,'id':id})
 
 def session_manage(request):
     id = request.GET.get('id',-1)

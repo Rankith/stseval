@@ -4,18 +4,21 @@
         <div class="row no-gutters">
             <div class="col-5">
                 COMPETITION NAME<br/>
-                {{ form.name }}
+                {{ form.name }}<br/>
+                {{form.name.errors}}
             </div>
             <div class="col-4">
                 COMPETITION TYPE<br/>
-                {{ form.type }}
+                {{ form.type }}<br/>
+                {{form.type.errors}}
             </div>
             <div class="col-3">
                 DATE<br/>
-               {{ form.date }}
+               {{ form.date }}<br/>
+               {{form.date.errors}}
             </div>
         </div>
-        {{form.disc}}
+        {{ form.disc }}
         <br/>
         <input type="hidden" id="id" name="id" value="{{id}}" />
         <input type="submit" href="#" id="btnCompFinish" class="btn btn-main" value="Save">
