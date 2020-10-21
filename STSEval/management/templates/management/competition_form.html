@@ -1,5 +1,44 @@
-<form action="/competition_manage/" method="post">
+<form id="form" action="/management/competition_form/" method="post">
     {% csrf_token %}
-    {{ form }}
-    <input type="submit" value="Submit">
+    <div id="divManageCompeition" align="center">
+        <div class="row no-gutters">
+            <div class="col-5">
+                COMPETITION NAME<br/>
+                {{ form.name }}
+            </div>
+            <div class="col-4">
+                COMPETITION TYPE<br/>
+                {{ form.type }}
+            </div>
+            <div class="col-3">
+                DATE<br/>
+               {{ form.date }}
+            </div>
+        </div>
+        {{form.disc}}
+        <br/>
+        <input type="hidden" id="id" name="id" value="{{id}}" />
+        <input type="submit" href="#" id="btnCompFinish" class="btn btn-main" value="Save">
+        <button href="#" id="btnCompCancel" type="button" class="btn btn-red" data-dismiss="modal">Cancel</button>
+    </div>
 </form>
+<script type="text/javascript">
+    var frm = $('#form');
+    $("#id_disc").val(SelectedDisc);
+    $('.selectpicker').selectpicker();
+    frm.submit(function () {
+        console.log("forming");
+        $.ajax({
+            type: frm.attr('method'),
+            url: frm.attr('action'),
+            data: frm.serialize(),
+            success: function (data) {
+                CompManageFinishParent();
+            },
+            error: function(data) {
+                console.log("wat");
+            }
+        });
+        return false;
+    });
+</script>

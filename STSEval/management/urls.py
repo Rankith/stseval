@@ -11,6 +11,7 @@ urlpatterns = [
     path('setup_competition/', views.setup_competition, name='setup_competition'),
     path('judges_get/', views.judges_get, name='judges_get'),
     path('judges_update/', views.judges_update, name='judges_update'),
+    path('competition_form/', views.competition_form, name='competition_form'),
     path('competition_list/', views.competition_list, name='competition_list'),
     path('competition_manage/', views.competition_manage, name='competition_manage'),
     path('competition_create_update/', views.competition_create_update, name='competition_create_update'),

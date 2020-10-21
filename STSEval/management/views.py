@@ -20,6 +20,26 @@ def competition_list(request):
     }
     return render(request, 'management/competition_list.html', context)
 
+def competition_form(request):
+    if request.method == 'POST':
+        id = request.POST.get('id','-1')
+        if id != '-1':
+            form = CompetitionForm(request.POST,instance=Competition.objects.get(pk=id))
+        else:
+            form = CompetitionForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponse(status=200)
+        else:
+            return HttpResponse(status=404)
+    else:
+        id = request.GET.get('id',-1)
+        if id != -1:
+            form = CompetitionForm(instance=Competition.objects.get(pk=id))
+        else:
+            form = CompetitionForm()
+        return render(request, 'management/competition_form.html', {'form': form,'id':id})
+
 def competition_manage(request):
     compid = request.GET.get('id',-1)
     name = ""
