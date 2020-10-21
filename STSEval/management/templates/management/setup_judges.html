@@ -7,16 +7,16 @@
     <div id="divJudges" style="max-width:800px;min-height:276px">
 
     </div>
-    <select id="ddlEvent" class="selectpicker" data-style="btn-main" onchange="EventClick()">
+    <select id="ddlEvent" class="selectpicker" data-style="btn-main management-button-long" onchange="EventClick()">
         {% for event in events %}
             <option value="{{event.short}}">{{event.long}}</option>
         {% endfor %}
-    </select><br/><br/>
-    <button href="#" id="btnSave" type="button" class="btn btn-main management-button" onclick="Save()">Save</button>
+    </select><br/>
+    <button href="#" id="btnSave" type="button" class="btn btn-main management-button-long" onclick="Save()">Save</button>
     <br/>
     <br/>
     <div>
-        <button id="btnBack" type="button" class="btn-main pt-4 pb-4" style="border-radius: 1rem;" onclick="Goback()">Return to<br/>Previous Page</button>
+        <button id="btnBack" type="button" class="btn-main pt-4 pb-4" style="border-radius: 1rem;" onclick="GoBack()">Return to<br/>Previous Page</button>
         <button id="btnNext" type="button" class="btn-main ui-disabled pt-4 pb-4" style="border-radius: 1rem;">Save and<br/>Continue (2/7)</button>
     </div>
 		
@@ -74,7 +74,7 @@
     function GoBack() {
         if (CheckChange("Go Back"))
         {
-            window.location = "/management/setup_judges/?session=" + SelectedSession;
+            window.location = "/management/setup_competition/";
         }
     }
 

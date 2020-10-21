@@ -383,3 +383,7 @@ input[type="checkbox"].input-validation-error {
     width: 98% !important;
     max-width: none !important;
 }
+.management-button-long {
+    width: 175px !important;
+    margin-bottom: .5rem;
+}
