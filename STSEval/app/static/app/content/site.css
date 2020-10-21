@@ -373,3 +373,13 @@ input[type="checkbox"].input-validation-error {
 .errorList {
     color:red;
 }
+.col-25 {
+    -ms-flex: 0 0 20%;
+    flex: 0 0 20%;
+    max-width: 20%;
+}
+
+.judge-input {
+    width: 98% !important;
+    max-width: none !important;
+}

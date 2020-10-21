@@ -38,7 +38,7 @@
     <br/>
     <br/>
     <div>
-        <button href="#" id="btnNext" type="button" class="btn-main ui-disabled pt-4 pb-4" style="border-radius: 1rem;">Save and<br/>Continue (1/7)</button>
+        <button href="#" id="btnNext" type="button" class="btn-main ui-disabled pt-4 pb-4" style="border-radius: 1rem;" onclick="btnNextClick()">Save and<br/>Continue (1/7)</button>
     </div>
 		
 </div>
@@ -57,42 +57,11 @@
     var Changed = false;
    
 
-    function CheckChange(ThingIn)
-    {
-        if (Changed)
-        {
-            if (confirm('You have unsaved changes to judges, are you sure you want to switch ' + ThingIn + '?'))
-            {
-                Changed = false;
-                return true;
-            }
-            else
-                return false;
+    function btnNextClick() {
+        if (SelectedSession != -1) {
+            window.location = "/management/setup_judges/?session=" + SelectedSession;
         }
-        return true;
     }
-
-    function EventClick() {
-        console.log("Click");
-        //if ($("#ddlEventJudge").val() != SelectedEvent)        {
-            if (CheckChange("Events")) {
-                SelectedEvent = $("#ddlEventJudge").val();
-                $.ajax({
-                    url: "/judges_get/",
-                    data: {
-                        'comp': SelectedComp,
-                        'disc': SelectedDisc,
-                        'event': SelectedEvent,
-                    },
-                    dataType: 'json',
-                    success: function (data) {
-                        FillJudges(data)
-                        Changed = false;
-                    }
-                });
-            }
-        //}
-    }   
 
     function SessionClick(sesIn) {
         $('.session-list').removeClass("ctxSelected");

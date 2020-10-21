@@ -9,6 +9,7 @@ from management import views
 
 urlpatterns = [
     path('setup_competition/', views.setup_competition, name='setup_competition'),
+    path('setup_judges/', views.setup_judges, name='setup_judges'),
     path('judges_get/', views.judges_get, name='judges_get'),
     path('judges_update/', views.judges_update, name='judges_update'),
     path('competition_form/', views.competition_form, name='competition_form'),
@@ -17,6 +18,7 @@ urlpatterns = [
     path('session_form/', views.session_form, name='session_form'),
     path('session_list/', views.session_list, name='session_list'),
     path('session_delete/', views.session_delete, name='session_delete'),
+    path('judge_form/', views.judge_form, name='judge_form'),
     path('athlete_list/', views.athlete_list, name='athlete_list'),
     path('athlete_delete/', views.athlete_delete, name='athlete_delete'),
     #path('competition_manage/', views.competition_manage, name='competition_manage'),

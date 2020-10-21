@@ -2,8 +2,8 @@ from django.shortcuts import render,redirect
 from django.http import HttpRequest,JsonResponse,HttpResponse
 from django.template import RequestContext
 from datetime import datetime
-from .forms import CompetitionForm,SessionForm
-from .models import Competition,Session,Athlete
+from .forms import CompetitionForm,SessionForm,JudgeForm
+from .models import Competition,Session,Athlete,Judge
 
 # Create your views here.
 def setup_competition(request):
@@ -40,45 +40,6 @@ def competition_form(request):
             form = CompetitionForm()
         return render(request, 'management/competition_form.html', {'form': form,'id':id})
 
-def competition_manage(request):
-    compid = request.GET.get('id',-1)
-    name = ""
-    date = datetime.now().date()
-    comp_type = ""
-    if compid != -1:
-        comp = Competition.objects.get(pk=compid)
-        name = comp.name
-        date = comp.date
-        comp_type = comp.type
-        manage_type = "save"
-    else:
-        manage_type="add"
-
-    context = {
-        'id':compid,
-        'type':manage_type,
-        'comp_type':comp_type,
-        'name':name,
-        'date':date.strftime("%Y-%m-%d"),
-        'types':Competition.COMPETITION_TYPE
-    }
-    return render(request, 'management/competition_manage.html', context)
-
-def competition_create_update(request):
-    compid = request.GET.get('id','-1')
-    if compid != '-1':
-        #update
-        comp = Competition.objects.get(pk=compid)
-        comp.name=request.GET.get('name','')
-        comp.type=request.GET.get('type','T')
-        comp.date=request.GET.get('date')
-        comp.disc=request.GET.get('disc')
-        comp.save()
-    else:
-        comp = Competition(name=request.GET.get('name',''),type=request.GET.get('type','T'),date=request.GET.get('date'),disc=request.GET.get('disc'))
-        comp.save()
-    return HttpResponse(status=200)
-
 def competition_delete(request):
     Competition.objects.filter(id=request.GET.get('id')).delete()
     return HttpResponse(status=200)
@@ -111,43 +72,54 @@ def session_form(request):
             form = SessionForm()
         return render(request, 'management/session_form.html', {'form': form,'id':id})
 
-def session_manage(request):
-    id = request.GET.get('id',-1)
-    name = ""
-    time = ""
-    if id != -1:
-        session = Session.objects.get(pk=id)
-        name = session.name
-        time = session.time
-        manage_type = "save"
-    else:
-        manage_type="add"
-
-    context = {
-        'id':id,
-        'type':manage_type,
-        'name':name,
-        'time':time,
-    }
-    return render(request, 'management/session_manage.html', context)
-
-def session_create_update(request):
-    id = request.GET.get('id','-1')
-    if id != '-1':
-        #update
-        session = Session.objects.get(pk=id)
-        session.name=request.GET.get('name','')
-        session.time=request.GET.get('time')
-        session.competition_id = request.GET.get('comp_id')
-        session.save()
-    else:
-        session = Session(name=request.GET.get('name',''),time=request.GET.get('time'),competition_id=request.GET.get('comp_id'))
-        session.save()
-    return HttpResponse(status=200)
-
 def session_delete(request):
     Session.objects.filter(id=request.GET.get('id')).delete()
     return HttpResponse(status=200)
+
+def setup_judges(request):
+    session = Session.objects.get(pk=request.GET.get('session'))
+    events = []
+    if session.competition.disc == "MAG":
+        events.append({'short':'FX','long':'Floor Exercise'})
+        events.append({'short':'PH','long':'Pommel Horse'})
+        events.append({'short':'R','long':'Rings'})
+        events.append({'short':'V','long':'Vault'})
+        events.append({'short':'PB','long':'Parellel Bars'})
+        events.append({'short':'HB','long':'High Bar'})
+    elif session.competition.disc == "WAG":
+        events.append({'short':'V','long':'Vault'})
+        events.append({'short':'UB','long':'Uneven Bars'})
+        events.append({'short':'BB','long':'Balance Beam'})
+        events.append({'short':'FX','long':'Floor Exercise'})
+    context = {
+        'title': 'Compeition Setup (2/7)',
+        'session_name': session.full_name,
+        'events':events,
+        'id':session.id,
+    }
+    return render(request,'management/setup_judges.html',context)
+
+def judge_form(request):
+    if request.method == 'POST':
+        id = request.POST.get('id','-1')
+        if id != '-1':
+            form = JudgeForm(request.POST,instance=Judge.objects.get(pk=id))
+        else:
+            form = JudgeForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponse(status=200)
+        else:
+            return render(request, 'management/judge_form.html', {'form': form,'id':id})
+    else:
+        judge = Judge.objects.filter(session_id=request.GET.get('session'),event=request.GET.get('event'))
+        if len(judge) > 0:
+            id=judge[0].id
+            form = JudgeForm(instance=judge[0])
+        else:
+            id=-1
+            form = JudgeForm()
+        return render(request, 'management/judge_form.html', {'form': form,'id':id})
 
 def judges_get(request):
     comp = request.GET.get('comp')
@@ -210,4 +182,78 @@ def athlete_manage(request):
 
 def athlete_delete(request):
     Athlete.objects.filter(id=request.GET.get('id')).delete()
+    return HttpResponse(status=200)
+
+
+def session_manage(request):
+    id = request.GET.get('id',-1)
+    name = ""
+    time = ""
+    if id != -1:
+        session = Session.objects.get(pk=id)
+        name = session.name
+        time = session.time
+        manage_type = "save"
+    else:
+        manage_type="add"
+
+    context = {
+        'id':id,
+        'type':manage_type,
+        'name':name,
+        'time':time,
+    }
+    return render(request, 'management/session_manage.html', context)
+
+def session_create_update(request):
+    id = request.GET.get('id','-1')
+    if id != '-1':
+        #update
+        session = Session.objects.get(pk=id)
+        session.name=request.GET.get('name','')
+        session.time=request.GET.get('time')
+        session.competition_id = request.GET.get('comp_id')
+        session.save()
+    else:
+        session = Session(name=request.GET.get('name',''),time=request.GET.get('time'),competition_id=request.GET.get('comp_id'))
+        session.save()
+    return HttpResponse(status=200)
+
+def competition_manage(request):
+    compid = request.GET.get('id',-1)
+    name = ""
+    date = datetime.now().date()
+    comp_type = ""
+    if compid != -1:
+        comp = Competition.objects.get(pk=compid)
+        name = comp.name
+        date = comp.date
+        comp_type = comp.type
+        manage_type = "save"
+    else:
+        manage_type="add"
+
+    context = {
+        'id':compid,
+        'type':manage_type,
+        'comp_type':comp_type,
+        'name':name,
+        'date':date.strftime("%Y-%m-%d"),
+        'types':Competition.COMPETITION_TYPE
+    }
+    return render(request, 'management/competition_manage.html', context)
+
+def competition_create_update(request):
+    compid = request.GET.get('id','-1')
+    if compid != '-1':
+        #update
+        comp = Competition.objects.get(pk=compid)
+        comp.name=request.GET.get('name','')
+        comp.type=request.GET.get('type','T')
+        comp.date=request.GET.get('date')
+        comp.disc=request.GET.get('disc')
+        comp.save()
+    else:
+        comp = Competition(name=request.GET.get('name',''),type=request.GET.get('type','T'),date=request.GET.get('date'),disc=request.GET.get('disc'))
+        comp.save()
     return HttpResponse(status=200)

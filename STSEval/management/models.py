@@ -21,6 +21,8 @@ class Session(models.Model):
     competition = models.ForeignKey(Competition, on_delete=models.CASCADE,default=None,null=True)
     name = models.CharField(max_length=75)
     time = models.TimeField()
+    def full_name(self):
+       return self.competition.name + " - " + self.competition.get_type_display() + " - " + self.name
 
 class Athlete(models.Model):
     session = models.ForeignKey(Session, on_delete=models.CASCADE)
