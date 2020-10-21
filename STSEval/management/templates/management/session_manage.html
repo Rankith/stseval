@@ -1,0 +1,38 @@
+<div id="divManageCompeition" align="center">
+    <div class="row">
+        <div class="col-8">
+            SESSION NAME<br/>
+            <input type="text" id="txtSessionName" placeholder="Session Name" class="management-input" value="{{name}}">
+        </div>
+        <div class="col-4">
+            SESSION TIME<br/>
+           <input type="time" id="txtSessionTime" placeholder="Time" class="management-input" value="{{time|date:'H:i'}}">
+        </div>
+    </div>
+    <br/>
+    <button href="#" id="btnSessionFinish" type="button" class="btn btn-main" onclick="SessionManageFinish()">{{type|title}}</button>
+    <button href="#" id="btnSessionCancel" type="button" class="btn btn-red" data-dismiss="modal">Cancel</button>
+</div>
+
+<script type="text/javascript">
+    var SessionID = {{id}};
+    var time = "{{time|date:'H:i'}}";
+</script>
+<script type="text/javascript">
+    $('.selectpicker').selectpicker();
+    function SessionManageFinish() {
+        $.ajax({
+            url: "/management/session_create_update/",
+            data: {
+                'id': SessionID,
+                'name': $("#txtSessionName").val(),
+                'time': $("#txtSessionTime").val(),
+                'comp_id': SelectedComp,
+            },
+            success: function () {
+                SessionManageFinishParent();
+            }
+        });
+    
+    }
+</script>

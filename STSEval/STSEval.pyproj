@@ -147,6 +147,8 @@
     <Content Include="app\templates\app\dots_area.html" />
     <Content Include="management\templates\management\athlete_list.html" />
     <Content Include="management\templates\management\competition_form.html" />
+    <Content Include="management\templates\management\session_list.html" />
+    <Content Include="management\templates\management\session_manage.html" />
     <Content Include="management\templates\management\competition_manage.html" />
     <Content Include="management\templates\management\athlete_manage.html" />
     <Content Include="management\templates\management\competition_list.html" />

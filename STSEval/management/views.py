@@ -63,6 +63,52 @@ def competition_delete(request):
     Competition.objects.filter(id=request.GET.get('id')).delete()
     return HttpResponse(status=200)
 
+def session_list(request):
+    sessions = Session.objects.filter(competition_id=request.GET.get('comp'))
+
+    context = {
+        'sessions':sessions,
+    }
+    return render(request, 'management/session_list.html', context)
+
+def session_manage(request):
+    id = request.GET.get('id',-1)
+    name = ""
+    time = ""
+    if id != -1:
+        session = Session.objects.get(pk=id)
+        name = session.name
+        time = session.time
+        manage_type = "save"
+    else:
+        manage_type="add"
+
+    context = {
+        'id':id,
+        'type':manage_type,
+        'name':name,
+        'time':time,
+    }
+    return render(request, 'management/session_manage.html', context)
+
+def session_create_update(request):
+    id = request.GET.get('id','-1')
+    if id != '-1':
+        #update
+        session = Session.objects.get(pk=id)
+        session.name=request.GET.get('name','')
+        session.time=request.GET.get('time')
+        session.competition_id = request.GET.get('comp_id')
+        session.save()
+    else:
+        session = Session(name=request.GET.get('name',''),time=request.GET.get('time'),competition_id=request.GET.get('comp_id'))
+        session.save()
+    return HttpResponse(status=200)
+
+def session_delete(request):
+    Session.objects.filter(id=request.GET.get('id')).delete()
+    return HttpResponse(status=200)
+
 def judges_get(request):
     comp = request.GET.get('comp')
     disc = request.GET.get('disc')

@@ -2,39 +2,46 @@
 
 {% block content %}
 <div align="center" style="margin:10px;padding:0">
-    <div id="divDisc" style="vertical-align: top;padding:3px;height:254px;display:inline-block;margin-right:30px;">
-		<div id="divDiscHeader" style="padding-bottom:5px;font-size:22px;font-weight:bold;text-align:center">Discipline</div><br/>
-		<div id="divDiscList" class="listbox" style=";height:180px;">
-		<div id="divDiscMAG" name="divDiscMAG" class="disc-list" style="padding-bottom:5px" onclick="DiscClick('MAG');">MAG</div>
-		<div id="divDiscWAG" name="divDiscWAG" class="disc-list" style="padding-bottom:5px" onclick="DiscClick('WAG');">WAG</div>
-		<div id="divDiscRG" name="divDiscRG" style="padding-bottom:5px" onclick="DiscClick('RG');" class="ui-disabled disc-list">RG</div>
-		<div id="divDiscTRA" name="divDiscTRA" style="padding-bottom:5px" onclick="DiscClick('TRA');" class="ui-disabled disc-list">TRA</div>
-		<div id="divDiscACRO" name="divDiscACRO"  style="padding-bottom:5px" onclick="DiscClick('ACRO');" class="ui-disabled disc-list">ACRO</div>
-		<div id="divDiscAER" name="divDiscAER"  style="padding-bottom:5px" onclick="DiscClick('AER');" class="ui-disabled disc-list">AER</div>
-		</div>
-	</div>
-
-	<div id="divCompetitions" style="display:inline-block;vertical-align: top;padding:3px;display:inline-block;margin-right:30px;" class="ui-disabled">
-	    <div id="divCompHeader" style="padding-bottom:5px;font-size:22px;font-weight:bold;text-align:center">Competition</div><br/>
-	    <div id="divCompList"class="listbox"  style="width:400px;height:150px;"></div><br/>
-	    <div id="divCompButtonsArea">
-		    <button href="#" id="btnCompAdd"  type="button" class="btn btn-main" data-toggle="modal" data-target="#modalMain" onclick="AddCompStart()">Add</button>
-		    <button href="#" id="btnCompEdit"  type="button" class="btn btn-main" data-toggle="modal" data-target="#modalMain" onclick="EditCompStart()">Edit</button>
-		    <button href="#" id="btnCompDelete"  type="button" class="btn btn-main" onclick="CompDelete()">Delete</button>
+    <div>
+        <div id="divDisc" style="vertical-align: top;padding:3px;height:254px;display:inline-block;margin-right:30px;">
+		    <div id="divDiscHeader" style="padding-bottom:5px;font-size:22px;font-weight:bold;text-align:center">Discipline</div>
+		    <div id="divDiscList" class="listbox" style=";height:180px;">
+		    <div id="divDiscMAG" name="divDiscMAG" class="disc-list" style="padding-bottom:5px" onclick="DiscClick('MAG');">MAG</div>
+		    <div id="divDiscWAG" name="divDiscWAG" class="disc-list" style="padding-bottom:5px" onclick="DiscClick('WAG');">WAG</div>
+		    <div id="divDiscRG" name="divDiscRG" style="padding-bottom:5px" onclick="DiscClick('RG');" class="ui-disabled disc-list">RG</div>
+		    <div id="divDiscTRA" name="divDiscTRA" style="padding-bottom:5px" onclick="DiscClick('TRA');" class="ui-disabled disc-list">TRA</div>
+		    <div id="divDiscACRO" name="divDiscACRO"  style="padding-bottom:5px" onclick="DiscClick('ACRO');" class="ui-disabled disc-list">ACRO</div>
+		    <div id="divDiscAER" name="divDiscAER"  style="padding-bottom:5px" onclick="DiscClick('AER');" class="ui-disabled disc-list">AER</div>
+		    </div>
 	    </div>
-	</div>
 
-    <div id="divSessions" style="vertical-align: top;padding:3px;width:220px;display:inline-block;margin-right:30px;" class="ui-disabled">
-		<div id="divSessionHeader" style="padding-bottom:5px;font-size:22px;font-weight:bold;text-align:center">Session</div><br/>
-		<div id="divSessionList" class="listbox" style="width:200px;height:150px;"></div><br/>
-		<div id="divASessionButtonsArea">
-		<button href="#" id="btnAthAdd"   type="button" class="btn btn-main"  data-toggle="modal" data-target="#modalMain" onclick="AddSessionStart()">Add</button>
-		<button href="#" id="btnAthEdit"  type="button" class="btn btn-main" data-toggle="modal" data-target="#modalMain" onclick="EditSessionStart()">Edit</button>
-		<button href="#" id="btnAthDelete"   type="button" class="btn btn-main" onclick="AthDelete()">Delete</button>
-	</div>
-	</div>
-		
+	    <div id="divCompetitions" style="display:inline-block;vertical-align: top;padding:3px;display:inline-block;margin-right:30px;" class="ui-disabled">
+	        <div id="divCompHeader" style="padding-bottom:5px;font-size:22px;font-weight:bold;text-align:center">Competition</div>
+	        <div id="divCompList"class="listbox"  style="width:400px;height:180px;"></div><br/>
+	        <div id="divCompButtonsArea">
+		        <button href="#" id="btnCompAdd"  type="button" class="btn btn-main management-button" data-toggle="modal" data-target="#modalMain" onclick="AddCompStart()">Add</button><br/>
+		        <button href="#" id="btnCompEdit"  type="button" class="btn btn-main management-button" data-toggle="modal" data-target="#modalMain" onclick="EditCompStart()">Edit</button><br/>
+		        <button href="#" id="btnCompDelete"  type="button" class="btn btn-red management-button" onclick="CompDelete()">Delete</button>
+	        </div>
+	    </div>
+
+        <div id="divSessions" style="vertical-align: top;padding:3px;display:inline-block;margin-right:30px;" class="ui-disabled">
+		    <div id="divSessionHeader" style="padding-bottom:5px;font-size:22px;font-weight:bold;text-align:center">Session</div>
+		    <div id="divSessionList" class="listbox" style="width:240px;height:180px;"></div><br/>
+		    <div id="divSessionButtonsArea">
+		        <button href="#" id="btnAthAdd"   type="button" class="btn btn-main management-button"  data-toggle="modal" data-target="#modalMain" onclick="AddSessionStart()">Add</button><br/>
+		        <button href="#" id="btnAthEdit"  type="button" class="btn btn-main management-button" data-toggle="modal" data-target="#modalMain" onclick="EditSessionStart()">Edit</button><br/>
+		        <button href="#" id="btnAthDelete"   type="button" class="btn btn-red management-button" onclick="SessionDelete()">Delete</button>
+	        </div>
+	    </div>
     </div>
+    <br/>
+    <br/>
+    <div>
+        <button href="#" id="btnNext" type="button" class="btn-main ui-disabled pt-4 pb-4" style="border-radius: 1rem;">Save and<br/>Continue (1/7)</button>
+    </div>
+		
+</div>
 
 {% endblock %}
 
@@ -45,7 +52,7 @@
 <script type="text/javascript">
     var SelectedComp = -1;
     var SelectedDisc = -1;
-    var SelectedAthlete = -1;
+    var SelectedSession = -1;
     var SelectedEvent = -1;
     var Changed = false;
    
@@ -91,6 +98,7 @@
         $('.session-list').removeClass("ctxSelected");
         $("#divSession" + sesIn).addClass("ctxSelected");
         SelectedSession = sesIn;
+        $("#btnNext").removeClass("ui-disabled");
 
     }
 
@@ -98,8 +106,12 @@
         $('.disc-list').removeClass("ctxSelected");
         $("#divDisc" + discIn).addClass("ctxSelected");
         SelectedDisc = discIn;
+        SelectedComp = -1;
         $("#divCompetitions").removeClass("ui-disabled");
         $("#divCompList").load("/management/competition_list/?disc=" + SelectedDisc);
+        $("#divSessionList").empty();
+        $("#divSessions").addClass("ui-disabled");
+        $("#btnNext").addClass("ui-disabled");
     }
 
 
@@ -107,6 +119,7 @@
         //$("#divDisc").addClass("ui-disabled");
         $("#divCompetitions").addClass("ui-disabled");
         $("#divSessions").addClass("ui-disabled");
+        $("#btnNext").addClass("ui-disabled");
     }
 
     function CompClick(CompIn) {
@@ -116,9 +129,11 @@
         SelectedComp = CompIn;
         $("#divSessions").removeClass("ui-disabled");
         FillSession();
+        $("#btnNext").addClass("ui-disabled");
     }
 
     function AddCompStart() {
+        $("#modalMainDoc").addClass("modal-lg");
         $("#modalMainTitle").html("Add Competition");
         $(".modal-dialog")
         $("#modalBodyArea2").hide();
@@ -130,6 +145,7 @@
 
     function EditCompStart() {
         if (SelectedComp != -1) {
+            $("#modalMainDoc").addClass("modal-lg");
             $("#modalMainTitle").html("Edit Competition");
             $(".modal-dialog")
             $("#modalBodyArea2").hide();
@@ -151,6 +167,8 @@
                     Changed = false;
                     $('.session-list').removeClass("ctxSelected");
                     $("#divSessions").addClass('ui-disabled');
+                    $("#divSessionList").empty();
+                    $("#btnNext").addClass("ui-disabled");
                 }
             });
     
@@ -168,6 +186,7 @@
     }
 
     function AddSessionStart() {
+        $("#modalMainDoc").removeClass("modal-lg");
         $("#modalMainTitle").html("ADD SESSION");
         $(".modal-dialog")
         $("#modalBodyArea2").hide();
@@ -177,7 +196,8 @@
         $("#modalBodyArea1").show();
     }
     function EditSessionStart() {
-        if (SelectedAthlete != -1) {
+        if (SelectedSession != -1) {
+            $("#modalMainDoc").removeClass("modal-lg");
             $("#modalMainTitle").html("EDIT SESSION");
             $(".modal-dialog")
             $("#modalBodyArea2").hide();
@@ -190,29 +210,30 @@
 
      function SessionManageFinishParent() {
         $("#modalMain").modal('hide');
-        $("#divAthleteList").load("/management/session_list/?comp="+ SelectedComp, function () {
-            if (SelectedAthlete != -1)
-                AthleteClick(SelectedAthlete);
+        $("#divSessionList").load("/management/session_list/?comp="+ SelectedComp, function () {
+            if (SelectedSession != -1)
+                SessionClick(SelectedSession);
         });
         
     }
 
     function SessionDelete() {
-        if (SelectedAthlete != -1) {
+        if (SelectedSession != -1) {
             $.ajax({
-                url: "management/session_delete/",
+                url: "/management/session_delete/",
                 data: {
-                    'id': SelectedAthlete,
+                    'id': SelectedSession,
                 },
                 success: function () {
-                    FillAthletes();
+                    FillSession();
+                    $("#btnNext").addClass("ui-disabled");
                 }
             });
         }
     }
 
     function FillSession() {
-        $("#divAthleteList").load("/management/session_list/?comp="+ SelectedComp);
+        $("#divSessionList").load("/management/session_list/?comp="+ SelectedComp);
     }
 </script>
 {% endblock %}
