@@ -5,7 +5,7 @@
     <div>
         <div id="divDisc" style="vertical-align: top;padding:3px;height:254px;display:inline-block;margin-right:30px;">
 		    <div id="divDiscHeader" style="padding-bottom:5px;font-size:22px;font-weight:bold;text-align:center">Discipline</div>
-		    <div id="divDiscList" class="listbox" style=";height:180px;">
+		    <div id="divDiscList" class="listbox" style="height:180px;">
 		    <div id="divDiscMAG" name="divDiscMAG" class="disc-list" style="padding-bottom:5px" onclick="DiscClick('MAG');">MAG</div>
 		    <div id="divDiscWAG" name="divDiscWAG" class="disc-list" style="padding-bottom:5px" onclick="DiscClick('WAG');">WAG</div>
 		    <div id="divDiscRG" name="divDiscRG" style="padding-bottom:5px" onclick="DiscClick('RG');" class="ui-disabled disc-list">RG</div>
@@ -138,7 +138,9 @@
         $(".modal-dialog")
         $("#modalBodyArea2").hide();
         $("#modalBodyArea1").empty();
-        $("#modalBodyArea1").load("/management/competition_form");
+        $("#modalBodyArea1").load("/management/competition_form", function () {
+            AttachCompForm();
+        });
 
         $("#modalBodyArea1").show();
     }
@@ -150,7 +152,9 @@
             $(".modal-dialog")
             $("#modalBodyArea2").hide();
             $("#modalBodyArea1").empty();
-            $("#modalBodyArea1").load("/management/competition_form/?id=" + SelectedComp);
+            $("#modalBodyArea1").load("/management/competition_form/?id=" + SelectedComp, function () {
+                AttachCompForm();
+            });
 
             $("#modalBodyArea1").show();
         }
@@ -173,6 +177,51 @@
             });
     
         }
+    }
+
+    function AttachCompForm() {
+        var frm = $('#form');
+        $("#id_disc").val(SelectedDisc);
+        $('.selectpicker').selectpicker();
+        frm.submit(function () {
+            console.log("forming");
+            $.ajax({
+                type: frm.attr('method'),
+                url: frm.attr('action'),
+                data: frm.serialize(),
+                success: function (data) {
+                    CompManageFinishParent();
+                },
+                error: function(data) {
+                    $("#modalBodyArea1").empty();
+                    $("#modalBodyArea1").load("/management/competition_form/?id=" + SelectedComp, function () {
+                        AttachCompForm();
+                    });
+                }
+            });
+            return false;
+        });
+    }
+
+        function AttachSessionForm() {
+        var frm = $('#form');
+        $("#id_disc").val(SelectedDisc);
+        $('.selectpicker').selectpicker();
+        frm.submit(function () {
+            console.log("forming");
+            $.ajax({
+                type: frm.attr('method'),
+                url: frm.attr('action'),
+                data: frm.serialize(),
+                success: function (data) {
+                    SessionManageFinishParent();
+                },
+                error: function(data) {
+                    console.log("wat");
+                }
+            });
+            return false;
+        });
     }
 
     function CompManageFinishParent() {

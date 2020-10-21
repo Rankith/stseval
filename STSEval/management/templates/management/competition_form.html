@@ -22,23 +22,3 @@
         <button href="#" id="btnCompCancel" type="button" class="btn btn-red" data-dismiss="modal">Cancel</button>
     </div>
 </form>
-<script type="text/javascript">
-    var frm = $('#form');
-    $("#id_disc").val(SelectedDisc);
-    $('.selectpicker').selectpicker();
-    frm.submit(function () {
-        console.log("forming");
-        $.ajax({
-            type: frm.attr('method'),
-            url: frm.attr('action'),
-            data: frm.serialize(),
-            success: function (data) {
-                CompManageFinishParent();
-            },
-            error: function(data) {
-                console.log("wat");
-            }
-        });
-        return false;
-    });
-</script>
