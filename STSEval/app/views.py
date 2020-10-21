@@ -174,7 +174,7 @@ def d1(request):
         judges = Judge.objects.filter(competition_id=comp,disc=disc,event=event)
         athletes = Athlete.objects.filter(competition_id=comp,disc=disc)
         comp = routine.competition
-        layout = 'app/layout_blank.html'
+        layout = 'app/layout_empty.html'
         routine = routine.id
     context = {
         'title': 'D1 Overview - ' + event + ' ' + comp.name,

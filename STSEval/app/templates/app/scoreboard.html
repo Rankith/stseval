@@ -40,9 +40,9 @@
     var ScoreboardRoutineID = -1;
     var Status = "";
     var Videos = new Array();
-    var db = firebase.firestore();
+    var dbF = firebase.firestore();
 
-    db.collection("routines").doc(Comp + Disc + ev)
+    dbF.collection("routines").doc(Comp + Disc + ev)
         .onSnapshot(function (doc) {
             console.log("scoreboard");
             SetBasedOnStatusScoreboard(doc);
