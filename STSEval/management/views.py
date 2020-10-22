@@ -2,8 +2,8 @@ from django.shortcuts import render,redirect
 from django.http import HttpRequest,JsonResponse,HttpResponse
 from django.template import RequestContext
 from datetime import datetime
-from .forms import CompetitionForm,SessionForm,JudgeForm
-from .models import Competition,Session,Athlete,Judge
+from .forms import CompetitionForm,SessionForm,JudgeForm,TeamForm,AthleteForm
+from .models import Competition,Session,Athlete,Judge,Team
 
 # Create your views here.
 def setup_competition(request):
@@ -76,8 +76,8 @@ def session_delete(request):
     Session.objects.filter(id=request.GET.get('id')).delete()
     return HttpResponse(status=200)
 
-def setup_judges(request):
-    session = Session.objects.get(pk=request.GET.get('session'))
+def setup_judges(request,id):
+    session = Session.objects.get(pk=id)
     events = []
     if session.competition.disc == "MAG":
         events.append({'short':'FX','long':'Floor Exercise'})
@@ -121,6 +121,77 @@ def judge_form(request):
             form = JudgeForm()
         return render(request, 'management/judge_form.html', {'form': form,'id':id})
 
+def setup_athletes(request,id):
+    session = Session.objects.get(pk=id)
+    context = {
+        'title': 'Compeition Setup (3/7)',
+        'session_name': session.full_name,
+        'id':session.id,
+    }
+    return render(request,'management/setup_athletes.html',context)
+
+def team_form(request):
+    if request.method == 'POST':
+        id = request.POST.get('id','-1')
+        if id != '-1':
+            form = TeamForm(request.POST,instance=Team.objects.get(pk=id))
+        else:
+            form = TeamForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponse(status=200)
+        else:
+            return render(request, 'management/team_form.html', {'form': form,'id':id})
+    else:
+        id = request.GET.get('id',-1)
+        if id != -1:
+            form = TeamForm(instance=Team.objects.get(pk=id))
+        else:
+            form = TeamForm()
+        return render(request, 'management/team_form.html', {'form': form,'id':id})
+
+def team_list(request,session_id):
+    teams = Team.objects.filter(session_id=session_id)
+    context = {
+        'teams':teams,
+    }
+    return render(request, 'management/team_list.html', context)
+
+def team_delete(request,id):
+    Team.objects.filter(id=id).delete()
+    return HttpResponse(status=200)
+
+def athlete_form(request):
+    if request.method == 'POST':
+        id = request.POST.get('id','-1')
+        if id != '-1':
+            form = AthleteForm(request.POST,instance=Athlete.objects.get(pk=id))
+        else:
+            form = AthleteForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponse(status=200)
+        else:
+            return render(request, 'management/athlete_form.html', {'form': form,'id':id})
+    else:
+        id = request.GET.get('id',-1)
+        if id != -1:
+            form = AthleteForm(instance=Athlete.objects.get(pk=id))
+        else:
+            form = AthleteForm()
+        return render(request, 'management/athlete_form.html', {'form': form,'id':id})
+
+def athlete_list(request,team_id):
+    athletes = Athlete.objects.filter(team_id=team_id)
+    context = {
+        'athletes':athletes,
+    }
+    return render(request, 'management/athlete_list.html', context)
+
+def athlete_delete(request,id):
+    Athlete.objects.filter(id=id).delete()
+    return HttpResponse(status=200)
+
 def judges_get(request):
     comp = request.GET.get('comp')
     disc = request.GET.get('disc')
@@ -143,12 +214,7 @@ def judges_update(request):
     resp = {'updated':True}
     return JsonResponse(resp)
 
-def athlete_list(request):
-    athletes = Athlete.objects.filter(competition_id=request.GET.get('comp'),disc=request.GET.get('disc'))
-    context = {
-        'athletes':athletes,
-    }
-    return render(request, 'management/athlete_list.html', context)
+
 
 def athlete_create_update(request):
     athleteid = request.GET.get('id','-1')
@@ -180,9 +246,7 @@ def athlete_manage(request):
     }
     return render(request, 'management/athlete_manage.html', context)
 
-def athlete_delete(request):
-    Athlete.objects.filter(id=request.GET.get('id')).delete()
-    return HttpResponse(status=200)
+
 
 
 def session_manage(request):

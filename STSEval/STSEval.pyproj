@@ -145,6 +145,9 @@
     <Content Include="app\templates\app\status_dots.html" />
     <Content Include="app\templates\app\dot_change.html" />
     <Content Include="app\templates\app\dots_area.html" />
+    <Content Include="management\templates\management\athlete_form.html" />
+    <Content Include="management\templates\management\team_form.html" />
+    <Content Include="management\templates\management\team_list.html" />
     <Content Include="management\templates\management\athlete_list.html" />
     <Content Include="management\templates\management\judge_form.html" />
     <Content Include="management\templates\management\session_form.html" />
@@ -165,6 +168,7 @@
     <Content Include="app\templates\app\twitch_auth.html" />
     <Content Include="app\templates\app\twitch_connect.html" />
     <Content Include="management\templates\management\index.html" />
+    <Content Include="management\templates\management\setup_athletes.html" />
     <Content Include="management\templates\management\setup_judges.html" />
     <Content Include="requirements.txt" />
     <Content Include="db.sqlite3" />

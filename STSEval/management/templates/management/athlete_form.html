@@ -1,0 +1,27 @@
+<form id="form" action="/management/athlete_form/" method="post">
+    {% csrf_token %}
+    <div id="divManageAthlete" align="center">
+        <div class="row">
+            <div class="col-4">
+                LEVEL<br/>
+                {{ form.level }}<br/>
+                {{form.level.errors}}
+            </div>
+            <div class="col-5">
+                NAME<br/>
+                {{ form.name }}<br/>
+                {{form.name.errors}}
+            </div>
+            <div class="col-3">
+                ROTATION<br/>
+                {{ form.rotation }}<br/>
+                {{form.rotation.errors}}
+            </div>
+        </div>
+        {{form.team}}
+        <br/>
+        <input type="hidden" id="id" name="id" value="{{id}}" />
+        <input type="submit" href="#" id="btnAthleteFinish" class="btn btn-main" value="Save">
+        <button href="#" id="btnAthleteCancel" type="button" class="btn btn-red" data-dismiss="modal">Cancel</button>
+    </div>
+</form>

@@ -1,0 +1,251 @@
+{% extends "app/layout.html" %}
+
+{% block content %}
+<div align="center" style="margin:10px;padding:0">
+    <div>
+	    <div id="divTeams" style="display:inline-block;vertical-align: top;padding:3px;display:inline-block;margin-right:30px;">
+	        <div id="divTeamHeader" style="padding-bottom:5px;font-size:22px;font-weight:bold;text-align:center">Teams</div>
+            <div style="width:310px;">
+                <div class="row">
+                    <div class="col-8" align="left">
+                        GYM NAME
+                    </div>
+                     <div class="col-4" align="right">
+                        ABBREV.
+                    </div>
+                </div>
+            </div>
+	        <div id="divTeamList"class="listbox mb-2"  style="width:310px;height:180px;"></div>
+	        <div id="divTeamButtonsArea">
+		        <button href="#" id="btnTeamsAdd"  type="button" class="btn btn-main management-button" data-toggle="modal" data-target="#modalMain" onclick="AddTeamStart()">Add</button>
+		        <button href="#" id="btnTeamsEdit"  type="button" class="btn btn-main management-button" data-toggle="modal" data-target="#modalMain" onclick="EditTeamStart()">Edit</button>
+		        <button href="#" id="btnTeamsDelete"  type="button" class="btn btn-red management-button" onclick="TeamDelete()">Delete</button>
+	        </div>
+	    </div>
+
+        <div id="divAthletes" style="vertical-align: top;padding:3px;display:inline-block;margin-right:30px;" class="ui-disabled">
+		    <div id="divAthletesHeader" style="padding-bottom:5px;font-size:22px;font-weight:bold;text-align:center">Athletes</div>
+		    <div id="divAthletesList" class="listbox mb-2" style="width:310px;height:180px;"></div>
+		    <div id="divAthletesButtonsArea">
+		        <button href="#" id="btnAthAdd"   type="button" class="btn btn-main management-button"  data-toggle="modal" data-target="#modalMain" onclick="AddAthleteStart()">Add</button>
+		        <button href="#" id="btnAthEdit"  type="button" class="btn btn-main management-button" data-toggle="modal" data-target="#modalMain" onclick="EditAthleteStart()">Edit</button>
+		        <button href="#" id="btnAthDelete"   type="button" class="btn btn-red management-button" onclick="AthleteDelete()">Delete</button>
+	        </div>
+	    </div>
+    </div>
+    <br/>
+    <br/>
+    <div>
+        <button id="btnBack" type="button" class="btn-main pt-4 pb-4" style="border-radius: 1rem;" onclick="GoBack()">Return to<br/>Previous Page</button>
+        <button id="btnNext" type="button" class="btn-main pt-4 pb-4" style="border-radius: 1rem;" onclick="NextClick()">Save and<br/>Continue (3/7)</button>
+    </div>
+		
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript">
+    var token = "{{ csrf_token }}";
+    var SessionID = "{{id}}";
+</script>
+<script type="text/javascript">
+    var SelectedTeam = -1;
+    var SelectedAthlete = -1;
+    var Changed = false;
+
+    $("#divTeamList").load("/management/team_list/" + SessionID); 
+   
+    function GoBack() {
+        window.location = "/management/setup_judges/" + SessionID;
+    }
+
+    function NextClick() {
+        window.location = "/management/setup_camera/" + SessionID;
+    }
+
+    function AthleteClick(athIn) {
+        $('.athlete-list').removeClass("ctxSelected");
+        $("#divAthlete" + athIn).addClass("ctxSelected");
+        SelectedAthlete = athIn;
+        //$("#btnNext").removeClass("ui-disabled");
+
+    }
+
+    function TeamClick(TeamIn) {
+        
+        $('.team-list').removeClass("ctxSelected");
+        $("#divTeam" + TeamIn).addClass("ctxSelected");
+        SelectedTeam = TeamIn;
+        $("#divAthletes").removeClass("ui-disabled");
+        FillAthletes();
+        //$("#btnNext").addClass("ui-disabled");
+    }
+
+    function AddTeamStart() {
+        $("#modalMainDoc").addClass("modal-lg");
+        $("#modalMainTitle").html("ADD TEAM");
+        $(".modal-dialog")
+        $("#modalBodyArea2").hide();
+        $("#modalBodyArea1").empty();
+        $("#modalBodyArea1").load("/management/team_form", function () {
+            AttachTeamForm();
+        });
+
+        $("#modalBodyArea1").show();
+    }
+
+    function EditTeamStart() {
+        if (SelectedTeam != -1) {
+            $("#modalMainDoc").addClass("modal-lg");
+            $("#modalMainTitle").html("EDIT TEAM");
+            $(".modal-dialog")
+            $("#modalBodyArea2").hide();
+            $("#modalBodyArea1").empty();
+            $("#modalBodyArea1").load("/management/team_form/?id=" + SelectedTeam, function () {
+                AttachTeamForm();
+            });
+
+            $("#modalBodyArea1").show();
+        }
+    }
+    function TeamDelete() {
+        if (SelectedTeam != -1) {
+            $.ajax({
+                url: "/management/team_delete/" + SelectedTeam,
+                success: function () {
+                    $("#divTeamList").load("/management/team_list/" + SessionID); 
+                    Changed = false;
+                    $('.athlete-list').removeClass("ctxSelected");
+                    $("#divAthletes").addClass('ui-disabled');
+                    $("#divAthleteList").empty();
+                    //$("#btnNext").addClass("ui-disabled");
+                }
+            });
+    
+        }
+    }
+
+    function AttachTeamForm() {
+        console.log("attach");
+        var frm = $('#form');
+        $("#id_session").val(SessionID);
+        frm.submit(function () {
+            console.log("forming");
+            $.ajax({
+                type: frm.attr('method'),
+                url: frm.attr('action'),
+                data: frm.serialize(),
+                success: function (data) {
+                    if (data != "") {
+                        $("#modalBodyArea1").empty();
+                        $("#modalBodyArea1").html(data);
+                        AttachTeamForm();
+                        //console.log("Error");
+                    }
+                    else {
+                        TeamManageFinishParent();
+                    }
+                },
+                error: function(data) {
+                    
+                }
+            });
+            return false;
+        });
+    }
+
+    function AttachAthleteForm() {
+        var frm = $('#form');
+        $("#id_team").val(SelectedTeam);
+        $('.selectpicker').selectpicker();
+        frm.submit(function () {
+            console.log("forming");
+            $.ajax({
+                type: frm.attr('method'),
+                url: frm.attr('action'),
+                data: frm.serialize(),
+                success: function (data) {
+                    if (data != "") {
+                        $("#modalBodyArea1").empty();
+                        $("#modalBodyArea1").html(data);
+                        AttachAthleteForm();
+                        //console.log("Error");
+                    }
+                    else {
+                        AthleteManageFinishParent();
+                    }
+                },
+                error: function(data) {
+                }
+            });
+            return false;
+        });
+    }
+
+    function TeamManageFinishParent() {
+        $("#modalMain").modal('hide');
+        $("#divTeamList").load("/management/team_list/" +SessionID, function () {
+            console.log("comp finish " + SelectedTeam);
+            if (SelectedTeam != -1) 
+                CompClick(SelectedTeam);
+        });
+        
+    }
+
+    function AddAthleteStart() {
+        $("#modalMainDoc").removeClass("modal-lg");
+        $("#modalMainTitle").html("ADD ATHLETE");
+        $(".modal-dialog")
+        $("#modalBodyArea2").hide();
+        $("#modalBodyArea1").empty();
+        $("#modalBodyArea1").load("/management/athlete_form/", function () {
+            AttachAthleteForm();
+        });
+
+        $("#modalBodyArea1").show();
+    }
+    function EditAthleteStart() {
+        if (SelectedAthlete != -1) {
+            $("#modalMainDoc").removeClass("modal-lg");
+            $("#modalMainTitle").html("EDIT ATHLETE");
+            $(".modal-dialog")
+            $("#modalBodyArea2").hide();
+            $("#modalBodyArea1").empty();
+            $("#modalBodyArea1").load("/management/athlete_form/?id=" + SelectedAthlete, function () {
+                AttachAthleteForm();
+            });
+
+            $("#modalBodyArea1").show();
+        }
+    }
+
+     function AthleteManageFinishParent() {
+        $("#modalMain").modal('hide');
+        $("#divAthleteList").load("/management/athlete_list/"+ SelectedTeam, function () {
+            if (SelectedAthlete != -1)
+                AthleteClick(SelectedAthlete);
+        });
+        
+    }
+
+    function AthleteDelete() {
+        if (SelectedAthlete != -1) {
+            $.ajax({
+                url: "/management/athlete_delete/" + SelectedAthlete,
+                data: {
+                    'id': SelectedAthlete,
+                },
+                success: function () {
+                    FillAthletes();
+                    //$("#btnNext").addClass("ui-disabled");
+                }
+            });
+        }
+    }
+
+    function FillAthletes() {
+        $("#divAthleteList").load("/management/athlete_list/"+ SelectedTeam);
+    }
+</script>
+{% endblock %}

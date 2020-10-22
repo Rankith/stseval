@@ -1,0 +1,22 @@
+<form id="form" action="/management/team_form/" method="post">
+    {% csrf_token %}
+    <div id="divManageTeam" align="center">
+        <div class="row">
+            <div class="col-10">
+                NAME<br/>
+                {{ form.name }}<br/>
+                {{form.name.errors}}
+            </div>
+            <div class="col-2">
+                ABBREV.<br/>
+                {{ form.abbreviation }}<br/>
+                {{form.time.errors}}
+            </div>
+        </div>
+        {{form.session}}
+        <br/>
+        <input type="hidden" id="id" name="id" value="{{id}}" />
+        <input type="submit" href="#" id="btnTeamFinish" class="btn btn-main" value="Save">
+        <button href="#" id="btnTeamCancel" type="button" class="btn btn-red" data-dismiss="modal">Cancel</button>
+    </div>
+</form>

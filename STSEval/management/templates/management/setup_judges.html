@@ -17,7 +17,7 @@
     <br/>
     <div>
         <button id="btnBack" type="button" class="btn-main pt-4 pb-4" style="border-radius: 1rem;" onclick="GoBack()">Return to<br/>Previous Page</button>
-        <button id="btnNext" type="button" class="btn-main ui-disabled pt-4 pb-4" style="border-radius: 1rem;">Save and<br/>Continue (2/7)</button>
+        <button id="btnNext" type="button" class="btn-main pt-4 pb-4" style="border-radius: 1rem;" onclick="NextClick()">Save and<br/>Continue (2/7)</button>
     </div>
 		
 </div>
@@ -32,6 +32,7 @@
 <script type="text/javascript">
     var SelectedEvent = -1;
     var Changed = false;
+    var gonext = false;
     EventClick();
 
     function CheckChange(ThingIn)
@@ -55,7 +56,7 @@
         //if ($("#ddlEventJudge").val() != SelectedEvent)        {
         if (CheckChange("switch events")) {
             SelectedEvent = $("#ddlEvent").val();
-
+            gonext = false;
             $.ajax({
                 url: "/management/judge_form/?event=" + SelectedEvent + "&session=" + SessionID,
                 success: function (data) {
@@ -78,12 +79,42 @@
         }
     }
 
+    function NextClick() {
+        if (Changed) {
+            gonext = true;
+            $('#form').submit();
+        }
+        else
+            GoNext();
+    }
+
+    function GoNext() {
+        window.location = "/management/setup_athletes/" + SessionID;
+    }
+
     function Save() {
+        gonext = false;
         $('#form').submit();
     }
 
-    function FlagChange() {
+    function FlagChange(passer) {
         Changed = true;
+        if (passer.id.includes('email'))
+            CheckGeneratePassword(passer.id.substring(3, 5));
+    }
+
+    function CheckGeneratePassword(line) {
+        if (($("#id_" + line + "_password").val() == "" || $("#id_" + line + "_password").val() == " ") && ($("#id_" + line + "_email").val() != "")) {
+            $("#id_" + line + "_password").val(generate(6));
+        }
+    }
+
+    function generate(length) {
+        var chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
+            result=""
+        for (var i = length; i > 0; --i)
+            result += chars[Math.round(Math.random() * (chars.length - 1))]
+        return result
     }
 
     function AttachForm() {
@@ -102,11 +133,15 @@
                         $("#divJudges").empty();
                         $("#divJudges").html(data);
                         AttachForm();
+                        
                         //console.log("Error");
                     }
                     else {
                         $("#divErrors").empty();
+                        $(".errorlist").empty();
                         Changed = false;
+                        if (gonext)
+                            GoNext();
                     }
                 },
                 error: function(data) {
@@ -115,18 +150,6 @@
             });
             return false;
         });
-    }
-
-    
-
-    function CompManageFinishParent() {
-        $("#modalMain").modal('hide');
-        $("#divCompList").load("/management/competition_list/?disc=" +SelectedDisc, function () {
-            console.log("comp finish " + SelectedComp);
-            if (SelectedComp != -1) 
-                CompClick(SelectedComp);
-        });
-        
     }
 
    

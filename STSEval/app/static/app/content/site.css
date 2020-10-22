@@ -370,8 +370,11 @@ input[type="checkbox"].input-validation-error {
     width:100px;
     margin-bottom:.5rem;
 }
-.errorList {
-    color:red;
+.errorlist {
+    color: red;
+    list-style-type: none;
+    padding-inline-start: 0px;
+    margin-bottom:0px !important;
 }
 .col-25 {
     -ms-flex: 0 0 20%;

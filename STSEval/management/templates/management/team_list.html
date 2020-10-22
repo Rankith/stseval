@@ -1,0 +1,8 @@
+{% block content %}
+    {% for team in teams %}
+        <div id="divTeam{{team.id}}" onclick="TeamClick({{team.id}});"class="row no-gutters team-list">
+            <div class="col-9 pl-2" align="left">{{team.name}}</div>
+            <div class="col-3 pr-2" align="right">{{team.abbreviation}}</div>
+        </div>
+    {% endfor %}
+{% endblock %}
