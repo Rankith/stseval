@@ -136,6 +136,7 @@
                 success: function () {
                     $("#divCompList").load("/management/competition_list/?disc=" + SelectedDisc); 
                     Changed = false;
+                    SelectedComp = -1;
                     $('.session-list').removeClass("ctxSelected");
                     $("#divSessions").addClass('ui-disabled');
                     $("#divSessionList").empty();
@@ -258,6 +259,7 @@
                 },
                 success: function () {
                     FillSession();
+                    SelectedSession = -1;
                     $("#btnNext").addClass("ui-disabled");
                 }
             });

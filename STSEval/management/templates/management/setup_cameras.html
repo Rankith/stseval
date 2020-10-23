@@ -1,0 +1,155 @@
+{% extends "app/layout.html" %}
+
+{% block content %}
+<div align="center" style="margin:10px;padding:0">
+    <div>
+        <div id="divCameras" style="vertical-align: top;padding:3px;display:inline-block;margin-right:30px;">
+		    <div id="divCameraHeader" style="padding-bottom:5px;font-size:22px;font-weight:bold;text-align:center">Cameras</div>
+            <div style="width:600px;">
+                <div class="row">
+                    <div class="col-3" align="left">
+                        &nbsp;NAME
+                    </div>
+                    <div class="col-3" align="center">
+                        LOCATION
+                    </div>
+                    <div class="col-3" align="center">
+                        EVENT(S)
+                    </div>
+                    <div class="col-3" align="right">
+                        TEAM(S)&nbsp;
+                    </div>
+                </div>
+            </div>
+		    <div id="divCameraList" class="listbox mb-2" style="width:600px;height:180px;"></div>
+		    <div id="divCameraButtonsArea">
+		        <button href="#" id="btnCameraAdd"   type="button" class="btn btn-main management-button"  data-toggle="modal" data-target="#modalMain" onclick="AddCameraStart()">Add</button>
+		        <button href="#" id="btnCameraEdit"  type="button" class="btn btn-main management-button" data-toggle="modal" data-target="#modalMain" onclick="EditCameraStart()">Edit</button>
+		        <button href="#" id="btnCameraDelete"   type="button" class="btn btn-red management-button" onclick="CameraDelete()">Delete</button>
+	        </div>
+	    </div>
+    </div>
+    <br/>
+    <br/>
+    <div>
+        <button id="btnBack" type="button" class="btn-main pt-4 pb-4" style="border-radius: 1rem;" onclick="GoBack()">Return to<br/>Previous Page</button>
+        <button id="btnNext" type="button" class="btn-main pt-4 pb-4" style="border-radius: 1rem;" onclick="NextClick()">Save and<br/>Continue (4/7)</button>
+    </div>
+		
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript">
+    var token = "{{ csrf_token }}";
+    var SessionID = "{{id}}";
+</script>
+<script type="text/javascript">
+    var SelectedTeam = -1;
+    var SelectedCamera = -1;
+    var Changed = false;
+
+    $("#divCameraList").load("/management/camera_list/" + SessionID); 
+   
+    function GoBack() {
+        window.location = "/management/setup_athletes/" + SessionID;
+    }
+
+    function NextClick() {
+        window.location = "/management/setup_sponsors/" + SessionID;
+    }
+
+    function CameraClick(camIn) {
+        $('.camera-list').removeClass("ctxSelected");
+        $("#divCamera" + camIn).addClass("ctxSelected");
+        SelectedCamera = camIn;
+        //$("#btnNext").removeClass("ui-disabled");
+
+    }
+
+    function AttachCameraForm() {
+        var frm = $('#form');
+        $("#id_session").val(SessionID);
+        frm.submit(function () {
+            console.log("forming");
+            $.ajax({
+                type: frm.attr('method'),
+                url: frm.attr('action'),
+                data: frm.serialize(),
+                success: function (data) {
+                    if (data != "") {
+                        $("#modalBodyArea1").empty();
+                        $("#modalBodyArea1").html(data);
+                        AttachCameraForm();
+                        //console.log("Error");
+                    }
+                    else {
+                        CameraManageFinishParent();
+                    }
+                },
+                error: function(data) {
+                }
+            });
+            return false;
+        });
+    }
+
+
+    function AddCameraStart() {
+        $("#modalMainDoc").addClass("modal-lg");
+        $("#modalMainTitle").html("ADD CAMERA");
+        $(".modal-dialog")
+        $("#modalBodyArea2").hide();
+        $("#modalBodyArea1").empty();
+        $("#modalBodyArea1").load("/management/camera_form/?session=" + SessionID, function () {
+            AttachCameraForm();
+        });
+
+        $("#modalBodyArea1").show();
+    }
+    function EditCameraStart() {
+        if (SelectedCamera != -1) {
+            $("#modalMainDoc").addClass("modal-lg");
+            $("#modalMainTitle").html("EDIT CAMERA");
+            $(".modal-dialog")
+            $("#modalBodyArea2").hide();
+            $("#modalBodyArea1").empty();
+            $("#modalBodyArea1").load("/management/camera_form/?id=" + SelectedCamera + "&session=" + SessionID, function () {
+                AttachCameraForm();
+            });
+
+            $("#modalBodyArea1").show();
+        }
+    }
+
+     function CameraManageFinishParent() {
+        $("#modalMain").modal('hide');
+        $("#divCameraList").load("/management/camera_list/"+ SessionID, function () {
+            if (SelectedCamera != -1)
+                CameraClick(SelectedCamera);
+        });
+        
+    }
+
+    function CameraDelete() {
+        if (SelectedCamera != -1) {
+            $.ajax({
+                url: "/management/camera_delete/" + SelectedCamera,
+                data: {
+                    'id': SelectedCamera,
+                },
+                success: function () {
+                    FillCameras();
+                    SelectedCamera = -1;
+                    //$("#btnNext").addClass("ui-disabled");
+                }
+            });
+        }
+    }
+
+    function FillCameras() {
+        $("#divCameraList").load("/management/camera_list/"+ SessionID);
+    }
+</script>
+{% endblock %}

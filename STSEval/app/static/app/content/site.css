@@ -390,3 +390,9 @@ input[type="checkbox"].input-validation-error {
     width: 175px !important;
     margin-bottom: .5rem;
 }
+
+.camera-checkbox {
+    list-style-type: none;
+    padding-inline-start: 0px;
+    margin-bottom: 0px !important;
+}

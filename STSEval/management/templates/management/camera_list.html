@@ -1,0 +1,11 @@
+{% block content %}
+    {% for camera in cameras %}
+        <div id="divCamera{{camera.id}}" onclick="CameraClick({{camera.id}});"class="row no-gutters camera-list">
+            <div class="col-3 pl-2" align="left">{{camera.name}}</div>
+            <div class="col-3" align="center">{{camera.location}}</div>
+            <div class="col-3" align="center">
+            {% for event in camera.events.all %}{% if not forloop.first%},{% endif %}{{event}}{% endfor %}</div>
+            <div class="col-3 pr-2" align="right">{% for team in camera.teams.all %}{% if not forloop.first%},{% endif %}{{team.abbreviation}}{% endfor %}</div></div>
+        </div>
+    {% endfor %}
+{% endblock %}

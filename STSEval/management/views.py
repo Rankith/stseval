@@ -2,8 +2,8 @@ from django.shortcuts import render,redirect
 from django.http import HttpRequest,JsonResponse,HttpResponse
 from django.template import RequestContext
 from datetime import datetime
-from .forms import CompetitionForm,SessionForm,JudgeForm,TeamForm,AthleteForm
-from .models import Competition,Session,Athlete,Judge,Team,Disc,Event
+from .forms import CompetitionForm,SessionForm,JudgeForm,TeamForm,AthleteForm,CameraForm,SponsorForm
+from .models import Competition,Session,Athlete,Judge,Team,Disc,Event,Camera,Sponsor
 
 # Create your views here.
 def setup_competition(request):
@@ -182,6 +182,89 @@ def athlete_list(request,team_id):
 def athlete_delete(request,id):
     Athlete.objects.filter(id=id).delete()
     return HttpResponse(status=200)
+
+def setup_cameras(request,id):
+    session = Session.objects.get(pk=id)
+    context = {
+        'title': 'Compeition Setup (4/7)',
+        'session_name': session.full_name,
+        'id':session.id,
+    }
+    return render(request,'management/setup_cameras.html',context)
+
+def camera_form(request):
+    if request.method == 'POST':
+        id = request.POST.get('id','-1')
+        if id != '-1':
+            cam = Camera.objects.get(pk=id)
+            form = CameraForm(request.POST,instance=cam,session=cam.session.id)
+        else:
+            form = CameraForm(request.POST,session=request.POST.get('session'))
+        if form.is_valid():
+            form.save()
+            return HttpResponse(status=200)
+        else:
+            return render(request, 'management/camera_form.html', {'form': form,'id':id})
+    else:
+        id = request.GET.get('id',-1)
+        if id != -1:
+            cam = Camera.objects.get(pk=id)
+            form = CameraForm(instance=cam,session=cam.session.id)
+        else:
+            form = CameraForm(session=request.GET.get('session'))
+        return render(request, 'management/camera_form.html', {'form': form,'id':id})
+
+def camera_list(request,session_id):
+    cameras = Camera.objects.filter(session_id=session_id)
+    context = {
+        'cameras':cameras,
+    }
+    return render(request, 'management/camera_list.html', context)
+
+def camera_delete(request,id):
+    Camera.objects.filter(id=id).delete()
+    return HttpResponse(status=200)
+
+def setup_sponsors(request,id):
+    session = Session.objects.get(pk=id)
+    context = {
+        'title': 'Compeition Setup (5/6)',
+        'session_name': session.full_name,
+        'id':session.id,
+    }
+    return render(request,'management/setup_sponsors.html',context)
+
+def sponsor_form(request):
+    if request.method == 'POST':
+        id = request.POST.get('id','-1')
+        if id != '-1':
+            form = SponsorForm(request.POST,request.FILES,instance=Sponsor.objects.get(pk=id))
+        else:
+            form = SponsorForm(request.POST,request.FILES)
+        if form.is_valid():
+            form.save()
+            return HttpResponse(status=200)
+        else:
+            return render(request, 'management/sponsor_form.html', {'form': form,'id':id})
+    else:
+        id = request.GET.get('id',-1)
+        if id != -1:
+            form = SponsorForm(instance=Sponsor.objects.get(pk=id))
+        else:
+            form = SponsorForm()
+        return render(request, 'management/sponsor_form.html', {'form': form,'id':id})
+
+def sponsor_list(request,session_id):
+    sponsors = Sponsor.objects.filter(session_id=session_id)
+    context = {
+        'sponsors':sponsors,
+    }
+    return render(request, 'management/sponsor_list.html', context)
+
+def sponsor_delete(request,id):
+    Sponsor.objects.filter(id=id).delete()
+    return HttpResponse(status=200)
+
 
 def judges_get(request):
     comp = request.GET.get('comp')

@@ -1,0 +1,11 @@
+<form id="form" action="/management/sponsor_form/" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div id="divManageSponsor" align="center">
+       
+        {{form}}
+        <br/>
+        <input type="hidden" id="id" name="id" value="{{id}}" />
+        <input type="submit" href="#" id="btnSponsorFinish" class="btn btn-main" value="Save">
+        <button href="#" id="btnSponsorCancel" type="button" class="btn btn-red" data-dismiss="modal">Cancel</button>
+    </div>
+</form>

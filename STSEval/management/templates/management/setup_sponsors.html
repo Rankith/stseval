@@ -1,0 +1,170 @@
+{% extends "app/layout.html" %}
+
+{% block content %}
+<div align="center" style="margin:10px;padding:0">
+    <div>
+        <div id="divSponsors" style="vertical-align: top;padding:3px;display:inline-block;margin-right:30px;">
+		    <div id="divSponsorHeader" style="padding-bottom:5px;font-size:22px;font-weight:bold;text-align:center">Sponsors</div>
+		    <div id="divSponsorList" class="listbox mb-2" style="width:500px;height:180px;"></div>
+		    <div id="divSponsorButtonsArea">
+		        <button href="#" id="btnSponsorAdd"   type="button" class="btn btn-main management-button"  data-toggle="modal" data-target="#modalMain" onclick="AddSponsorStart()">Add</button>
+		        <button href="#" id="btnSponsorEdit"  type="button" class="btn btn-main management-button" data-toggle="modal" data-target="#modalMain" onclick="EditSponsorStart()">Edit</button>
+		        <button href="#" id="btnSponsorDelete"   type="button" class="btn btn-red management-button" onclick="SponsorDelete()">Delete</button>
+	        </div>
+	    </div>
+    </div>
+    <br/>
+    <br/>
+    <div>
+        <button id="btnBack" type="button" class="btn-main pt-4 pb-4" style="border-radius: 1rem;" onclick="GoBack()">Return to<br/>Previous Page</button>
+        <button id="btnNext" type="button" class="btn-main pt-4 pb-4" style="border-radius: 1rem;" onclick="NextClick()">Save and<br/>Continue (5/6)</button>
+    </div>
+		
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript">
+    var token = "{{ csrf_token }}";
+    var SessionID = "{{id}}";
+</script>
+<script type="text/javascript">
+    var SelectedTeam = -1;
+    var SelectedSponsor = -1;
+    var Changed = false;
+
+    $("#divSponsorList").load("/management/sponsor_list/" + SessionID); 
+   
+    function GoBack() {
+        window.location = "/management/setup_cameras/" + SessionID;
+    }
+
+    function NextClick() {
+        window.location = "/management/setup_finish/" + SessionID;
+    }
+
+    function SponsorClick(sponsorIn) {
+        $('.sponsor-list').removeClass("ctxSelected");
+        $("#divSponsor" + sponsorIn).addClass("ctxSelected");
+        SelectedSponsor = sponsorIn;
+        //$("#btnNext").removeClass("ui-disabled");
+
+    }
+
+    function AttachSponsorForm() {
+        var frm = $('#form');
+        $("#id_session").val(SessionID);
+        frm.submit(function () {
+            console.log("forming");
+            $.ajax({
+                type: frm.attr('method'),
+                url: frm.attr('action'),
+                data: new FormData(document.getElementById("form")),
+                contentType: false,
+                processData: false,
+                success: function (data) {
+                    if (data != "") {
+                        $("#modalBodyArea1").empty();
+                        $("#modalBodyArea1").html(data);
+                        AttachSponsorForm();
+                        //console.log("Error");
+                    }
+                    else {
+                        SponsorManageFinishParent();
+                    }
+                },
+                error: function(data) {
+                }
+            });
+            return false;
+        });
+    }
+
+    function AttachAthleteForm() {
+        var frm = $('#form');
+        $("#id_team").val(SelectedTeam);
+        $('.selectpicker').selectpicker();
+        frm.submit(function () {
+            console.log("forming");
+            $.ajax({
+                type: frm.attr('method'),
+                url: frm.attr('action'),
+                data: frm.serialize(),
+                success: function (data) {
+                    if (data != "") {
+                        $("#modalBodyArea1").empty();
+                        $("#modalBodyArea1").html(data);
+                        AttachAthleteForm();
+                        //console.log("Error");
+                    }
+                    else {
+                        AthleteManageFinishParent();
+                    }
+                },
+                error: function (data) {
+                }
+            });
+            return false;
+        });
+    }
+
+
+    function AddSponsorStart() {
+        $("#modalMainDoc").addClass("modal-lg");
+        $("#modalMainTitle").html("ADD SPONSOR");
+        $(".modal-dialog")
+        $("#modalBodyArea2").hide();
+        $("#modalBodyArea1").empty();
+        $("#modalBodyArea1").load("/management/sponsor_form/", function () {
+            AttachSponsorForm();
+        });
+
+        $("#modalBodyArea1").show();
+    }
+    function EditSponsorStart() {
+        console.log("what " + SelectedSponsor);
+        if (SelectedSponsor != -1) {
+            $("#modalMainDoc").addClass("modal-lg");
+            $("#modalMainTitle").html("EDIT SPONSOR");
+            $(".modal-dialog")
+            $("#modalBodyArea2").hide();
+            $("#modalBodyArea1").empty();
+            $("#modalBodyArea1").load("/management/sponsor_form/?id=" + SelectedSponsor, function () {
+                AttachSponsorForm();
+            });
+
+            $("#modalBodyArea1").show();
+        }
+    }
+
+     function SponsorManageFinishParent() {
+        $("#modalMain").modal('hide');
+        $("#divSponsorList").load("/management/sponsor_list/"+ SessionID, function () {
+            if (SelectedSponsor != -1)
+                SponsorClick(SelectedSponsor);
+        });
+        
+    }
+
+    function SponsorDelete() {
+        if (SelectedSponsor != -1) {
+            $.ajax({
+                url: "/management/sponsor_delete/" + SelectedSponsor,
+                data: {
+                    'id': SelectedSponsor,
+                },
+                success: function () {
+                    FillSponsors();
+                    SelectedSponsor = -1;
+                    //$("#btnNext").addClass("ui-disabled");
+                }
+            });
+        }
+    }
+
+    function FillSponsors() {
+        $("#divSponsorList").load("/management/sponsor_list/"+ SessionID);
+    }
+</script>
+{% endblock %}

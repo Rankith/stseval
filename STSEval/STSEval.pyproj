@@ -145,7 +145,13 @@
     <Content Include="app\templates\app\status_dots.html" />
     <Content Include="app\templates\app\dot_change.html" />
     <Content Include="app\templates\app\dots_area.html" />
+    <Content Include="management\templates\management\setup_sponsors.html" />
+    <Content Include="management\templates\management\sponsor_list.html" />
+    <Content Include="management\templates\management\sponsor_form.html" />
+    <Content Include="management\templates\management\camera_form.html" />
     <Content Include="management\templates\management\athlete_form.html" />
+    <Content Include="management\templates\management\camera_list.html" />
+    <Content Include="management\templates\management\setup_cameras.html" />
     <Content Include="management\templates\management\team_form.html" />
     <Content Include="management\templates\management\team_list.html" />
     <Content Include="management\templates\management\athlete_list.html" />

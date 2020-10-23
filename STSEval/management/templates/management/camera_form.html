@@ -1,0 +1,45 @@
+<form id="form" action="/management/camera_form/" method="post">
+    {% csrf_token %}
+     <div id="divManageCamera" align="center">
+        <div class="row">
+            <div class="col-3">
+                NAME<br/>
+                {{ form.name }}<br/>
+                {{form.name.errors}}
+            </div>
+            <div class="col-3">
+                EMAIL<br/>
+                {{ form.email }}<br/>
+                {{form.email.errors}}
+            </div>
+            <div class="col-3">
+                PASSWORD<br/>
+                {{ form.password }}<br/>
+                {{form.password.errors}}
+            </div>
+             <div class="col-3">
+                LOCATION (GYM)<br/>
+                {{ form.location }}<br/>
+                {{form.location.errors}}
+            </div>
+        </div>
+         <br/>
+        {{form.session}}
+        <div class="row">
+            <div class="col-6 pl-4" align="left">
+                EVENT(S) (select all that apply)<br/>
+                {{ form.events }}<br/>
+                {{form.events.errors}}
+            </div>
+            <div class="col-6" align="left">
+                TEAM(S) AT THIS CAMERA<br/>
+                {{ form.teams }}<br/>
+                {{form.teams.errors}}
+            </div>
+        </div>
+        <br/>
+        <input type="hidden" id="id" name="id" value="{{id}}" />
+        <input type="submit" href="#" id="btnCameraFinish" class="btn btn-main" value="Save">
+        <button href="#" id="btnCameraCancel" type="button" class="btn btn-red" data-dismiss="modal">Cancel</button>
+    </div>
+</form>

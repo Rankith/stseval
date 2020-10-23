@@ -5,8 +5,9 @@ Definition of forms.
 from django import forms
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from django.forms import ModelForm
-from management.models import Competition,Session,Athlete,Judge,Team
+from django.forms import ModelForm,CheckboxSelectMultiple,ImageField
+from django.utils.safestring import mark_safe
+from management.models import Competition,Session,Athlete,Judge,Team,Camera,Event,Sponsor
 
 class DateInput(forms.DateInput):
     input_type = 'date'
@@ -78,4 +79,44 @@ class AthleteForm(ModelForm):
                    'name':forms.TextInput(attrs={'class':'management-input'}),
                    'rotation':forms.TextInput(attrs={'class':'management-input'}),
                    'level':forms.Select(attrs={'class':'selectpicker management-input','data-style':'btn-main'})}
+
+class CameraForm(ModelForm):
+    class Meta:
+        model = Camera
+        fields = ['session','name','email','password','location','teams','events']
+        widgets = {'session': forms.HiddenInput(),
+                   'name':forms.TextInput(attrs={'class':'management-input'}),
+                   'email':forms.EmailInput(attrs={'placeholder':'example@email.com','class':'management-input'}),
+                   'password':forms.TextInput(attrs={'placeholder':'password','class':'management-input'}),
+                   'location':forms.TextInput(attrs={'class':'management-input'})}
+
+    def __init__(self, *args, **kwargs):
+        session = kwargs.pop('session')
+        session = Session.objects.get(pk=session)
+        super(CameraForm, self).__init__(*args, **kwargs)
+        self.fields["events"].widget = CheckboxSelectMultiple()
+        self.fields["events"].widget.attrs['class'] = 'camera-checkbox'
+        self.fields["events"].queryset = Event.objects.filter(disc=session.competition.disc)
+        self.fields['events'].label_from_instance = lambda obj: "%s - %s" % (obj.name, obj.full_name)
+        self.fields["teams"].widget = CheckboxSelectMultiple()
+        self.fields["teams"].widget.attrs['class'] = 'camera-checkbox'
+        self.fields["teams"].queryset = Team.objects.filter(session=session)
+
+class ImagePreviewWidget(forms.widgets.FileInput):
+    def render(self, name, value, attrs=None, **kwargs):
+        input_html = super().render(name, value, attrs=None, **kwargs)
+        if value:
+            img_html = mark_safe(f'<br><br><img src="{value.url}"/>')
+        else:
+            img_html=""
+        return f'{input_html}{img_html}'
+
+class SponsorForm(ModelForm):
+    class Meta:
+        model = Sponsor
+        fields = ['session','name','url','image']
+        widgets = {'session': forms.HiddenInput(),
+                   'name':forms.TextInput(attrs={'class':'management-input'}),
+                   'url':forms.TextInput(attrs={'class':'management-input'}),
+                   'image':ImagePreviewWidget()}
            

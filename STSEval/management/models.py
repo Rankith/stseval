@@ -101,8 +101,18 @@ class Camera(models.Model):
     name = models.CharField(max_length=50)
     email = models.EmailField(max_length=100)
     password = models.CharField(max_length=50)
-    location = models.CharField(max_length=50,blank=True)
+    location = models.CharField(max_length=50)
     events = models.ManyToManyField(Event)
     teams = models.ManyToManyField(Team)
     def __str__(self):
         return self.location + "-" + self.name
+
+def sponsor_path(instance, filename):
+    # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
+    return 'sponsors/{0}/{1}'.format(instance.session.id, filename)
+
+class Sponsor(models.Model):
+    session = models.ForeignKey(Session, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to=sponsor_path)
+    name = models.CharField(max_length=50)
+    url = models.URLField(max_length=200,blank=True)
