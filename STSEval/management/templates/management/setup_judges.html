@@ -9,7 +9,7 @@
     </div>
     <select id="ddlEvent" class="selectpicker" data-style="btn-main management-button-long" onchange="EventClick()">
         {% for event in events %}
-            <option value="{{event.short}}">{{event.long}}</option>
+            <option value="{{event.id}}">{{event.full_name}}</option>
         {% endfor %}
     </select><br/>
     <button href="#" id="btnSave" type="button" class="btn btn-main management-button-long" onclick="Save()">Save</button>

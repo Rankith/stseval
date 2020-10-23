@@ -1,9 +1,29 @@
 from django.db import models
 
 # Create your models here.
+class Disc(models.Model):
+    name = models.CharField(max_length=10)
+    full_name = models.CharField(max_length=50)
+    active = models.BooleanField(default=True)
+    display_order = models.IntegerField(default=1)
+    def __str__(self):
+        return self.name
+    class Meta:
+        ordering = ["display_order"]
+
+class Event(models.Model):
+    disc = models.ForeignKey(Disc, on_delete=models.CASCADE,default=None,null=True)
+    name = models.CharField(max_length=50)
+    full_name = models.CharField(max_length=50)
+    display_order = models.IntegerField(default=1)
+    def __str__(self):
+        return self.name
+    class Meta:
+        ordering = ["display_order"]
+
 class Competition(models.Model):
     name = models.CharField(max_length=75)
-    disc = models.CharField(max_length=10)
+    disc = models.ForeignKey(Disc, on_delete=models.SET_NULL,default=None,null=True)
     TOURNAMENT = 'T'
     DUAL = 'D'
     INTRASQUAD = 'I'
@@ -32,7 +52,7 @@ class Team(models.Model):
         return self.name
 
 class AthleteLevel(models.Model):
-    disc = models.CharField(max_length=10)
+    disc = models.ForeignKey(Disc, on_delete=models.CASCADE,default=None,null=True)
     name = models.CharField(max_length=25)
     abbreviation = models.CharField(max_length=6, blank=True)
     def __str__(self):
@@ -41,15 +61,16 @@ class AthleteLevel(models.Model):
 class Athlete(models.Model):
     team = models.ForeignKey(Team, on_delete=models.CASCADE,default=None,null=True)
     name = models.CharField(max_length=50)
-    level = models.ForeignKey(AthleteLevel,on_delete=models.CASCADE,default=None,null=True)
+    level = models.ForeignKey(AthleteLevel,on_delete=models.SET_NULL,default=None,null=True)
     age = models.IntegerField(default=8)
     rotation =  models.CharField(max_length=2,default='A')
     def __str__(self):
-        return self.team.name + " - " + self.level + " - " + self.name
+        return self.team.name + " - " + self.level.name + " - " + self.name
+
 
 class Judge(models.Model):
     session = models.ForeignKey(Session, on_delete=models.CASCADE)
-    event = models.CharField(max_length=10)
+    event = models.ForeignKey(Event, on_delete=models.SET_NULL,default=None,null=True)
     d1 = models.CharField(max_length=50,blank=True)
     d1_affil = models.CharField(max_length=50,blank=True)
     d1_email = models.EmailField(max_length=100,blank=True)
@@ -74,3 +95,14 @@ class Judge(models.Model):
     e4_affil = models.CharField(max_length=50,blank=True)
     e4_email = models.EmailField(max_length=100,blank=True)
     e4_password = models.CharField(max_length=50,blank=True)
+
+class Camera(models.Model):
+    session = models.ForeignKey(Session, on_delete=models.CASCADE)
+    name = models.CharField(max_length=50)
+    email = models.EmailField(max_length=100)
+    password = models.CharField(max_length=50)
+    location = models.CharField(max_length=50,blank=True)
+    events = models.ManyToManyField(Event)
+    teams = models.ManyToManyField(Team)
+    def __str__(self):
+        return self.location + "-" + self.name

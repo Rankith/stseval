@@ -5,7 +5,7 @@
     <div>
 	    <div id="divTeams" style="display:inline-block;vertical-align: top;padding:3px;display:inline-block;margin-right:30px;">
 	        <div id="divTeamHeader" style="padding-bottom:5px;font-size:22px;font-weight:bold;text-align:center">Teams</div>
-            <div style="width:310px;">
+            <!--<div style="width:310px;">
                 <div class="row">
                     <div class="col-8" align="left">
                         GYM NAME
@@ -14,7 +14,7 @@
                         ABBREV.
                     </div>
                 </div>
-            </div>
+            </div>-->
 	        <div id="divTeamList"class="listbox mb-2"  style="width:310px;height:180px;"></div>
 	        <div id="divTeamButtonsArea">
 		        <button href="#" id="btnTeamsAdd"  type="button" class="btn btn-main management-button" data-toggle="modal" data-target="#modalMain" onclick="AddTeamStart()">Add</button>
@@ -24,9 +24,22 @@
 	    </div>
 
         <div id="divAthletes" style="vertical-align: top;padding:3px;display:inline-block;margin-right:30px;" class="ui-disabled">
-		    <div id="divAthletesHeader" style="padding-bottom:5px;font-size:22px;font-weight:bold;text-align:center">Athletes</div>
-		    <div id="divAthletesList" class="listbox mb-2" style="width:310px;height:180px;"></div>
-		    <div id="divAthletesButtonsArea">
+		    <div id="divAthleteHeader" style="padding-bottom:5px;font-size:22px;font-weight:bold;text-align:center">Athletes</div>
+            <!--<div style="width:360px;">
+                <div class="row">
+                    <div class="col-4" align="left">
+                        LVL
+                    </div>
+                     <div class="col-6" align="center">
+                        NAME
+                    </div>
+                     <div class="col-2" align="right">
+                        ROTATION
+                    </div>
+                </div>
+            </div>-->
+		    <div id="divAthleteList" class="listbox mb-2" style="width:360px;height:180px;"></div>
+		    <div id="divAthleteButtonsArea">
 		        <button href="#" id="btnAthAdd"   type="button" class="btn btn-main management-button"  data-toggle="modal" data-target="#modalMain" onclick="AddAthleteStart()">Add</button>
 		        <button href="#" id="btnAthEdit"  type="button" class="btn btn-main management-button" data-toggle="modal" data-target="#modalMain" onclick="EditAthleteStart()">Edit</button>
 		        <button href="#" id="btnAthDelete"   type="button" class="btn btn-red management-button" onclick="AthleteDelete()">Delete</button>
@@ -65,7 +78,7 @@
     }
 
     function AthleteClick(athIn) {
-        $('.athlete-list').removeClass("ctxSelected");
+        $('.ath-list').removeClass("ctxSelected");
         $("#divAthlete" + athIn).addClass("ctxSelected");
         SelectedAthlete = athIn;
         //$("#btnNext").removeClass("ui-disabled");

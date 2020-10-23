@@ -1,5 +1,9 @@
 {% block content %}
     {% for athlete in athletes %}
-        <div id="divAthlete{{athlete.id}}" class="ath-list pb-2" onclick="AthleteClick({{athlete.id}});">{{athlete}}</div>
+        <div id="divAthlete{{athlete.id}}" onclick="AthleteClick({{athlete.id}});"class="row no-gutters ath-list">
+            <div class="col-4 pl-2" align="left">{{athlete.level}}</div>
+            <div class="col-6" align="center">{{athlete.name}}</div>
+            <div class="col-2 pr-2" align="right">{{athlete.rotation}}</div>
+        </div>
     {% endfor %}
 {% endblock %}

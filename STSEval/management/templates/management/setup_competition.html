@@ -6,12 +6,10 @@
         <div id="divDisc" style="vertical-align: top;padding:3px;height:254px;display:inline-block;margin-right:30px;">
 		    <div id="divDiscHeader" style="padding-bottom:5px;font-size:22px;font-weight:bold;text-align:center">Discipline</div>
 		    <div id="divDiscList" class="listbox" style="height:180px;">
-		    <div id="divDiscMAG" name="divDiscMAG" class="disc-list" style="padding-bottom:5px" onclick="DiscClick('MAG');">MAG</div>
-		    <div id="divDiscWAG" name="divDiscWAG" class="disc-list" style="padding-bottom:5px" onclick="DiscClick('WAG');">WAG</div>
-		    <div id="divDiscRG" name="divDiscRG" style="padding-bottom:5px" onclick="DiscClick('RG');" class="ui-disabled disc-list">RG</div>
-		    <div id="divDiscTRA" name="divDiscTRA" style="padding-bottom:5px" onclick="DiscClick('TRA');" class="ui-disabled disc-list">TRA</div>
-		    <div id="divDiscACRO" name="divDiscACRO"  style="padding-bottom:5px" onclick="DiscClick('ACRO');" class="ui-disabled disc-list">ACRO</div>
-		    <div id="divDiscAER" name="divDiscAER"  style="padding-bottom:5px" onclick="DiscClick('AER');" class="ui-disabled disc-list">AER</div>
+                {% for disc in discs %}
+                    <div id="divDisc{{disc.id}}" name="divDisc{{disc.id}}" class="disc-list{% if disc.active is False %} ui-disabled {% endif %}" style="padding-bottom:5px" onclick="DiscClick({{disc.id}});">{{disc.name}}</div>
+                {% endfor %}
+		        
 		    </div>
 	    </div>
 

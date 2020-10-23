@@ -3,12 +3,14 @@ from django.http import HttpRequest,JsonResponse,HttpResponse
 from django.template import RequestContext
 from datetime import datetime
 from .forms import CompetitionForm,SessionForm,JudgeForm,TeamForm,AthleteForm
-from .models import Competition,Session,Athlete,Judge,Team
+from .models import Competition,Session,Athlete,Judge,Team,Disc,Event
 
 # Create your views here.
 def setup_competition(request):
+
     context = {
         'title': 'Compeition Setup (1/7)',
+        'discs': Disc.objects.all(),
     }
     return render(request,'management/setup_competition.html',context)
 
@@ -78,19 +80,8 @@ def session_delete(request):
 
 def setup_judges(request,id):
     session = Session.objects.get(pk=id)
-    events = []
-    if session.competition.disc == "MAG":
-        events.append({'short':'FX','long':'Floor Exercise'})
-        events.append({'short':'PH','long':'Pommel Horse'})
-        events.append({'short':'R','long':'Rings'})
-        events.append({'short':'V','long':'Vault'})
-        events.append({'short':'PB','long':'Parellel Bars'})
-        events.append({'short':'HB','long':'High Bar'})
-    elif session.competition.disc == "WAG":
-        events.append({'short':'V','long':'Vault'})
-        events.append({'short':'UB','long':'Uneven Bars'})
-        events.append({'short':'BB','long':'Balance Beam'})
-        events.append({'short':'FX','long':'Floor Exercise'})
+    events = Event.objects.filter(disc=session.competition.disc)
+   
     context = {
         'title': 'Compeition Setup (2/7)',
         'session_name': session.full_name,
