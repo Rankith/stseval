@@ -18,8 +18,8 @@
 	        <div id="divCompList"class="listbox"  style="width:400px;height:180px;"></div><br/>
 	        <div id="divCompButtonsArea">
 		        <button href="#" id="btnCompAdd"  type="button" class="btn btn-main management-button" data-toggle="modal" data-target="#modalMain" onclick="AddCompStart()">Add</button><br/>
-		        <button href="#" id="btnCompEdit"  type="button" class="btn btn-main management-button" data-toggle="modal" data-target="#modalMain" onclick="EditCompStart()">Edit</button><br/>
-		        <button href="#" id="btnCompDelete"  type="button" class="btn btn-red management-button" onclick="CompDelete()">Delete</button>
+		        <button href="#" id="btnCompEdit"  type="button" class="btn btn-main management-button ui-disabled" data-toggle="modal" data-target="#modalMain" onclick="EditCompStart()">Edit</button><br/>
+		        <button href="#" id="btnCompDelete"  type="button" class="btn btn-red management-button ui-disabled" onclick="CompDelete()">Delete</button>
 	        </div>
 	    </div>
 
@@ -27,9 +27,9 @@
 		    <div id="divSessionHeader" style="padding-bottom:5px;font-size:22px;font-weight:bold;text-align:center">Session</div>
 		    <div id="divSessionList" class="listbox" style="width:240px;height:180px;"></div><br/>
 		    <div id="divSessionButtonsArea">
-		        <button href="#" id="btnAthAdd"   type="button" class="btn btn-main management-button"  data-toggle="modal" data-target="#modalMain" onclick="AddSessionStart()">Add</button><br/>
-		        <button href="#" id="btnAthEdit"  type="button" class="btn btn-main management-button" data-toggle="modal" data-target="#modalMain" onclick="EditSessionStart()">Edit</button><br/>
-		        <button href="#" id="btnAthDelete"   type="button" class="btn btn-red management-button" onclick="SessionDelete()">Delete</button>
+		        <button href="#" id="btnSessionhAdd"   type="button" class="btn btn-main management-button"  data-toggle="modal" data-target="#modalMain" onclick="AddSessionStart()">Add</button><br/>
+		        <button href="#" id="btnSessionEdit"  type="button" class="btn btn-main management-button ui-disabled" data-toggle="modal" data-target="#modalMain" onclick="EditSessionStart()">Edit</button><br/>
+		        <button href="#" id="btnSessionDelete"   type="button" class="btn btn-red management-button ui-disabled" onclick="SessionDelete()">Delete</button>
 	        </div>
 	    </div>
     </div>
@@ -66,6 +66,7 @@
         $("#divSession" + sesIn).addClass("ctxSelected");
         SelectedSession = sesIn;
         $("#btnNext").removeClass("ui-disabled");
+        EnableDisableButtons("Session", true);
 
     }
 
@@ -79,6 +80,8 @@
         $("#divSessionList").empty();
         $("#divSessions").addClass("ui-disabled");
         $("#btnNext").addClass("ui-disabled");
+        EnableDisableButtons("Comp", false);
+
     }
 
 
@@ -97,6 +100,8 @@
         $("#divSessions").removeClass("ui-disabled");
         FillSession();
         $("#btnNext").addClass("ui-disabled");
+        EnableDisableButtons("Comp", true);
+        EnableDisableButtons("Session", false);
     }
 
     function AddCompStart() {
@@ -141,6 +146,8 @@
                     $("#divSessions").addClass('ui-disabled');
                     $("#divSessionList").empty();
                     $("#btnNext").addClass("ui-disabled");
+                    EnableDisableButtons("Session", false);
+                    EnableDisableButtons("Comp", false);
                 }
             });
     
@@ -261,6 +268,7 @@
                     FillSession();
                     SelectedSession = -1;
                     $("#btnNext").addClass("ui-disabled");
+                    EnableDisableButtons("Session", false);
                 }
             });
         }
@@ -268,6 +276,17 @@
 
     function FillSession() {
         $("#divSessionList").load("/management/session_list/?comp="+ SelectedComp);
+    }
+
+    function EnableDisableButtons(typeIn, enabledIn) {
+        if (enabledIn) {
+            $("#btn" + typeIn + "Edit").removeClass("ui-disabled");
+            $("#btn" + typeIn + "Delete").removeClass("ui-disabled");
+        }
+        else {
+            $("#btn" + typeIn + "Edit").addClass("ui-disabled");
+            $("#btn" + typeIn + "Delete").addClass("ui-disabled");
+        }
     }
 </script>
 {% endblock %}

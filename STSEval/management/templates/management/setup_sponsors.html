@@ -5,11 +5,11 @@
     <div>
         <div id="divSponsors" style="vertical-align: top;padding:3px;display:inline-block;margin-right:30px;">
 		    <div id="divSponsorHeader" style="padding-bottom:5px;font-size:22px;font-weight:bold;text-align:center">Sponsors</div>
-		    <div id="divSponsorList" class="listbox mb-2" style="width:500px;height:180px;"></div>
+		    <div id="divSponsorList" class="listbox mb-2" style="width:600px;height:280px;"></div>
 		    <div id="divSponsorButtonsArea">
 		        <button href="#" id="btnSponsorAdd"   type="button" class="btn btn-main management-button"  data-toggle="modal" data-target="#modalMain" onclick="AddSponsorStart()">Add</button>
-		        <button href="#" id="btnSponsorEdit"  type="button" class="btn btn-main management-button" data-toggle="modal" data-target="#modalMain" onclick="EditSponsorStart()">Edit</button>
-		        <button href="#" id="btnSponsorDelete"   type="button" class="btn btn-red management-button" onclick="SponsorDelete()">Delete</button>
+		        <button href="#" id="btnSponsorEdit"  type="button" class="btn btn-main management-button ui-disabled" data-toggle="modal" data-target="#modalMain" onclick="EditSponsorStart()">Edit</button>
+		        <button href="#" id="btnSponsorDelete"   type="button" class="btn btn-red management-button ui-disabled" onclick="SponsorDelete()">Delete</button>
 	        </div>
 	    </div>
     </div>
@@ -48,8 +48,19 @@
         $('.sponsor-list').removeClass("ctxSelected");
         $("#divSponsor" + sponsorIn).addClass("ctxSelected");
         SelectedSponsor = sponsorIn;
-        //$("#btnNext").removeClass("ui-disabled");
+        EnableDisableButtons("Sponsor", true);
 
+    }
+
+    function EnableDisableButtons(typeIn, enabledIn) {
+        if (enabledIn) {
+            $("#btn" + typeIn + "Edit").removeClass("ui-disabled");
+            $("#btn" + typeIn + "Delete").removeClass("ui-disabled");
+        }
+        else {
+            $("#btn" + typeIn + "Edit").addClass("ui-disabled");
+            $("#btn" + typeIn + "Delete").addClass("ui-disabled");
+        }
     }
 
     function AttachSponsorForm() {
@@ -157,6 +168,7 @@
                 success: function () {
                     FillSponsors();
                     SelectedSponsor = -1;
+                    EnableDisableButtons("Sponsor", false);
                     //$("#btnNext").addClass("ui-disabled");
                 }
             });

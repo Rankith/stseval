@@ -1,8 +1,29 @@
 <form id="form" action="/management/sponsor_form/" method="post" enctype="multipart/form-data">
     {% csrf_token %}
     <div id="divManageSponsor" align="center">
-       
-        {{form}}
+       <div class="row">
+            <div class="col-5">
+                NAME<br/>
+                {{ form.name }}<br/>
+                {{form.name.errors}}
+            </div>
+            <div class="col-7">
+                URL<br/>
+                {{ form.url }}<br/>
+                {{form.url.errors}}
+            </div>
+        </div>
+         <br/>
+        {{form.session}}
+        <div class="row">
+            <div class="col-12" align="center">
+                IMAGE<br/>
+                396 x 288 pixels minimum<br/>
+                {{ form.image }}<br/>
+                {{form.image.errors}}
+            </div>   
+        </div>
+
         <br/>
         <input type="hidden" id="id" name="id" value="{{id}}" />
         <input type="submit" href="#" id="btnSponsorFinish" class="btn btn-main" value="Save">

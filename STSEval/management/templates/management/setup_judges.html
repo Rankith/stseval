@@ -92,6 +92,17 @@
         window.location = "/management/setup_athletes/" + SessionID;
     }
 
+    function EnableDisableButtons(typeIn, enabledIn) {
+        if (enabledIn) {
+            $("#btn" + typeIn + "Edit").removeClass("ui-disabled");
+            $("#btn" + typeIn + "Add").removeClass("ui-disabled");
+        }
+        else {
+            $("#btn" + typeIn + "Edit").addClass("ui-disabled");
+            $("#btn" + typeIn + "Add").addClass("ui-disabled");
+        }
+    }
+
     function Save() {
         gonext = false;
         $('#form').submit();

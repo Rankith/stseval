@@ -86,7 +86,7 @@ class CameraForm(ModelForm):
         fields = ['session','name','email','password','location','teams','events']
         widgets = {'session': forms.HiddenInput(),
                    'name':forms.TextInput(attrs={'class':'management-input'}),
-                   'email':forms.EmailInput(attrs={'placeholder':'example@email.com','class':'management-input'}),
+                   'email':forms.EmailInput(attrs={'placeholder':'example@email.com','class':'management-input','onchange':'EmailChange()'}),
                    'password':forms.TextInput(attrs={'placeholder':'password','class':'management-input'}),
                    'location':forms.TextInput(attrs={'class':'management-input'})}
 
@@ -106,7 +106,7 @@ class ImagePreviewWidget(forms.widgets.FileInput):
     def render(self, name, value, attrs=None, **kwargs):
         input_html = super().render(name, value, attrs=None, **kwargs)
         if value:
-            img_html = mark_safe(f'<br><br><img src="{value.url}"/>')
+            img_html = mark_safe(f'<br><br><img src="{value.url}" height="288px"/>')
         else:
             img_html=""
         return f'{input_html}{img_html}'
@@ -117,6 +117,6 @@ class SponsorForm(ModelForm):
         fields = ['session','name','url','image']
         widgets = {'session': forms.HiddenInput(),
                    'name':forms.TextInput(attrs={'class':'management-input'}),
-                   'url':forms.TextInput(attrs={'class':'management-input'}),
+                   'url':forms.TextInput(attrs={'class':'management-input','placeholder':'full url'}),
                    'image':ImagePreviewWidget()}
            

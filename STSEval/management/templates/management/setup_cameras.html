@@ -24,8 +24,8 @@
 		    <div id="divCameraList" class="listbox mb-2" style="width:600px;height:180px;"></div>
 		    <div id="divCameraButtonsArea">
 		        <button href="#" id="btnCameraAdd"   type="button" class="btn btn-main management-button"  data-toggle="modal" data-target="#modalMain" onclick="AddCameraStart()">Add</button>
-		        <button href="#" id="btnCameraEdit"  type="button" class="btn btn-main management-button" data-toggle="modal" data-target="#modalMain" onclick="EditCameraStart()">Edit</button>
-		        <button href="#" id="btnCameraDelete"   type="button" class="btn btn-red management-button" onclick="CameraDelete()">Delete</button>
+		        <button href="#" id="btnCameraEdit"  type="button" class="btn btn-main management-button ui-disabled" data-toggle="modal" data-target="#modalMain" onclick="EditCameraStart()">Edit</button>
+		        <button href="#" id="btnCameraDelete"   type="button" class="btn btn-red management-button ui-disabled" onclick="CameraDelete()">Delete</button>
 	        </div>
 	    </div>
     </div>
@@ -60,10 +60,36 @@
         window.location = "/management/setup_sponsors/" + SessionID;
     }
 
+    function EnableDisableButtons(typeIn, enabledIn) {
+        if (enabledIn) {
+            $("#btn" + typeIn + "Edit").removeClass("ui-disabled");
+            $("#btn" + typeIn + "Delete").removeClass("ui-disabled");
+        }
+        else {
+            $("#btn" + typeIn + "Edit").addClass("ui-disabled");
+            $("#btn" + typeIn + "Delete").addClass("ui-disabled");
+        }
+    }
+
+    function EmailChange() {
+        if (($("#id_password").val() == "" || $("#id_password").val() == " ") && ($("#id_email").val() != "")) {
+            $("#id_password").val(generate(6));
+        }
+    }
+
+    function generate(length) {
+        var chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
+            result = ""
+        for (var i = length; i > 0; --i)
+            result += chars[Math.round(Math.random() * (chars.length - 1))]
+        return result
+    }
+
     function CameraClick(camIn) {
         $('.camera-list').removeClass("ctxSelected");
         $("#divCamera" + camIn).addClass("ctxSelected");
         SelectedCamera = camIn;
+        EnableDisableButtons("Camer", true)
         //$("#btnNext").removeClass("ui-disabled");
 
     }
@@ -142,6 +168,7 @@
                 success: function () {
                     FillCameras();
                     SelectedCamera = -1;
+                    EnableDisableButtons("Camera", false)
                     //$("#btnNext").addClass("ui-disabled");
                 }
             });

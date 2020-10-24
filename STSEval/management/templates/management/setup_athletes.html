@@ -18,8 +18,8 @@
 	        <div id="divTeamList"class="listbox mb-2"  style="width:310px;height:180px;"></div>
 	        <div id="divTeamButtonsArea">
 		        <button href="#" id="btnTeamsAdd"  type="button" class="btn btn-main management-button" data-toggle="modal" data-target="#modalMain" onclick="AddTeamStart()">Add</button>
-		        <button href="#" id="btnTeamsEdit"  type="button" class="btn btn-main management-button" data-toggle="modal" data-target="#modalMain" onclick="EditTeamStart()">Edit</button>
-		        <button href="#" id="btnTeamsDelete"  type="button" class="btn btn-red management-button" onclick="TeamDelete()">Delete</button>
+		        <button href="#" id="btnTeamsEdit"  type="button" class="btn btn-main management-button ui-disabled" data-toggle="modal" data-target="#modalMain" onclick="EditTeamStart()">Edit</button>
+		        <button href="#" id="btnTeamsDelete"  type="button" class="btn btn-red management-button ui-disabled" onclick="TeamDelete()">Delete</button>
 	        </div>
 	    </div>
 
@@ -41,8 +41,8 @@
 		    <div id="divAthleteList" class="listbox mb-2" style="width:360px;height:180px;"></div>
 		    <div id="divAthleteButtonsArea">
 		        <button href="#" id="btnAthAdd"   type="button" class="btn btn-main management-button"  data-toggle="modal" data-target="#modalMain" onclick="AddAthleteStart()">Add</button>
-		        <button href="#" id="btnAthEdit"  type="button" class="btn btn-main management-button" data-toggle="modal" data-target="#modalMain" onclick="EditAthleteStart()">Edit</button>
-		        <button href="#" id="btnAthDelete"   type="button" class="btn btn-red management-button" onclick="AthleteDelete()">Delete</button>
+		        <button href="#" id="btnAthEdit"  type="button" class="btn btn-main management-button ui-disabled" data-toggle="modal" data-target="#modalMain" onclick="EditAthleteStart()">Edit</button>
+		        <button href="#" id="btnAthDelete"   type="button" class="btn btn-red management-button ui-disabled" onclick="AthleteDelete()">Delete</button>
 	        </div>
 	    </div>
     </div>
@@ -81,6 +81,7 @@
         $('.ath-list').removeClass("ctxSelected");
         $("#divAthlete" + athIn).addClass("ctxSelected");
         SelectedAthlete = athIn;
+        EnableDisableButtons("Ath", true);
         //$("#btnNext").removeClass("ui-disabled");
 
     }
@@ -92,6 +93,7 @@
         SelectedTeam = TeamIn;
         $("#divAthletes").removeClass("ui-disabled");
         FillAthletes();
+        EnableDisableButtons("Team", true);
         //$("#btnNext").addClass("ui-disabled");
     }
 
@@ -133,6 +135,8 @@
                     $('.athlete-list').removeClass("ctxSelected");
                     $("#divAthletes").addClass('ui-disabled');
                     $("#divAthleteList").empty();
+                    EnableDisableButtons("Ath", false);
+                    EnableDisableButtons("Team", false);
                     //$("#btnNext").addClass("ui-disabled");
                 }
             });
@@ -260,7 +264,19 @@
     }
 
     function FillAthletes() {
-        $("#divAthleteList").load("/management/athlete_list/"+ SelectedTeam);
+        $("#divAthleteList").load("/management/athlete_list/" + SelectedTeam);
+        EnableDisableButtons("Ath", false);
+    }
+
+    function EnableDisableButtons(typeIn, enabledIn) {
+        if (enabledIn) {
+            $("#btn" + typeIn + "Edit").removeClass("ui-disabled");
+            $("#btn" + typeIn + "Delete").removeClass("ui-disabled");
+        }
+        else {
+            $("#btn" + typeIn + "Edit").addClass("ui-disabled");
+            $("#btn" + typeIn + "Delete").addClass("ui-disabled");
+        }
     }
 </script>
 {% endblock %}
