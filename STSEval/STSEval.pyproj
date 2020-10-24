@@ -127,6 +127,7 @@
     <Content Include="app\templates\app\d1 - Copy.html" />
     <Content Include="app\templates\app\dev-view-play.html" />
     <Content Include="app\templates\app\dev-view-publish.html" />
+    <Content Include="app\templates\app\spectate.html" />
     <Content Include="app\templates\app\layout_empty.html" />
     <Content Include="app\templates\app\status_dots.html" />
     <Content Include="app\templates\app\dot_change.html" />
