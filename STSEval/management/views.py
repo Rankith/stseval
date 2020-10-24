@@ -9,7 +9,7 @@ from .models import Competition,Session,Athlete,Judge,Team,Disc,Event,Camera,Spo
 def setup_competition(request):
 
     context = {
-        'title': 'Compeition Setup (1/7)',
+        'title': 'Compeition Setup (1/6)',
         'discs': Disc.objects.all(),
     }
     return render(request,'management/setup_competition.html',context)
@@ -83,7 +83,7 @@ def setup_judges(request,id):
     events = Event.objects.filter(disc=session.competition.disc)
    
     context = {
-        'title': 'Compeition Setup (2/7)',
+        'title': 'Compeition Setup (2/6)',
         'session_name': session.full_name,
         'events':events,
         'id':session.id,
@@ -115,7 +115,7 @@ def judge_form(request):
 def setup_athletes(request,id):
     session = Session.objects.get(pk=id)
     context = {
-        'title': 'Compeition Setup (3/7)',
+        'title': 'Compeition Setup (3/6)',
         'session_name': session.full_name,
         'id':session.id,
     }
@@ -186,7 +186,7 @@ def athlete_delete(request,id):
 def setup_cameras(request,id):
     session = Session.objects.get(pk=id)
     context = {
-        'title': 'Compeition Setup (4/7)',
+        'title': 'Compeition Setup (4/6)',
         'session_name': session.full_name,
         'id':session.id,
     }
