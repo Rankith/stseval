@@ -676,13 +676,11 @@ def scoreboard(request):
         events.append('v')
         events.append('pb')
         events.append('hb')
-        events.append('aa')
     elif disc == "WAG":
         events.append('v')
         events.append('ub')
         events.append('bb')
         events.append('fx')
-        events.append('aa')
     context = {
         'title': 'Scoreboard - ' + event + ' ' + comp.name,
         'judges':judges[0],
