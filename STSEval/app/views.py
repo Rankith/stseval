@@ -664,7 +664,7 @@ def accountability_report(request):
     return render(request,'app/accountability_report.html',context)
 
 def get_routines_by_DCE(request):
-    routines = Routine.objects.values('athlete__name','athlete__team','athlete__level','id','score_e1','score_e2','score_e3','score_e4','score_e','score_d','score_final').filter(competition_id=request.POST.get('Comp'),disc=request.POST.get('Disc'),event=request.POST.get('Ev'),status=Routine.FINISHED)
+    routines = Routine.objects.values('athlete__name','athlete__team','athlete__level','id','score_e1','score_e2','score_e3','score_e4','score_e','score_d','score_final').filter(competition_id=request.POST.get('Comp'),disc=request.POST.get('Disc'),event=request.POST.get('Ev'),status=Routine.FINISHED).order_by('id')
     return JsonResponse(list(routines),safe=False)
 
 def scoreboard(request):
