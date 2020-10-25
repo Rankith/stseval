@@ -25,7 +25,6 @@ urlpatterns = [
     path('login/', views.loginview, name='loginview'),
     path('logout/', LogoutView.as_view(next_page='/'), name='logout'),
     path('manage/', views.manage, name='manage'),
-    path('spectate/', views.spectate, name='spectate'),
     path('admin/', admin.site.urls),
     path('competition_list/', views.competition_list, name='competition_list'),
     path('competition_manage/', views.competition_manage, name='competition_manage'),

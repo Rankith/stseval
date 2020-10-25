@@ -46,12 +46,6 @@ def manage(request):
     }
     return render(request,'app/manage.html',context)
 
-def spectate(request):
-    context = {
-        'title': 'Spectator (Alpha)',
-    }
-    return render(request,'app/spectate.html',context)
-
 def competition_list(request):
     comps = Competition.objects.all()
 
