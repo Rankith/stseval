@@ -222,7 +222,7 @@
     }
 
     function AddSessionStart() {
-        $("#modalMainDoc").removeClass("modal-lg");
+        $("#modalMainDoc").addClass("modal-lg");
         $("#modalMainTitle").html("ADD SESSION");
         $(".modal-dialog")
         $("#modalBodyArea2").hide();
@@ -235,7 +235,7 @@
     }
     function EditSessionStart() {
         if (SelectedSession != -1) {
-            $("#modalMainDoc").removeClass("modal-lg");
+            $("#modalMainDoc").addClass("modal-lg");
             $("#modalMainTitle").html("EDIT SESSION");
             $(".modal-dialog")
             $("#modalBodyArea2").hide();

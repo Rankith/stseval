@@ -27,10 +27,17 @@ class CompetitionForm(ModelForm):
 class SessionForm(ModelForm):
     class Meta:
         model = Session
-        fields = ['competition','name','time']
+        fields = ['competition','name','time','spectator_fee']
         widgets = {'competition': forms.HiddenInput(),
                    'name':forms.TextInput(attrs={'class':'management-input'}),
+                   'spectator_fee':forms.TextInput(attrs={'class':'management-input','placeholder':'$2.00 min.'}),
                    'time':TimeInput(attrs={'class':'management-input'})}
+    def clean(self):
+        data = self.cleaned_data
+        if data.get('spectator_fee') < 2:
+            raise forms.ValidationError('Spectator Fee has a $2.00 minimum')
+        else:
+            return data
 
 class JudgeForm(ModelForm):
     class Meta:
