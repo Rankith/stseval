@@ -4,6 +4,7 @@ from django.template import RequestContext
 from datetime import datetime
 from .forms import CompetitionForm,SessionForm,JudgeForm,TeamForm,AthleteForm,CameraForm,SponsorForm
 from .models import Competition,Session,Athlete,Judge,Team,Disc,Event,Camera,Sponsor
+from django.core.mail import send_mail
 
 # Create your views here.
 def setup_competition(request):
@@ -265,6 +266,53 @@ def sponsor_delete(request,id):
     Sponsor.objects.filter(id=id).delete()
     return HttpResponse(status=200)
 
+def setup_finish(request,id):
+    session = Session.objects.get(pk=id)
+    context = {
+        'title': 'Compeition Setup (6/6)',
+        'session_name': session.full_name,
+        'id':session.id,
+    }
+    return render(request,'management/setup_finish.html',context)
+
+def send_session_emails(request,session_id):
+    judges = Judge.objects.filter(session_id=session_id)
+    cameras = Camera.objects.filter(session_id=session_id)
+    session = Session.objects.get(pk=session_id)
+    
+    for judge in judges:
+        if judge.d1_email != None and judge.d1_email != '':
+            send_judge_notice(session,judge.d1_email,judge.d1_password,'D1')
+        if judge.d2_email != None and judge.d2_email != '':
+            send_judge_notice(session,judge.d2_email,judge.d2_password,'D2')
+        if judge.e1_email != None and judge.e1_email != '':
+            send_judge_notice(session,judge.e1_email,judge.e1_password,'E1')
+        if judge.e2_email != None and judge.e2_email != '':
+            send_judge_notice(session,judge.e2_email,judge.e2_password,'E2')
+        if judge.e3_email != None and judge.e3_email != '':
+            send_judge_notice(session,judge.e3_email,judge.e3_password,'E3')
+        if judge.e4_email != None and judge.e4_email != '':
+            send_judge_notice(session,judge.e4_email,judge.e4_password,'E4')
+
+    for camera in cameras:
+        if camera.email != None and camera.email != '':
+            send_camera_notice(session,camera)
+    
+    return HttpResponse(status=200)
+
+def send_judge_notice(session,email,password,type):
+    subject = "Judge " + str(type) + " Login for " + str(session.full_name())
+    message = "You will be the " + str(type) + " judge for " + str(session.full_name()) + " on " + session.competition.date.strftime('%Y-%m-%d') + " " + str(session.time) +"<br/>"
+    message += "Login at <a href='https://www.stslivegym.com'>https://www.stslivegym.com</a> with:<br/>"
+    message += "Email: " + str(email) + "<br/>Password: " + str(password)
+    send_mail(subject, message, 'noreply@stslivegym.com', [email],html_message=message)
+
+def send_camera_notice(session,camera):
+    subject = "Camera Login for " + str(session.full_name())
+    message = "You will be a camera operator for " + str(session.full_name()) + " on " + session.competition.date.strftime('%Y-%m-%d') + " " + str(session.time) +"<br/>"
+    message += "Login at <a href='https://www.stslivegym.com'>https://www.stslivegym.com</a> with:<br/>"
+    message += "Email: " + str(camera.email) + "<br/>Password: " + str(camera.password)
+    send_mail(subject, message, 'noreply@stslivegym.com', [camera.email],html_message=message)
 
 def judges_get(request):
     comp = request.GET.get('comp')
@@ -319,9 +367,6 @@ def athlete_manage(request):
         'ath':ath
     }
     return render(request, 'management/athlete_manage.html', context)
-
-
-
 
 def session_manage(request):
     id = request.GET.get('id',-1)

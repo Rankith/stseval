@@ -1,0 +1,59 @@
+{% extends "app/layout.html" %}
+
+{% block content %}
+<div align="center" style="margin:10px;padding:0">
+    {{session_name}}<br/>
+    <br/>
+    <div class="timer-green">COMPETITION SETUP COMPLETE</div>
+
+    <br/>
+    Send competition information to judges, coaches, and camera operators
+    <br/><br/>
+    <button id="btnSendEmails" type="button" class="btn-main btn-wide pt-4 pb-4" style="border-radius: 1rem;" onclick="Send()">Send</button>
+    <br/>
+    <br/>
+    <div>
+        <button id="btnBack" type="button" class="btn-main btn-wide pt-4 pb-4" style="border-radius: 1rem;" onclick="GoBack()">Return to<br/>Previous Page</button>
+        <button id="btnFirst" type="button" class="btn-main btn-wide pt-4 pb-4" style="border-radius: 1rem;" onclick="FirstClick()">Return to<br/>First Page</button>
+    </div>
+		
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript">
+    var token = "{{ csrf_token }}";
+    var SessionID = "{{id}}";
+</script>
+<script type="text/javascript">
+    var Changed = false;
+    var gonext = false;
+
+
+    function Send() {
+        $.ajax({
+            url: "/management/send_session_emails/" + SessionID,
+            success: function () {
+                alert("Notifications Sent");
+            }
+        });
+
+    }
+
+    function GoBack() {
+
+        window.location = "/management/setup_sponsors/" + SessionID;
+
+    }
+
+    function FirstClick() {
+        window.location = "/management/setup_competition/";
+    }
+
+
+
+
+   
+</script>
+{% endblock %}

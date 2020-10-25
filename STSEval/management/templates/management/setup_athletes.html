@@ -93,7 +93,7 @@
         SelectedTeam = TeamIn;
         $("#divAthletes").removeClass("ui-disabled");
         FillAthletes();
-        EnableDisableButtons("Team", true);
+        EnableDisableButtons("Teams", true);
         //$("#btnNext").addClass("ui-disabled");
     }
 
@@ -136,7 +136,7 @@
                     $("#divAthletes").addClass('ui-disabled');
                     $("#divAthleteList").empty();
                     EnableDisableButtons("Ath", false);
-                    EnableDisableButtons("Team", false);
+                    EnableDisableButtons("Teams", false);
                     //$("#btnNext").addClass("ui-disabled");
                 }
             });
