@@ -86,10 +86,12 @@ class JudgeForm(ModelForm):
 class TeamForm(ModelForm):
     class Meta:
         model = Team
-        fields = ['session','name','abbreviation']
+        fields = ['session','name','abbreviation','head_coach_email','coach_password']
         widgets = {'session': forms.HiddenInput(),
                    'name':forms.TextInput(attrs={'class':'management-input'}),
-                   'abbreviation':forms.TextInput(attrs={'class':'management-input'})}
+                   'abbreviation':forms.TextInput(attrs={'class':'management-input'}),
+                   'head_coach_email':forms.EmailInput(attrs={'placeholder':'example@email.com','class':'management-input','onchange':'EmailChange()'}),
+                   'coach_password':forms.TextInput(attrs={'placeholder':'password','class':'management-input'})}
 
 class AthleteForm(ModelForm):
     class Meta:

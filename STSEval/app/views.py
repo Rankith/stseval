@@ -19,6 +19,16 @@ from binascii import a2b_base64
 import distutils.util
 import os
 
+def valid_login_type(match=None):
+    def decorator(func):
+        def decorated(request, *args, **kwargs):
+            if match in request.session.get('type'):
+                return func(request, *args, **kwargs)
+            else:
+                return redirect('/')
+        return decorated
+    return decorator
+
 def loginview(request):
     if request.method == 'POST':
         login_form = LoginForm(data=request.POST)
@@ -265,6 +275,13 @@ def set_judges_participating(request):
     routine.save()
     app.firebase.routine_set_ejudge_include(str(routine.competition.id) + routine.disc + routine.event,routine)
     return HttpResponse(status=200)
+
+@valid_login_type(match='e')
+def ejudge_select(request):
+    context = {
+        'title': 'E-Jury - ' + request.session.get("name"),
+    }
+    return render(request,'app/ejudge_select.html',context)
 
 
 def ejudge(request):

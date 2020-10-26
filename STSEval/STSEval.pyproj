@@ -125,8 +125,10 @@
     <Folder Include="STSEval\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="account\templates\account\login_simple.html" />
     <Content Include="account\templates\account\login.html" />
     <Content Include="account\templates\account\signup.html" />
+    <Content Include="app\templates\app\ejuge_select.html" />
     <Content Include="app\templates\registration\password_reset_complete.html" />
     <Content Include="app\templates\registration\password_reset_confirm.html" />
     <Content Include="app\templates\registration\password_reset_done.html" />

@@ -25,3 +25,7 @@ class LoginForm(forms.Form): # Note: forms.Form NOT forms.ModelForm
 
     class Meta:
         fields = ['email', 'password']
+
+class EmailPasswordForm(forms.Form):
+    email = forms.EmailField(widget=forms.EmailInput(attrs={'class': 'management-input'}))
+    password = forms.CharField(widget=forms.PasswordInput(attrs={'class': 'management-input','type':'password'}))

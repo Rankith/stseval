@@ -304,6 +304,7 @@ def setup_finish(request,id):
 def send_session_emails(request,session_id):
     judges = Judge.objects.filter(session_id=session_id)
     cameras = Camera.objects.filter(session_id=session_id)
+    teams = Team.objects.filter(session_id=session_id)
     session = Session.objects.get(pk=session_id)
     
     for judge in judges:
@@ -323,6 +324,10 @@ def send_session_emails(request,session_id):
     for camera in cameras:
         if camera.email != None and camera.email != '':
             send_camera_notice(session,camera)
+
+    for team in teams:
+        if team.head_coach_email != None and team.head_coach_email != '':
+            send_team_notice(session,team)
     
     return HttpResponse(status=200)
 
@@ -339,6 +344,14 @@ def send_camera_notice(session,camera):
     message += "Login at <a href='https://www.stslivegym.com'>https://www.stslivegym.com</a> with:<br/>"
     message += "Email: " + str(camera.email) + "<br/>Password: " + str(camera.password)
     send_mail(subject, message, 'noreply@stslivegym.com', [camera.email],html_message=message)
+
+def send_coach_notice(session,team):
+    subject = "Coach Login for " + str(session.full_name())
+    message = "You will be a coach for " + str(team.name) + " at " + str(session.full_name()) + " on " + session.competition.date.strftime('%Y-%m-%d') + " " + str(session.time) +"<br/>"
+    message += "Login at <a href='https://www.stslivegym.com'>https://www.stslivegym.com</a> with:<br/>"
+    message += "Email: " + str(team.head_coach_email) + "<br/>Password: " + str(team.coach_password)
+    message += "<br/><br/>All your team coaches can login with this email."
+    send_mail(subject, message, 'noreply@stslivegym.com', [team.head_coach_email],html_message=message)
 
 def judges_get(request):
     comp = request.GET.get('comp')

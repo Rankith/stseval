@@ -1,0 +1,31 @@
+{% extends 'app/layout.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-center">
+    <div><h2>{{type}} Login</h2>
+  <form method="post">
+          {% csrf_token %}
+          {% for field in form %}
+            <div class="row">
+                <div class="col">
+              {{ field.label_tag }}<br>
+              {{ field }}
+              {% if field.help_text %}
+                <small style="color: grey">{{ field.help_text }}</small>
+              {% endif %}
+              {% for error in field.errors %}
+                <p style="color: red">{{ error }}</p>
+              {% endfor %}
+                    </div>
+            </div>
+            
+          {% endfor %}
+      {% if err is not '' %}
+                <p style="color: red">{{ err }}</p>
+            {% endif %}
+          <button type="submit" class="btn btn-main mt-2">Login</button><br/><br/>
+        </form>
+    <br/>
+    </div>
+</div>
+{% endblock %}

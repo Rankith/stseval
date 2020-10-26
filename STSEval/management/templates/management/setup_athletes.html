@@ -2,6 +2,7 @@
 
 {% block content %}
 <div align="center" style="margin:10px;padding:0">
+    {{session_name}}<br/>
     <div>
 	    <div id="divTeams" style="display:inline-block;vertical-align: top;padding:3px;display:inline-block;margin-right:30px;">
 	        <div id="divTeamHeader" style="padding-bottom:5px;font-size:22px;font-weight:bold;text-align:center">Teams</div>
@@ -85,7 +86,19 @@
         //$("#btnNext").removeClass("ui-disabled");
 
     }
+        function EmailChange() {
+        if (($("#id_coach_password").val() == "" || $("#id_coach_password").val() == " ") && ($("#id_head_coach_email").val() != "")) {
+            $("#id_coach_password").val(generate(6));
+        }
+    }
 
+    function generate(length) {
+        var chars = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
+            result = ""
+        for (var i = length; i > 0; --i)
+            result += chars[Math.round(Math.random() * (chars.length - 1))]
+        return result
+    }
     function TeamClick(TeamIn) {
         
         $('.team-list').removeClass("ctxSelected");

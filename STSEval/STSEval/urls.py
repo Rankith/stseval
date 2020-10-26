@@ -27,6 +27,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('judge_select/', views.judge_select, name='judge_select'),
     path('d1/', views.d1, name='d1'),
+    path('ejudge_select/', views.ejudge_select, name='ejudge_select'),
     path('ejudge/', views.ejudge, name='ejudge'),
     path('evideo/', views.evideo, name='evideo'),
     path('twitch_connect/', views.twitch_connect, name='twitch_connect'),

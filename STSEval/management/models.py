@@ -52,6 +52,8 @@ class Team(models.Model):
     session = models.ForeignKey(Session, on_delete=models.CASCADE)
     name = models.CharField(max_length=100)
     abbreviation = models.CharField(max_length=4,blank=True)
+    head_coach_email = models.EmailField(max_length=100,blank=True)
+    coach_password = models.CharField(max_length=50,blank=True)
     def __str__(self):
         return self.name
 
