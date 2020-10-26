@@ -1,5 +1,6 @@
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
+from account.models import User
 
 # Create your models here.
 class Disc(models.Model):
@@ -23,6 +24,7 @@ class Event(models.Model):
         ordering = ["display_order"]
 
 class Competition(models.Model):
+    admin = models.ForeignKey(User, on_delete=models.CASCADE)
     name = models.CharField(max_length=75)
     disc = models.ForeignKey(Disc, on_delete=models.SET_NULL,default=None,null=True)
     TOURNAMENT = 'T'
@@ -42,7 +44,7 @@ class Session(models.Model):
     competition = models.ForeignKey(Competition, on_delete=models.CASCADE,default=None,null=True)
     name = models.CharField(max_length=75)
     time = models.TimeField()
-    spectator_fee = models.DecimalField(max_digits=6, decimal_places=2,default=2)
+    spectator_fee = models.DecimalField(max_digits=6, decimal_places=2)
     def full_name(self):
        return self.competition.name + " - " + self.competition.get_type_display() + " - " + self.name
 

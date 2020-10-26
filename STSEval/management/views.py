@@ -18,20 +18,21 @@ def setup_competition(request):
     return render(request,'management/setup_competition.html',context)
 
 def competition_list(request):
-    comps = Competition.objects.filter(disc=request.GET.get('disc'))
+    comps = Competition.objects.filter(disc=request.GET.get('disc'),admin=request.user)
 
     context = {
         'comps':comps,
     }
     return render(request, 'management/competition_list.html', context)
 
+@login_required(login_url='/account/login/')
 def competition_form(request):
     if request.method == 'POST':
         id = request.POST.get('id','-1')
         if id != '-1':
-            form = CompetitionForm(request.POST,instance=Competition.objects.get(pk=id))
+            form = CompetitionForm(request.POST,instance=Competition.objects.get(pk=id),user=request.user)
         else:
-            form = CompetitionForm(request.POST)
+            form = CompetitionForm(request.POST,user=request.user)
         if form.is_valid():
             form.save()
             return HttpResponse(status=200)
@@ -40,15 +41,17 @@ def competition_form(request):
     else:
         id = request.GET.get('id',-1)
         if id != -1:
-            form = CompetitionForm(instance=Competition.objects.get(pk=id))
+            form = CompetitionForm(instance=Competition.objects.get(pk=id),user=request.user)
         else:
-            form = CompetitionForm()
+            form = CompetitionForm(user=request.user)
         return render(request, 'management/competition_form.html', {'form': form,'id':id})
 
+@login_required(login_url='/account/login/')
 def competition_delete(request):
     Competition.objects.filter(id=request.GET.get('id')).delete()
     return HttpResponse(status=200)
 
+@login_required(login_url='/account/login/')
 def session_list(request):
     sessions = Session.objects.filter(competition_id=request.GET.get('comp'))
 
@@ -57,6 +60,7 @@ def session_list(request):
     }
     return render(request, 'management/session_list.html', context)
 
+@login_required(login_url='/account/login/')
 def session_form(request):
     if request.method == 'POST':
         id = request.POST.get('id','-1')
@@ -77,10 +81,12 @@ def session_form(request):
             form = SessionForm()
         return render(request, 'management/session_form.html', {'form': form,'id':id})
 
+@login_required(login_url='/account/login/')
 def session_delete(request):
     Session.objects.filter(id=request.GET.get('id')).delete()
     return HttpResponse(status=200)
 
+@login_required(login_url='/account/login/')
 def setup_judges(request,id):
     session = Session.objects.get(pk=id)
     events = Event.objects.filter(disc=session.competition.disc)
@@ -93,6 +99,7 @@ def setup_judges(request,id):
     }
     return render(request,'management/setup_judges.html',context)
 
+@login_required(login_url='/account/login/')
 def judge_form(request):
     if request.method == 'POST':
         id = request.POST.get('id','-1')
@@ -115,6 +122,7 @@ def judge_form(request):
             form = JudgeForm()
         return render(request, 'management/judge_form.html', {'form': form,'id':id})
 
+@login_required(login_url='/account/login/')
 def setup_athletes(request,id):
     session = Session.objects.get(pk=id)
     context = {
@@ -124,6 +132,7 @@ def setup_athletes(request,id):
     }
     return render(request,'management/setup_athletes.html',context)
 
+@login_required(login_url='/account/login/')
 def team_form(request):
     if request.method == 'POST':
         id = request.POST.get('id','-1')
@@ -144,6 +153,7 @@ def team_form(request):
             form = TeamForm()
         return render(request, 'management/team_form.html', {'form': form,'id':id})
 
+@login_required(login_url='/account/login/')
 def team_list(request,session_id):
     teams = Team.objects.filter(session_id=session_id)
     context = {
@@ -151,10 +161,12 @@ def team_list(request,session_id):
     }
     return render(request, 'management/team_list.html', context)
 
+@login_required(login_url='/account/login/')
 def team_delete(request,id):
     Team.objects.filter(id=id).delete()
     return HttpResponse(status=200)
 
+@login_required(login_url='/account/login/')
 def athlete_form(request):
     if request.method == 'POST':
         id = request.POST.get('id','-1')
@@ -175,6 +187,7 @@ def athlete_form(request):
             form = AthleteForm()
         return render(request, 'management/athlete_form.html', {'form': form,'id':id})
 
+@login_required(login_url='/account/login/')
 def athlete_list(request,team_id):
     athletes = Athlete.objects.filter(team_id=team_id)
     context = {
@@ -182,10 +195,12 @@ def athlete_list(request,team_id):
     }
     return render(request, 'management/athlete_list.html', context)
 
+@login_required(login_url='/account/login/')
 def athlete_delete(request,id):
     Athlete.objects.filter(id=id).delete()
     return HttpResponse(status=200)
 
+@login_required(login_url='/account/login/')
 def setup_cameras(request,id):
     session = Session.objects.get(pk=id)
     context = {
@@ -195,6 +210,7 @@ def setup_cameras(request,id):
     }
     return render(request,'management/setup_cameras.html',context)
 
+@login_required(login_url='/account/login/')
 def camera_form(request):
     if request.method == 'POST':
         id = request.POST.get('id','-1')
@@ -217,6 +233,7 @@ def camera_form(request):
             form = CameraForm(session=request.GET.get('session'))
         return render(request, 'management/camera_form.html', {'form': form,'id':id})
 
+@login_required(login_url='/account/login/')
 def camera_list(request,session_id):
     cameras = Camera.objects.filter(session_id=session_id)
     context = {
@@ -224,10 +241,12 @@ def camera_list(request,session_id):
     }
     return render(request, 'management/camera_list.html', context)
 
+@login_required(login_url='/account/login/')
 def camera_delete(request,id):
     Camera.objects.filter(id=id).delete()
     return HttpResponse(status=200)
 
+@login_required(login_url='/account/login/')
 def setup_sponsors(request,id):
     session = Session.objects.get(pk=id)
     context = {
@@ -237,6 +256,7 @@ def setup_sponsors(request,id):
     }
     return render(request,'management/setup_sponsors.html',context)
 
+@login_required(login_url='/account/login/')
 def sponsor_form(request):
     if request.method == 'POST':
         id = request.POST.get('id','-1')
@@ -257,6 +277,7 @@ def sponsor_form(request):
             form = SponsorForm()
         return render(request, 'management/sponsor_form.html', {'form': form,'id':id})
 
+@login_required(login_url='/account/login/')
 def sponsor_list(request,session_id):
     sponsors = Sponsor.objects.filter(session_id=session_id)
     context = {
@@ -264,10 +285,12 @@ def sponsor_list(request,session_id):
     }
     return render(request, 'management/sponsor_list.html', context)
 
+@login_required(login_url='/account/login/')
 def sponsor_delete(request,id):
     Sponsor.objects.filter(id=id).delete()
     return HttpResponse(status=200)
 
+@login_required(login_url='/account/login/')
 def setup_finish(request,id):
     session = Session.objects.get(pk=id)
     context = {
@@ -277,6 +300,7 @@ def setup_finish(request,id):
     }
     return render(request,'management/setup_finish.html',context)
 
+@login_required(login_url='/account/login/')
 def send_session_emails(request,session_id):
     judges = Judge.objects.filter(session_id=session_id)
     cameras = Camera.objects.filter(session_id=session_id)

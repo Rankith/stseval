@@ -24,14 +24,27 @@ class CompetitionForm(ModelForm):
                    'date':DateInput(attrs={'class':'management-input'}),
                    'type':forms.Select(attrs={'class':'selectpicker','data-style':'btn-main'})}
 
+    def __init__(self, *args, **kwargs):
+        self._user = kwargs.pop('user')
+        super(CompetitionForm, self).__init__(*args, **kwargs)
+
+    def save(self, commit=True):
+        inst = super(CompetitionForm, self).save(commit=False)
+        inst.admin = self._user
+        if commit:
+            inst.save()
+            self.save_m2m()
+        return inst
+
 class SessionForm(ModelForm):
     class Meta:
         model = Session
         fields = ['competition','name','time','spectator_fee']
         widgets = {'competition': forms.HiddenInput(),
                    'name':forms.TextInput(attrs={'class':'management-input'}),
-                   'spectator_fee':forms.TextInput(attrs={'class':'management-input','placeholder':'$2.00 min.'}),
+                   'spectator_fee':forms.TextInput(attrs={'class':'management-input','placeholder':'2.00 min.'}),
                    'time':TimeInput(attrs={'class':'management-input'})}
+
     def clean(self):
         data = self.cleaned_data
         if data.get('spectator_fee') < 2:
