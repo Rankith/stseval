@@ -32,10 +32,19 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="account\admin.py" />
+    <Compile Include="account\apps.py" />
+    <Compile Include="account\forms.py" />
+    <Compile Include="account\migrations\__init__.py" />
+    <Compile Include="account\models.py" />
+    <Compile Include="account\tests.py" />
+    <Compile Include="account\urls.py" />
+    <Compile Include="account\views.py" />
+    <Compile Include="account\__init__.py" />
     <Compile Include="app\admin.py">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="app\backends.py">
+    <Compile Include="account\backends.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="app\firebase.py">
@@ -87,6 +96,11 @@
     <Compile Include="STSEval\wsgi.py" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="account\" />
+    <Folder Include="account\migrations\" />
+    <Folder Include="account\templates\" />
+    <Folder Include="account\templates\account\" />
+    <Folder Include="app\templates\registration\" />
     <Folder Include="app\" />
     <Folder Include="app\migrations\" />
     <Folder Include="app\static\app\scripts\wowza\" />
@@ -111,6 +125,14 @@
     <Folder Include="STSEval\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="account\templates\account\login.html" />
+    <Content Include="account\templates\account\signup.html" />
+    <Content Include="app\templates\registration\password_reset_complete.html" />
+    <Content Include="app\templates\registration\password_reset_confirm.html" />
+    <Content Include="app\templates\registration\password_reset_done.html" />
+    <Content Include="app\templates\registration\password_reset_email.html" />
+    <Content Include="app\templates\registration\password_reset_form.html" />
+    <Content Include="app\templates\registration\password_reset_subject.txt" />
     <Content Include="app\static\app\images\aa-white.svg" />
     <Content Include="app\static\app\images\fx-white.svg" />
     <Content Include="app\static\app\images\hb-white.svg" />

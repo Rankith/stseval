@@ -5,18 +5,22 @@ from management.models import Competition,Athlete,Judge,Session,Team,AthleteLeve
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin
 
-class AthleteLevelAdmin(admin.ModelAdmin):
+class AthleteLevelAdmin(ImportExportModelAdmin):
     list_display=('id', 'disc','name','abbreviation')
     list_editable=('disc','name','abbreviation')
     list_filter=('disc',)
 
-class EventAdmin(admin.ModelAdmin):
+class EventAdmin(ImportExportModelAdmin):
     list_display=('id', 'disc','name','full_name','display_order')
     list_editable=('disc','name','full_name','display_order')
 
+class DiscAdmin(ImportExportModelAdmin):
+    list_display=('id', 'name','full_name','active','display_order')
+    list_editable=('name','full_name','active','display_order')
+
 admin.site.register(AthleteLevel,AthleteLevelAdmin)
 admin.site.register(Event,EventAdmin)
-admin.site.register(Disc)
+admin.site.register(Disc,DiscAdmin)
 admin.site.register(Competition)
 admin.site.register(Judge)
 admin.site.register(Athlete)

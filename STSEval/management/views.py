@@ -5,8 +5,10 @@ from datetime import datetime
 from .forms import CompetitionForm,SessionForm,JudgeForm,TeamForm,AthleteForm,CameraForm,SponsorForm
 from .models import Competition,Session,Athlete,Judge,Team,Disc,Event,Camera,Sponsor
 from django.core.mail import send_mail
+from django.contrib.auth.decorators import login_required,user_passes_test
 
 # Create your views here.
+@login_required(login_url='/account/login/')
 def setup_competition(request):
 
     context = {

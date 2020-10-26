@@ -18,7 +18,7 @@
                 <div class="row no-gutters w-100 align-items-center">
                     <div class="col-3">
                         <div>
-                            <img src="{% static 'app/images/stslivegym-white.svg' %}" style="height:35px">
+                            <a href="/"><img class="pt-1" src="{% static 'app/images/stslivegym-white.svg' %}" style="height:35px"></a>
                         </div>
                     </div>
                     <div class="col-6" align="center">
@@ -27,22 +27,46 @@
                         </div>
                     </div>
                     <div class="col-3" align="right">
-                        <ul class="nav navbar-nav ml-auto justify-content-end">
-                             <!--<li class="nav-item dropdown">
-                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    {{event|upper}}
-                                </a>
-                                <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                    <a class="dropdown-item" onclick="EventChanged('FX')">FX</a>
-                                    <a class="dropdown-item" onclick="EventChanged('PH')">PH</a>
-                                    <a class="dropdown-item" onclick="EventChanged('R')">R</a>
-                                    <a class="dropdown-item" onclick="EventChanged('V')">V</a>
-                                    <a class="dropdown-item" onclick="EventChanged('PB')">PB</a>
-                                    <a class="dropdown-item" onclick="EventChanged('HB')">HB</a>
-                                </div>
-                            </li>-->
-                            <li class="nav-item align-self-center"><a href="/">logout</a></li>
-                        </ul>
+                        {% if user.is_authenticated %}
+                            <form id="logoutForm" action="/account/logout/" method="post">
+                                {% csrf_token %}
+                                <ul class="nav navbar-nav ml-auto justify-content-end">
+                                     <!--<li class="nav-item dropdown">
+                                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            {{event|upper}}
+                                        </a>
+                                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                            <a class="dropdown-item" onclick="EventChanged('FX')">FX</a>
+                                            <a class="dropdown-item" onclick="EventChanged('PH')">PH</a>
+                                            <a class="dropdown-item" onclick="EventChanged('R')">R</a>
+                                            <a class="dropdown-item" onclick="EventChanged('V')">V</a>
+                                            <a class="dropdown-item" onclick="EventChanged('PB')">PB</a>
+                                            <a class="dropdown-item" onclick="EventChanged('HB')">HB</a>
+                                        </div>
+                                    </li>-->
+                            
+                                    <li class="nav-item align-self-center"><a class="nav-link" href="javascript:document.getElementById('logoutForm').submit()">logout</a></li>
+                                </ul>
+                            </form>
+                        {% else %}
+                            <ul class="nav navbar-nav ml-auto justify-content-end">
+                                    <!--<li class="nav-item dropdown">
+                                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        {{event|upper}}
+                                    </a>
+                                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                        <a class="dropdown-item" onclick="EventChanged('FX')">FX</a>
+                                        <a class="dropdown-item" onclick="EventChanged('PH')">PH</a>
+                                        <a class="dropdown-item" onclick="EventChanged('R')">R</a>
+                                        <a class="dropdown-item" onclick="EventChanged('V')">V</a>
+                                        <a class="dropdown-item" onclick="EventChanged('PB')">PB</a>
+                                        <a class="dropdown-item" onclick="EventChanged('HB')">HB</a>
+                                    </div>
+                                </li>-->
+                            
+                                <li class="nav-item align-self-center"><a class="nav-link" href="/">logout</a></li>
+                            </ul>
+                        {% endif %}
                     </div>
                 </div>
             </div>

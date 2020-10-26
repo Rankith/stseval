@@ -6,7 +6,6 @@ from django.shortcuts import render,redirect
 from django.http import HttpRequest,JsonResponse,HttpResponse
 from django.template import RequestContext
 from datetime import datetime
-from .forms import SignUpForm,LoginForm
 from django.contrib.auth import authenticate, login
 from app.models import Twitch,Routine,EJuryDeduction
 from management.models import Competition,Judge,Athlete
@@ -597,3 +596,4 @@ def wowza_broadcast(request):
 
 def wowza_play(request):
     return render(request,'app/dev-view-play.html')
+

@@ -52,6 +52,7 @@ urlpatterns = [
     path('set_judges_participating/', views.set_judges_participating, name='set_judges_participating'),
     path('streaming/', include('streaming.urls')),
     path('management/', include('management.urls')),
+    path('account/', include('account.urls')),
     #url(r'^login/$',
     #    django.contrib.auth.views.login,
     #    {
