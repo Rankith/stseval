@@ -90,6 +90,7 @@ def login_judge(request):
                 if type != None:
                     request.session['session'] = session.id
                     request.session['event'] = event.name
+                    request.session['disc'] = session.competition.disc.name
                     request.session['name'] = name
                     request.session['email'] = email
                     request.session['type'] = type
@@ -124,11 +125,12 @@ def login_camera(request):
                 camera = cameras.filter(email=email,password=password)
                 if len(camera) > 0:
                     camera = camera.first()
-                    request.session['session'] = session.id
+                    request.session['session'] = camera.session.id
                     request.session['camera'] = camera.id
                     request.session['type'] = 'camera'
+                    request.session['disc'] = session.competition.disc.name
                     request.session.set_expiry(0)#until they close browser
-                    return redirect('/camera/')
+                    return redirect('/streaming/camera/')
  
             err = "Incorrect Login Inforation"
     else:
@@ -154,9 +156,10 @@ def login_coach(request):
                 coach = teams.filter(head_coach_email=email,coach_password=password)
                 if len(coach) > 0:
                     coach = coach.first()
-                    request.session['session'] = session.id
+                    request.session['session'] = teams.session.id
                     request.session['team'] = team.id
                     request.session['type'] = 'coach'
+                    request.session['disc'] = teams.session.competition.disc.name
                     request.session.set_expiry(0)#until they close browser
                     return redirect('/coach/')
  

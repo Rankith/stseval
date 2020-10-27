@@ -52,7 +52,7 @@
             <div id="video-controls" class="video-controls">
                 <button id="publish-toggle" type="button" class="btn btn-main">Start</button>
             </div>
-            <div class="form-group">
+            <div>
                     <label for="camera-list-select">
                     Camera
                     </label>
@@ -241,9 +241,7 @@
     $("#applicationName").val('{{stream.application_name}}');
     $("#streamName").val('{{stream.stream_name}}');
     var token = "{{ csrf_token }}";
-    var Comp = "{{comp}}";
-    var Disc = "{{disc}}";
-    var ev = "{{event}}";
+    var Camera = "{{camera}}";
 </script>
 <script type="text/javascript">
     var SetupInterval;
@@ -258,9 +256,7 @@
             type: "POST",
             headers: { "X-CSRFToken": token },
             data: {
-                'comp': Comp,
-                'disc': Disc,
-                'event': ev,
+                'camera': Camera,
             },
             dataType: 'json',
             success: function (data) {
@@ -282,9 +278,7 @@
             type: "POST",
             headers: { "X-CSRFToken": token },
             data: {
-                'comp': Comp,
-                'disc': Disc,
-                'event': ev,
+                'camera': Camera,
                 'status':status,
             },
             dataType: 'json',
@@ -300,9 +294,7 @@
             type: "POST",
             headers: { "X-CSRFToken": token },
             data: {
-                'comp': Comp,
-                'disc': Disc,
-                'event': ev,
+                'camera': Camera,
             },
             dataType: 'json',
             success: function (data) {
@@ -350,9 +342,7 @@
             type: "POST",
             headers: { "X-CSRFToken": token },
             data: {
-                'comp': Comp,
-                'disc': Disc,
-                'event': ev,
+                'camera': Camera,
             },
             dataType: 'json',
             success: function (data) {

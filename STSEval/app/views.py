@@ -8,7 +8,7 @@ from django.template import RequestContext
 from datetime import datetime
 from django.contrib.auth import authenticate, login
 from app.models import Twitch,Routine,EJuryDeduction
-from management.models import Competition,Judge,Athlete
+from management.models import Competition,Judge,Athlete,Session,Camera
 from app.twitch import TwitchAPI
 import app.firebase
 from time import time
@@ -56,96 +56,74 @@ def judge_select(request):
     }
     return render(request,'app/judge_select.html',context)
 
+@valid_login_type(match='d')
 def d1(request):
     routine = request.GET.get('routine','')
     if routine == '':
-        comp = request.GET.get('c')
-        disc = request.GET.get('d')
-        event = request.GET.get('e')
-        comp = Competition.objects.get(pk=comp)
-        judges = Judge.objects.filter(competition_id=comp,disc=disc,event=event)
-        athletes = Athlete.objects.filter(competition_id=request.GET.get('c'),disc=request.GET.get('d'))
+        event = request.session.get('event')
+        session = Session.objects.get(pk=request.session.get('session'))
+        judges = Judge.objects.filter(session=session,event__name=event)
+        athletes = Athlete.objects.filter(team__session=session)
+        disc = session.competition.disc.name
         layout = 'app/layout.html'
     else:
         routine = Routine.objects.get(pk=routine)
-        comp = routine.competition.id
+        session_id = routine.session.id
         disc = routine.disc
         event = routine.event
-        judges = Judge.objects.filter(competition_id=comp,disc=disc,event=event)
-        athletes = Athlete.objects.filter(competition_id=comp,disc=disc)
-        comp = routine.competition
+        judges = Judge.objects.filter(session_id=session_id,event__name=event)
+        athletes = Athlete.objects.filter(session_id=session_id)
+        session = routine.session
         layout = 'app/layout_empty.html'
         routine = routine.id
     context = {
-        'title': 'D1 Overview - ' + event + ' ' + comp.name,
+        'title': 'D1 Overview - ' + event + ' ' + session.name,
         'judges':judges[0],
         'athletes':athletes,
         'disc':disc,
         'event':event,
-        'comp':comp,
+        'session':session,
         'loadroutine':routine,
         'layout':layout
     }
     return render(request,'app/d1.html',context)
 
-def twitch_connect(request):
-    context = {
-        'title': 'Authenticate Twitch',
-        'client_id':'2qc1kgbap6qm1ecltg0ad9kv9uqunv'
-    }
-    return render(request,'app/twitch_connect.html',context)
-
-def twitch_auth(request):
-    api = TwitchAPI()
-    api.authenticate(request.GET.get('code'))
-    context = {
-        'title': 'Twitch Auth',
-    }
-    return render(request,'app/twitch_auth.html',context)
-
-def mark_stream(request):
-    start_end = request.GET.get('type')
-    api = TwitchAPI()
-    position,vid_id = api.mark_stream(request.GET.get('desc'))
-
-    return HttpResponse(status=200)
-
 def routine_setup(request):
-    routine = Routine(competition_id=request.POST.get('comp'),disc=request.POST.get('disc'),event=request.POST.get('event'),athlete_id=request.POST.get('athlete'))
-    judges = Judge.objects.filter(competition_id=request.POST.get('comp'),disc=request.POST.get('disc'),event=request.POST.get('event')).first()
-    routine.e1_name = judges.e1
-    routine.e2_name = judges.e2
-    routine.e3_name = judges.e3
-    routine.e4_name = judges.e4
-    routine.d1_name = judges.d1
-    routine.save()
-    app.firebase.routine_setup(request.POST.get('comp') + request.POST.get('disc') + request.POST.get('event'),routine)
+    athlete = Athlete.objects.get(pk=request.POST.get('athlete'))
+    #check for camera
+    camera = Camera.objects.filter(teams=athlete.team,events__name=request.session.get('event')).first()
+    if camera == None:
+        resp = {'routine':-1,
+                 'error':'No Camera for ' + athlete.team.name + ' on ' + request.session.get('event') + '.  Contact your Meet Administrator'}
+        return JsonResponse(resp)
+
+    app.firebase.routine_setup(str(request.session.get('session')) + request.session.get('disc') + request.session.get('event'),athlete,camera.id)
 
     resp = {'routine':routine.id}
     return JsonResponse(resp)
 
 def routine_start_judging(request):
-    routine = Routine.objects.filter(competition_id=request.POST.get('comp'),disc=request.POST.get('disc'),event=request.POST.get('event')).order_by('-id').first()
+    routine = Routine(session_id=request.session.get('session'),disc=request.session.get('disc'),event=request.session.get('event'),athlete_id=request.POST.get('athlete'))
+    judges = Judge.objects.filter(session_id=request.session.get('session'),event__name=request.session.get('event')).first()
+    routine.e1_name = judges.e1
+    routine.e2_name = judges.e2
+    routine.e3_name = judges.e3
+    routine.e4_name = judges.e4
+    routine.d1_name = judges.d1
+    #routine = Routine.objects.filter(session_id=request.session.get('session'),disc=request.session.get('disc'),event=request.session.get('event')).order_by('-id').first()
     routine.status = Routine.STARTED
     routine.athlete_id=request.POST.get('athlete')
-
-    #try:
-        #api = TwitchAPI()
-        #position,vid_id = api.mark_stream('Routine ' + str(routine.id) + ' start')
-    #except:
-        #position = 0
-        #vid_id = 0
 
     mili = int(time() * 1000)
     routine.start_time = mili
 
     routine.save()
-    app.firebase.routine_set_status(request.POST.get('comp') + request.POST.get('disc') + request.POST.get('event'),routine)
+    app.firebase.routine_set_status(str(request.session.get('session')) + request.session.get('disc') + request.session.get('event'),routine)
 
     return HttpResponse(status=200)
 
 def routine_athlete_done(request):
-    routine = Routine.objects.filter(competition_id=request.POST.get('comp'),disc=request.POST.get('disc'),event=request.POST.get('event')).order_by('-id').first()
+    routine = Routine.objects.filter(session_id=request.session.get('session'),disc=request.session.get('disc'),event=request.session.get('event')).order_by('-id').first()
     routine.status = Routine.ATHLETE_DONE
 
     #try:
@@ -159,7 +137,7 @@ def routine_athlete_done(request):
     routine.athlete_done_time = mili
 
     routine.save()
-    app.firebase.routine_set_status(request.POST.get('comp') + request.POST.get('disc') + request.POST.get('event'),routine)
+    app.firebase.routine_set_status(str(request.session.get('session')) + request.session.get('disc') + request.session.get('event'),routine)
 
     return JsonResponse(Routine.objects.values().get(pk=routine.id),safe=False)
 
@@ -176,7 +154,7 @@ def routine_ejudge_done(request):
         routine.e4_done = True
 
     routine.save()
-    app.firebase.routine_set_ejudge_done(str(routine.competition.id) + routine.disc + routine.event,judge,True)
+    app.firebase.routine_set_ejudge_done(str(routine.session.id) + routine.disc + routine.event,judge,True)
 
     return HttpResponse(status=200)
 
@@ -189,7 +167,7 @@ def routine_delete(request):
     if os.path.exists('/' + settings.MEDIA_ROOT + '/routine_videos/' + str(routine.id) + '.webm'):
         os.remove('/' + settings.MEDIA_ROOT + '/routine_videos/' + str(routine.id) + '.webm')
 
-    app.firebase.routine_set_status(str(routine.competition.id) + routine.disc + routine.event,routine)
+    app.firebase.routine_set_status(str(routine.session.id) + routine.disc + routine.event,routine)
 
     return HttpResponse(status=200)
 
@@ -204,7 +182,7 @@ def routine_finished(request):
     routine.d1_done_time = mili
     
     routine.save()
-    app.firebase.routine_set_status(str(routine.competition.id) + routine.disc + routine.event,routine)
+    app.firebase.routine_set_status(str(routine.session.id) + routine.disc + routine.event,routine)
 
     return HttpResponse(status=200)
 
@@ -261,7 +239,7 @@ def routine_set_score(request):
         routine.score_final = 0
 
     routine.save()
-    app.firebase.routine_set_status(str(routine.competition.id) + routine.disc + routine.event,routine)
+    app.firebase.routine_set_status(str(routine.session.id) + routine.disc + routine.event,routine)
 
     return HttpResponse(status=200)
 
@@ -273,7 +251,7 @@ def set_judges_participating(request):
     routine.e4_include = bool(distutils.util.strtobool(request.POST.get('e4')))
     
     routine.save()
-    app.firebase.routine_set_ejudge_include(str(routine.competition.id) + routine.disc + routine.event,routine)
+    app.firebase.routine_set_ejudge_include(str(routine.session.id) + routine.disc + routine.event,routine)
     return HttpResponse(status=200)
 
 @valid_login_type(match='e')
@@ -283,7 +261,7 @@ def ejudge_select(request):
     }
     return render(request,'app/ejudge_select.html',context)
 
-
+@valid_login_type(match='e')
 def ejudge(request):
     comp = request.GET.get('c')
     disc = request.GET.get('d')
@@ -291,7 +269,7 @@ def ejudge(request):
     ej = request.GET.get('ej')
 
     comp = Competition.objects.get(pk=comp)
-    judges = Judge.objects.filter(competition_id=comp,disc=disc,event=event).first()
+    judges = Judge.objects.filter(session_id=comp,disc=disc,event=event).first()
     if ej == '1':
         this_judge = judges.e1
     elif ej == '2':
@@ -311,14 +289,15 @@ def ejudge(request):
     }
     return render(request,'app/ejudge.html',context)
 
+@valid_login_type(match='e')
 def evideo(request):
     comp = request.GET.get('c')
     disc = request.GET.get('d')
     event = request.GET.get('e')
     ej = request.GET.get('ej')
     comp = Competition.objects.get(pk=comp)
-    judges = Judge.objects.filter(competition_id=comp,disc=disc,event=event).first()
-    athletes = Athlete.objects.filter(competition_id=request.GET.get('c'),disc=request.GET.get('d'))
+    judges = Judge.objects.filter(session_id=comp,disc=disc,event=event).first()
+    athletes = Athlete.objects.filter(session_id=request.GET.get('c'),disc=request.GET.get('d'))
     if ej == '1':
         this_judge = judges.e1
     elif ej == '2':
@@ -565,7 +544,7 @@ def accountability_report(request):
     return render(request,'app/accountability_report.html',context)
 
 def get_routines_by_DCE(request):
-    routines = Routine.objects.values('athlete__name','athlete__team','athlete__level','id','score_e1','score_e2','score_e3','score_e4','score_e','score_d','score_final').filter(competition_id=request.POST.get('Comp'),disc=request.POST.get('Disc'),event=request.POST.get('Ev'),status=Routine.FINISHED).order_by('id')
+    routines = Routine.objects.values('athlete__name','athlete__team','athlete__level','id','score_e1','score_e2','score_e3','score_e4','score_e','score_d','score_final').filter(session_id=request.POST.get('session'),disc=request.POST.get('Disc'),event=request.POST.get('Ev'),status=Routine.FINISHED).order_by('id')
     return JsonResponse(list(routines),safe=False)
 
 def scoreboard(request):
@@ -573,8 +552,8 @@ def scoreboard(request):
     disc = request.GET.get('d')
     event = request.GET.get('e')
     comp = Competition.objects.get(pk=comp)
-    judges = Judge.objects.filter(competition_id=comp,disc=disc,event=event)
-    athletes = Athlete.objects.filter(competition_id=request.GET.get('c'),disc=request.GET.get('d'))
+    judges = Judge.objects.filter(session_id=comp,disc=disc,event=event)
+    athletes = Athlete.objects.filter(session_id=request.GET.get('c'),disc=request.GET.get('d'))
     events = []
     if disc == "MAG":
         events.append('fx')

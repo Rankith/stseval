@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.validators import MaxValueValidator, MinValueValidator
 from account.models import User
+from streaming.models import WowzaStream
 
 # Create your models here.
 class Disc(models.Model):
@@ -104,6 +105,7 @@ class Judge(models.Model):
 
 class Camera(models.Model):
     session = models.ForeignKey(Session, on_delete=models.CASCADE)
+    stream = models.ForeignKey(WowzaStream, on_delete=models.SET_NULL,null=True,default=None)
     name = models.CharField(max_length=50)
     email = models.EmailField(max_length=100)
     password = models.CharField(max_length=50)

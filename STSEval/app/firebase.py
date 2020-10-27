@@ -8,34 +8,35 @@ from streaming.models import WowzaStream
 initialize_app()
 
 
-def routine_set_status(cde,routine):
+def routine_set_status(sde,routine):
     db = firestore.Client()
 
-    doc_ref = db.collection(u'routines').document(str(cde))
+    doc_ref = db.collection(u'routines').document(str(sde))
     doc_ref.set({
         u'status': routine.status,
         u'athlete': routine.athlete.name,
         u'athlete_id': routine.athlete.id,
+        u'routine':routine.id
     },merge=True)
 
-def routine_set_ejudge_done(cde,ejudge,done):
+def routine_set_ejudge_done(sde,ejudge,done):
     db = firestore.Client()
 
-    doc_ref = db.collection(u'routines').document(str(cde))
+    doc_ref = db.collection(u'routines').document(str(sde))
     doc_ref.set({
         u'e' + str(ejudge) + 'done': done
     },merge=True)
 
-def routine_setup(cde,routine):
+def routine_setup(sde,athlete,camera):
     db = firestore.Client()
 
-    doc_ref = db.collection(u'routines').document(str(cde))
+    doc_ref = db.collection(u'routines').document(str(sde))
     doc_ref.set({
-        u'id': cde,
-        u'status': routine.status,
-        u'athlete': routine.athlete.name,
-        u'athlete_id': routine.athlete.id,
-        u'routine':routine.id,
+        u'id': sde,
+        u'status': Routine.NEW,
+        u'athlete': athlete.name,
+        u'athlete_id': athlete.id,
+        u'routine':-1,
         u'e1done':False,
         u'e2done':False,
         u'e3done':False,
@@ -44,12 +45,13 @@ def routine_setup(cde,routine):
         u'e2include':True,
         u'e3include':True,
         u'e4include':True,
+        u'stream':camera,
     },merge=True)
 
-def routine_set_ejudge_include(cde,routine):
+def routine_set_ejudge_include(sde,routine):
     db = firestore.Client()
 
-    doc_ref = db.collection(u'routines').document(str(cde))
+    doc_ref = db.collection(u'routines').document(str(sde))
     doc_ref.set({
         u'e1include':routine.e1_include,
         u'e2include':routine.e2_include,
@@ -57,12 +59,12 @@ def routine_set_ejudge_include(cde,routine):
         u'e4include':routine.e4_include,
     },merge=True)
 
-def routine_set_stream(cde,stream):
+def routine_set_stream(sde,stream):
     db = firestore.Client()
 
-    doc_ref = db.collection(u'routines').document(str(cde))
+    doc_ref = db.collection(u'routines').document(str(sde))
     doc_ref.set({
-        u'id': cde,
+        u'id': sde,
         u'stream':stream,
     },merge=True)
 
@@ -95,27 +97,3 @@ def set_stream_connected(stream_id,stream_connected):
         u'connected':stream_connected,
     },merge=True)
 
-
-
-def streaming_set(mode,type,sdp,id):
-    db = firestore.Client()
-
-    doc_ref = db.collection(u'rooms').document(id)
-    doc_ref.set({
-        mode: {
-            u'type':type,
-            u'sdp':sdp
-            }
-        }
-        ,merge=True)
-
-def add_candidate(candidate,sdpMid,sdpMLineIndex,usernameFragment,id):
-    db = firestore.Client()
-
-    doc_ref = db.collection(u'rooms').document(id).collection('calleeCandidates')
-    doc_ref.add({u'candidate':candidate,
-                 u'sdpMid':sdpMid,
-                 u'sdpMLineIndex':sdpMLineIndex,
-                 u'usernameFragment':usernameFragment
-                 }
-        )

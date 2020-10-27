@@ -4,55 +4,32 @@ from django.http import HttpRequest,JsonResponse,HttpResponse
 from streaming.wowza import LiveStreams, WOWZA_API_KEY, WOWZA_ACCESS_KEY
 from streaming.models import WowzaStream
 import app.firebase
+from management.models import Camera
 
 # Create your views here.
 def camera(request):
-    comp = request.GET.get('c')
-    disc = request.GET.get('d')
-    event = request.GET.get('e')
-    stream = WowzaStream.objects.filter(competition_id=comp,disc=disc,event=event).first()
-    if stream == None:
-        response = wowza_instance = LiveStreams(
-            api_key = WOWZA_API_KEY,
-            access_key = WOWZA_ACCESS_KEY
-        )
-        #stream_id = response['live_stream']['id']
-        # Create a Live Stream
-        response = wowza_instance.create({
-            'name': comp + disc + event,
-            'broadcast_location': 'us_west_oregon',
-            'encoder': 'other_webrtc',
-            'aspect_ratio_width': 1280,
-            'aspect_ratio_height': 720,
-            'transcoder_type':'transcoded',
-            'hosted_page':False,
-            'player_responsive':True,
-            'low_latency':True
-        })
-
-        stream = WowzaStream(stream_id=response['live_stream']['id'],name='Test1',sdp_url=response['live_stream']['source_connection_information']['sdp_url'],application_name=response['live_stream']['source_connection_information']['application_name'],stream_name=response['live_stream']['source_connection_information']['stream_name'])
-        stream.competition_id = comp
-        stream.disc = disc
-        stream.event = event
-        stream.save()
+    camera = Camera.objects.get(pk=request.session.get('camera'))
+    #make stream target
+    if camera.stream == None:
+        create_stream(camera)
     context = {
-        'stream':stream,
-        'disc':disc,
-        'event':event,
-        'comp':comp,
+        'stream':camera.stream,
+        'disc':camera.session.competition.disc,
+        'comp':camera.session.competition,
         }
 
-    return render(request,'app/camera.html',context)
+    return render(request,'streaming/camera.html',context)
 
-def create_camera_stream(request):
+def create_stream(camera):
     response = wowza_instance = LiveStreams(
         api_key = WOWZA_API_KEY,
         access_key = WOWZA_ACCESS_KEY
     )
+    new_name = str(camera.session.id) + "-camera" + str(camera.id)
     #stream_id = response['live_stream']['id']
     # Create a Live Stream
     response = wowza_instance.create({
-        'name': 'Test1',
+        'name': new_name,
         'broadcast_location': 'us_west_oregon',
         'encoder': 'other_webrtc',
         'aspect_ratio_width': 1280,
@@ -63,24 +40,30 @@ def create_camera_stream(request):
         'low_latency':True
     })
 
-    stream = WowzaStream(stream_id=response['live_stream']['id'],name='Test1',sdp_url=response['live_stream']['source_connection_information']['sdp_url'],application_name=response['live_stream']['source_connection_information']['application_name'],stream_name=response['live_stream']['source_connection_information']['stream_name'])
-    stream.competition_id = request.POST.get('comp')
-    stream.disc = request.POST.get('disc')
-    stream.event = request.POST.get('event')
+    stream = WowzaStream(stream_id=response['live_stream']['id'],name=new_name,sdp_url=response['live_stream']['source_connection_information']['sdp_url'],application_name=response['live_stream']['source_connection_information']['application_name'],stream_name=response['live_stream']['source_connection_information']['stream_name'],hls_playback_url=response['live_stream']['player_hls_playback_url'])
     stream.save()
+    camera.stream = stream
+    camera.save()
+    return True
+
+def create_camera_stream(request):
+    camera = Camera.objects.get(pk=request.session.get('camera'))
+    #make stream target
+    if camera.stream == None:
+        create_stream(camera)
 
     return JsonResponse({"test":"test"},safe=False)
 
 def get_stream_connection_info(request):
-    stream = WowzaStream.objects.filter(competition_id=request.POST.get('comp'),disc=request.POST.get('disc'),event=request.POST.get('event')).first()
-    app.firebase.routine_set_stream(request.POST.get('comp') + request.POST.get('disc') + request.POST.get('event'),stream.id)
-    #app.firebase.set_stream(request.POST.get('comp') + request.POST.get('disc') + request.POST.get('event'),stream)
+    stream = Camera.objects.get(pk=request.session.get('camera')).stream
+    #app.firebase.routine_set_stream(request.POST.get('comp') + request.POST.get('disc') + request.POST.get('event'),stream.id)
+   
     return JsonResponse({
         "stream":stream.id,
     },safe=False)
 
 def start_stream(request):
-    stream = WowzaStream.objects.filter(competition_id=request.POST.get('comp'),disc=request.POST.get('disc'),event=request.POST.get('event')).first()
+    stream = Camera.objects.get(pk=request.session.get('camera')).stream
     
     wowza_instance = LiveStreams(
         api_key = WOWZA_API_KEY,
@@ -97,7 +80,7 @@ def start_stream(request):
     return JsonResponse(response,safe=False)
 
 def stop_stream(request):
-    stream = WowzaStream.objects.filter(competition_id=request.POST.get('comp'),disc=request.POST.get('disc'),event=request.POST.get('event')).first()
+    stream = Camera.objects.get(pk=request.session.get('camera')).stream
     wowza_instance = LiveStreams(
         api_key = WOWZA_API_KEY,
         access_key = WOWZA_ACCESS_KEY
@@ -114,7 +97,7 @@ def stop_stream(request):
     return JsonResponse(response,safe=False)
 
 def get_state(request):
-    stream = WowzaStream.objects.filter(competition_id=request.POST.get('comp'),disc=request.POST.get('disc'),event=request.POST.get('event')).first()
+    stream = Camera.objects.get(pk=request.session.get('camera')).stream
     wowza_instance = LiveStreams(
         api_key = WOWZA_API_KEY,
         access_key = WOWZA_ACCESS_KEY
@@ -132,7 +115,7 @@ def get_state(request):
     return JsonResponse(response,safe=False)
 
 def update_stream_status(request):
-    stream = WowzaStream.objects.filter(competition_id=request.POST.get('comp'),disc=request.POST.get('disc'),event=request.POST.get('event')).first()
+    stream = Camera.objects.get(pk=request.session.get('camera')).stream
     status = request.POST.get('status')
 
     if status=="connected":
@@ -148,7 +131,7 @@ def update_stream_status(request):
 
 
 def get_stats(request):
-    stream = WowzaStream.objects.filter(competition_id=request.POST.get('comp'),disc=request.POST.get('disc'),event=request.POST.get('event')).first()
+    stream = Camera.objects.get(pk=request.session.get('camera')).stream
     wowza_instance = LiveStreams(
         api_key = WOWZA_API_KEY,
         access_key = WOWZA_ACCESS_KEY

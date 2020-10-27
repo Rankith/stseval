@@ -7,16 +7,19 @@
 <div id="divAccountabilityReport" style="position:absolute;z-index:104;text-align:center;padding:5px;overflow:auto;display:none;background-color:rgb(97, 97, 106);color:white;top:10%;left:35%;width:40%"  class="rounded"></div>
 <div align="center">
 <div id="divHeader"></div>
+<div style="max-width:854px" id="divAthleteLabel">
+</div>
 <div class="row no-gutters">
     <div class="col-xl-8 col-12" align="right">
         <div align="right">
-            <div style="max-width:854px">
+            <!--<div style="max-width:854px" id="divAthleteLabel">
                 <select id="ddlAthlete" style="max-width:854px" class="selectpicker form-control" data-live-search="true" data-style="btn-main" data-header="Select Gymnast" title="Select Gymnast" onchange="GymnastChanged()">
                     {% for athlete in athletes %}
                         <option value="{{athlete.id}}">{{athlete}}</option>
                     {% endfor %}
                 </select>
-            </div>
+
+            </div>-->
             <video id="video-playback"  style="max-width:854px;max-height:720px;display:none;width:100%" muted controls webkit-playsinline>
 		        Your browser does not support the video tag.
 	        </video>
@@ -122,7 +125,7 @@
 	        <div>
 	            <div>
                     {% if loadroutine == '' %}
-	                    <button href="#" id="btnFinish" type="button" class="btn btn-main mb-2 ui-disabled" style="width:200px" onclick="FinishRoutineClick()" >Routine Complete</button><br/>
+	                    <button href="#" id="btnFinish" type="button" class="btn btn-main mb-2 ui-disabled" style="width:200px" onclick="FinishRoutineClick()" >Routine complete</button><br/>
 	                    <button href="#" id="btnAccountability" type="button" class="btn btn-main mb-2 ui-disabled" style="width:200px" onclick="ViewAccountabilityReport()">Report</button><br/>
 	                    <button href="#" id="btnNuke"  type="button" class="btn btn-main mb-2 ui-disabled" style="width:200px" onclick="DeleteRoutineClick()">Delete Routine</button>
                     {% else %}
@@ -153,8 +156,8 @@
 <script src="{% static 'app/scripts/RecordRTC.js' %}"></script>
 <script src="{% static 'app/scripts/stream_listener.js' %}"></script>
 <script type="text/javascript">
-    var Comp = "{{comp.id}}";
-    var CompName = "{{comp}}";
+    var Session = "{{session.id}}";
+    var SessionName = "{{session}}";
     var Disc = "{{disc}}";
     var ev = "{{event}}";
     var D1Judge = "{{judges.d1}}";
@@ -204,6 +207,8 @@
     var RedLineInterval;
     var EditableDots = true;
     var RoutineID;
+    var CurrentAthlete = -1;
+    var ScoringType;
     var db = firebase.firestore();
    
     $( "#video-playback" ).click(function(e) {
@@ -221,7 +226,7 @@
     SetupPage();
     if (LoadRot == '') {
         SetupStream();
-        var docRef = db.collection("routines").doc(Comp + Disc + ev);
+        var docRef = db.collection("routines").doc(Session + Disc + ev);
         docRef.get().then(function (doc) {
             if (doc.exists) {
                 console.log(doc);
@@ -253,7 +258,9 @@
         // $("#play-video-container").hide();
     }
 
-   
+    function SetAthleteDisplay() {
+        $("#divAthleteLabel").html(GymnastLabels[CurrentAthlete]);
+    }
     function SetBasedOnStatus(doc) {
         if (doc.data() != undefined) {
             console.log("Set Based On Status");
@@ -272,7 +279,9 @@
                 //new
                 RoutineID = doc.data().routine;
                 //$("#txtVideoURL").val(doc.data().stream);
-                $("#ddlAthlete").val(doc.data().athlete_id).change();
+                CurrentAthlete = doc.data().athlete_id;
+                SetAthleteDisplay();
+                //$("#ddlAthlete").val(doc.data().athlete_id).change();
                 JudgesReadyClick(true);
                 EJudgesDone[1] = doc.data().e1done;
                 EJudgesDone[2] = doc.data().e2done;
@@ -400,7 +409,7 @@
 
     function SetupPage() {
 
-        $("#ddlAthlete").val(FirstGymnast).change();
+        //$("#ddlAthlete").val(FirstGymnast).change();
 
         if ((ev == "FX" || ev == "HB") && ScoringType != "4567")
             $("#tdBonus").html("Connections and Bonus: ");
@@ -461,7 +470,7 @@
         $("#btnStartJudging").hide();
         $("#btnJudgesReady").addClass('ui-disabled');
         //$("#txtVideoURL").addClass('ui-disabled');
-        $("#ddlAthlete").addClass('ui-disabled');
+        //$("#ddlAthlete").addClass('ui-disabled');
         $("#btnExerciseDone").show();
         $("#btnNuke").removeClass('ui-disabled');
         Status = status.STARTED;
@@ -590,7 +599,7 @@
         SetDScore();
     }
 
-    function SetDScore(CompleteRoutine = false) {
+    function SetDScore(completeRoutine = false) {
         CalculateScores();
         $.ajax({
             url: "/routine_set_score/",
@@ -612,7 +621,7 @@
                 'score_final': $("#divTotalScore").html(),
             },
             success: function (data) {
-                if (CompleteRoutine) {
+                if (completeRoutine) {
                     FinishRoutine();
                     Status = status.BLANK;
                     Reset();
@@ -817,10 +826,7 @@
             type: "POST",
             headers: { "X-CSRFToken": token },
             data: {
-                'comp': Comp,
-                'disc': Disc,
-                'event': ev,
-                'athlete': $("#ddlAthlete").val()
+                'athlete': CurrentAthlete
             },
             success: function (data) {
             }
@@ -832,9 +838,6 @@
             type: "POST",
             headers: { "X-CSRFToken": token },
             data: {
-                'comp': Comp,
-                'disc': Disc,
-                'event': ev,
             },
             dataType: 'json',
             success: function (data) {
@@ -850,14 +853,13 @@
             type: "POST",
             headers: { "X-CSRFToken": token },
             data: {
-                'comp': Comp,
-                'disc': Disc,
-                'event': ev,
-                'athlete': $("#ddlAthlete").val()
+                'athlete': CurrentAthlete
             },
             dataType: 'json',
             success: function (data) {
                 RoutineID = data['routine'];
+                if (RoutineID == -1)
+                    alert(data['error']);
             }
         });
     }
@@ -867,9 +869,6 @@
             type: "POST",
             headers: { "X-CSRFToken": token },
             data: {
-                'comp': Comp,
-                'disc': Disc,
-                'event': ev,
             },
             dataType: 'json',
             success: function (data) {
@@ -953,7 +952,7 @@
    
 
     function GymnastChanged() {
-        SetDScoreType($("#ddlAthlete").val());
+        SetDScoreType(CurrentAthlete);
         SetDScoreDefaults();
     }
     function SetDScoreType(AthleteIn) {

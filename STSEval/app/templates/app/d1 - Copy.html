@@ -18,7 +18,7 @@
             <table cellspacing="0" cellpadding="0" border="0">
 	            <tr>
 	                <td colspan="2">
-                        <select id="ddlAthlete" class="selectpicker form-control" data-live-search="true" data-style="btn-main" data-header="Select Gymnast" title="Select Gymnast" onchange="GymnastChanged()">
+                        <select id="ddlAthlete" class="selectpicker form-control ui-disabled" data-live-search="true" data-style="btn-main" data-header="Select Gymnast" title="Select Gymnast" onchange="GymnastChanged()">
                             {% for athlete in athletes %}
                                 <option value="{{athlete.id}}">{{athlete}}</option>
                             {% endfor %}

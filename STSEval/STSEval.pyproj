@@ -160,7 +160,7 @@
     <Content Include="app\static\app\scripts\wowza\WowzaWebRTCPublish.js" />
     <Content Include="app\templates\app\accountability_report.html" />
     <Content Include="app\templates\app\camera_old.html" />
-    <Content Include="app\templates\app\camera.html" />
+    <Content Include="streaming\templates\streaming\camera.html" />
     <Content Include="app\templates\app\d1 - Copy.html" />
     <Content Include="app\templates\app\dev-view-play.html" />
     <Content Include="app\templates\app\dev-view-publish.html" />
