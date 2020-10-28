@@ -71,6 +71,7 @@ class Athlete(models.Model):
     level = models.ForeignKey(AthleteLevel,on_delete=models.SET_NULL,default=None,null=True)
     age = models.IntegerField(default=8)
     rotation =  models.CharField(max_length=2,default='A')
+    order = models.IntegerField(default=1)
     def __str__(self):
         return self.team.name + " - " + self.level.name + " - " + self.name
 

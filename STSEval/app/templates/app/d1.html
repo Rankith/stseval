@@ -175,7 +175,7 @@
         GymnastLabels[{{athlete.id}}] = "{{athlete}}";
     {% endfor %}
     var LoadRot = "{{loadroutine}}";
-    var FirstGymnast = "{{athletes.first.id}}";
+    var FirstAthlete = "{{athletes.first.id}}";
     var JudgeName = "{{this_judge}}";
     var token = "{{ csrf_token }}";
     var VideoLocation = "/media/routine_videos/";
@@ -240,6 +240,8 @@
         });
 
         docRef.onSnapshot(function (doc) {
+            CurrentAthlete = FirstAthlete;
+            SetAthleteDisplay();
             CheckJudges(doc);
             CheckStream(doc);
         });
@@ -828,7 +830,9 @@
             data: {
                 'athlete': CurrentAthlete
             },
+            dataType: 'json',
             success: function (data) {
+                RoutineID = data['routine'];
             }
         });
     }
@@ -857,9 +861,9 @@
             },
             dataType: 'json',
             success: function (data) {
-                RoutineID = data['routine'];
+                /*RoutineID = data['routine'];
                 if (RoutineID == -1)
-                    alert(data['error']);
+                    alert(data['error']);*/
             }
         });
     }

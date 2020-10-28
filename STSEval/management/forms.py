@@ -96,11 +96,27 @@ class TeamForm(ModelForm):
 class AthleteForm(ModelForm):
     class Meta:
         model = Athlete
+        ROTATION_CHOICES = (
+                ('A', 'A'),
+                ('B', 'B'), #First one is the value of select option and second is the displayed value in option
+                ('C', 'C'),
+                ('D', 'D'),
+                ('E', 'E'),
+                ('F', 'F'),
+                )
         fields = ['team','level','name','rotation']
-        widgets = {'team': forms.HiddenInput(),
-                   'name':forms.TextInput(attrs={'class':'management-input'}),
-                   'rotation':forms.TextInput(attrs={'class':'management-input'}),
+        widgets = {'name':forms.TextInput(attrs={'class':'management-input'}),
+                   'rotation':forms.Select(choices=ROTATION_CHOICES,attrs={'class':'selectpicker management-input','data-style':'btn-main'}),
                    'level':forms.Select(attrs={'class':'selectpicker management-input','data-style':'btn-main'})}
+
+    def __init__(self, *args, **kwargs):
+        session = kwargs.pop('session')
+        session = Session.objects.get(pk=session)
+        super(AthleteForm, self).__init__(*args, **kwargs)
+        self.fields["team"].widget = forms.Select()
+        self.fields["team"].widget.attrs['class'] = 'selectpicker management-input'
+        self.fields["team"].widget.attrs['data-style'] = 'btn-main'
+        self.fields["team"].queryset = Team.objects.filter(session=session)
 
 class CameraForm(ModelForm):
     class Meta:

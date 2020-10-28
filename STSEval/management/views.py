@@ -171,9 +171,11 @@ def athlete_form(request):
     if request.method == 'POST':
         id = request.POST.get('id','-1')
         if id != '-1':
-            form = AthleteForm(request.POST,instance=Athlete.objects.get(pk=id))
+            athlete = Athlete.objects.get(pk=id)
+            form = AthleteForm(request.POST,instance=athlete,session=athlete.team.session.id)
         else:
-            form = AthleteForm(request.POST)
+            team = Team.objects.get(pk=request.POST.get('team'))
+            form = AthleteForm(request.POST,session=team.session.id)
         if form.is_valid():
             form.save()
             return HttpResponse(status=200)
@@ -182,14 +184,15 @@ def athlete_form(request):
     else:
         id = request.GET.get('id',-1)
         if id != -1:
-            form = AthleteForm(instance=Athlete.objects.get(pk=id))
+            athlete = Athlete.objects.get(pk=id)
+            form = AthleteForm(instance=athlete,session=athlete.team.session.id)
         else:
-            form = AthleteForm()
+            form = AthleteForm(session=request.GET.get('session'))
         return render(request, 'management/athlete_form.html', {'form': form,'id':id})
 
 @login_required(login_url='/account/login/')
 def athlete_list(request,team_id):
-    athletes = Athlete.objects.filter(team_id=team_id)
+    athletes = Athlete.objects.filter(team__session_id=team_id)
     context = {
         'athletes':athletes,
     }

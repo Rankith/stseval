@@ -3,22 +3,27 @@
     <div id="divManageAthlete" align="center">
         <div class="row">
             <div class="col-4">
+                TEAM<br/>
+                {{ form.team }}<br/>
+                {{form.team.errors}}
+            </div>
+            <div class="col-2">
                 LEVEL<br/>
                 {{ form.level }}<br/>
                 {{form.level.errors}}
             </div>
-            <div class="col-5">
+            <div class="col-4">
                 NAME<br/>
                 {{ form.name }}<br/>
                 {{form.name.errors}}
             </div>
-            <div class="col-3">
+            <div class="col-2">
                 ROTATION<br/>
                 {{ form.rotation }}<br/>
                 {{form.rotation.errors}}
             </div>
         </div>
-        {{form.team}}
+        {{form.session}}
         <br/>
         <input type="hidden" id="id" name="id" value="{{id}}" />
         <input type="submit" href="#" id="btnAthleteFinish" class="btn btn-main" value="Save">

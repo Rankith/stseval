@@ -46,7 +46,6 @@ def loginview(request):
     }
     return render(request, 'app/login.html', context)
 
-
 def home(request):
     return render(request,'app/index.html')
 
@@ -99,8 +98,7 @@ def routine_setup(request):
 
     app.firebase.routine_setup(str(request.session.get('session')) + request.session.get('disc') + request.session.get('event'),athlete,camera.id)
 
-    resp = {'routine':routine.id}
-    return JsonResponse(resp)
+    return HttpResponse(status=200)
 
 def routine_start_judging(request):
     routine = Routine(session_id=request.session.get('session'),disc=request.session.get('disc'),event=request.session.get('event'),athlete_id=request.POST.get('athlete'))
@@ -120,7 +118,8 @@ def routine_start_judging(request):
     routine.save()
     app.firebase.routine_set_status(str(request.session.get('session')) + request.session.get('disc') + request.session.get('event'),routine)
 
-    return HttpResponse(status=200)
+    resp = {'routine':routine.id}
+    return JsonResponse(resp)
 
 def routine_athlete_done(request):
     routine = Routine.objects.filter(session_id=request.session.get('session'),disc=request.session.get('disc'),event=request.session.get('event')).order_by('-id').first()
