@@ -76,7 +76,7 @@ def start_stream(request):
         stream.status = WowzaStream.STOPPED
     stream.last_connected = datetime.now(timezone.utc)
     stream.save()
-    app.firebase.set_stream(stream)
+    app.firebase.set_stream(str(request.session.get('session')),stream)
     return JsonResponse(response,safe=False)
 
 def stop_stream(request):
@@ -92,7 +92,7 @@ def stop_stream(request):
     except:
         stream.status = WowzaStream.STARTED
     stream.save()
-    app.firebase.set_stream(stream)
+    app.firebase.set_stream(str(request.session.get('session')),stream)
 
     return JsonResponse(response,safe=False)
 
@@ -107,7 +107,7 @@ def get_state(request):
         if stream.status != response['live_stream']['state']:
             stream.status = response['live_stream']['state']
             stream.save()
-            app.firebase.set_stream_status(stream.id,stream.status)
+            app.firebase.set_stream_status(str(request.session.get('session')),stream.id,stream.status)
     except:
         stream.status = WowzaStream.STOPPED
         stream.save()
@@ -125,7 +125,7 @@ def update_stream_status(request):
     else:
          stream.connected = False
     stream.save()
-    app.firebase.set_stream(stream)
+    app.firebase.set_stream(str(request.session.get('session')),stream)
 
     return HttpResponse(status=200)
 
@@ -147,7 +147,7 @@ def get_stats(request):
             if connected:
                 stream.last_connected = datetime.now(timezone.utc)
             stream.save()
-            app.firebase.set_stream_connected(stream.id,stream.connected)
+            app.firebase.set_stream_connected(str(request.session.get('session')),stream.id,stream.connected)
     except:
         stream.connected = False
         stream.save()

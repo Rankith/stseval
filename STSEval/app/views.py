@@ -95,8 +95,8 @@ def routine_setup(request):
         resp = {'routine':-1,
                  'error':'No Camera for ' + athlete.team.name + ' on ' + request.session.get('event') + '.  Contact your Meet Administrator'}
         return JsonResponse(resp)
-
-    app.firebase.routine_setup(str(request.session.get('session')) + request.session.get('disc') + request.session.get('event'),athlete,camera.id)
+    session = Session.objects.get(pk=request.session.get('session'))
+    app.firebase.routine_setup(session,request.session.get('event'),athlete,camera.id)
 
     return HttpResponse(status=200)
 
@@ -116,7 +116,7 @@ def routine_start_judging(request):
     routine.start_time = mili
 
     routine.save()
-    app.firebase.routine_set_status(str(request.session.get('session')) + request.session.get('disc') + request.session.get('event'),routine)
+    app.firebase.routine_set_status(str(request.session.get('session')),request.session.get('event'),routine)
 
     resp = {'routine':routine.id}
     return JsonResponse(resp)
@@ -136,7 +136,7 @@ def routine_athlete_done(request):
     routine.athlete_done_time = mili
 
     routine.save()
-    app.firebase.routine_set_status(str(request.session.get('session')) + request.session.get('disc') + request.session.get('event'),routine)
+    app.firebase.routine_set_status(str(request.session.get('session')) ,request.session.get('event'),routine)
 
     return JsonResponse(Routine.objects.values().get(pk=routine.id),safe=False)
 
@@ -153,7 +153,7 @@ def routine_ejudge_done(request):
         routine.e4_done = True
 
     routine.save()
-    app.firebase.routine_set_ejudge_done(str(routine.session.id) + routine.disc + routine.event,judge,True)
+    app.firebase.routine_set_ejudge_done(str(routine.session.id),routine.event,judge,True)
 
     return HttpResponse(status=200)
 
@@ -166,7 +166,7 @@ def routine_delete(request):
     if os.path.exists('/' + settings.MEDIA_ROOT + '/routine_videos/' + str(routine.id) + '.webm'):
         os.remove('/' + settings.MEDIA_ROOT + '/routine_videos/' + str(routine.id) + '.webm')
 
-    app.firebase.routine_set_status(str(routine.session.id) + routine.disc + routine.event,routine)
+    app.firebase.routine_set_status(str(routine.session.id) , routine.event,routine)
 
     return HttpResponse(status=200)
 
@@ -181,7 +181,7 @@ def routine_finished(request):
     routine.d1_done_time = mili
     
     routine.save()
-    app.firebase.routine_set_status(str(routine.session.id) + routine.disc + routine.event,routine)
+    app.firebase.routine_set_status(str(routine.session.id) , routine.event,routine)
 
     return HttpResponse(status=200)
 
@@ -238,7 +238,7 @@ def routine_set_score(request):
         routine.score_final = 0
 
     routine.save()
-    app.firebase.routine_set_status(str(routine.session.id) + routine.disc + routine.event,routine)
+    app.firebase.routine_set_status(str(routine.session.id) , routine.event,routine)
 
     return HttpResponse(status=200)
 
@@ -250,7 +250,7 @@ def set_judges_participating(request):
     routine.e4_include = bool(distutils.util.strtobool(request.POST.get('e4')))
     
     routine.save()
-    app.firebase.routine_set_ejudge_include(str(routine.session.id) + routine.disc + routine.event,routine)
+    app.firebase.routine_set_ejudge_include(str(routine.session.id) , routine.event,routine)
     return HttpResponse(status=200)
 
 @valid_login_type(match='e')
@@ -262,13 +262,12 @@ def ejudge_select(request):
 
 @valid_login_type(match='e')
 def ejudge(request):
-    comp = request.GET.get('c')
-    disc = request.GET.get('d')
-    event = request.GET.get('e')
-    ej = request.GET.get('ej')
+    event = request.session.get('event')
+    session = Session.objects.get(pk=request.session.get('session'))
+    judges = Judge.objects.filter(session=session,event__name=event).first()
+    disc = session.competition.disc.name
+    ej = request.session.get('ej')
 
-    comp = Competition.objects.get(pk=comp)
-    judges = Judge.objects.filter(session_id=comp,disc=disc,event=event).first()
     if ej == '1':
         this_judge = judges.e1
     elif ej == '2':
@@ -278,11 +277,11 @@ def ejudge(request):
     else:
         this_judge = judges.e4
     context = {
-        'title': 'STS EJury - ' + event + ' ' + comp.name,
+        'title': 'STS EJury - ' + event + ' ' + session.competition.name,
         'judges':judges,
         'disc':disc,
         'event':event,
-        'comp':comp,
+        'session':session,
         'ej':ej,
         'this_judge':this_judge,
     }
@@ -290,13 +289,12 @@ def ejudge(request):
 
 @valid_login_type(match='e')
 def evideo(request):
-    comp = request.GET.get('c')
-    disc = request.GET.get('d')
-    event = request.GET.get('e')
-    ej = request.GET.get('ej')
-    comp = Competition.objects.get(pk=comp)
-    judges = Judge.objects.filter(session_id=comp,disc=disc,event=event).first()
-    athletes = Athlete.objects.filter(session_id=request.GET.get('c'),disc=request.GET.get('d'))
+    event = request.session.get('event')
+    session = Session.objects.get(pk=request.session.get('session'))
+    judges = Judge.objects.filter(session=session,event__name=event).first()
+    disc = session.competition.disc.name
+    ej = request.session.get('ej')
+    athletes = Athlete.objects.filter(team__session=session)
     if ej == '1':
         this_judge = judges.e1
     elif ej == '2':
@@ -306,11 +304,11 @@ def evideo(request):
     else:
         this_judge = judges.e4
     context = {
-        'title': 'STS EJury - ' + event + ' ' + comp.name + ' - ' + this_judge,
+        'title': 'STS EJury - ' + event + ' ' + session.competition.name + ' - ' + this_judge,
         'judges':judges,
         'disc':disc,
         'event':event,
-        'comp':comp,
+        'session':session,
         'ej':ej,
         'this_judge':this_judge,
         'athletes':athletes

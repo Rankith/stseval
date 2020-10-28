@@ -9,7 +9,7 @@ function CheckStream(doc) {
             StreamListener();//release stream listener
         Stream = doc.data().stream;
         console.log("Setting Stream Listener To " + Stream);
-        StreamListener = db.collection("streams").doc(Stream.toString()).onSnapshot(function (doc) {
+        StreamListener = db.collection("sessions").doc(Session).collection("streams").doc(Stream.toString()).onSnapshot(function (doc) {
             HandleStreamChanges(doc);
         });
     }

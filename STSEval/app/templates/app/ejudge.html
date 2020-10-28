@@ -98,8 +98,8 @@
 <script type="text/javascript">
     var Disc = "{{disc}}";
     var ev = "{{event}}";
-    var CompName = "{{comp}}";
-    var Comp = "{{comp.id}}";
+    var Session = "{{session.id}}";
+    var SessionName = "{{session}}";
     var D1Judge = "{{judges.d1}}";
     var EJudges = new Array();
     EJudges[1] = "{{judges.e1}}";
@@ -135,7 +135,7 @@
     OnlyOneJudge = true;
 
     var db = firebase.firestore();
-    db.collection("routines").doc(Comp + Disc + ev)
+    db.collection("sessions").doc(Session).collection("event_managers").doc(ev)
         .onSnapshot(function (doc) {
             //console.log(doc);
             SetBasedOnStatus(doc);

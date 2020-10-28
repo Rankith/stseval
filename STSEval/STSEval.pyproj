@@ -128,7 +128,7 @@
     <Content Include="account\templates\account\login_simple.html" />
     <Content Include="account\templates\account\login.html" />
     <Content Include="account\templates\account\signup.html" />
-    <Content Include="app\templates\app\ejuge_select.html" />
+    <Content Include="app\templates\app\ejudge_select.html" />
     <Content Include="app\templates\registration\password_reset_complete.html" />
     <Content Include="app\templates\registration\password_reset_confirm.html" />
     <Content Include="app\templates\registration\password_reset_done.html" />
@@ -188,16 +188,12 @@
     <Content Include="management\templates\management\competition_manage.html" />
     <Content Include="management\templates\management\athlete_manage.html" />
     <Content Include="management\templates\management\competition_list.html" />
-    <Content Include="app\templates\app\firebase_rtc_consumer.html" />
-    <Content Include="app\templates\app\firebase_rtc_broadcaster.html" />
     <Content Include="app\templates\app\layout_blank.html" />
     <Content Include="app\templates\app\scoreboard.html" />
     <Content Include="app\templates\app\evideo.html" />
     <Content Include="app\templates\app\ejudge.html" />
     <Content Include="app\templates\app\d1.html" />
     <Content Include="app\templates\app\judge_select.html" />
-    <Content Include="app\templates\app\twitch_auth.html" />
-    <Content Include="app\templates\app\twitch_connect.html" />
     <Content Include="management\templates\management\index.html" />
     <Content Include="management\templates\management\setup_athletes.html" />
     <Content Include="management\templates\management\setup_judges.html" />

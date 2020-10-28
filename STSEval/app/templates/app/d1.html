@@ -226,7 +226,7 @@
     SetupPage();
     if (LoadRot == '') {
         SetupStream();
-        var docRef = db.collection("routines").doc(Session + Disc + ev);
+        var docRef = db.collection("sessions").doc(Session).collection("event_managers").doc(ev);
         docRef.get().then(function (doc) {
             if (doc.exists) {
                 console.log(doc);
