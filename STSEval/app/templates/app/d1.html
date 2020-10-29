@@ -470,8 +470,8 @@
             $("#tdE" + i).removeClass("judge-strike");
             $("#divET" + i).removeClass("judge-strike");
         }
-        
-        GetNextAthlete(true);
+        if (LoadRot == "")
+            GetNextAthlete(true);
     }
 
     function JudgesReadyClick(Syncing = false) {
@@ -616,6 +616,8 @@
                 BuildDots(false,'1');
                 $("#btnAccountability").removeClass("ui-disabled");
                 CalculateScores();
+                
+                RedLineInterval = setInterval(UpdateRedLine, 250);
                
             }
         });
@@ -1002,7 +1004,8 @@
 
 	    posx = posx*(VidWidth-10);
 	    posx += 5;
-	    $("#divRedLine").css({left: posx});
+        $("#divRedLine").css({ left: posx });
+        $("#divRedLine").show();
  
     }
 

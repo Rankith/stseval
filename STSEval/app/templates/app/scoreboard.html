@@ -7,14 +7,7 @@
     <div id="DetailsHeader" style="font-weight:bold;font-size:18px"></div>
 </div>
 <div id="divResults" align="center" style="color:black;margin:auto" >
-    <div class="d-flex">
-        {% for ev in events %}
-            <div class="flex-grow-1">
-                <button id="btn{{ev}}" type="button" class="btn btn-event{% if ev|lower == event|lower %}-selected{% endif %} mb-2" onclick="SwapEvent('{{ev|upper}}')"><img src="{% static 'app/images/' %}{{ev|lower}}-white.svg" height="45px"/></button>
-            </div>
-        {% endfor %}
-       
-    </div>
+    {% include "app/event_select.html" %}  
     <div id="jsGrid" ></div>
 </div>
 <div id="desktopTest" class="d-none d-lg-block"></div>
@@ -26,10 +19,9 @@
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid.min.js"></script>
 <script src="{% static 'app/scripts/dots_area.js' %}?v=1"></script>
 <script type="text/javascript">
-    var Disc = "{{disc}}";
-    var ev = "{{event}}";
-    var CompName = "{{comp}}";
-    var Comp = "{{comp.id}}";
+    var Session = "{{session.id}}";
+    var SessionName = "{{session}}";
+    var ev = "{{event_name}}";
     var token = "{{ csrf_token }}";
 
     
@@ -42,7 +34,7 @@
     var Videos = new Array();
     var dbF = firebase.firestore();
 
-    dbF.collection("routines").doc(Comp + Disc + ev)
+    dbF.collection("sessions").doc(Session).collection("event_managers").doc(ev)
         .onSnapshot(function (doc) {
             console.log("scoreboard");
             SetBasedOnStatusScoreboard(doc);
@@ -64,14 +56,13 @@
     //GetRoutineData();
     function GetRoutineData() {
         $.ajax({
-            url: "/get_routines_by_DCE/",
+            url: "/get_routines_by_SE/",
             type: "POST",
             dataType: 'json',
             headers: { "X-CSRFToken": token },
             data: {
-                'Disc': Disc,
+                'Session': Session,
                 'Ev': ev,
-                'Comp':Comp,
             },
             success: function (data) {
                 UpdateRoutines(data)
@@ -80,7 +71,7 @@
     }
 
     function SwapEvent(evIn) {
-        window.location = "/scoreboard/?c=" + Comp + "&d=" + Disc + "&e=" + evIn;
+        window.location = "/scoreboard/" + evIn;
     }
 
     function UpdateRoutines(data) {
@@ -171,8 +162,8 @@
 
             fields: [
                 { name: "Place", title: "#", type: "number", width: 25 },
-                { name: "athlete__level", title: "Level", type: "text", width: 55 },
-                { name: "athlete__team", title: "Team", type: "text" },
+                { name: "athlete__level__name", title: "Level", type: "text", width: 55 },
+                { name: "athlete__team__name", title: "Team", type: "text" },
                 { name: "athlete__name", title: "Gymnast", type: "text" },
                 { name: "score_d", title: "D-Score<hr class='jsgrid-hr'>Start Value", type: "number" },
                 { name: "score_e", title: "E-Score<hr class='jsgrid-hr'>Deductions", type: "number" },
@@ -205,7 +196,7 @@
     function ShowDetails(IDIn, GymIn, ev) {
 
         $("#DetailsArea").empty();
-        $("#DetailsArea").load("/d1/?routine=" + IDIn, function () {
+        $("#DetailsArea").load("/view_routine/" + IDIn, function () {
             $("#LockBlackout").show();
              if ($('#desktopTest').is(':hidden')) {
             // device is small

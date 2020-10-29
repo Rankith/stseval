@@ -24,6 +24,8 @@ def valid_login_type(match=None):
         def decorated(request, *args, **kwargs):
             if match in request.session.get('type'):
                 return func(request, *args, **kwargs)
+            elif match == 'session' and request.session.get('session',None) != None:
+                return func(request, *args, **kwargs)
             else:
                 return redirect('/')
         return decorated
@@ -57,29 +59,38 @@ def judge_select(request):
 
 @valid_login_type(match='d')
 def d1(request):
-    routine = request.GET.get('routine','')
-    if routine == '':
-        event = request.session.get('event')
-        session = Session.objects.get(pk=request.session.get('session'))
-        judges = Judge.objects.filter(session=session,event__name=event)
-        athletes = Athlete.objects.filter(team__session=session)
-        disc = session.competition.disc.name
-        layout = 'app/layout.html'
-    else:
-        routine = Routine.objects.get(pk=routine)
-        session_id = routine.session.id
-        disc = routine.disc
-        event = routine.event
-        judges = Judge.objects.filter(session_id=session_id,event__name=event)
-        athletes = Athlete.objects.filter(session_id=session_id)
-        session = routine.session
-        layout = 'app/layout_empty.html'
-        routine = routine.id
+    event = request.session.get('event')
+    session = Session.objects.get(pk=request.session.get('session'))
+    judges = Judge.objects.filter(session=session,event__name=event)
+    athletes = Athlete.objects.filter(team__session=session)
+    disc = session.competition.disc.name
+    layout = 'app/layout.html'
+    
     context = {
-        'title': 'D1 Overview - ' + event + ' ' + session.name,
+        'title': 'D1 Overview - ' + event + ' ' + session.full_name(),
         'judges':judges[0],
         'athletes':athletes,
         'disc':disc,
+        'event':event,
+        'session':session,
+        'loadroutine':'',
+        'layout':layout
+    }
+    return render(request,'app/d1.html',context)
+
+def view_routine(request,routine_id):
+    routine = Routine.objects.get(pk=routine_id)
+    event = routine.event
+    session_id = routine.session.id
+    judges = Judge.objects.filter(session_id=session_id,event__name=event)
+    athletes = Athlete.objects.filter(team__session_id=session_id)
+    session = routine.session
+    layout = 'app/layout_empty.html'
+    routine = routine.id
+    context = {
+        'title': 'D1 Overview - ' + event + ' ' + session.full_name(),
+        'judges':judges[0],
+        'athletes':athletes,
         'event':event,
         'session':session,
         'loadroutine':routine,
@@ -540,38 +551,22 @@ def accountability_report(request):
     }
     return render(request,'app/accountability_report.html',context)
 
-def get_routines_by_DCE(request):
-    routines = Routine.objects.values('athlete__name','athlete__team','athlete__level','id','score_e1','score_e2','score_e3','score_e4','score_e','score_d','score_final').filter(session_id=request.POST.get('session'),disc=request.POST.get('Disc'),event=request.POST.get('Ev'),status=Routine.FINISHED).order_by('id')
+def get_routines_by_SE(request):
+    routines = Routine.objects.values('athlete__name','athlete__team__name','athlete__level__name','id','score_e1','score_e2','score_e3','score_e4','score_e','score_d','score_final').filter(session_id=request.POST.get('Session'),event=request.POST.get('Ev'),status=Routine.FINISHED).order_by('id')
     return JsonResponse(list(routines),safe=False)
 
-def scoreboard(request):
-    comp = request.GET.get('c')
-    disc = request.GET.get('d')
-    event = request.GET.get('e')
-    comp = Competition.objects.get(pk=comp)
-    judges = Judge.objects.filter(session_id=comp,disc=disc,event=event)
-    athletes = Athlete.objects.filter(session_id=request.GET.get('c'),disc=request.GET.get('d'))
-    events = []
-    if disc == "MAG":
-        events.append('fx')
-        events.append('ph')
-        events.append('r')
-        events.append('v')
-        events.append('pb')
-        events.append('hb')
-    elif disc == "WAG":
-        events.append('v')
-        events.append('ub')
-        events.append('bb')
-        events.append('fx')
+@valid_login_type(match='session')
+def scoreboard(request,event_name='FX'):
+    session = Session.objects.get(pk=request.session.get('session'))
+    judges = Judge.objects.filter(session=session,event__name=event_name).first()
+    #athletes = Athlete.objects.filter(session=session)
+    events = Event.objects.filter(disc=session.competition.disc)
     context = {
-        'title': 'Scoreboard - ' + event + ' ' + comp.name,
-        'judges':judges[0],
-        'athletes':athletes,
-        'disc':disc,
-        'event':event,
-        'comp':comp,
+        'title': 'Scoreboard - ' + event_name + ' ' + session.full_name(),
+        'judges':judges,
+        'session':session,
         'events':events,
+        'event_name':event_name,
     }
     return render(request,'app/scoreboard.html',context)
 
