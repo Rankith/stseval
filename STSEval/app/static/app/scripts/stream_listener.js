@@ -27,7 +27,7 @@ function HandleStreamChanges(doc) {
         else {
             StreamConnected = false;
             $("#player-video").hide();
-            $("#player-waiting").show();
+            $("#player-waiting").css("display","flex");
         }
     }
 }

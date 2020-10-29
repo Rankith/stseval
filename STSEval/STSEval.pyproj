@@ -129,6 +129,9 @@
     <Content Include="account\templates\account\login.html" />
     <Content Include="account\templates\account\signup.html" />
     <Content Include="app\templates\app\ejudge_select.html" />
+    <Content Include="app\templates\app\coach.html" />
+    <Content Include="app\templates\app\athlete_start_list.html" />
+    <Content Include="app\templates\app\event_select.html" />
     <Content Include="app\templates\registration\password_reset_complete.html" />
     <Content Include="app\templates\registration\password_reset_confirm.html" />
     <Content Include="app\templates\registration\password_reset_done.html" />

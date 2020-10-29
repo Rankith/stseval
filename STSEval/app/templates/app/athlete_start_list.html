@@ -1,0 +1,12 @@
+<div class="row no-gutters" align="center">
+    {% for sl in start_list %}
+        <div class="col-12 mb-2">
+            <div id="divAthlete{{forloop.counter}}"  class="start-list-athlete">{{sl.athlete.team.abbreviation}} - {{sl.athlete.level.name}} - {{sl.athlete.name}}</div>
+        </div>
+        {% if forloop.first %}
+            <div class="col-12 mb-1">
+                NEXT:
+            </div>
+        {% endif %}
+    {% endfor %} 
+</div>

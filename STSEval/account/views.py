@@ -156,10 +156,10 @@ def login_coach(request):
                 coach = teams.filter(head_coach_email=email,coach_password=password)
                 if len(coach) > 0:
                     coach = coach.first()
-                    request.session['session'] = teams.session.id
-                    request.session['team'] = team.id
+                    request.session['session'] = coach.session.id
+                    request.session['team'] = coach.id
                     request.session['type'] = 'coach'
-                    request.session['disc'] = teams.session.competition.disc.name
+                    request.session['disc'] = coach.session.competition.disc.name
                     request.session.set_expiry(0)#until they close browser
                     return redirect('/coach/')
  

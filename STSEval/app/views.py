@@ -8,7 +8,7 @@ from django.template import RequestContext
 from datetime import datetime
 from django.contrib.auth import authenticate, login
 from app.models import Twitch,Routine,EJuryDeduction
-from management.models import Competition,Judge,Athlete,Session,Camera,StartList
+from management.models import Competition,Judge,Athlete,Session,Camera,StartList,Team,Event
 from app.twitch import TwitchAPI
 import app.firebase
 from time import time
@@ -602,6 +602,42 @@ def athlete_get_next(request):
 def athlete_get_next_do(event,session_id):
     sl = StartList.objects.filter(session_id=session_id,event__name=event,active=True,completed=False).order_by('order').first()
     return sl
+
+def athlete_start_list(request,event_name,team_id):
+    session_id = request.session.get('session')
+    start_list = StartList.objects.filter(session_id=session_id,event__name=event_name,active=True,completed=False).order_by('order')
+    if start_list.count() > 0:
+        if team_id != 0:
+            rotation = Athlete.objects.filter(team_id=team_id).first().rotation
+            if start_list[0].athlete.rotation != rotation:
+                #not to this group yet
+                start_list = None
+            else:
+                start_list=start_list.filter(athlete__rotation=rotation)
+        else:
+            rotation = start_list[0].athlete.rotation
+            start_list=start_list.filter(athlete__rotation=rotation)
+        
+    context = {
+        'start_list':start_list,
+    }
+    return render(request,'app/athlete_start_list.html',context)
+
+@valid_login_type(match='coach')
+def coach(request,event_name='FX'):
+    session_id = request.session.get('session')
+    session = Session.objects.get(pk=session_id)
+    team_id = request.session.get('team')
+    team = Team.objects.get(pk=team_id)
+    events = Event.objects.filter(disc=session.competition.disc)
+    context = {
+        'title': 'Start List - ' + team.abbreviation,
+        'event_name':event_name,
+        'events':events,
+        'session':session,
+        'team':team,
+    }
+    return render(request,'app/coach.html',context)
 
 def athlete_mark_done_get_next(request,athlete_id):
     event = request.session.get('event')

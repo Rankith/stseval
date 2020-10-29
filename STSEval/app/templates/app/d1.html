@@ -7,7 +7,8 @@
 <div id="divAccountabilityReport" style="position:absolute;z-index:104;text-align:center;padding:5px;overflow:auto;display:none;background-color:rgb(97, 97, 106);color:white;top:10%;left:35%;width:40%"  class="rounded"></div>
 <div align="center">
 <div id="divHeader"></div>
-<div style="max-width:854px" id="divAthleteLabel">
+<div >
+    <span id="divAthleteLabel" onclick="ShowStartList()" data-toggle="modal" data-target="#modalMain"></span>
 </div>
 <div class="row no-gutters">
     <div class="col-xl-8 col-12" align="right">
@@ -24,7 +25,7 @@
 		        Your browser does not support the video tag.
 	        </video>
             <div id="play-video-container" style="max-width:854px;max-height:720px;width:100%" class="d-flex align-items-center justify-content-center">
-                <div id="player-waiting" style="height:480px" class="align-items-center"><h1>Waiting for Camera</h1></div>
+                <div id="player-waiting" style="height:480px;display:flex" class="align-items-center"><h1>Waiting for Camera</h1></div>
                 <video id="player-video" autoplay playsinline muted controls style="display:none"></video>
             </div>
                     
@@ -261,6 +262,19 @@
         // $("#play-video-container").hide();
     }
 
+    function ShowStartList() {
+         
+        //$("#modalMainDoc").addClass("modal-lg");
+        $("#modalMainTitle").html("Start List");
+        $("#modalBodyArea2").hide();
+        $("#modalBodyArea1").empty();
+        $("#modalBodyArea1").load("/athlete_start_list/" + ev + "/0",  function () {
+
+        });
+
+        $("#modalBodyArea1").show();
+    }
+
     function SetAthleteDisplay() {
         $("#divAthleteLabel").html(AthleteLabel);
     }
@@ -424,7 +438,7 @@
         SetDotsArea();
         //$("#divDotsArea").width(VidWidth - VideoLossRight);
         document.getElementById('divDotsArea').addEventListener('click', NewDeduction);
-        $("#divHeader").html("<h2 style='display:inline'>" + D1Judge + "</h2>");
+        $("#divHeader").html("<h4 style='display:inline'>" + D1Judge + "</h4>");
 
         Reset();
 
@@ -467,23 +481,27 @@
         if (!Syncing)
             SetupRoutine();
         $("#btnStartJudging").removeClass('ui-disabled');
-        $("#btnNuke").addClass('ui-disabled');
+        //$("#btnNuke").addClass('ui-disabled');
         Status = status.NEW;
     }
 
     function StartJudgingClick(Syncing = false) {
-        $("#btnStartJudging").addClass('ui-disabled');
-        if (!Syncing) {
-            //RoutineStartJudging();
-            StartRecording();
+        if (StreamConnected || Syncing) {
+            $("#btnStartJudging").addClass('ui-disabled');
+            if (!Syncing) {
+                //RoutineStartJudging();
+                StartRecording();
+            }
+
+            //$("#btnJudgesReady").addClass('ui-disabled');
+            //$("#txtVideoURL").addClass('ui-disabled');
+            //$("#ddlAthlete").addClass('ui-disabled');
+            $("#btnExerciseDone").removeClass('ui-disabled');
+            $("#btnNuke").removeClass('ui-disabled');
+            Status = status.STARTED;
         }
-        
-        //$("#btnJudgesReady").addClass('ui-disabled');
-        //$("#txtVideoURL").addClass('ui-disabled');
-        //$("#ddlAthlete").addClass('ui-disabled');
-        $("#btnExerciseDone").removeClass('ui-disabled');
-        $("#btnNuke").removeClass('ui-disabled');
-        Status = status.STARTED;
+        else
+            alert("Waiting for Camera");
         
     }
 
