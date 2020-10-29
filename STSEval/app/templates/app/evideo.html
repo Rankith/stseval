@@ -145,13 +145,14 @@
 
     function SetBasedOnStatus(doc) {
         if (doc.data() != undefined) {
+            $("#divHeader").html("<h2 style='display:inline'>" + doc.data().athlete + "</h2>");
             if (Status != doc.data().status || RoutineID != doc.data().routine) {
                 RoutineID = doc.data().routine
                 if (doc.data().status == "N" || doc.data().status == "S" || Status == "") {
                     SetDScoreType(doc.data().athlete_id);
                     SetDScoreDefaults();
                     Reset();
-                    $("#divHeader").html("<h2 style='display:inline'>" + doc.data().athlete + "</h2>");
+                    
                     //SetupStream(doc.data().stream);
                     Status = doc.data().status;
                 }
@@ -174,9 +175,10 @@
             }
             else
                 CheckJudges(doc);
-            CheckStream(doc);
+            
             console.log("Current data: ", doc.data());
         }
+        CheckStream(doc);
     }
     function SetJudgesDone(statusIn) {
         for (var i = 1; i <= 4; i++) {

@@ -3,9 +3,10 @@ from django.http import HttpRequest,JsonResponse,HttpResponse
 from django.template import RequestContext
 from datetime import datetime
 from .forms import CompetitionForm,SessionForm,JudgeForm,TeamForm,AthleteForm,CameraForm,SponsorForm
-from .models import Competition,Session,Athlete,Judge,Team,Disc,Event,Camera,Sponsor
+from .models import Competition,Session,Athlete,Judge,Team,Disc,Event,Camera,Sponsor,StartList
 from django.core.mail import send_mail
 from django.contrib.auth.decorators import login_required,user_passes_test
+from django.db.models import Count
 
 # Create your views here.
 @login_required(login_url='/account/login/')
@@ -201,6 +202,34 @@ def athlete_list(request,team_id):
 @login_required(login_url='/account/login/')
 def athlete_delete(request,id):
     Athlete.objects.filter(id=id).delete()
+    return HttpResponse(status=200)
+
+@login_required(login_url='/account/login/')
+def create_start_lists(request,session_id):
+    session = Session.objects.get(pk=session_id)
+    athletes = Athlete.objects.filter(team__session=session).order_by('-rotation','order')
+    events = Event.objects.filter(disc=session.competition.disc).order_by('display_order')
+    rotations = athletes.values('rotation').distinct()
+    rotation_ord = ord('A')
+    rotation_list = []
+    #athlete_counts = athletes.values('rotation').annotate(total=Count('id'))
+    #clear out old
+    StartList.objects.filter(session=session).delete()
+    for e in events:
+        order = 0
+        rotation_list.append(chr(rotation_ord)) #add this rotation to list and increment to next rotation letter
+        rotation_ord = rotation_ord + 1
+        sub_ath = athletes.filter(rotation__in=rotation_list) #get the starting rotations for this even in reverse order
+        for ath in sub_ath:
+            order = order + 1
+            sl = StartList(session=session,event=e,athlete=ath,order=order)
+            sl.save()
+        sub_ath = athletes.exclude(rotation__in=rotation_list)#now all the rest
+        for ath in sub_ath:
+            order = order + 1
+            sl = StartList(session=session,event=e,athlete=ath,order=order)
+            sl.save()
+    
     return HttpResponse(status=200)
 
 @login_required(login_url='/account/login/')

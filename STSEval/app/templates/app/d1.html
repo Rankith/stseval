@@ -74,13 +74,11 @@
     <div class="col-xl-4 col-12" align="left">
         <div class="ml-4">
                 {% if loadroutine == '' %}
-                    <button id="btnJudgesReady" type="button" class="btn btn-main mb-2" onclick="JudgesReadyClick()">Judges Ready</button><br/>
-                    
-                    <button id="btnStartJudging" type="button" class="btn btn-main mb-2" onclick="StartJudgingClick()">Start Judging</button>
+                    <button id="btnStartJudging" type="button" class="btn btn-main mb-2" onclick="StartJudgingClick()" style="width:143px">Start Judging</button><br/>
 	                <button id="btnRestartD" type="button" class="btn btn-main mb-2" onclick="RestartD()" style="display:none">Judge D</button>
 	                <button id="btnRestartE" type="button" class="btn btn-main mb-2" onclick="RestartE()" style="display:none">Judge E</button>
 	                <button id="btnRestartBoth" type="button" class="btn btn-main mb-2" onclick="RestartBoth()" style="display:none">Both</button>
-	                <button id="btnExerciseDone" type="button" class="btn btn-main mb-2" onclick="ExerciseDoneClick()" style="display:none">Exercise Done</button>
+	                <button id="btnExerciseDone" type="button" class="btn btn-main mb-2" onclick="ExerciseDoneClick()" style="width:143px">Exercise Done</button>
 		            <button id="btnStopRecording" type="button" class="btn btn-main mb-2" onclick="StopRecording()" style="display:none">Stop Recording</button>
 		            <button id="btnStartPlayBack" type="button" class="btn btn-main mb-2" onclick="StartPlayBack()" style="display:none">Playback</button>
 
@@ -125,7 +123,7 @@
 	        <div>
 	            <div>
                     {% if loadroutine == '' %}
-	                    <button href="#" id="btnFinish" type="button" class="btn btn-main mb-2 ui-disabled" style="width:200px" onclick="FinishRoutineClick()" >Routine complete</button><br/>
+	                    <button href="#" id="btnFinish" type="button" class="btn btn-main mb-2 ui-disabled" style="width:200px" onclick="FinishRoutineClick()" >Post Score</button><br/>
 	                    <button href="#" id="btnAccountability" type="button" class="btn btn-main mb-2 ui-disabled" style="width:200px" onclick="ViewAccountabilityReport()">Report</button><br/>
 	                    <button href="#" id="btnNuke"  type="button" class="btn btn-main mb-2 ui-disabled" style="width:200px" onclick="DeleteRoutineClick()">Delete Routine</button>
                     {% else %}
@@ -166,6 +164,9 @@
     EJudges[2] = "{{judges.e2}}";
     EJudges[3] = "{{judges.e3}}";
     EJudges[4] = "{{judges.e4}}";
+    var AthleteLevel;
+    var AthleteTeam;
+    var AthleteLabel
     var GymnastLevels = new Array();
     var GymnastTeams = new Array();
     var GymnastLabels = new Array();
@@ -240,8 +241,8 @@
         });
 
         docRef.onSnapshot(function (doc) {
-            CurrentAthlete = FirstAthlete;
-            SetAthleteDisplay();
+            //CurrentAthlete = FirstAthlete;
+            //SetAthleteDisplay();
             CheckJudges(doc);
             CheckStream(doc);
         });
@@ -261,7 +262,7 @@
     }
 
     function SetAthleteDisplay() {
-        $("#divAthleteLabel").html(GymnastLabels[CurrentAthlete]);
+        $("#divAthleteLabel").html(AthleteLabel);
     }
     function SetBasedOnStatus(doc) {
         if (doc.data() != undefined) {
@@ -281,8 +282,11 @@
                 //new
                 RoutineID = doc.data().routine;
                 //$("#txtVideoURL").val(doc.data().stream);
-                CurrentAthlete = doc.data().athlete_id;
-                SetAthleteDisplay();
+                
+                /*CurrentAthlete = doc.data().athlete_id;
+                AthleteLabel = GymnastLabels[CurrentAthlete];
+                console.log("Status Set Athlete: " + AthleteLabel);
+                SetAthleteDisplay();*/
                 //$("#ddlAthlete").val(doc.data().athlete_id).change();
                 JudgesReadyClick(true);
                 EJudgesDone[1] = doc.data().e1done;
@@ -430,13 +434,14 @@
         Status = status.BLANK;
         SetJudges();
         SetJudgesDone(false);
+        
         RoutineID = 0;
-        GymnastChanged();
-        $("#btnStartJudging").show();
+        //$("#btnStartJudging").show();
         $("#btnStartJudging").addClass('ui-disabled');
-        $("#btnExerciseDone").hide();
+        //$("#btnExerciseDone").hide();
+        $("#btnExerciseDone").addClass('ui-disabled');
         $("#btnNuke").addClass('ui-disabled');
-        $("#btnJudgesReady").removeClass('ui-disabled');
+        //$("#btnJudgesReady").removeClass('ui-disabled');
         //$("#txtVideoURL").removeClass('ui-disabled');
         $("#divDotsArea").empty();
         $("#divDotsAreaGlobal").empty();
@@ -451,12 +456,14 @@
             $("#tdE" + i).removeClass("judge-strike");
             $("#divET" + i).removeClass("judge-strike");
         }
+        
+        GetNextAthlete(true);
     }
 
     function JudgesReadyClick(Syncing = false) {
         //window.WowzaWebRTCPlay.stop();
         //SetupStream();
-        console.log(Syncing);
+        //console.log(Syncing);
         if (!Syncing)
             SetupRoutine();
         $("#btnStartJudging").removeClass('ui-disabled');
@@ -465,15 +472,16 @@
     }
 
     function StartJudgingClick(Syncing = false) {
+        $("#btnStartJudging").addClass('ui-disabled');
         if (!Syncing) {
             //RoutineStartJudging();
             StartRecording();
         }
-        $("#btnStartJudging").hide();
-        $("#btnJudgesReady").addClass('ui-disabled');
+        
+        //$("#btnJudgesReady").addClass('ui-disabled');
         //$("#txtVideoURL").addClass('ui-disabled');
         //$("#ddlAthlete").addClass('ui-disabled');
-        $("#btnExerciseDone").show();
+        $("#btnExerciseDone").removeClass('ui-disabled');
         $("#btnNuke").removeClass('ui-disabled');
         Status = status.STARTED;
         
@@ -530,9 +538,8 @@
         $(".entrybox").removeClass('ui-disabled');
         $("#btnSetDScore").removeClass('ui-disabled');
         Status = status.ATHLETE_DONE;
-        $("#btnStartJudging").show();
         $("#btnStartJudging").addClass('ui-disabled');
-        $("#btnExerciseDone").hide();
+        $("#btnExerciseDone").addClass('ui-disabled');;
     }
 
     function GetDScore() {
@@ -626,7 +633,9 @@
                 if (completeRoutine) {
                     FinishRoutine();
                     Status = status.BLANK;
-                    Reset();
+                    MarkDoneAndGetNextAthlete();
+                    
+                   
                 }
             }
         });
@@ -867,6 +876,43 @@
             }
         });
     }
+    function MarkDoneAndGetNextAthlete() {
+        $.ajax({
+            url: "/athlete_mark_done/" + CurrentAthlete,
+            type: "POST",
+            headers: { "X-CSRFToken": token },
+            data: {
+            },
+            success: function (data) {
+                Reset();
+            }
+        });
+    }
+    function GetNextAthlete(judgesready=false) {
+        $.ajax({
+            url: "/athlete_get_next/",
+            type: "POST",
+            headers: { "X-CSRFToken": token },
+            data: {
+            },
+            dataType: 'json',
+            success: function (data) {
+                if (data['id'] != '-1') {
+                    console.log("DB set athlete: " + data['label']);
+                    CurrentAthlete = data['id'];
+                    AthleteLabel = data['label'];
+                    AthleteLevel = data['level'];
+                    AthleteTeam = data['team'];
+                    
+                    SetAthlete();
+                    if (judgesready)
+                        JudgesReadyClick();
+                }
+                else
+                    alert("All Athletes Done");
+            }
+        });
+    }
      async function GetStreamInfo() {
         const result = await $.ajax({
             url: "/streaming/get_stream_connection_info/",
@@ -955,7 +1001,8 @@
 
    
 
-    function GymnastChanged() {
+    function SetAthlete() {
+        SetAthleteDisplay();
         SetDScoreType(CurrentAthlete);
         SetDScoreDefaults();
     }
@@ -1130,6 +1177,28 @@
     function CloseAccountabilityReport() {
         $("#AccountabilityReportBlackOut").hide();
         $("#divAccountabilityReport").hide();
+    }
+
+     async function CheckStreamStatus() {
+        const result = await $.ajax({
+            url: "/streaming/get_state/",
+            type: "POST",
+            headers: { "X-CSRFToken": token },
+            data: {
+                'camera': Camera,
+            },
+            dataType: 'json',
+            success: function (data) {
+               
+            }
+        });
+        console.log(result["live_stream"]["state"]);
+        if (result["live_stream"] != undefined)
+            return (result["live_stream"]["state"]);
+        else {
+            alert("Your camera account is not setup, contact the meet administrator");
+            return "error";
+        }
     }
 
 

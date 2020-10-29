@@ -128,7 +128,7 @@ def login_camera(request):
                     request.session['session'] = camera.session.id
                     request.session['camera'] = camera.id
                     request.session['type'] = 'camera'
-                    request.session['disc'] = session.competition.disc.name
+                    request.session['disc'] = camera.session.competition.disc.name
                     request.session.set_expiry(0)#until they close browser
                     return redirect('/streaming/camera/')
  

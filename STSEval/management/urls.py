@@ -29,6 +29,7 @@ urlpatterns = [
     path('athlete_delete/<int:id>', views.athlete_delete, name='athlete_delete'),
     path('team_list/<int:session_id>', views.team_list, name='team_list'),
     path('team_delete/<int:id>', views.team_delete, name='team_delete'),
+    path('create_start_lists/<int:session_id>', views.create_start_lists, name='create_start_lists'),
     path('camera_form/', views.camera_form, name='camera_form'),
     path('camera_list/<int:session_id>', views.camera_list, name='camera_list'),
     path('camera_delete/<int:id>', views.camera_delete, name='camera_delete'),

@@ -8,7 +8,7 @@ from django.template import RequestContext
 from datetime import datetime
 from django.contrib.auth import authenticate, login
 from app.models import Twitch,Routine,EJuryDeduction
-from management.models import Competition,Judge,Athlete,Session,Camera
+from management.models import Competition,Judge,Athlete,Session,Camera,StartList
 from app.twitch import TwitchAPI
 import app.firebase
 from time import time
@@ -574,6 +574,48 @@ def scoreboard(request):
         'events':events,
     }
     return render(request,'app/scoreboard.html',context)
+
+def athlete_mark_done(request,athlete_id):
+    event = request.session.get('event')
+    session_id = request.session.get('session')
+    athlete_mark_done_do(event,session_id,athlete_id)
+
+    return HttpResponse(status=200)
+
+def athlete_mark_done_do(event,session_id,athlete_id):
+    sl = StartList.objects.filter(session_id=session_id,event__name=event,athlete_id=athlete_id).first()
+    sl.completed=True
+    sl.save()
+
+def athlete_get_next(request):
+    event = request.session.get('event')
+    session_id = request.session.get('session')
+    sl = athlete_get_next_do(event,session_id)
+    if sl != None:
+        return JsonResponse({'id':sl.athlete.id,
+                             'label':str(sl.athlete),
+                             'level':sl.athlete.level.name,
+                             'team':str(sl.athlete.team)})
+    else:
+        return JsonResponse({'id':'-1'})
+
+def athlete_get_next_do(event,session_id):
+    sl = StartList.objects.filter(session_id=session_id,event__name=event,active=True,completed=False).order_by('order').first()
+    return sl
+
+def athlete_mark_done_get_next(request,athlete_id):
+    event = request.session.get('event')
+    session_id = request.session.get('session')
+    athlete_mark_done_do(event,session_id,athlete_id)
+    sl = athlete_get_next_do(event,session_id)
+
+    if sl != None:
+        return JsonResponse({'id':sl.athlete.id,
+                             'label':str(sl.athlete),
+                             'level':sl.athlete.level.name,
+                             'team':str(sl.athlete.team)})
+    else:
+        return JsonResponse({'id':'-1'})
 
 def save_video(request):
     output = open('/' + settings.MEDIA_ROOT + '/routine_videos/' + request.POST.get('video-filename'), 'wb+')

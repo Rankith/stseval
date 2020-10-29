@@ -48,6 +48,7 @@
 	    </div>
     </div>
     <br/>
+    <button href="#" id="btnGenStartList" type="button" class="btn btn-main management-button" onclick="GenerateStartList()">Generate Start Lists</button>
     <br/>
     <div>
         <button id="btnBack" type="button" class="btn-main pt-4 pb-4" style="border-radius: 1rem;" onclick="GoBack()">Return to<br/>Previous Page</button>
@@ -280,6 +281,18 @@
                 }
             });
         }
+    }
+
+    function GenerateStartList() {
+         $("#modalMainDoc").removeClass("modal-lg");
+        $.ajax({
+            url: "/management/create_start_lists/" + SessionID,
+            success: function () {
+                alert("Start lists generated");
+                //$("#btnNext").addClass("ui-disabled");
+            }
+        });
+
     }
 
     function FillAthletes() {

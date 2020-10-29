@@ -75,6 +75,13 @@ class Athlete(models.Model):
     def __str__(self):
         return self.team.name + " - " + self.level.name + " - " + self.name
 
+class StartList(models.Model):
+    session = models.ForeignKey(Session, on_delete=models.CASCADE)
+    athlete = models.ForeignKey(Athlete, on_delete=models.CASCADE)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    completed = models.BooleanField(default=False)
+    active = models.BooleanField(default=True)
+    order = models.IntegerField(default=1)
 
 class Judge(models.Model):
     session = models.ForeignKey(Session, on_delete=models.CASCADE)

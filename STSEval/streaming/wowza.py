@@ -301,6 +301,28 @@ class StreamTargets(object):
                 'message': 'Invalid parameter dictionary provided.'
             })
 
+    def create_fastly(self, param_dict):
+        """
+        Used to create a new stream
+        """
+        if isinstance(param_dict, dict):
+            path = self.base_url + "fastly"
+            param_dict = {
+                'stream_target_fastly': param_dict
+            }
+            response = session.post(path, json.dumps(param_dict), 
+                headers=self.headers)
+            if 'meta' in response.json():
+                if 'LimitReached' in response.json()['meta']['code']:
+                    raise LimitReached({
+                        'message': response.json()['meta']['message']
+                    })
+            return response.json()
+        else:
+            return InvalidParamDict({
+                'message': 'Invalid parameter dictionary provided.'
+            })
+
     def update(self, stream_target_id, param_dict):
         """
         Used to update details associated with a particular stream target

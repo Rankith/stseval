@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from datetime import datetime,timezone
 from django.http import HttpRequest,JsonResponse,HttpResponse
-from streaming.wowza import LiveStreams, WOWZA_API_KEY, WOWZA_ACCESS_KEY
+from streaming.wowza import LiveStreams, Transcoders, StreamTargets, WOWZA_API_KEY, WOWZA_ACCESS_KEY
 from streaming.models import WowzaStream
 import app.firebase
 from management.models import Camera
@@ -12,6 +12,7 @@ def camera(request):
     #make stream target
     if camera.stream == None:
         create_stream(camera)
+    #create_stream_passthrough(camera)
     context = {
         'stream':camera.stream,
         'disc':camera.session.competition.disc,
@@ -19,6 +20,39 @@ def camera(request):
         }
 
     return render(request,'streaming/camera.html',context)
+
+def create_stream_passthrough(camera):
+    #create fastly stream target
+    response = wowza_instance =  StreamTargets(
+        api_key = WOWZA_API_KEY,
+        access_key = WOWZA_ACCESS_KEY
+    )
+    new_name = str(camera.session.id) + "-camera" + str(camera.id) + " / Fastly Target"
+    response = wowza_instance.create_fastly({
+        'name': new_name,
+    })
+    fastly_target = response['stream_target_fastly']['id']
+
+    #create passthrough transcoder
+    response = wowza_instance =  Transcoders(
+        api_key = WOWZA_API_KEY,
+        access_key = WOWZA_ACCESS_KEY
+    )
+    new_name = str(camera.session.id) + "-camera" + str(camera.id) + " / Transcoder"
+    response = wowza_instance.create({
+        'name': new_name,
+        'billing_mode': 'pay_as_you_go',
+        'broadcast_location': 'us_west_oregon',
+        'delivery_method': 'push',
+        'protocol': "webrtc",
+        'transcoder_type':'passthrough',
+        'low_latency':True
+    })
+
+    transcoder_id = response['transcoder']['id']
+    application_name = response['transcoder']['application_name']
+    stream_name = response['transcoder']['direct_playback_urls']['webrtc'][0]['stream_name']
+    sdp_url = response['transcoder']['direct_playback_urls']['webrtc'][0]['url']
 
 def create_stream(camera):
     response = wowza_instance = LiveStreams(
