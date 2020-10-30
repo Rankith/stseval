@@ -140,6 +140,19 @@ class CameraForm(ModelForm):
         self.fields["teams"].widget.attrs['class'] = 'camera-checkbox'
         self.fields["teams"].queryset = Team.objects.filter(session=session)
 
+    def clean(self):
+        data = self.cleaned_data
+        #make sure this team not already have these events
+        teams = data.get("teams")
+        events = data.get("events")
+        if teams != None and events != None:
+            if Camera.objects.filter(events__in = events,teams__in = teams).exclude(pk=self.instance.id).count() > 0:
+                raise forms.ValidationError("Camera already exists for this team and event")
+            else:
+                return data
+        else:
+            return data
+
 class ImagePreviewWidget(forms.widgets.FileInput):
     def render(self, name, value, attrs=None, **kwargs):
         input_html = super().render(name, value, attrs=None, **kwargs)

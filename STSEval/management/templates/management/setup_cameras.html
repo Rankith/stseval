@@ -30,8 +30,7 @@
 	        </div>
 	    </div>
     </div>
-    <br/>
-    <br/>
+    <div id="divMissing" style="color:red;font-size:.85rem">&nbsp;</div>
     <div>
         <button id="btnBack" type="button" class="btn-main pt-4 pb-4" style="border-radius: 1rem;" onclick="GoBack()">Return to<br/>Previous Page</button>
         <button id="btnNext" type="button" class="btn-main pt-4 pb-4" style="border-radius: 1rem;" onclick="NextClick()">Save and<br/>Continue (4/6)</button>
@@ -50,7 +49,7 @@
     var SelectedTeam = -1;
     var SelectedCamera = -1;
     var Changed = false;
-
+    CheckMissing();
     $("#divCameraList").load("/management/camera_list/" + SessionID); 
    
     function GoBack() {
@@ -152,7 +151,8 @@
 
      function CameraManageFinishParent() {
         $("#modalMain").modal('hide');
-        $("#divCameraList").load("/management/camera_list/"+ SessionID, function () {
+         $("#divCameraList").load("/management/camera_list/" + SessionID, function () {
+             CheckMissing();
             if (SelectedCamera != -1)
                 CameraClick(SelectedCamera);
         });
@@ -170,6 +170,7 @@
                     FillCameras();
                     SelectedCamera = -1;
                     EnableDisableButtons("Camera", false)
+                    CheckMissing();
                     //$("#btnNext").addClass("ui-disabled");
                 }
             });
@@ -178,6 +179,34 @@
 
     function FillCameras() {
         $("#divCameraList").load("/management/camera_list/"+ SessionID);
+    }
+
+    function CheckMissing() {
+       
+        $.ajax({
+            url: "/management/cameras_check_missing/" + SessionID,
+            data: {
+                'id': SessionID,
+            },
+            dataType: 'json',
+            success: function (data) {
+                SetErrorDisplay(data['missed']);
+            }
+        });
+
+    }
+
+    function SetErrorDisplay(missed) {
+        let msg = "";
+        if (missed.length > 0) {
+            let com = "";
+            for (index = 0; index < missed.length; ++index) {
+                msg = msg + com  + missed[index];
+                com = "<br/>";
+            }
+        }
+        $("#divMissing").html(msg);
+       
     }
 </script>
 {% endblock %}

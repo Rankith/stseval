@@ -37,6 +37,11 @@
                 {{form.teams.errors}}
             </div>
         </div>
+         <div id="divErrors">
+            {% for err in form.non_field_errors %}
+                <div class="errorlist">{{ err }}</div>
+            {% endfor %}
+        </div>
         <br/>
         <input type="hidden" id="id" name="id" value="{{id}}" />
         <input type="submit" href="#" id="btnCameraFinish" class="btn btn-main" value="Save">

@@ -35,6 +35,7 @@ urlpatterns = [
     path('camera_form/', views.camera_form, name='camera_form'),
     path('camera_list/<int:session_id>', views.camera_list, name='camera_list'),
     path('camera_delete/<int:id>', views.camera_delete, name='camera_delete'),
+    path('cameras_check_missing/<int:session_id>', views.cameras_check_missing, name='cameras_check_missing'),
     path('sponsor_form/', views.sponsor_form, name='sponsor_form'),
     path('sponsor_list/<int:session_id>', views.sponsor_list, name='sponsor_list'),
     path('sponsor_delete/<int:id>', views.sponsor_delete, name='sponsor_delete'),

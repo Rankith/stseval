@@ -124,6 +124,11 @@ def judge_form(request):
         return render(request, 'management/judge_form.html', {'form': form,'id':id})
 
 def judges_check_missing(request,session_id):
+    missed = judges_check_missing_call(session_id)
+
+    return JsonResponse({'missed':list(missed)})
+
+def judges_check_missing_call(session_id):
     #see if d1 judge is assigned
     session = Session.objects.get(pk=session_id)
     events = Event.objects.filter(disc=session.competition.disc).order_by('display_order')
@@ -138,7 +143,7 @@ def judges_check_missing(request,session_id):
         else:
             missed.append(event.name)
 
-    return JsonResponse({'missed':list(missed)})
+    return missed
 
 @login_required(login_url='/account/login/')
 def setup_athletes(request,id):
@@ -307,6 +312,31 @@ def camera_delete(request,id):
     Camera.objects.filter(id=id).delete()
     return HttpResponse(status=200)
 
+def cameras_check_missing(request,session_id):
+    missed = cameras_check_missing_call(session_id)
+
+    return JsonResponse({'missed':list(missed)})
+
+def cameras_check_missing_call(session_id):
+    #see if d1 judge is assigned
+    session = Session.objects.get(pk=session_id)
+    events = Event.objects.filter(disc=session.competition.disc).order_by('display_order')
+    teams = Team.objects.filter(session=session)
+    cameras = Camera.objects.filter(session=session)
+    missed = []
+
+    for team in teams:
+        msg = ""
+        for event in events:
+            camera = cameras.filter(events=event,teams=team).first()
+            if camera == None:
+                msg = msg + " " + event.name
+            
+        if msg != "":
+            missed.append(team.name + " missing camera on" + msg)
+
+    return missed
+
 @login_required(login_url='/account/login/')
 def setup_sponsors(request,id):
     session = Session.objects.get(pk=id)
@@ -354,10 +384,27 @@ def sponsor_delete(request,id):
 @login_required(login_url='/account/login/')
 def setup_finish(request,id):
     session = Session.objects.get(pk=id)
+    missed_athlete = False
+    missed_judge = False
+    missed_camera = False
+    if len(judges_check_missing_call(id)) > 0:
+        missed_judge = True
+    if len(cameras_check_missing_call(id)) > 0:
+        missed_camera = True
+    if Athlete.objects.filter(team__session = session).count() < 1:
+        missed_athlete = True
+    if missed_camera or missed_athlete or missed_judge:
+        setup_complete = False
+    else:
+        setup_complete = True
     context = {
         'title': 'Compeition Setup (6/6)',
         'session_name': session.full_name,
         'id':session.id,
+        'missed_athlete':missed_athlete,
+        'missed_judge':missed_judge,
+        'missed_camera':missed_camera,
+        'setup_complete':setup_complete,
     }
     return render(request,'management/setup_finish.html',context)
 

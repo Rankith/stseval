@@ -4,14 +4,27 @@
 <div align="center" style="margin:10px;padding:0">
     {{session_name}}<br/>
     <br/>
-    <div class="timer-green">COMPETITION SETUP COMPLETE</div>
-
-    <br/>
-    Send competition information to judges, coaches, and camera operators
-    <br/><br/>
-    <button id="btnSendEmails" type="button" class="btn-main btn-wide pt-4 pb-4" style="border-radius: 1rem;" onclick="Send()">Send</button>
-    <br/>
-    <br/>
+    {% if setup_complete %}
+        <div class="timer-green">COMPETITION SETUP COMPLETE</div>
+        <br/>
+        Send competition information to judges, coaches, and camera operators
+        <br/><br/>
+        <button id="btnSendEmails" type="button" class="btn-main btn-wide pt-4 pb-4" style="border-radius: 1rem;" onclick="Send()">Send</button>
+        <br/>
+        <br/>
+     {% else %}
+        <div class="timer-yellow">COMPETITION SETUP INCOMPLETE</div>
+        {% if missed_athlete %}
+            <div class="errorlist">You need at least one athlete.</div>
+        {% endif %}
+        {% if missed_judge %}
+            <div class="errorlist">You need at least a D1 judge for every event.</div>
+        {% endif %}
+        {% if missed_camera %}
+            <div class="errorlist">You need a camera for every event and team</div>
+        {% endif %}
+        <br/>
+    {% endif %}
     <div>
         <button id="btnBack" type="button" class="btn-main btn-wide pt-4 pb-4" style="border-radius: 1rem;" onclick="GoBack()">Return to<br/>Previous Page</button>
         <button id="btnFirst" type="button" class="btn-main btn-wide pt-4 pb-4" style="border-radius: 1rem;" onclick="FirstClick()">Return to<br/>First Page</button>
