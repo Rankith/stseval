@@ -6,7 +6,19 @@ from streaming.models import WowzaStream
 def start():
     scheduler = BackgroundScheduler()
     scheduler.add_job(check_and_stop_streams, 'interval', seconds=20)
+    scheduler.add_job(check_update_wowza_player, 'interval', seconds=30)
     scheduler.start()
+
+def check_update_wowza_player():
+    streams = WowzaStream.objects.filter(wowza_player_code='')
+    wowza_instance = LiveStreams(
+        api_key = WOWZA_API_KEY,
+        access_key = WOWZA_ACCESS_KEY
+    )
+    for stream in streams:
+        response = wowza_instance.info(stream.stream_id)
+        stream.wowza_player_code = response['live_stream']['player_id']
+        stream.save();
 
 def check_and_stop_streams():
     AUTO_SHUTOFF = 900#15 minutes

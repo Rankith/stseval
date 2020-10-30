@@ -88,6 +88,7 @@ def set_stream(s,stream):
         u'stream_name':stream.stream_name,
         u'status':stream.status,
         u'connected':stream.connected,
+        u'player_id':stream.wowza_player_code,
     },merge=True)
 
 def set_stream_status(s,stream_id,stream_status):

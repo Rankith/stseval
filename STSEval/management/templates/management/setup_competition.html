@@ -36,7 +36,8 @@
     <br/>
     <br/>
     <div>
-        <button href="#" id="btnNext" type="button" class="btn-main ui-disabled pt-4 pb-4" style="border-radius: 1rem;" onclick="btnNextClick()">Save and<br/>Continue (1/6)</button>
+        <button href="#" id="btnAdministrate" type="button" class="btn-main btn-wide ui-disabled pt-4 pb-4" style="border-radius: 1rem;" onclick="btnAdministrateClick()">Session Overview</button>
+        <button href="#" id="btnNext" type="button" class="btn-main btn-wide ui-disabled pt-4 pb-4" style="border-radius: 1rem;" onclick="btnNextClick()">Session<br/>Setup</button>
     </div>
 		
 </div>
@@ -61,10 +62,17 @@
         }
     }
 
+    function btnAdministrateClick() {
+        if (SelectedSession != -1) {
+            window.location = "/administrator/" + SelectedSession;
+        }
+    }
+
     function SessionClick(sesIn) {
         $('.session-list').removeClass("ctxSelected");
         $("#divSession" + sesIn).addClass("ctxSelected");
         SelectedSession = sesIn;
+        $("#btnAdministrate").removeClass("ui-disabled");
         $("#btnNext").removeClass("ui-disabled");
         EnableDisableButtons("Session", true);
 
@@ -80,6 +88,7 @@
         $("#divSessionList").empty();
         $("#divSessions").addClass("ui-disabled");
         $("#btnNext").addClass("ui-disabled");
+        $("#btnAdministrate").addClass("ui-disabled");
         EnableDisableButtons("Comp", false);
 
     }
@@ -90,6 +99,7 @@
         $("#divCompetitions").addClass("ui-disabled");
         $("#divSessions").addClass("ui-disabled");
         $("#btnNext").addClass("ui-disabled");
+        $("#btnAdministrate").addClass("ui-disabled");
     }
 
     function CompClick(CompIn) {
@@ -100,6 +110,7 @@
         $("#divSessions").removeClass("ui-disabled");
         FillSession();
         $("#btnNext").addClass("ui-disabled");
+        $("#btnAdministrate").addClass("ui-disabled");
         EnableDisableButtons("Comp", true);
         EnableDisableButtons("Session", false);
     }
@@ -146,6 +157,7 @@
                     $("#divSessions").addClass('ui-disabled');
                     $("#divSessionList").empty();
                     $("#btnNext").addClass("ui-disabled");
+                    $("#btnAdministrate").addClass("ui-disabled");
                     EnableDisableButtons("Session", false);
                     EnableDisableButtons("Comp", false);
                 }
@@ -268,6 +280,7 @@
                     FillSession();
                     SelectedSession = -1;
                     $("#btnNext").addClass("ui-disabled");
+                    $("#btnAdministrate").addClass("ui-disabled");
                     EnableDisableButtons("Session", false);
                 }
             });

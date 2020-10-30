@@ -23,3 +23,4 @@ class WowzaStream(models.Model):
     connected = models.BooleanField(default=False)
     last_connected = models.DateTimeField(default=datetime.datetime.now)
     hls_playback_url = models.CharField(max_length=255,blank=True,default='')
+    wowza_player_code = models.CharField(max_length=255,blank=True,default='')
