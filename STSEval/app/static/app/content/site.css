@@ -411,3 +411,11 @@ input[type="checkbox"].input-validation-error {
     color: black;
     font-weight: 700;
 }
+
+.ath-list{
+    cursor:pointer
+}
+
+.setup-box{
+    height:240px;
+}

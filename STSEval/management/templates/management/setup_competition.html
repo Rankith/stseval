@@ -5,7 +5,7 @@
     <div>
         <div id="divDisc" style="vertical-align: top;padding:3px;height:254px;display:inline-block;margin-right:30px;">
 		    <div id="divDiscHeader" style="padding-bottom:5px;font-size:22px;font-weight:bold;text-align:center">Discipline</div>
-		    <div id="divDiscList" class="listbox" style="height:180px;">
+		    <div id="divDiscList" class="listbox  setup-box" style="">
                 {% for disc in discs %}
                     <div id="divDisc{{disc.id}}" name="divDisc{{disc.id}}" class="disc-list{% if disc.active is False %} ui-disabled {% endif %}" style="padding-bottom:5px" onclick="DiscClick({{disc.id}});">{{disc.name}}</div>
                 {% endfor %}
@@ -15,7 +15,7 @@
 
 	    <div id="divCompetitions" style="display:inline-block;vertical-align: top;padding:3px;display:inline-block;margin-right:30px;" class="ui-disabled">
 	        <div id="divCompHeader" style="padding-bottom:5px;font-size:22px;font-weight:bold;text-align:center">Competition</div>
-	        <div id="divCompList"class="listbox"  style="width:400px;height:180px;"></div><br/>
+	        <div id="divCompList"class="listbox  setup-box"  style="width:400px;"></div><br/>
 	        <div id="divCompButtonsArea">
 		        <button href="#" id="btnCompAdd"  type="button" class="btn btn-main management-button" data-toggle="modal" data-target="#modalMain" onclick="AddCompStart()">Add</button><br/>
 		        <button href="#" id="btnCompEdit"  type="button" class="btn btn-main management-button ui-disabled" data-toggle="modal" data-target="#modalMain" onclick="EditCompStart()">Edit</button><br/>
@@ -25,7 +25,7 @@
 
         <div id="divSessions" style="vertical-align: top;padding:3px;display:inline-block;margin-right:30px;" class="ui-disabled">
 		    <div id="divSessionHeader" style="padding-bottom:5px;font-size:22px;font-weight:bold;text-align:center">Session</div>
-		    <div id="divSessionList" class="listbox" style="width:240px;height:180px;"></div><br/>
+		    <div id="divSessionList" class="listbox  setup-box" style="width:240px;"></div><br/>
 		    <div id="divSessionButtonsArea">
 		        <button href="#" id="btnSessionhAdd"   type="button" class="btn btn-main management-button"  data-toggle="modal" data-target="#modalMain" onclick="AddSessionStart()">Add</button><br/>
 		        <button href="#" id="btnSessionEdit"  type="button" class="btn btn-main management-button ui-disabled" data-toggle="modal" data-target="#modalMain" onclick="EditSessionStart()">Edit</button><br/>

@@ -128,6 +128,7 @@
     <Content Include="account\templates\account\login_simple.html" />
     <Content Include="account\templates\account\login.html" />
     <Content Include="account\templates\account\signup.html" />
+    <Content Include="app\static\app\scripts\sortable.min.js" />
     <Content Include="app\templates\app\ejudge_select.html" />
     <Content Include="app\templates\app\coach.html" />
     <Content Include="app\templates\app\athlete_start_list.html" />

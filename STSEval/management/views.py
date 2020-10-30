@@ -123,6 +123,23 @@ def judge_form(request):
             form = JudgeForm()
         return render(request, 'management/judge_form.html', {'form': form,'id':id})
 
+def judges_check_missing(request,session_id):
+    #see if d1 judge is assigned
+    session = Session.objects.get(pk=session_id)
+    events = Event.objects.filter(disc=session.competition.disc).order_by('display_order')
+    judges = Judge.objects.filter(session=session)
+    missed = []
+
+    for event in events:
+        judge = judges.filter(event=event).first()
+        if judge != None:
+            if judge.d1_email == '':
+                missed.append(event.name)
+        else:
+            missed.append(event.name)
+
+    return JsonResponse({'missed':list(missed)})
+
 @login_required(login_url='/account/login/')
 def setup_athletes(request,id):
     session = Session.objects.get(pk=id)
@@ -193,7 +210,7 @@ def athlete_form(request):
 
 @login_required(login_url='/account/login/')
 def athlete_list(request,team_id):
-    athletes = Athlete.objects.filter(team__session_id=team_id)
+    athletes = Athlete.objects.filter(team__session_id=team_id).order_by('rotation','order')
     context = {
         'athletes':athletes,
     }
@@ -231,6 +248,18 @@ def create_start_lists(request,session_id):
             sl.save()
     
     return HttpResponse(status=200)
+
+def athlete_update_order(request):
+    session = Session.objects.get(pk=request.POST.get('session'))
+    aths = request.POST.get('ath_order').split(',')
+
+    for index, val in enumerate(aths,start=1):
+        ath = Athlete.objects.get(pk=val)
+        ath.order = index
+        ath.save()
+
+    return HttpResponse(status=200)
+
 
 @login_required(login_url='/account/login/')
 def setup_cameras(request,id):

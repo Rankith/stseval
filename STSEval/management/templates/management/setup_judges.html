@@ -14,7 +14,7 @@
     </select><br/>
     <button href="#" id="btnSave" type="button" class="btn btn-main management-button-long" onclick="Save()">Save</button>
     <br/>
-    <br/>
+    <div id="divMissing" style="color:red;font-size:.85rem">&nbsp;</div>
     <div>
         <button id="btnBack" type="button" class="btn-main pt-4 pb-4" style="border-radius: 1rem;" onclick="GoBack()">Return to<br/>Previous Page</button>
         <button id="btnNext" type="button" class="btn-main pt-4 pb-4" style="border-radius: 1rem;" onclick="NextClick()">Save and<br/>Continue (2/6)</button>
@@ -130,6 +130,7 @@
 
     function AttachForm() {
         console.log("attach");
+        JudgesCheckMissing();
         var frm = $('#form');
         $("#id_session").val(SessionID);
         $("#id_event").val(SelectedEvent);
@@ -140,6 +141,7 @@
                 url: frm.attr('action'),
                 data: frm.serialize(),
                 success: function (data) {
+                    JudgesCheckMissing();
                     if (data != "") {
                         $("#divJudges").empty();
                         $("#divJudges").html(data);
@@ -161,6 +163,40 @@
             });
             return false;
         });
+    }
+
+    function JudgesCheckMissing() {
+       
+        $.ajax({
+            url: "/management/judges_check_missing/" + SessionID,
+            data: {
+                'id': SessionID,
+            },
+            dataType: 'json',
+            success: function (data) {
+                SetErrorDisplay(data['missed']);
+            }
+        });
+
+    }
+
+    function SetErrorDisplay(missed) {
+        let msg = "";
+        tester = missed;
+        if (missed.length > 0) {
+            msg = "NOTE:";
+            let com = "";
+            for (index = 0; index < missed.length; ++index) {
+                msg = msg + com + ' ' + missed[index];
+                com = ",";
+            }
+            if (missed.length == 1)
+                msg = msg + " has not been assigned";
+            else
+                msg = msg + " have not been assigned";
+        }
+        $("#divMissing").html(msg);
+       
     }
 
    

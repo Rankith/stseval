@@ -1,5 +1,5 @@
 {% extends "app/layout.html" %}
-
+{% load staticfiles %}
 {% block content %}
 <div align="center" style="margin:10px;padding:0">
     {{session_name}}<br/>
@@ -16,7 +16,7 @@
                     </div>
                 </div>
             </div>-->
-	        <div id="divTeamList"class="listbox mb-2"  style="width:310px;height:180px;"></div>
+	        <div id="divTeamList"class="listbox mb-2 setup-box"  style="width:310px;"></div>
 	        <div id="divTeamButtonsArea">
 		        <button href="#" id="btnTeamsAdd"  type="button" class="btn btn-main management-button" data-toggle="modal" data-target="#modalMain" onclick="AddTeamStart()">Add</button>
 		        <button href="#" id="btnTeamsEdit"  type="button" class="btn btn-main management-button ui-disabled" data-toggle="modal" data-target="#modalMain" onclick="EditTeamStart()">Edit</button>
@@ -25,7 +25,7 @@
 	    </div>
 
         <div id="divAthletes" style="vertical-align: top;padding:3px;display:inline-block;margin-right:30px;" class="ui-disabled">
-		    <div id="divAthleteHeader" style="padding-bottom:5px;font-size:22px;font-weight:bold;text-align:center">Athletes</div>
+		    <div id="divAthleteHeader" style="padding-bottom:5px;font-size:22px;font-weight:bold;text-align:center">Athletes <span style="font-size:12px;font-weight:normal">(drag to order)</span></div>
             <!--<div style="width:360px;">
                 <div class="row">
                     <div class="col-4" align="left">
@@ -39,7 +39,7 @@
                     </div>
                 </div>
             </div>-->
-		    <div id="divAthleteList" class="listbox mb-2" style="width:360px;height:180px;"></div>
+		    <div id="divAthleteList" class="listbox mb-2 setup-box" style="width:360px;"></div>
 		    <div id="divAthleteButtonsArea">
 		        <button href="#" id="btnAthAdd"   type="button" class="btn btn-main management-button"  data-toggle="modal" data-target="#modalMain" onclick="AddAthleteStart()">Add</button>
 		        <button href="#" id="btnAthEdit"  type="button" class="btn btn-main management-button ui-disabled" data-toggle="modal" data-target="#modalMain" onclick="EditAthleteStart()">Edit</button>
@@ -60,6 +60,7 @@
 {% endblock %}
 
 {% block scripts %}
+<script src="{% static 'app/scripts/sortable.min.js' %}?v=1.1"></script>
 <script type="text/javascript">
     var token = "{{ csrf_token }}";
     var SessionID = "{{id}}";
@@ -260,7 +261,9 @@
 
      function AthleteManageFinishParent() {
         $("#modalMain").modal('hide');
-        $("#divAthleteList").load("/management/athlete_list/"+ SessionID, function () {
+         $("#divAthleteList").load("/management/athlete_list/" + SessionID, function () {
+             Sortable.create(divAthleteList, { onEnd: SortEnd });
+             UpdateAthleteOrder();
             if (SelectedAthlete != -1)
                 AthleteClick(SelectedAthlete);
         });
@@ -298,7 +301,9 @@
     function FillAthletes() {
         $("#divAthleteList").load("/management/athlete_list/" + SessionID);
         EnableDisableButtons("Ath", false);
+        Sortable.create(divAthleteList, {onEnd: SortEnd});
     }
+   
 
     function EnableDisableButtons(typeIn, enabledIn) {
         if (enabledIn) {
@@ -309,6 +314,30 @@
             $("#btn" + typeIn + "Edit").addClass("ui-disabled");
             $("#btn" + typeIn + "Delete").addClass("ui-disabled");
         }
+    }
+
+    function SortEnd(evt) {
+        UpdateAthleteOrder();
+    }
+
+    function UpdateAthleteOrder() {
+        var AthList = "";
+        $("#divAthleteList").children("div").each(function () {
+            AthList += "," + $(this).attr("athid");
+        });
+        AthList = AthList.substring(1);
+        $.ajax({
+            url: '/management/athlete_update_order/',
+            data: {
+                'session': SessionID,
+                'ath_order': AthList
+            },
+            headers: { "X-CSRFToken": token },
+            type:'POST',
+            success: function (data) {
+                console.log("Athlete Order Updated");
+            }
+      });
     }
 </script>
 {% endblock %}
