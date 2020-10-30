@@ -45,6 +45,7 @@ urlpatterns = [
     path('accountability_report/', views.accountability_report, name='accountability_report'),
     path('get_routines_by_SE/', views.get_routines_by_SE, name='get_routines_by_SE'),
     path('scoreboard/<str:event_name>', views.scoreboard, name='scoreboard'),
+    path('scoreboard/', views.scoreboard, name='scoreboard'),
     path('wowza_broadcast/', views.wowza_broadcast, name='wowza_broadcast'),
     path('wowza_play/', views.wowza_play, name='wowza_play'),
     path('save_video/', views.save_video, name='save_video'),

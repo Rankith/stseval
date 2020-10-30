@@ -74,7 +74,8 @@ def d1(request):
         'event':event,
         'session':session,
         'loadroutine':'',
-        'layout':layout
+        'layout':layout,
+        'scoreboard':True,
     }
     return render(request,'app/d1.html',context)
 
@@ -322,7 +323,8 @@ def evideo(request):
         'session':session,
         'ej':ej,
         'this_judge':this_judge,
-        'athletes':athletes
+        'athletes':athletes,
+        'scoreboard':True,
     }
     return render(request,'app/evideo.html',context)
 
@@ -631,6 +633,7 @@ def coach(request,event_name='FX'):
         'events':events,
         'session':session,
         'team':team,
+        'scoreboard':True,
     }
     return render(request,'app/coach.html',context)
 

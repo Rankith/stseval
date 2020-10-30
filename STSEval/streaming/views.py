@@ -17,6 +17,7 @@ def camera(request):
         'stream':camera.stream,
         'disc':camera.session.competition.disc,
         'comp':camera.session.competition,
+        'scoreboard':True,
         }
 
     return render(request,'streaming/camera.html',context)

@@ -44,7 +44,9 @@
                                             <a class="dropdown-item" onclick="EventChanged('HB')">HB</a>
                                         </div>
                                     </li>-->
-                            
+                                    {% if scoreboard %}
+                                        <li class="nav-item align-self-center"><a target="_blank" class="nav-link" href="/scoreboard/{{event_name}}">scoreboard</a></li>
+                                    {% endif %}
                                     <li class="nav-item align-self-center"><a class="nav-link" href="javascript:document.getElementById('logoutForm').submit()">logout</a></li>
                                 </ul>
                             </form>
@@ -63,7 +65,9 @@
                                         <a class="dropdown-item" onclick="EventChanged('HB')">HB</a>
                                     </div>
                                 </li>-->
-                            
+                                {% if scoreboard %}
+                                    <li class="nav-item align-self-center"><a target="_blank" class="nav-link" href="/scoreboard/{{event_name}}">scoreboard</a></li>
+                                {% endif %}
                                 <li class="nav-item align-self-center"><a class="nav-link" href="/">logout</a></li>
                             </ul>
                         {% endif %}
