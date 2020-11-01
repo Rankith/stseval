@@ -148,7 +148,6 @@
 {% endblock %}
 
 {% block scripts %}
-<script src= "https://player.twitch.tv/js/embed/v1.js"></script>
 <script src="{% static 'app/scripts/dots_area.js' %}?v=1.1"></script>
 <script type="module" src="{% static 'app/scripts/wowza/play.js' %}?v=1"></script>
 <script src="https://www.webrtc-experiment.com/EBML.js"></script> 
@@ -211,6 +210,7 @@
     var RoutineID;
     var CurrentAthlete = -1;
     var ScoringType;
+    var StartListChange = -1;
     var db = firebase.firestore();
    
     $( "#video-playback" ).click(function(e) {
@@ -244,6 +244,7 @@
         docRef.onSnapshot(function (doc) {
             //CurrentAthlete = FirstAthlete;
             //SetAthleteDisplay();
+            CheckAthlete(doc);
             CheckJudges(doc);
             CheckStream(doc);
         });
@@ -344,6 +345,16 @@
  
              console.log("Current data: ", doc.data());
              $("#divStatus").html(doc.data().stream + " | " + doc.data().status);*/
+        }
+    }
+
+    function CheckAthlete(doc) {
+        if (doc.data().start_list_change != undefined) {
+            if (doc.data().start_list_change != StartListChange) {
+                //update the gymnast if on status New
+                if (Status == status.NEW)
+                    GetNextAthlete(true);
+            }
         }
     }
 

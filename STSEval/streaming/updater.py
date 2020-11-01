@@ -2,11 +2,12 @@ from datetime import datetime,timezone
 from apscheduler.schedulers.background import BackgroundScheduler
 from streaming.wowza import LiveStreams, WOWZA_API_KEY, WOWZA_ACCESS_KEY
 from streaming.models import WowzaStream
+import app.firebase
 
 def start():
     scheduler = BackgroundScheduler()
     scheduler.add_job(check_and_stop_streams, 'interval', seconds=20)
-    scheduler.add_job(check_update_wowza_player, 'interval', seconds=30)
+    #scheduler.add_job(check_update_wowza_player, 'interval', seconds=5)
     scheduler.start()
 
 def check_update_wowza_player():
@@ -18,7 +19,8 @@ def check_update_wowza_player():
     for stream in streams:
         response = wowza_instance.info(stream.stream_id)
         stream.wowza_player_code = response['live_stream']['player_id']
-        stream.save();
+        stream.save()
+        app.firebase.set_stream(stream.camera_set.first().session.id,stream)
 
 def check_and_stop_streams():
     AUTO_SHUTOFF = 900#15 minutes

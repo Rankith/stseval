@@ -1,0 +1,19 @@
+<div class="row no-gutters" align="center">
+     <table cellspacing="0" border=0 cellpadding="0">
+        {% for sl in start_list %}
+            <tr>
+                <td><input type="checkbox" id="chkSL{{sl.id}}" onclick="SLCheck({{sl.id}})" {% if sl.active %} checked="checked" {% endif %}>&nbsp; &nbsp;</td>
+                <td><a href="" onclick="ShowStartList({{sl.id}})" data-toggle="modal" data-target="#modalMain"><i class="fa fa-exchange"></i></a>
+                &nbsp; &nbsp;
+                </td>
+			    <td id="divSL{{sl.id}}" {% if sl.completed %} class="start-list-completed"{% endif %}>{{sl.athlete.team.abbreviation}} - {{sl.athlete.level.name}} - {{sl.athlete.name}} - {{sl.athlete.rotation}}</td>
+		    </tr>
+        {% endfor %} 
+         <input type="hidden" id="hdnTopPosition" value="divSL{{first_not_completed}}"/>
+    </table>
+</div>
+<div id="divStartSwapList" style="display:none;max-height:600px;overflow:auto">
+    {% for sl in start_list %}
+        <button id="btnStartListSwap{{sl.id}}" type="button" class="btn btn-main mb-2" onclick="StartListSwapClick({{sl.id}})" style="width:300px">{{sl.athlete.team.abbreviation}} - {{sl.athlete.level.name}} - {{sl.athlete.name}} - {{sl.athlete.rotation}}</button><br/>
+    {% endfor %}
+</div>

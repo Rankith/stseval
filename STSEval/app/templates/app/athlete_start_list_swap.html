@@ -1,0 +1,11 @@
+<div align="center">
+    Swapping: {{sl_to_swap.athlete.team.abbreviation}} - {{sl_to_swap.athlete.level.name}} - {{sl_to_swap.athlete.name}} - {{sl_to_swap.athlete.rotation}}<br/>
+    This will swap their start list positions AND any completed routines on {{sl_to_swap.event.name}}<br/>
+    Select athlete to swap with below:<br/><br/>
+    <div id="divStartSwapList" style="max-height:600px;overflow:auto">
+        {% for sl in start_list %}
+            <button id="btnStartListSwap{{sl.id}}" type="button" class="btn btn-main mb-2" onclick="StartListSwapClick({{sl.id}})" style="width:300px">{{sl.athlete.team.abbreviation}} - {{sl.athlete.level.name}} - {{sl.athlete.name}} - {{sl.athlete.rotation}}</button><br/>
+        {% endfor %}
+    </div>
+    <input type="hidden" id="hdnSLtoSwap" value="{{sl_to_swap.id}}"/>
+</div>

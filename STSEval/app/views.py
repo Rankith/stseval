@@ -18,6 +18,8 @@ from django.conf import settings
 from binascii import a2b_base64
 import distutils.util
 import os
+from django.contrib.auth.decorators import login_required,user_passes_test
+from django.db.models import F
 
 def valid_login_type(match=None):
     def decorator(func):
@@ -108,7 +110,7 @@ def routine_setup(request):
                  'error':'No Camera for ' + athlete.team.name + ' on ' + request.session.get('event') + '.  Contact your Meet Administrator'}
         return JsonResponse(resp)
     session = Session.objects.get(pk=request.session.get('session'))
-    app.firebase.routine_setup(session,request.session.get('event'),athlete,camera.id)
+    app.firebase.routine_setup(session,request.session.get('event'),athlete,camera.stream.id)
 
     return HttpResponse(status=200)
 
@@ -558,11 +560,13 @@ def get_routines_by_SE(request):
     return JsonResponse(list(routines),safe=False)
 
 @valid_login_type(match='session')
-def scoreboard(request,event_name='FX'):
+def scoreboard(request,event_name='-1'):
     session = Session.objects.get(pk=request.session.get('session'))
     judges = Judge.objects.filter(session=session,event__name=event_name).first()
     #athletes = Athlete.objects.filter(session=session)
     events = Event.objects.filter(disc=session.competition.disc)
+    if event_name == '-1':
+        event_name = events.first().name
     context = {
         'title': 'Scoreboard - ' + event_name + ' ' + session.full_name(),
         'judges':judges,
@@ -597,12 +601,12 @@ def athlete_get_next(request):
         return JsonResponse({'id':'-1'})
 
 def athlete_get_next_do(event,session_id):
-    sl = StartList.objects.filter(session_id=session_id,event__name=event,active=True,completed=False).order_by('order').first()
+    sl = StartList.objects.filter(session_id=session_id,event__name=event,active=True,completed=False).order_by('order','athlete__rotation').first()
     return sl
 
 def athlete_start_list(request,event_name,team_id):
     session_id = request.session.get('session')
-    start_list = StartList.objects.filter(session_id=session_id,event__name=event_name,active=True,completed=False).order_by('order')
+    start_list = StartList.objects.filter(session_id=session_id,event__name=event_name,active=True,completed=False).order_by('order','athlete__rotation')
     if start_list.count() > 0:
         if team_id != 0:
             rotation = Athlete.objects.filter(team_id=team_id).first().rotation
@@ -619,6 +623,70 @@ def athlete_start_list(request,event_name,team_id):
         'start_list':start_list,
     }
     return render(request,'app/athlete_start_list.html',context)
+
+def athlete_start_list_admin(request,event_name):
+    session_id = request.session.get('session')
+    start_list = StartList.objects.filter(session_id=session_id,event__name=event_name).order_by('-completed','order','athlete__rotation')
+    first_not_completed = start_list.filter(completed=False,active=True).first().id
+    context = {
+        'start_list':start_list,
+        'first_not_completed':first_not_completed,
+    }
+    return render(request,'app/athlete_start_list_admin.html',context)
+
+def athlete_start_list_swap(request,sl_id):
+    sl = StartList.objects.get(pk=sl_id)
+    start_list = StartList.objects.filter(session_id=sl.session.id,event=sl.event).exclude(id=sl_id).order_by('-completed','order','athlete__rotation')
+    context = {
+        'start_list':start_list,
+        'sl_to_swap':sl,
+    }
+    return render(request,'app/athlete_start_list_swap.html',context)
+
+def athlete_start_list_swap_do(request):
+    sl_orig = StartList.objects.get(pk=request.POST.get('sl_orig'))
+    sl_target = StartList.objects.get(pk=request.POST.get('sl_target'))
+    #swap the numbers
+    orig_order = sl_orig.order
+    sl_orig.order = sl_target.order
+    sl_target.order = orig_order
+    
+    orig_completed = sl_orig.completed
+    sl_orig.completed = sl_target.completed
+    sl_target.completed = orig_completed
+
+    sl_orig.save()
+    sl_target.save()
+    
+    #find routine on this event and swap
+    rot_orig_swap_ids = list(Routine.objects.filter(athlete=sl_orig.athlete,event=sl_orig.event.name,session=sl_orig.session,status=Routine.FINISHED).values_list('id',flat=True))
+    rot_target_swap_ids = list(Routine.objects.filter(athlete=sl_target.athlete,event=sl_target.event.name,session=sl_target.session,status=Routine.FINISHED).values_list('id',flat=True))
+    Routine.objects.filter(id__in=rot_orig_swap_ids).update(athlete=sl_target.athlete)
+    Routine.objects.filter(id__in=rot_target_swap_ids).update(athlete=sl_orig.athlete)
+
+    app.firebase.update_start_list(sl_orig.session.id,sl_orig.event.name)
+
+    return HttpResponse(status=200)
+
+def athlete_set_active(request,sl_id):
+    sl = StartList.objects.get(pk=sl_id)
+    if request.POST.get('active','1') == '1':
+        sl.active = True
+        #put them back in at end of current list for this rotation
+        this_rotation = StartList.objects.filter(session=sl.session,event=sl.event,athlete__rotation=sl.athlete.rotation,active=True).order_by('-order')
+        if len(this_rotation) > 0:
+            #bump em all down one
+            move_down = this_rotation.filter(order__gt=sl.order)
+            if len(move_down) > 0:
+                this_rotation.filter(order__gt=sl.order).update(order=F('order')-1)
+                sl.order = this_rotation.first().order
+        sl.save()
+    else:
+        sl.active = False
+        sl.save()
+    app.firebase.update_start_list(sl.session.id,sl.event.name)
+
+    return HttpResponse(status=200)
 
 @valid_login_type(match='coach')
 def coach(request,event_name='FX'):
@@ -659,6 +727,34 @@ def save_video(request):
     output.close()
   
     return HttpResponse(status=200)
+
+@login_required(login_url='/account/login/')
+def overview(request,session_id,event_name='-1'):
+    request.session['session'] = session_id
+    session = Session.objects.get(pk=request.session.get('session'))
+    events = Event.objects.filter(disc=session.competition.disc)
+    if event_name == '-1':
+        event = events.first()
+    athletes = Athlete.objects.filter(team__session=session)
+    judges = Judge.objects.filter(session=session,event=event)
+    
+    context = {
+        'title': 'Administrator',
+        'event_name':event.name,
+        'events':events,
+        'session':session,
+        'scoreboard':True,
+        'athletes':athletes,
+        'judges':judges.first(),
+    }
+    return render(request,'app/overview.html',context)
+
+def spectator_video(request):
+    context = {
+        'player_id':request.POST.get('player_id'),
+    }
+    return render(request,'app/spectator_video.html',context)
+
 
 def wowza_broadcast(request):
     return render(request,'app/dev-view-publish.html')

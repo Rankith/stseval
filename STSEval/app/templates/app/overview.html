@@ -1,0 +1,89 @@
+{% extends "app/layout.html" %}
+
+{% block content %}
+{% load staticfiles %}
+<div  align="center">
+    {% include "app/event_select.html" %}  
+    <div id="divHeader">{{session_name}}</div>
+   <div class="row no-gutters">
+        <div class="col-xl-6 col-12 pr-4" align="right">
+            <div id="play-video-container" style="max-width:854px;max-height:720px;width:100%" class="d-flex align-items-center justify-content-center">
+                <div id="player-waiting" style="height:480px" class="align-items-center d-flex"><h1>Waiting for Camera</h1></div>
+                <video id="player-video" autoplay playsinline muted controls style="display:none"></video>
+                
+            </div><div id="divAthlete" align="center"></div>
+            
+        </div>
+        <div class="col-xl-6 col-12 pl-4" align="left">
+            <h3 class="pl-4">Officials</h3>
+            <div id="divOfficials">
+                {% if judges.d1 != '' %}
+                    <div id="divD1">D1: {{judges.d1}}</div>
+                {% endif %}
+                {% if judges.e1 != '' %}
+                    <div id="divE1">E1: {{judges.e1}}</div>
+                {% endif %}
+                {% if judges.e2 != '' %}
+                    <div id="divE2">E2: {{judges.e2}}</div>
+                {% endif %}
+                {% if judges.e3 != '' %}
+                    <div id="divE3">E3: {{judges.e3}}</div>
+                {% endif %}
+                {% if judges.e4 != '' %}
+                    <div id="divE4">E4: {{judges.e4}}</div>
+                {% endif %}
+            </div>
+            <br/>
+            <h3  class="pl-4">Start List</h3>
+            <div id="divStartList" style="max-height:600px;overflow:auto;display:inline-block">
+
+            </div>
+        </div>
+   </div>
+    <div id="play-settings" style="display:none">
+    <form id="play-settings-form">
+        <input type="text" class="form-control" id="playSdpURL" name="playSdpURL" maxlength="1024" placeholder="wss://[ssl-certificate-domain-name]/webrtc-session.json">     
+        <input type="text" class="form-control" id="playApplicationName" name="playApplicationName" maxlength="256">       
+        <input type="text" class="form-control" id="playStreamName" name="playStreamName" maxlength="256">    
+    </form>
+    <button id="play-toggle" type="button" class="btn btn-main mb-2" style="display:none">Wozwa Hack</button>
+</div>
+ </div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://www.webrtc-experiment.com/EBML.js"></script> 
+<script type="module" src="{% static 'app/scripts/wowza/play.js' %}?v=1"></script>
+<script src="{% static 'app/scripts/stream_listener.js' %}"></script>
+<script src="{% static 'app/scripts/start_list.js' %}"></script>
+<script type="text/javascript">
+
+    var ev = "{{event_name}}";
+    var Session = "{{session.id}}";
+    var SessionName = "{{session}}";
+    var token = "{{ csrf_token }}";
+    var VidJSPlayer;
+    var AthleteNames = new Array();
+    {% for athlete in athletes %}
+        AthleteNames[{{athlete.id}}] = "{{athlete}}";
+    {% endfor %}
+
+
+</script>
+<script type="text/javascript">
+    var CurrentAthlete = -1;
+    var db = firebase.firestore();
+    var docRef = db.collection("sessions").doc(Session).collection("event_managers").doc(ev);
+
+    docRef.onSnapshot(function (doc) {
+        if (CurrentAthlete != doc.data().athlete_id) {
+            $("#divAthlete").html(AthleteNames[doc.data().athlete_id]);
+            CheckStream(doc);
+            LoadStartList();
+        }
+    });
+
+    
+
+</script>
+{% endblock %}

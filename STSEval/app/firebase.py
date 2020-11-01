@@ -48,6 +48,12 @@ def routine_setup(session,e,athlete,camera):
         u'stream':camera,
     },merge=True)
 
+    # set startlist change if not in there
+    if 'start_list_change' not in doc_ref.get().to_dict():
+        doc_ref.set({
+            u'start_list_change': 1,
+        },merge=True)
+
     #update root
     doc_ref = db.collection(u'sessions').document(str(session.id))
     doc_ref.set({
@@ -88,7 +94,7 @@ def set_stream(s,stream):
         u'stream_name':stream.stream_name,
         u'status':stream.status,
         u'connected':stream.connected,
-        u'player_id':stream.wowza_player_code,
+        u'hls_playback_url':stream.hls_playback_url,
     },merge=True)
 
 def set_stream_status(s,stream_id,stream_status):
@@ -106,4 +112,18 @@ def set_stream_connected(s,stream_id,stream_connected):
     doc_ref.set({
         u'connected':stream_connected,
     },merge=True)
+
+def update_start_list(s,e):
+    db = firestore.Client()
+
+    doc_ref = db.collection(u'sessions').document(str(s)).collection(u'event_managers').document(str(e))
+    doc_dict = doc_ref.get().to_dict()
+    if 'start_list_change' not in doc_ref.get().to_dict():
+        doc_ref.set({
+            u'start_list_change': 1,
+        },merge=True)
+    else:
+        doc_ref.set({
+            u'start_list_change':doc_dict['start_list_change'] + 1,
+        },merge=True)
 

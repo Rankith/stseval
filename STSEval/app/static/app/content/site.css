@@ -419,3 +419,7 @@ input[type="checkbox"].input-validation-error {
 .setup-box{
     height:240px;
 }
+
+.start-list-completed {
+    text-decoration: line-through;
+}

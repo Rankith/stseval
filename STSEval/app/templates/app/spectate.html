@@ -2,13 +2,41 @@
 
 {% block content %}
 {% load staticfiles %}
-<div style="margin:10px;padding:0" align="center">
-   <div id='wowza_player'></div>
-<script id='player_embed' src='//player.cloud.wowza.com/hosted/nggymvkh/wowza.js' type='text/javascript'></script>
-    </div>
-
+<div  align="center">
+    {% include "app/event_select.html" %}  
+    <div id="divHeader">{{session_name}}</div>
+   <div class="row no-gutters">
+        <div class="col-xl-6 col-12" align="right">
+            <div id="play-video-container" style="max-width:854px;max-height:720px;width:100%" class="d-flex align-items-center justify-content-center">
+                <div id="player-waiting" style="height:480px;display:none" class="align-items-center"><h1>Waiting for Camera</h1></div>
+                <video id="player-video" class="video-js vjs-16-9" disablePictureInPicture autoplay muted></video>
+            </div>
+        </div>
+        <div class="col-xl-6 col-12" align="left">
+        </div>
+   </div>
+ </div>
 {% endblock %}
 
 {% block scripts %}
+<script src="https://vjs.zencdn.net/7.6.6/video.js"></script>
+<script src="{% static 'app/scripts/stream_listener_spectator.js' %}"></script>
+<script type="text/javascript">
 
+    var ev = "{{event_name}}";
+    var Session = "{{session.id}}";
+    var SessionName = "{{session}}";
+    var token = "{{ csrf_token }}";
+    var VidJSPlayer;
+
+</script>
+<script type="text/javascript">
+    var db = firebase.firestore();
+    var docRef = db.collection("sessions").doc(Session).collection("event_managers").doc(ev);
+
+    docRef.onSnapshot(function (doc) {
+        CheckStream(doc);
+    });
+
+</script>
 {% endblock %}
