@@ -125,7 +125,7 @@ class Camera(models.Model):
 
 def sponsor_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
-    return '/sponsors/{0}/{1}'.format(instance.session.id, filename)
+    return 'sponsors/{0}/{1}'.format(instance.session.id, filename)
 
 class Sponsor(models.Model):
     session = models.ForeignKey(Session, on_delete=models.CASCADE)
