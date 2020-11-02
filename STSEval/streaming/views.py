@@ -142,7 +142,7 @@ def get_state(request):
         if stream.status != response['live_stream']['state']:
             stream.status = response['live_stream']['state']
             stream.save()
-            app.firebase.set_stream_status(str(request.session.get('session')),stream.id,stream.status)
+            app.firebase.set_stream_status(str(request.session.get('session')),stream.camera_set.first().id,stream.status)
     except:
         stream.status = WowzaStream.STOPPED
         stream.save()
@@ -182,7 +182,7 @@ def get_stats(request):
             if connected:
                 stream.last_connected = datetime.now(timezone.utc)
             stream.save()
-            app.firebase.set_stream_connected(str(request.session.get('session')),stream.id,stream.connected)
+            app.firebase.set_stream_connected(str(request.session.get('session')),stream.camera_set.first().id,stream.connected)
     except:
         stream.connected = False
         stream.save()

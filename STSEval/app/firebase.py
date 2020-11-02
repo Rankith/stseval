@@ -86,7 +86,7 @@ def routine_set_stream(s,e,stream):
 def set_stream(s,stream):
     db = firestore.Client()
 
-    doc_ref = db.collection(u'sessions').document(str(s)).collection(u'streams').document(str(stream.id))
+    doc_ref = db.collection(u'sessions').document(str(s)).collection(u'streams').document(str(stream.camera_set.first().id))
     doc_ref.set({
         u'stream_id':stream.stream_id,
         u'application_name':stream.application_name,
@@ -127,3 +127,9 @@ def update_start_list(s,e):
             u'start_list_change':doc_dict['start_list_change'] + 1,
         },merge=True)
 
+def check_event_manager_setup(s,e):
+    db = firestore.Client()
+
+    doc_ref = db.collection(u'sessions').document(str(s)).collection(u'event_managers').document(str(e))
+    doc = doc_ref.get()
+    return doc.exists

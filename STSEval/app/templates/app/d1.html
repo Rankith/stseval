@@ -153,6 +153,7 @@
 <script src="https://www.webrtc-experiment.com/EBML.js"></script> 
 <script src="{% static 'app/scripts/RecordRTC.js' %}"></script>
 <script src="{% static 'app/scripts/stream_listener.js' %}"></script>
+<script src="{% static 'app/scripts/start_list.js' %}"></script>
 <script type="text/javascript">
     var Session = "{{session.id}}";
     var SessionName = "{{session}}";
@@ -269,7 +270,7 @@
         $("#modalMainTitle").html("Start List");
         $("#modalBodyArea2").hide();
         $("#modalBodyArea1").empty();
-        $("#modalBodyArea1").load("/athlete_start_list/" + ev + "/0",  function () {
+        $("#modalBodyArea1").load("/athlete_start_list_admin/" + ev,  function () {
 
         });
 
@@ -934,13 +935,16 @@
                     AthleteLabel = data['label'];
                     AthleteLevel = data['level'];
                     AthleteTeam = data['team'];
-                    
+
                     SetAthlete();
                     if (judgesready)
                         JudgesReadyClick();
                 }
-                else
-                    alert("All Athletes Done");
+                else {
+                    alert("All Athletes Done, Going To Scoreboard");
+                    window.location = "/scoreboard/";
+                }
+
             }
         });
     }

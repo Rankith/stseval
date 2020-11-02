@@ -28,6 +28,7 @@
     var datahold;
     var AthleteID = -1;
     var Status = "";
+    var StartListChange = -1;
 
     var db = firebase.firestore();
     db.collection("sessions").doc(Session).collection("event_managers").doc(ev)
@@ -41,19 +42,25 @@
         if (doc.data() != undefined) {
             console.log("Status: " + Status + " | " + doc.data().status);
             console.log("AthleteID: " + AthleteID + " | " + doc.data().athlete_id);
-            if (AthleteID != doc.data().athlete_id) {
+            if (AthleteID != doc.data().athlete_id || doc.data().start_list_change != StartListChange) {
+                AthleteID = doc.data().athlete_id;
+                StartListChange = doc.data().start_list_change;
                 Status = doc.data().status;
                 $("#divStartList").load("/athlete_start_list/" + ev + "/" + Team, function () {
                     SetStatus();
                 });
             }
-            else if (Status != doc.data().status ) {
+            else if (Status != doc.data().status) {
                 Status = doc.data().status;
                 SetStatus();
             }
-            
+
 
             //$("#divStatus").html(doc.data().stream + " | " + doc.data().status);
+        }
+        else {
+            StatusDotsRed();
+            $("#divStatus").html("ROTATION NOT ON THIS EVENT").removeClass("timer-yellow").removeClass("timer-green").addClass("timer-red");
         }
     }
 

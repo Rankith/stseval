@@ -21,21 +21,21 @@ function SLCheck(id) {
 
 function LoadStartList() {
     $("#divStartList").load("/athlete_start_list_admin/" + ev + "/", function () {
-        document.getElementById($("#hdnTopPosition").val()).scrollIntoView(true);
+        if ($("#hdnTopPosition").val() != 'divSL-1')
+            document.getElementById($("#hdnTopPosition").val()).scrollIntoView(true);
     });
 }
 
 function ShowStartList(sl) {
 
     //$("#modalMainDoc").addClass("modal-lg");
-    $("#modalMainTitle").html("Swap Athlete Positions");
-    $("#modalBodyArea2").hide();
-    $("#modalBodyArea1").empty();
-    $("#modalBodyArea1").load("/athlete_start_list_swap/" + sl, function () {
+    $("#modalSecondTitle").html("Swap Athlete Positions");
+    $("#modalSecondArea1").empty();
+    $("#modalSecondArea1").load("/athlete_start_list_swap/" + sl, function () {
 
     });
 
-    $("#modalBodyArea1").show();
+    $("#modalSecondArea1").show();
 }
 
 function StartListSwapClick(sl) {
@@ -49,7 +49,7 @@ function StartListSwapClick(sl) {
         },
         success: function (data) {
             LoadStartList();
-            $("#modalMain").modal('hide');
+            $("#modalSecond").modal('hide');
         }
     });
 }

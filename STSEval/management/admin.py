@@ -1,5 +1,5 @@
 from django.contrib import admin
-from management.models import Competition,Athlete,Judge,Session,Team,AthleteLevel,Disc,Event,Sponsor,StartList
+from management.models import Competition,Athlete,Judge,Session,Team,AthleteLevel,Disc,Event,Sponsor,StartList,Camera
 
 # Register your models here.
 from import_export import resources
@@ -32,4 +32,5 @@ admin.site.register(Athlete)
 admin.site.register(Session)
 admin.site.register(Team)
 admin.site.register(Sponsor)
+admin.site.register(Camera)
 admin.site.register(StartList,StartListAdmin)

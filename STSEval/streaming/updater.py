@@ -44,8 +44,15 @@ def check_and_stop_streams():
                         s.status = WowzaStream.STARTED
                 except:
                     s.status = WowzaStream.STOPPED
+            else:
+                response = wowza_instance.info(s.stream_id,'state')
+                try:
+                    s.status = response['live_stream']['state']
+                except:
+                    s.status = WowzaStream.STARTED
             s.save()
         else:
             s.connected = True
             s.last_connected = datetime.now(timezone.utc)
             s.save()
+        app.firebase.set_stream(s.camera_set.first().session.id,s)

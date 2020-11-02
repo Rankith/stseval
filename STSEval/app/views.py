@@ -110,7 +110,7 @@ def routine_setup(request):
                  'error':'No Camera for ' + athlete.team.name + ' on ' + request.session.get('event') + '.  Contact your Meet Administrator'}
         return JsonResponse(resp)
     session = Session.objects.get(pk=request.session.get('session'))
-    app.firebase.routine_setup(session,request.session.get('event'),athlete,camera.stream.id)
+    app.firebase.routine_setup(session,request.session.get('event'),athlete,camera.id)
 
     return HttpResponse(status=200)
 
@@ -627,7 +627,11 @@ def athlete_start_list(request,event_name,team_id):
 def athlete_start_list_admin(request,event_name):
     session_id = request.session.get('session')
     start_list = StartList.objects.filter(session_id=session_id,event__name=event_name).order_by('-completed','order','athlete__rotation')
-    first_not_completed = start_list.filter(completed=False,active=True).first().id
+    first_not_completed = start_list.filter(completed=False,active=True).first()
+    if first_not_completed != None:
+        first_not_completed = first_not_completed.id
+    else:
+        first_not_completed = -1
     context = {
         'start_list':start_list,
         'first_not_completed':first_not_completed,
@@ -735,8 +739,13 @@ def overview(request,session_id,event_name='-1'):
     events = Event.objects.filter(disc=session.competition.disc)
     if event_name == '-1':
         event = events.first()
+    else:
+        event = events.filter(name=event_name).first()
     athletes = Athlete.objects.filter(team__session=session)
     judges = Judge.objects.filter(session=session,event=event)
+    cameras = Camera.objects.filter(events=event,session=session)
+
+    setup_firebase_managers(session,event.name)
     
     context = {
         'title': 'Administrator',
@@ -746,8 +755,24 @@ def overview(request,session_id,event_name='-1'):
         'scoreboard':True,
         'athletes':athletes,
         'judges':judges.first(),
+        'cameras':cameras,
     }
     return render(request,'app/overview.html',context)
+
+def setup_firebase_managers(session,event_name=''):
+    events = Event.objects.filter(disc=session.competition.disc)
+    if event_name != '':
+        events = events.filter(name=event_name)
+    for event in events:
+        if not app.firebase.check_event_manager_setup(session.id,event.name):
+            sl = athlete_get_next_do(event.name,session.id)
+            athlete = sl.athlete
+            #check for camera
+            camera = Camera.objects.filter(teams=athlete.team,events__name=event.name).first()
+            app.firebase.routine_setup(session,event.name,athlete,camera.id)
+    
+
+    return HttpResponse(status=200)
 
 def spectator_video(request):
     context = {

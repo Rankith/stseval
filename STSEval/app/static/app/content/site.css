@@ -349,6 +349,15 @@ input[type="checkbox"].input-validation-error {
     display: inline-block;
 }
 
+.status-dot-small {
+    height: 14px;
+    width: 14px;
+    color: #8e8e8e;
+    border-radius: 50%;
+    border: 1px solid;
+    display: inline-block;
+}
+
 .status-dot-red {
     background-color: #ff0000 !important;
 }

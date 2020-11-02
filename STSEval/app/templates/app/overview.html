@@ -33,6 +33,11 @@
                     <div id="divE4">E4: {{judges.e4}}</div>
                 {% endif %}
             </div>
+            <div id="divCameras">
+                {% for camera in cameras %}
+                    <div id="divCam{{camera.id}}"><span id="camdot{{camera.id}}" class="status-dot-small status-dot-red mr-1"></span> CAMERA: {{camera.name}} ({% for team in camera.teams.all %}{% if not forloop.first %},{% endif %}{{team.abbreviation}}{% endfor %})</div>
+                {% endfor %}
+            </div>
             <br/>
             <h3  class="pl-4">Start List</h3>
             <div id="divStartList" style="max-height:600px;overflow:auto;display:inline-block">
@@ -67,6 +72,10 @@
     {% for athlete in athletes %}
         AthleteNames[{{athlete.id}}] = "{{athlete}}";
     {% endfor %}
+    var streams = new Array();
+    {% for camera in cameras %}
+        streams.push("{{camera.id}}");
+    {% endfor %}
 
 
 </script>
@@ -74,7 +83,6 @@
     var CurrentAthlete = -1;
     var db = firebase.firestore();
     var docRef = db.collection("sessions").doc(Session).collection("event_managers").doc(ev);
-
     docRef.onSnapshot(function (doc) {
         if (CurrentAthlete != doc.data().athlete_id) {
             $("#divAthlete").html(AthleteNames[doc.data().athlete_id]);
@@ -82,6 +90,35 @@
             LoadStartList();
         }
     });
+
+    db.collection("sessions").doc(Session).collection("streams").where(firebase.firestore.FieldPath.documentId(), "in", streams)
+        .onSnapshot(function (querySnapshot) {
+            querySnapshot.forEach(function (doc) {
+                SetCameraDots(doc);
+            });
+        });
+
+    function SetCameraDots(doc) {
+        console.log(doc.id + " | " + doc.data().connected + " | " + doc.data().status);
+        if (doc.data().connected == true) {
+            $("#camdot" + doc.id).removeClass("status-dot-red").removeClass("status-dot-yellow").addClass("status-dot-green");
+            $("#camdot" + doc.id).prop("title", "LIVE");
+        }
+        else {
+            if (doc.data().status == "started") {
+                $("#camdot" + doc.id).removeClass("status-dot-red").addClass("status-dot-yellow").removeClass("status-dot-green");
+                $("#camdot" + doc.id).prop("title", "NOT CONNECTED");
+            }
+            else {
+                $("#camdot" + doc.id).addClass("status-dot-red").removeClass("status-dot-yellow").removeClass("status-dot-green");
+                $("#camdot" + doc.id).prop("title", "NOT STARTED");
+            }
+        }
+    }
+
+    function SwapEvent(evIn) {
+        window.location = "/overview/" + Session + "/" + evIn;
+    }
 
     
 
