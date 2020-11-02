@@ -435,7 +435,7 @@ def send_session_emails(request,session_id):
 
     for team in teams:
         if team.head_coach_email != None and team.head_coach_email != '':
-            send_team_notice(session,team)
+            send_coach_notice(session,team)
     
     return HttpResponse(status=200)
 
