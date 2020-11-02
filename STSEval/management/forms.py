@@ -156,9 +156,12 @@ class CameraForm(ModelForm):
 class ImagePreviewWidget(forms.widgets.FileInput):
     def render(self, name, value, attrs=None, **kwargs):
         input_html = super().render(name, value, attrs=None, **kwargs)
-        if value:
-            img_html = mark_safe(f'<br><br><img src="{value.url}" height="288px"/>')
-        else:
+        try:
+            if value:
+                img_html = mark_safe(f'<br><br><img src="{value.url}" height="288px"/>')
+            else:
+                img_html=""
+        except:
             img_html=""
         return f'{input_html}{img_html}'
 
@@ -170,4 +173,13 @@ class SponsorForm(ModelForm):
                    'name':forms.TextInput(attrs={'class':'management-input'}),
                    'url':forms.TextInput(attrs={'class':'management-input','placeholder':'full url'}),
                    'image':ImagePreviewWidget()}
+
+    def clean_image(self):
+        image = self.cleaned_data.get('image', False)
+        if image:
+            if image.size > 4*1024*1024:
+                raise forms.ValidationError("Image file too large ( > 4mb )")
+            return image
+        else:
+            raise forms.ValidationError("Couldn't read uploaded image")
            
