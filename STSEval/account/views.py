@@ -76,7 +76,34 @@ def login_multiple(request,type,sub_type,id):
             return login_judge_do(request,judge.session,judge.event,name,email,jt,ej)
         else:
             return redirect('/')
-           
+    elif type=='coach':
+        coach = Team.objects.get(pk=id)
+        if coach.head_coach_email == email and coach.coach_password == password:
+            return login_coach_do(request,coach.session,coach)
+        else:
+            return redirect('/')
+    elif type=='camera':
+        camera = Camera.objects.get(pk=id)
+        if camera.email == email and camera.password == password:
+            return login_camera_do(request,camera)
+        else:
+            return redirect('/')
+
+def login_camera_do(request,camera):
+    request.session['session'] = camera.session.id
+    request.session['camera'] = camera.id
+    request.session['type'] = 'camera'
+    request.session['disc'] = camera.session.competition.disc.name
+    request.session.set_expiry(0)#until they close browser
+    return redirect('/streaming/camera/')
+
+def login_coach_do(request,session,team):
+    request.session['session'] = session.id
+    request.session['team'] = team.id
+    request.session['disc'] = session.competition.disc.name
+    request.session['type'] = 'coach'
+    request.session.set_expiry(0)#until they close browser
+    return redirect('/coach/')          
 
 def login_judge_do(request,session,event,name,email,jt,ej):
     request.session['session'] = session.id
@@ -156,9 +183,7 @@ def login_judge(request):
                 if len(possibles) > 0:
                     if len(possibles) == 1:
                         judge = Judge.objects.get(pk=possibles[0]['id'])
-
                         return login_judge_do(request,judge.session,judge.event,name,email,possibles[0]['type'],ej)
-                       
                     else:
                         #more then one
                         context = {
@@ -193,14 +218,25 @@ def login_camera(request):
             cameras = Camera.objects.filter(session__competition__date__gte= datetime.datetime.now() -  datetime.timedelta(days=2)) #got possible cameras
             if len(cameras) > 0:
                 camera = cameras.filter(email=email,password=password)
-                if len(camera) > 0:
+                if len(camera) == 1:
                     camera = camera.first()
-                    request.session['session'] = camera.session.id
-                    request.session['camera'] = camera.id
-                    request.session['type'] = 'camera'
-                    request.session['disc'] = camera.session.competition.disc.name
-                    request.session.set_expiry(0)#until they close browser
-                    return redirect('/streaming/camera/')
+                    return login_camera_do(request,camera)
+                elif len(camera) > 1:
+                    possibles = []
+                    for cam in camera:
+                        p = {}
+                        p['type'] = 'camera'
+                        p['id'] = cam.id
+                        p['display'] = cam.session.full_name() + ": " + cam.name
+                        possibles.append(p)
+                    #more then one
+                    context = {
+                        'possibles': possibles,
+                        'email':email,
+                        'password':password,
+                        'type':'camera',
+                    }
+                    return render(request, 'account/login_multiple.html', context)
  
             err = "Incorrect Login Inforation"
     else:
@@ -224,14 +260,25 @@ def login_coach(request):
             teams = Team.objects.filter(session__competition__date__gte= datetime.datetime.now() -  datetime.timedelta(days=2)) #got possible teams
             if len(teams) > 0:
                 coach = teams.filter(head_coach_email=email,coach_password=password)
-                if len(coach) > 0:
+                if len(coach) == 1:
                     coach = coach.first()
-                    request.session['session'] = coach.session.id
-                    request.session['team'] = coach.id
-                    request.session['type'] = 'coach'
-                    request.session['disc'] = coach.session.competition.disc.name
-                    request.session.set_expiry(0)#until they close browser
-                    return redirect('/coach/')
+                    return login_coach_do(request,coach.session,coach)
+                elif len(coach) > 1:
+                    possibles = []
+                    for c in coach:
+                        p = {}
+                        p['type'] = 'coach'
+                        p['id'] = c.id
+                        p['display'] = c.session.full_name() + ": " + c.name
+                        possibles.append(p)
+                    #more then one
+                    context = {
+                        'possibles': possibles,
+                        'email':email,
+                        'password':password,
+                        'type':'coach',
+                    }
+                    return render(request, 'account/login_multiple.html', context)
  
             err = "Incorrect Login Inforation"
     else:
