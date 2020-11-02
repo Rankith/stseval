@@ -1,0 +1,20 @@
+{% extends 'app/layout.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-center">
+    <div align="center">
+    Multiple {{type}} accounts found, select the one to login to below<br/>
+    {% for p in possibles %}
+        <button id="btnLogin{{forloop.counter}}" type="button" class="btn btn-main mb-2" onclick="Login('{{p.type}}',{{p.id}})" style="width:300px">{{p.display}}</button><br/>
+    {% endfor %}
+        </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script type="text/javascript">
+    function Login(type, id) {
+        window.location="/account/login_multiple/{{type}}/" + type + "/" + id + "?email={{email}}&password={{password}}";
+    }
+
+</script>
+{% endblock %}

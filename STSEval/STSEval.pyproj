@@ -125,6 +125,7 @@
     <Folder Include="STSEval\" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="account\templates\account\login_multiple.html" />
     <Content Include="account\templates\account\login_simple.html" />
     <Content Include="account\templates\account\login.html" />
     <Content Include="account\templates\account\signup.html" />
@@ -133,11 +134,11 @@
     <Content Include="app\static\app\scripts\stream_listener_spectator.js" />
     <Content Include="app\templates\app\athlete_start_list_swap.html" />
     <Content Include="app\templates\app\athlete_start_list_admin.html" />
-    <Content Include="app\templates\app\ejudge_select.html" />
     <Content Include="app\templates\app\coach.html" />
     <Content Include="app\templates\app\athlete_start_list.html" />
     <Content Include="app\templates\app\event_select.html" />
     <Content Include="app\templates\app\overview.html" />
+    <Content Include="app\templates\app\ejudge_select.html" />
     <Content Include="app\templates\registration\password_reset_complete.html" />
     <Content Include="app\templates\registration\password_reset_confirm.html" />
     <Content Include="app\templates\registration\password_reset_done.html" />

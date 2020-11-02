@@ -4,6 +4,7 @@ from .forms import SignUpForm,LoginForm,EmailPasswordForm
 from django.contrib.auth import authenticate, login
 from management.models import Judge,Camera,Session,Competition,Team
 import datetime
+from django.db.models import Q
 
 def signup(request):
     if request.method == 'POST':
@@ -21,21 +22,75 @@ def signup(request):
     return render(request, 'account/signup.html', {'form': form})
 
 def login_admin(request):
+    err = ''
     if request.method == 'POST':
         login_form = LoginForm(data=request.POST)
         if login_form.is_valid():
             email = login_form.cleaned_data.get('email')
             raw_password = login_form.cleaned_data.get('password')
             user = authenticate(request, email=email, password=raw_password)
-            login(request, user)
-            return redirect('/management/setup_competition/')
+            if user is not None:
+                login(request, user,backend='django.contrib.auth.backends.ModelBackend')
+                return redirect('/management/setup_competition/')
+            else:
+                err = "Incorrect Login Inforation"
     else:
         login_form = LoginForm()
 
     context = {
         'form': login_form,
+        'err':err
     }
     return render(request, 'account/login.html', context)
+
+def login_multiple(request,type,sub_type,id):
+    email = request.GET.get('email')
+    password = request.GET.get('password')
+    if type=='judge':
+        judge = Judge.objects.get(pk=id)
+        if sub_type == 'D1' and judge.d1_email == email and judge.d1_password == password:
+            jt = 'D1'
+            name = judge.d1
+            ej=0
+        if sub_type == 'D2' and judge.d2_email == email and judge.d2_password == password:
+            jt = 'D2'
+            name = judge.d2
+            ej=0
+        if sub_type == 'E1' and judge.e1_email == email and judge.e1_password == password:
+            jt = 'E1'
+            name = judge.e1
+            ej=1
+        if sub_type == 'E2' and judge.e2_email == email and judge.e2_password == password:
+            jt = 'E2'
+            name = judge.e2
+            ej=2
+        if sub_type == 'E3' and judge.e3_email == email and judge.e3_password == password:
+            jt = 'E3'
+            name = judge.e3
+            ej=3
+        if sub_type == 'E4' and judge.e4_email == email and judge.e4_password == password:
+            jt = 'E4'
+            name = judge.e4
+            ej=4
+        if jt != None:
+            return login_judge_do(request,judge.session,judge.event,name,email,jt,ej)
+        else:
+            return redirect('/')
+           
+
+def login_judge_do(request,session,event,name,email,jt,ej):
+    request.session['session'] = session.id
+    request.session['event'] = event.name
+    request.session['disc'] = session.competition.disc.name
+    request.session['name'] = name
+    request.session['email'] = email
+    request.session['type'] = jt.lower()
+    request.session.set_expiry(0)#until they close browser
+    if jt[0:1] == 'E':
+        request.session['ej'] = ej
+        return redirect('/ejudge_select/')
+    else:
+        return redirect('/d1/')
 
 def login_judge(request):
     err = ''
@@ -47,61 +102,76 @@ def login_judge(request):
             type = None
             judges = Judge.objects.filter(session__competition__date__gte= datetime.datetime.now() -  datetime.timedelta(days=2)) #got possible judges
             if len(judges) > 0:
-                if len(judges.filter(d1_email=email,d1_password=password)) > 0:
-                    type='d1'
-                    judge = judges.filter(d1_email=email,d1_password=password).first()
-                    name = judge.d1
-                    event = judge.event
-                    session = judge.session
-                elif len(judges.filter(d2_email=email,d2_password=password)) > 0:
-                    type='d2'
-                    judge = judges.filter(d2_email=email,d2_password=password).first()
-                    name = judge.d2
-                    event = judge.event
-                    session = judge.session
-                elif len(judges.filter(e1_email=email,e1_password=password)) > 0:
-                    type='e1'
-                    judge = judges.filter(e1_email=email,e1_password=password).first()
-                    name = judge.e1
-                    event = judge.event
-                    session = judge.session
-                    ej = 1
-                elif len(judges.filter(e2_email=email,e2_password=password)) > 0:
-                    type='e2'
-                    judge = judges.filter(e2_email=email,e2_password=password).first()
-                    name = judge.e2
-                    event = judge.event
-                    session = judge.session
-                    ej = 2
-                elif len(judges.filter(e3_email=email,e3_password=password)) > 0:
-                    type='e3'
-                    judge = judges.filter(e3_email=email,e3_password=password).first()
-                    name = judge.e3
-                    event = judge.event
-                    session = judge.session
-                    ej = 3
-                elif len(judges.filter(e4_email=email,e4_password=password)) > 0:
-                    type='e4'
-                    judge = judges.filter(e4_email=email,e4_password=password).first()
-                    name = judge.e4
-                    event = judge.event
-                    session = judge.session
-                    ej = 4
-                if type != None:
-                    request.session['session'] = session.id
-                    request.session['event'] = event.name
-                    request.session['disc'] = session.competition.disc.name
-                    request.session['name'] = name
-                    request.session['email'] = email
-                    request.session['type'] = type
-                    request.session.set_expiry(0)#until they close browser
-                    if type[0:1] == 'e':
-                        request.session['ej'] = ej
-                        return redirect('/ejudge_select/')
+                judges = judges.filter(Q(d1_email=email,d1_password=password) | Q(d2_email=email,d2_password=password) | Q(e1_email=email,e1_password=password) | Q(e2_email=email,e2_password=password) | Q(e3_email=email,e3_password=password) | Q(e4_email=email,e4_password=password))
+                possibles = []
+                for judge in judges:
+                    if judge.d1_email == email and judge.d1_password == password:
+                        p = {}
+                        name = judge.d1
+                        p['type'] = 'D1'
+                        p['display'] = judge.session.full_name() + ": " + judge.event.name + " " + p['type']
+                        p['id'] = judge.id
+                        ej = 0
+                        possibles.append(p)
+                    if judge.d2_email == email and judge.d2_password == password:
+                        p = {}
+                        name = judge.d2
+                        p['type'] = 'D2'
+                        p['display'] = judge.session.full_name() + ": " + judge.event.name + " " + p['type']
+                        p['id'] = judge.id
+                        ej = 0
+                        possibles.append(p)
+                    if judge.e1_email == email and judge.e1_password == password:
+                        p = {}
+                        name = judge.e1
+                        p['type'] = 'E1'
+                        p['display'] = judge.session.full_name() + ": " + judge.event.name + " " + p['type']
+                        p['id'] = judge.id
+                        ej = 1
+                        possibles.append(p)
+                    if judge.e2_email == email and judge.e2_password == password:
+                        p = {}
+                        name = judge.e2
+                        p['type'] = 'E2'
+                        p['display'] = judge.session.full_name() + ": " + judge.event.name + " " + p['type']
+                        p['id'] = judge.id
+                        ej = 2
+                        possibles.append(p)
+                    if judge.e3_email == email and judge.e3_password == password:
+                        p = {}
+                        name = judge.e3
+                        p['type'] = 'E3'
+                        p['display'] = judge.session.full_name() + ": " + judge.event.name + " " + p['type']
+                        p['id'] = judge.id
+                        ej = 3
+                        possibles.append(p)
+                    if judge.e4_email == email and judge.e4_password == password:
+                        p = {}
+                        name = judge.e4
+                        p['type'] = 'E4'
+                        p['display'] = judge.session.full_name() + ": " + judge.event.name + " " + p['type']
+                        p['id'] = judge.id
+                        ej = 4
+                        possibles.append(p)
+                if len(possibles) > 0:
+                    if len(possibles) == 1:
+                        judge = Judge.objects.get(pk=possibles[0]['id'])
+
+                        return login_judge_do(request,judge.session,judge.event,name,email,possibles[0]['type'],ej)
+                       
                     else:
-                        return redirect('/d1/')
- 
-            err = "Incorrect Login Inforation"
+                        #more then one
+                        context = {
+                            'possibles': possibles,
+                            'email':email,
+                            'password':password,
+                            'type':'judge',
+                        }
+                        return render(request, 'account/login_multiple.html', context)
+                else:
+                    err = "Incorrect Login Inforation"
+            else:
+                err = "Incorrect Login Inforation"
     else:
         login_form = EmailPasswordForm()
 
