@@ -60,7 +60,7 @@ def create_stream(camera):
         api_key = WOWZA_API_KEY,
         access_key = WOWZA_ACCESS_KEY
     )
-    new_name = str(camera.session.id) + "-camera" + str(camera.id)
+    new_name = str(camera.session.full_name()[:120]) + "-camera" + str(camera.id) + camera.name
     #stream_id = response['live_stream']['id']
     # Create a Live Stream
     response = wowza_instance.create({

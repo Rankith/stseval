@@ -606,21 +606,28 @@ def athlete_get_next_do(event,session_id):
 
 def athlete_start_list(request,event_name,team_id):
     session_id = request.session.get('session')
-    start_list = StartList.objects.filter(session_id=session_id,event__name=event_name,active=True,completed=False).order_by('order','athlete__rotation')
+    start_list = StartList.objects.filter(session_id=session_id,event__name=event_name,completed=False).order_by('order','athlete__rotation')
+    first_not_completed = -1
     if start_list.count() > 0:
         if team_id != 0:
-            rotation = Athlete.objects.filter(team_id=team_id).first().rotation
-            if start_list[0].athlete.rotation != rotation:
+            ath_rotation_team = Athlete.objects.filter(team_id=team_id,rotation=start_list[0].athlete.rotation).first()
+            if ath_rotation_team == None:
                 #not to this group yet
                 start_list = None
             else:
-                start_list=start_list.filter(athlete__rotation=rotation)
+                start_list=StartList.objects.filter(session_id=session_id,event__name=event_name,athlete__rotation=ath_rotation_team.rotation).order_by('order','athlete__rotation')
+                fc = start_list.filter(completed=False,active=True).first()
+                if fc != None:
+                    first_not_completed = fc.id
+                else:
+                    first_not_completed = -1;
         else:
             rotation = start_list[0].athlete.rotation
             start_list=start_list.filter(athlete__rotation=rotation)
         
     context = {
         'start_list':start_list,
+        'first_not_completed':first_not_completed,
     }
     return render(request,'app/athlete_start_list.html',context)
 
@@ -769,7 +776,10 @@ def setup_firebase_managers(session,event_name=''):
             athlete = sl.athlete
             #check for camera
             camera = Camera.objects.filter(teams=athlete.team,events__name=event.name).first()
-            app.firebase.routine_setup(session,event.name,athlete,camera.id)
+            try:
+                app.firebase.routine_setup(session,event.name,athlete,camera.id)
+            except:
+                pass
     
 
     return HttpResponse(status=200)

@@ -429,6 +429,10 @@ input[type="checkbox"].input-validation-error {
     height:240px;
 }
 
-.start-list-completed {
+.start-list-scratched {
     text-decoration: line-through;
+}
+
+.start-list-completed {
+    background-color: #ff0000 !important;
 }

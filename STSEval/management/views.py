@@ -13,7 +13,7 @@ from django.db.models import Count
 def setup_competition(request):
 
     context = {
-        'title': 'Compeition Setup (1/6)',
+        'title': 'Competition Setup (1/6)',
         'discs': Disc.objects.all(),
     }
     return render(request,'management/setup_competition.html',context)
@@ -93,7 +93,7 @@ def setup_judges(request,id):
     events = Event.objects.filter(disc=session.competition.disc)
    
     context = {
-        'title': 'Compeition Setup (2/6)',
+        'title': 'Competition Setup (2/6)',
         'session_name': session.full_name,
         'events':events,
         'id':session.id,
@@ -149,7 +149,7 @@ def judges_check_missing_call(session_id):
 def setup_athletes(request,id):
     session = Session.objects.get(pk=id)
     context = {
-        'title': 'Compeition Setup (3/6)',
+        'title': 'Competition Setup (3/6)',
         'session_name': session.full_name,
         'id':session.id,
     }
@@ -270,7 +270,7 @@ def athlete_update_order(request):
 def setup_cameras(request,id):
     session = Session.objects.get(pk=id)
     context = {
-        'title': 'Compeition Setup (4/6)',
+        'title': 'Competition Setup (4/6)',
         'session_name': session.full_name,
         'id':session.id,
     }
@@ -341,7 +341,7 @@ def cameras_check_missing_call(session_id):
 def setup_sponsors(request,id):
     session = Session.objects.get(pk=id)
     context = {
-        'title': 'Compeition Setup (5/6)',
+        'title': 'Competition Setup (5/6)',
         'session_name': session.full_name,
         'id':session.id,
     }
@@ -398,7 +398,7 @@ def setup_finish(request,id):
     else:
         setup_complete = True
     context = {
-        'title': 'Compeition Setup (6/6)',
+        'title': 'Competition Setup (6/6)',
         'session_name': session.full_name,
         'id':session.id,
         'missed_athlete':missed_athlete,

@@ -65,21 +65,21 @@
     }
 
     function SetStatus() {
-        if ($("#divAthlete1").html() != undefined) {
+        if ($("#" + $("#hdnUpNext").val()).html() != undefined) {
             if (Status == "AD" || Status == "F" || Status == "RD") {
                 StatusDotsRed();
                 $("#divStatus").html("EVALUATION IN PROGRESS").removeClass("timer-yellow").removeClass("timer-green").addClass("timer-red");
-                $("#divAthlete1").removeClass("status-dot-yellow").removeClass("status-dot-green").addClass("status-dot-red");
+                $("#" + $("#hdnUpNext").val()).removeClass("status-dot-yellow").removeClass("status-dot-green").addClass("status-dot-red");
             }
             else if (Status == "N") {
                 StatusDotsYellow();
                 $("#divStatus").html("RAISE HAND TO START").addClass("timer-yellow").removeClass("timer-green").removeClass("timer-red");
-                $("#divAthlete1").addClass("status-dot-yellow").removeClass("status-dot-green").removeClass("status-dot-red");
+                $("#" + $("#hdnUpNext").val()).addClass("status-dot-yellow").removeClass("status-dot-green").removeClass("status-dot-red");
             }
             else if (Status == "S") {
                 StatusDotsGreen();
                 $("#divStatus").html("ROUTINE IN PROGRESS").removeClass("timer-yellow").addClass("timer-green").removeClass("timer-red");
-                $("#divAthlete1").removeClass("status-dot-yellow").addClass("status-dot-green").removeClass("status-dot-red");
+                $("#" + $("#hdnUpNext").val()).removeClass("status-dot-yellow").addClass("status-dot-green").removeClass("status-dot-red");
             }
         }
         else {

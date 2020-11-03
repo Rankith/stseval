@@ -1,12 +1,12 @@
 <div class="row no-gutters" align="center">
      <table cellspacing="0" border=0 cellpadding="0">
         {% for sl in start_list %}
-            <tr>
-                <td><input type="checkbox" id="chkSL{{sl.id}}" onclick="SLCheck({{sl.id}})" {% if sl.active %} checked="checked" {% endif %}>&nbsp; &nbsp;</td>
+            <tr class="{% if sl.completed %}start-list-completed{% endif %}">
+                <td class="pl-1"><input type="checkbox" id="chkSL{{sl.id}}" onclick="SLCheck({{sl.id}})" {% if sl.active %} checked="checked" {% endif %}>&nbsp; &nbsp;</td>
                 <td><a href="" onclick="ShowStartList({{sl.id}})" data-toggle="modal" data-target="#modalSecond"><i class="fa fa-exchange fa-rotate-90"></i></a>
                 &nbsp; &nbsp;
                 </td>
-			    <td id="divSL{{sl.id}}" {% if sl.completed %} class="start-list-completed"{% endif %}>{{sl.athlete.team.abbreviation}} - {{sl.athlete.level.name}} - {{sl.athlete.name}} - {{sl.athlete.rotation}}</td>
+			    <td id="divSL{{sl.id}}" class="{% if not sl.active %}start-list-scratched{% endif %}">{{sl.athlete.team.abbreviation}} - {{sl.athlete.level.name}} - {{sl.athlete.name}} - {{sl.athlete.rotation}}</td>
 		    </tr>
         {% endfor %} 
          <input type="hidden" id="hdnTopPosition" value="divSL{{first_not_completed}}"/>

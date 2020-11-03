@@ -708,12 +708,16 @@
             var TotalDeductions = CalcDeductions(DeductFrom);
             EScore = parseFloat(TotalDeductions).toFixed(3);
             DScore = StartValueScore;
+            f (EScore < 0)
+                EScore = 0;
             //console.log ("TotalDeductions: " + TotalDeductions + " | StartValueScore: " + StartValueScore )
-            document.getElementById('divEScore').innerHTML = parseFloat(TotalDeductions).toFixed(2);
+            document.getElementById('divEScore').innerHTML = EScore.toFixed(2);
             document.getElementById('lblDScore').innerHTML = StartValueScore;
             //StartValueScore = parseFloat(DeductFrom) + parseFloat(StartValueScore);
-
-            document.getElementById('divTotalScore').innerHTML = (parseFloat(StartValueScore - TotalDeductions).toFixed(2));
+            let tot = (parseFloat(StartValueScore - TotalDeductions).toFixed(2))
+            if (tot < 0)
+                tot = 0
+            document.getElementById('divTotalScore').innerHTML = (tot.toFixed(2));
         }
         else if (ScoringType == "8910") {
             if (countedE > 1 && countedE <= 3)
@@ -731,10 +735,14 @@
             var TotalDeductions = CalcDeductions(DeductFrom);
             EScore = parseFloat(DeductFrom - TotalDeductions).toFixed(3);
             DScore = StartValueScore;
-            document.getElementById('divEScore').innerHTML = parseFloat(DeductFrom - TotalDeductions).toFixed(2);
+            if (EScore < 0)
+                EScore = 0;
+            document.getElementById('divEScore').innerHTML = EScore.toFixed(2);
             document.getElementById('lblDScore').innerHTML = StartValueScore;
-
-            document.getElementById('divTotalScore').innerHTML = (parseFloat(+StartValueScore + +EScore).toFixed(2));
+            let tot =  (parseFloat(+StartValueScore + +EScore).toFixed(2));
+            if (tot < 0)
+                tot = 0
+            document.getElementById('divTotalScore').innerHTML = tot.toFixed(2);
         }
         else //fig
         {
@@ -754,7 +762,9 @@
 
             EScore = parseFloat(DeductFrom - TotalDeductions).toFixed(3);
             DScore = StartValueScore;
-            document.getElementById('divEScore').innerHTML = parseFloat(DeductFrom - TotalDeductions).toFixed(2);
+            if (EScore < 0)
+                EScore = 0;
+            document.getElementById('divEScore').innerHTML = EScore.toFixed(2);
             document.getElementById('lblDScore').innerHTML = StartValueScore;
 
             document.getElementById('divTotalScore').innerHTML = (parseFloat(+StartValueScore + +EScore).toFixed(2));
@@ -787,6 +797,8 @@
                         EScores[j] = parseFloat(Against - JudgeDeductions[j]).toPrecision(2);
                     else
                         EScores[j] = parseFloat(JudgeDeductions[j]).toPrecision(2);
+                    if (EScores[j] < 0)
+                        EScores[j] = 0
                     $("#divET" + j).html(EScores[j])
                     JudgesCounting += 1;
                     if (parseFloat(JudgeDeductions[j]).toPrecision(2) > highest) {
@@ -821,6 +833,7 @@
             $("#divET" + low).addClass("judge-strike");
         }
         ETotal = ETotal / (JudgesCounting);
+        //console.log(ETotal);
         return ETotal;
     }
 
@@ -1068,10 +1081,11 @@
             $("#tdDifficulty").html("Base Score:");
             $("#tdDScore").html("Start Value:");
             $("#btnSetDScore").children(0).children(0).text("Set Start Value");
-            $("#tdE1").html(EJudges[1] + " Deduction:");
-            $("#tdE2").html(EJudges[2] + " Deduction:");
-            $("#tdE3").html(EJudges[3] + " Deduction:");
-            $("#tdE4").html(EJudges[4] + " Deduction:");
+            for (var i = 1; i <= 4; i++) {
+                if (EJudges[i] != "" && EJudges[i] != " ") {
+                    $("#tdE" + i).html("E" + i + " Deduction:");
+                }
+            }
             $("#txtDifficulty").val('9.5');
             $("#txtElements").val('8');
             $("#txtBonus").val('0.0');
@@ -1090,10 +1104,11 @@
                 $("#tdBonus").html("Bonus: ");
             $("#tdDifficulty").html("Difficulty:");
             $("#btnSetDScore").children(0).children(0).text("Set D-Score");
-            $("#tdE1").html(EJudges[1] + " Execution:");
-            $("#tdE2").html(EJudges[2] + " Execution:");
-            $("#tdE3").html(EJudges[3] + " Execution:");
-            $("#tdE4").html(EJudges[4] + " Execution:");
+            for (var i = 1; i <= 4; i++) {
+                if (EJudges[i] != "" && EJudges[i] != " ") {
+                    $("#tdE" + i).html("E" + i + " Execution:");
+                }
+            }
             $("#tdDScore").html("D-Score:");
             $("#txtDifficulty").val('0.0');
             $("#txtBonus").val('0.0');
@@ -1117,10 +1132,11 @@
             $("#tdDifficulty").html("Difficulty:");
             $("#tdDScore").html("D-Score:");
             $("#btnSetDScore").children(0).children(0).text("Set D-Score");
-            $("#tdE1").html("E1 Execution:");
-            $("#tdE2").html("E2 Execution:");
-            $("#tdE3").html("E3 Execution:");
-            $("#tdE4").html("E4 Execution:");
+            for (var i = 1; i <= 4; i++) {
+                if (EJudges[i] != "" && EJudges[i] != " ") {
+                    $("#tdE" + i).html("E" + i + " Execution:");
+                }
+            }
             $("#txtDifficulty").val('0.0');
             $("#txtGroups").val('2.0');
             $("#txtElements").val('10');

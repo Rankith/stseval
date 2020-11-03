@@ -1,12 +1,18 @@
 <div class="row no-gutters" align="center">
     {% for sl in start_list %}
+    <!--
+        {% ifchanged sl.completed %}
+            {% if not forloop.first %}
+                <div class="col-12 mb-1">
+                    NEXT:
+                </div>
+            {% endif %}
+        {% endifchanged %}
+        -->
         <div class="col-12 mb-2">
-            <div id="divAthlete{{forloop.counter}}"  class="start-list-athlete">{{sl.athlete.team.abbreviation}} - {{sl.athlete.level.name}} - {{sl.athlete.name}}</div>
+            <div id="divAthlete{{sl.id}}"  class="start-list-athlete {% if not sl.active %}start-list-scratched{% endif %} {% if sl.completed %}start-list-completed{% endif %}">{{sl.athlete.team.abbreviation}} - {{sl.athlete.level.name}} - {{sl.athlete.name}}</div>
         </div>
-        {% if forloop.first %}
-            <div class="col-12 mb-1">
-                NEXT:
-            </div>
-        {% endif %}
+        
     {% endfor %} 
+    <input type="hidden" id="hdnUpNext" value="divAthlete{{first_not_completed}}"/>
 </div>
