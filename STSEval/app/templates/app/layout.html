@@ -15,20 +15,20 @@
 
 <body>
     <div id="divFullScreen">
-        <div class="navbar navbar-inverse navbar-fixed-top navbar-expand-xl" style="padding:.0rem 1rem">
+        <div class="navbar navbar-dark navbar-expand-xl" style="padding:.0rem 1rem">
             <div class="container-fluid">
-                <div class="row no-gutters w-100 align-items-center">
-                    <div class="col-3">
-                        <div>
-                            <a href="/"><img class="pt-1" src="{% static 'app/images/stslivegym-white.svg' %}" style="height:35px"></a>
-                        </div>
-                    </div>
-                    <div class="col-6" align="center">
-                        <div>
-                            <h3 id="title">{{title}}</h3>
-                        </div>
-                    </div>
-                    <div class="col-3" align="right">
+                <div class="d-flex w-50 order-0">
+                    <a class="navbar-brand" href="/"><img class="pt-1" src="{% static 'app/images/stslivegym-white.svg' %}" style="height:35px"></a>
+                    <button class="navbar-toggler ml-1" type="button" data-toggle="collapse" data-target="#collapsingNavbar">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                </div>
+                
+                <div class="navbar-brand mx-auto d-block text-center order-0 order-md-1 w-25 text-truncate"><h4 id="title">{{title}}</h4></div>
+                
+                <div class="navbar-collapse collapse justify-content-end order-2 w-50 pull-right" id="collapsingNavbar">
+                    
+                    <ul class="navbar-nav">
                         {% if user.is_authenticated %}
                             <form id="logoutForm" action="/account/logout/" method="post">
                                 {% csrf_token %}
@@ -73,8 +73,9 @@
                                 <li class="nav-item align-self-center"><a class="nav-link" href="/">logout</a></li>
                             </ul>
                         {% endif %}
-                    </div>
+                    </ul>
                 </div>
+                        
             </div>
         </div>
 

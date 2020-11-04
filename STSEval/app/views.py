@@ -291,7 +291,7 @@ def ejudge(request):
     else:
         this_judge = judges.e4
     context = {
-        'title': 'STS EJury - ' + event + ' ' + session.competition.name,
+        'title': event + ' ' + session.competition.name,
         'judges':judges,
         'disc':disc,
         'event':event,

@@ -398,7 +398,8 @@
     }
 
     function JudgeStrike(j) {
-        if ($("#chkE" + j).prop("checked")) {
+        console.log("JudgeStrike " + j);
+        if ($("#chkE" + j).prop("checked") && $("#chkE" + j).css("display") != "none") {
             $("#divE" + j + "N").removeClass("judge-strike");
             $("#tdE" + j).show();
             $("#divET" + j).show();
@@ -779,6 +780,7 @@
         let highest = 0;
         let lowest = 1000;
         JudgesCounting = 0;
+        console.log("Calc deductins");
         //console.log("Deductions:");
         for (var j = 1; j <= 4; j++) {
             EScores[j] = -1;
@@ -1162,6 +1164,7 @@
 
     function SetJudges() {
         NumJudges = 0;
+        
         for (var i = 1; i <= 4; i++) {
             if (EJudges[i] != "" && EJudges[i] != " ") {
                 //check excluded judges from loading
@@ -1173,6 +1176,7 @@
                 // else
                 //$("#divE" + i + "N").html(EJudges[i]);
                 //$("#divJT" + i).empty();
+                console.log("Set Judges " + i);
                 $("#chkE" + i).show();
                 $("#chkE" + i).prop('checked', true);
                 $("#divET" + i).show();
@@ -1201,6 +1205,7 @@
     }
 
     function AddJudge(j) {
+        console.log("AddJudge " + j);
         $("#divE" + j + "N").removeClass("LineThroughRed");
         //$("#divJT" + j).removeClass("LineThroughRed");;
         $("#divET" + j).show();
