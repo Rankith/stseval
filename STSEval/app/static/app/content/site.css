@@ -436,3 +436,14 @@ input[type="checkbox"].input-validation-error {
 .start-list-completed {
     background-color: #ff0000 !important;
 }
+
+.live-video {
+    max-width: 854px;
+    max-height: 500px;
+}
+
+.live-container {
+    max-width: 854px;
+    max-height: 720px;
+    width: 100%
+}
