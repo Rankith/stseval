@@ -447,3 +447,8 @@ input[type="checkbox"].input-validation-error {
     max-height: 720px;
     width: 100%
 }
+
+.sponsor-image {
+    height:200px;
+    max-width: 100%
+}

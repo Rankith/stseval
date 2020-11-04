@@ -26,6 +26,14 @@ def competition_list(request):
     }
     return render(request, 'management/competition_list.html', context)
 
+def competition_list_all(request):
+    comps = Competition.objects.filter(disc=request.GET.get('disc'))
+
+    context = {
+        'comps':comps,
+    }
+    return render(request, 'management/competition_list.html', context)
+
 @login_required(login_url='/account/login/')
 def competition_form(request):
     if request.method == 'POST':
@@ -52,7 +60,6 @@ def competition_delete(request):
     Competition.objects.filter(id=request.GET.get('id')).delete()
     return HttpResponse(status=200)
 
-@login_required(login_url='/account/login/')
 def session_list(request):
     sessions = Session.objects.filter(competition_id=request.GET.get('comp'))
 

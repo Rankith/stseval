@@ -8,7 +8,7 @@ from django.template import RequestContext
 from datetime import datetime
 from django.contrib.auth import authenticate, login
 from app.models import Twitch,Routine,EJuryDeduction
-from management.models import Competition,Judge,Athlete,Session,Camera,StartList,Team,Event
+from management.models import Competition,Judge,Athlete,Session,Camera,StartList,Team,Event,Disc,Sponsor
 from app.twitch import TwitchAPI
 import app.firebase
 from time import time
@@ -568,7 +568,7 @@ def scoreboard(request,event_name='-1'):
     if event_name == '-1':
         event_name = events.first().name
     context = {
-        'title': 'Scoreboard - ' + event_name + ' ' + session.full_name(),
+        'title': session.full_name(),
         'judges':judges,
         'session':session,
         'events':events,
@@ -783,6 +783,43 @@ def setup_firebase_managers(session,event_name=''):
     
 
     return HttpResponse(status=200)
+
+def select_session(request):
+
+    context = {
+        'title': 'Select Competition',
+        'discs': Disc.objects.all(),
+    }
+    return render(request,'app/select_session.html',context)
+
+def spectate(request,session_id,event_name='-1'):
+    request.session['session'] = session_id
+    session = Session.objects.get(pk=request.session.get('session'))
+    events = Event.objects.filter(disc=session.competition.disc)
+    if event_name == '-1':
+        event = events.first()
+    else:
+        event = events.filter(name=event_name).first()
+    athletes = Athlete.objects.filter(team__session=session)
+    judges = Judge.objects.filter(session=session,event=event)
+    cameras = Camera.objects.filter(events=event,session=session)
+
+    sponsors = Sponsor.objects.filter(session=session)
+    
+    #setup_firebase_managers(session,event.name)
+
+    context = {
+        'title': 'Spectator',
+        'event_name':event.name,
+        'events':events,
+        'session':session,
+        'scoreboard':True,
+        'athletes':athletes,
+        'judges':judges.first(),
+        'cameras':cameras,
+        'sponsors':sponsors,
+    }
+    return render(request,'app/spectate.html',context)
 
 def spectator_video(request):
     context = {

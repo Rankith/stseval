@@ -18,6 +18,7 @@ urlpatterns = [
     path('judges_update/', views.judges_update, name='judges_update'),
     path('competition_form/', views.competition_form, name='competition_form'),
     path('competition_list/', views.competition_list, name='competition_list'),
+    path('competition_list_all/', views.competition_list_all, name='competition_list_all'),
     path('competition_delete/', views.competition_delete, name='competition_delete'),
     path('session_form/', views.session_form, name='session_form'),
     path('session_list/', views.session_list, name='session_list'),

@@ -1,0 +1,101 @@
+{% extends "app/layout.html" %}
+
+{% block content %}
+<div align="center" style="margin:10px;padding:0">
+    <div>
+        <div id="divDisc" style="vertical-align: top;padding:3px;height:254px;display:inline-block;margin-right:30px;">
+		    <div id="divDiscHeader" style="padding-bottom:5px;font-size:22px;font-weight:bold;text-align:center">Discipline</div>
+		    <div id="divDiscList" class="listbox  setup-box" style="">
+                {% for disc in discs %}
+                    <div id="divDisc{{disc.id}}" name="divDisc{{disc.id}}" class="disc-list{% if disc.active is False %} ui-disabled {% endif %}" style="padding-bottom:5px" onclick="DiscClick({{disc.id}});">{{disc.name}}</div>
+                {% endfor %}
+		        
+		    </div>
+	    </div>
+
+	    <div id="divCompetitions" style="display:inline-block;vertical-align: top;padding:3px;display:inline-block;margin-right:30px;" class="ui-disabled">
+	        <div id="divCompHeader" style="padding-bottom:5px;font-size:22px;font-weight:bold;text-align:center">Competition</div>
+	        <div id="divCompList"class="listbox  setup-box"  style="width:400px;"></div><br/>
+	    </div>
+
+        <div id="divSessions" style="vertical-align: top;padding:3px;display:inline-block;margin-right:30px;" class="ui-disabled">
+		    <div id="divSessionHeader" style="padding-bottom:5px;font-size:22px;font-weight:bold;text-align:center">Session</div>
+		    <div id="divSessionList" class="listbox  setup-box" style="width:240px;"></div><br/>
+		   
+	    </div>
+    </div>
+    <br/>
+    <br/>
+    <div>
+        <button href="#" id="btnView" type="button" class="btn-main btn-wide ui-disabled pt-4 pb-4" style="border-radius: 1rem;" onclick="btnViewClick()">View</button><br/><br/>
+    </div>
+		
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript">
+    var token = "{{ csrf_token }}";
+</script>
+<script type="text/javascript">
+    var SelectedComp = -1;
+    var SelectedDisc = -1;
+    var SelectedSession = -1;
+    var SelectedEvent = -1;
+    var Changed = false;
+   
+
+    function btnViewClick() {
+        if (SelectedSession != -1) {
+            window.location = "/spectate/" + SelectedSession;
+        }
+    }
+
+    function SessionClick(sesIn) {
+        $('.session-list').removeClass("ctxSelected");
+        $("#divSession" + sesIn).addClass("ctxSelected");
+        SelectedSession = sesIn;
+        $("#btnView").removeClass("ui-disabled");
+
+    }
+
+    function DiscClick(discIn) {
+        $('.disc-list').removeClass("ctxSelected");
+        $("#divDisc" + discIn).addClass("ctxSelected");
+        SelectedDisc = discIn;
+        SelectedComp = -1;
+        $("#divCompetitions").removeClass("ui-disabled");
+        $("#divCompList").load("/management/competition_list_all/?disc=" + SelectedDisc);
+        $("#divSessionList").empty();
+        $("#divSessions").addClass("ui-disabled");
+        $("#btnView").addClass("ui-disabled");
+
+    }
+
+
+    function DisableAll() {
+        //$("#divDisc").addClass("ui-disabled");
+        $("#divCompetitions").addClass("ui-disabled");
+        $("#divSessions").addClass("ui-disabled");
+        $("#btnView").addClass("ui-disabled");
+    }
+
+    function CompClick(CompIn) {
+        
+        $('.comp-list').removeClass("ctxSelected");
+        $("#divComp" + CompIn).addClass("ctxSelected");
+        SelectedComp = CompIn;
+        $("#divSessions").removeClass("ui-disabled");
+        FillSession();
+        $("#btnView").addClass("ui-disabled");
+
+    }
+
+   
+    function FillSession() {
+        $("#divSessionList").load("/management/session_list/?comp="+ SelectedComp);
+    }
+
+</script>
+{% endblock %}
