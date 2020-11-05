@@ -1,38 +1,43 @@
-var Stream = '';
-var StreamListener;
-var StreamConnected = false;
-var ReCheck;
-var hls_playback_url = "";
+var Stream = new Array();
+Stream[1] = '';
+Stream[2] = '';
+var StreamListener = new Array();
+var StreamConnected = new Array();
+StreamConnected[1] = false;
+StreamConnected[2] = false;
+var ReCheck = new Array();
+var hls_playback_url = new Array();
+hls_playback_url[1] = "";
+hls_playback_url[2] = "";
 
-function CheckStream(doc) {
-    console.log("Check Stream");
-    if (doc.data().stream != Stream) {
-        if (StreamListener != undefined)
-            StreamListener();//release stream listener
-        Stream = doc.data().stream;
-        console.log("Setting Stream Listener To " + Stream);
-        StreamListener = db.collection("sessions").doc(Session).collection("streams").doc(Stream.toString()).onSnapshot(function (doc) {
-            HandleStreamChanges(doc);
+function CheckStream(doc,which) {
+    console.log("Check Stream " + which);
+    if (doc.data().stream != Stream[which]) {
+        if (StreamListener[which] != undefined)
+            StreamListener[which]();//release stream listener
+        Stream[which] = doc.data().stream;
+        console.log("Setting Stream Listener " + which + " To " + Stream[which]);
+        StreamListener = db.collection("sessions").doc(Session).collection("streams").doc(Stream[which].toString()).onSnapshot(function (doc) {
+            HandleStreamChanges(doc,which);
         });
     }
 }
-function HandleStreamChanges(doc) {
-    console.log("stream change");
+function HandleStreamChanges(doc,which) {
+    console.log("stream change " + which);
     if (doc.data() != undefined) {
         console.log(doc.data());
         if (doc.data().hls_playback_url != undefined && doc.data().hls_playback_url != "" && doc.data().connected == true) {
-            console.log(doc.data());
-            StreamConnected = true;
-            hls_playback_url = doc.data().hls_playback_url;
-            clearTimeout(ReCheck);
-            StartStream();
+            StreamConnected[which] = true;
+            hls_playback_url[which] = doc.data().hls_playback_url;
+            clearTimeout(ReCheck[which]);
+            StartStream(which);
         }
         else if (doc.data().connected == false) {
-            StreamConnected = false;
-            console.log("dispose");
-            clearTimeout(ReCheck);
-            if (VidJSPlayer != undefined) {
-                VidJSPlayer.src({
+            StreamConnected[which] = false;
+            console.log("dispose " + which);
+            clearTimeout(ReCheck[which]);
+            if (VidJSPlayer[which] != undefined) {
+                VidJSPlayer[which].src({
                     "type": "none",
                     "src": ""
                 });
@@ -53,17 +58,17 @@ function HandleStreamChanges(doc) {
     }
 
 }
-function StartStream() {
-    if (VidJSPlayer == undefined) {
-        VidJSPlayer = videojs("player-video");
+function StartStream(which) {
+    if (VidJSPlayer[which] == undefined) {
+        VidJSPlayer[which] = videojs("player-video" + which);
         $(".vjs-tech").show();
-        VidJSPlayer.on('error', function () {
-            console.log("error");
-            if (VidJSPlayer.error().code == 4) {
-                ReCheck = setTimeout(CheckStreamIsStreaming, 2000);
+        VidJSPlayer[which].on('error', function () {
+            console.log("error " + which);
+            if (VidJSPlayer[which].error().code == 4) {
+                ReCheck[which] = setTimeout(CheckStreamIsStreaming(which), 2000);
                 console.log("4");
-                $("#player-video").hide();
-                $("#player-waiting").css("display", "flex");
+                $("#player-video" + which).hide();
+                $("#player-waiting" + which).css("display", "flex");
             }
             /*else if (VidJSPlayer.error().code == 2) {
                 ReCheck = setInterval(StartStream, 2000);
@@ -79,17 +84,17 @@ function StartStream() {
         });*/
 
     }
-    $("#player-waiting").hide();
-    $("#player-video").show();
-    clearTimeout(ReCheck);
-    VidJSPlayer.src({
+    $("#player-waiting" + which).hide();
+    $("#player-video" + which).show();
+    clearTimeout(ReCheck[which]);
+    VidJSPlayer[which].src({
         "type": "application/x-mpegURL",
-        "src": hls_playback_url
+        "src": hls_playback_url[which]
     });
    
 }
 
-function CheckStreamIsStreaming() {
-    if (StreamConnected)
-        StartStream();
+function CheckStreamIsStreaming(which) {
+    if (StreamConnected[which])
+        StartStream(which);
 }

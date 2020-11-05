@@ -813,7 +813,7 @@ def select_session(request):
     }
     return render(request,'app/select_session.html',context)
 
-def spectate(request,session_id,event_name='-1'):
+def spectate(request,session_id,display_type,event_name='-1'):
     request.session['session'] = session_id
     session = Session.objects.get(pk=request.session.get('session'))
     events = Event.objects.filter(disc=session.competition.disc)
@@ -822,23 +822,29 @@ def spectate(request,session_id,event_name='-1'):
     else:
         event = events.filter(name=event_name).first()
     athletes = Athlete.objects.filter(team__session=session)
-    judges = Judge.objects.filter(session=session,event=event)
-    cameras = Camera.objects.filter(events=event,session=session)
-
     sponsors = Sponsor.objects.filter(session=session)
     
+    event_name = event.name
+
+    if display_type == 'dual':
+        event_name2 = event.display_order + (events.count() / 2)
+        if event_name2 > events.count():
+            event_name2 = event_name2 - events.count()
+        event_name2 = events.filter(display_order=event_name2).first().name
+    else:
+        event_name2 = ''
     #setup_firebase_managers(session,event.name)
 
     context = {
         'title': 'Spectator',
-        'event_name':event.name,
+        'event_name':event_name,
+        'event_name2':event_name2,
         'events':events,
         'session':session,
         'scoreboard':True,
         'athletes':athletes,
-        'judges':judges.first(),
-        'cameras':cameras,
         'sponsors':sponsors,
+        'display_type':display_type,
     }
     return render(request,'app/spectate.html',context)
 

@@ -1,0 +1,7 @@
+<div class="d-flex align-items-center justify-content-center">
+    {% for sponsor in sponsors %}
+        <div style="max-width:400px" class="pr-4">
+            <a href="{{sponsor.url}}" target="_blank"><img src="{{sponsor.image.url}}" class="sponsor-image" title="{{sponsor.name}}" /></a>
+        </div>
+    {% endfor %}
+</div>

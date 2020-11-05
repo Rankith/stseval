@@ -3,28 +3,55 @@
 {% block content %}
 {% load staticfiles %}
 <div  align="center">
-    {% include "app/event_select.html" %}  
+    {% if display_type == 'single' %}
+        {% include "app/event_select.html" %} 
+    {% endif %}
     <div id="divHeader"><h4>{{session.full_name}}</h4></div>
    <div class="row no-gutters">
-        <div class="col-12" align="center">
-            <div id="play-video-container" class="live-container d-flex align-items-center justify-content-center">
-                <div id="player-waiting" style="height:480px;display:flex" class="align-items-center"><h1>Waiting for Camera</h1></div>
-                <video id="player-video" class="live-video video-js vjs-16-9" style="display:none" disablePictureInPicture autoplay muted></video>
+       {% if display_type == 'single' %}
+            <div class="col-12" align="center">
+                <div id="play-video-container1" class="live-container d-flex align-items-center justify-content-center">
+                    <div id="player-waiting1" style="height:480px;display:flex" class="align-items-center"><h1>Waiting for Camera</h1></div>
+                    <video id="player-video1" class="live-video video-js vjs-16-9" style="display:none" disablePictureInPicture autoplay muted></video>
+                </div>
+                <div id="divAthlete1" align="center"></div>
             </div>
-            <div id="divAthlete" align="center"></div>
-        </div>
+        {% else %}
+            <div class="col-12 col-xl-6 pr-4" align="right">
+                <div id="play-video-container1" class="live-container d-flex align-items-center justify-content-center flex-column">
+                    <div id="player-waiting1" style="height:480px;display:flex" class="align-items-center"><h1>Waiting for Camera</h1></div>
+                    <video id="player-video1" class="live-video video-js vjs-16-9" style="display:none" disablePictureInPicture autoplay muted></video>
+                    <div class="d-flex w-100">
+                        {% for ev in events %}
+                            <div class="flex-grow-1">
+                                <button id="btn{{ev.name}}1" type="button" class="btn event-display-1 btn-event{% if ev.name|lower == event_name|lower %}-selected{% endif %} mb-2" onclick="SwapEventDual(1,'{{ev.name|upper}}')"><img src="{% static 'app/images/' %}{{ev.name|lower}}-white.svg" height="30px"/></button>
+                            </div>
+                        {% endfor %} 
+                    </div>
+                </div>
+                <div id="divAthlete1" align="center"></div>
+            </div>
+            <div class="col-12 col-xl-6" align="left">
+                <div id="play-video-container2" class="live-container d-flex align-items-center justify-content-center flex-column">
+                    <div id="player-waiting2" style="height:480px;display:flex" class="align-items-center"><h1>Waiting for Camera</h1></div>
+                    <video id="player-video2" class="live-video video-js vjs-16-9" style="display:none" disablePictureInPicture autoplay muted></video>
+                    <div class="d-flex w-100">
+                        {% for ev in events %}
+                            <div class="flex-grow-1">
+                                <button id="btn{{ev.name}}2" type="button" class="btn event-display-2 btn-event{% if ev.name|lower == event_name2|lower %}-selected{% endif %} mb-2" onclick="SwapEventDual(2,'{{ev.name|upper}}')"><img src="{% static 'app/images/' %}{{ev.name|lower}}-white.svg" height="30px"/></button>
+                            </div>
+                        {% endfor %} 
+                    </div>
+                </div>
+                <div id="divAthlete2" align="center"></div>
+            </div>
+       {% endif %}
        <!--<div class="col-xl-6 col-12" align="left"> </div>-->
        <br/>
        <br/>
+       <br/>
        <div class="col-12 pt-4">
-           <div class="d-flex align-items-center justify-content-center">
-               {% for sponsor in sponsors %}
-                   <div style="max-width:400px" class="pr-4">
-                       <a href="{{sponsor.url}}" target="_blank"><img src="{{sponsor.image.url}}" class="sponsor-image" title="{{sponsor.name}}" /></a>
-                   </div>
-            
-               {% endfor %}
-            </div>
+           {% include "app/sponsor_display.html" %}
        </div>
         
        
@@ -36,12 +63,17 @@
 <script src="https://vjs.zencdn.net/7.6.6/video.js"></script>
 <script src="{% static 'app/scripts/stream_listener_spectator.js' %}"></script>
 <script type="text/javascript">
-
-    var ev = "{{event_name}}";
+    var ev = new Array();
+    {% if display_type == 'single' %}
+    ev[1] = "{{event_name}}";
+    {% else %}
+    ev[1] = "{{event_name}}";
+    ev[2] = "{{event_name2}}";
+    {% endif %}
     var Session = "{{session.id}}";
     var SessionName = "{{session}}";
     var token = "{{ csrf_token }}";
-    var VidJSPlayer;
+    var VidJSPlayer = new Array();
     var AthleteNames = new Array();
     {% for athlete in athletes %}
         AthleteNames[{{athlete.id}}] = "{{athlete}}";
@@ -49,26 +81,46 @@
 
 </script>
 <script type="text/javascript">
-    var CurrentAthlete = -1;
+    var CurrentAthlete = new Array();
+    CurrentAthlete[1] = -1;
+    CurrentAthlete[2] = -1;
+    var refs = new Array();
     var db = firebase.firestore();
-    var docRef = db.collection("sessions").doc(Session).collection("event_managers").doc(ev);
+    SetEventListeners(1);
+    if (ev[2] != undefined)
+        SetEventListeners(2);
 
-    docRef.onSnapshot(function (doc) {
+    function SetEventListeners(which) {
+        if (refs[which] != undefined)
+            refs[which]();//release event listener
+        console.log("Setting Event Listener " + which + " To " + ev[which]);
+        refs[which] = db.collection("sessions").doc(Session).collection("event_managers").doc(ev[which]).onSnapshot(function (doc) {
+            HandleEventChanges(doc,which);
+        });
+    }
+
+    function HandleEventChanges(doc, which) {
         if (doc.data() != undefined) {
-            if (CurrentAthlete != doc.data().athlete_id) {
-                $("#divAthlete").html(AthleteNames[doc.data().athlete_id]);
-                CheckStream(doc);
+            if (CurrentAthlete[which] != doc.data().athlete_id) {
+                $("#divAthlete" + which).html(AthleteNames[doc.data().athlete_id]);
+                CheckStream(doc,which);
             }
         }
         else {
-             $("#player-video").hide();
-            $("#player-waiting").css("display", "flex");
+            $("#player-video" + which).hide();
+            $("#player-waiting" + which).css("display", "flex");
         }
-
-    });
+    }
 
     function SwapEvent(evIn) {
-        window.location = "/spectate/" + Session + "/" + evIn;
+        window.location = "/spectate/" + Session + "/single/" + evIn;
+    }
+
+    function SwapEventDual(which, evIn) {
+        $(".event-display-" + which).addClass("btn-event").removeClass("btn-event-selected");
+        $("#btn" + evIn + which).addClass("btn-event-selected");
+        ev[which] = evIn;
+        SetEventListeners(which)
     }
 
 </script>
