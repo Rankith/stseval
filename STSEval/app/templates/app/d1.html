@@ -712,7 +712,7 @@
             f (EScore < 0)
                 EScore = 0;
             //console.log ("TotalDeductions: " + TotalDeductions + " | StartValueScore: " + StartValueScore )
-            document.getElementById('divEScore').innerHTML = EScore.toFixed(2);
+            document.getElementById('divEScore').innerHTML =  parseFloat(EScore).toFixed(2);
             document.getElementById('lblDScore').innerHTML = StartValueScore;
             //StartValueScore = parseFloat(DeductFrom) + parseFloat(StartValueScore);
             let tot = (parseFloat(StartValueScore - TotalDeductions).toFixed(2))
@@ -738,7 +738,7 @@
             DScore = StartValueScore;
             if (EScore < 0)
                 EScore = 0;
-            document.getElementById('divEScore').innerHTML = EScore.toFixed(2);
+            document.getElementById('divEScore').innerHTML = parseFloat(EScore).toFixed(2);
             document.getElementById('lblDScore').innerHTML = StartValueScore;
             let tot =  (parseFloat(+StartValueScore + +EScore).toFixed(2));
             if (tot < 0)
@@ -765,7 +765,7 @@
             DScore = StartValueScore;
             if (EScore < 0)
                 EScore = 0;
-            document.getElementById('divEScore').innerHTML = EScore.toFixed(2);
+            document.getElementById('divEScore').innerHTML =  parseFloat(EScore).toFixed(2);
             document.getElementById('lblDScore').innerHTML = StartValueScore;
 
             document.getElementById('divTotalScore').innerHTML = (parseFloat(+StartValueScore + +EScore).toFixed(2));
