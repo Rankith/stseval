@@ -11,7 +11,9 @@ from account import views
 
 urlpatterns = [
     path('signup/', views.signup, name='signup'),
+    path('signup/<str:type>/', views.signup, name='signup'),
     path('login/', views.login_admin, name='login'),
+    path('login/<str:type>/', views.login_admin, name='login'),
     path('logout/', LogoutView.as_view(next_page='/'), name='logout'),
     path('password_reset/', auth_views.PasswordResetView.as_view(), name='password_reset'),
     path('password_reset/done/', auth_views.PasswordResetDoneView.as_view(), name='password_reset_done'),

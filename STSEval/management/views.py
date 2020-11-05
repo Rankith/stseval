@@ -9,7 +9,7 @@ from django.contrib.auth.decorators import login_required,user_passes_test
 from django.db.models import Count
 
 # Create your views here.
-@login_required(login_url='/account/login/')
+@login_required(login_url='/account/login/admin/')
 def setup_competition(request):
 
     context = {
@@ -34,7 +34,7 @@ def competition_list_all(request):
     }
     return render(request, 'management/competition_list.html', context)
 
-@login_required(login_url='/account/login/')
+@login_required(login_url='/account/login/admin/')
 def competition_form(request):
     if request.method == 'POST':
         id = request.POST.get('id','-1')
@@ -55,7 +55,7 @@ def competition_form(request):
             form = CompetitionForm(user=request.user)
         return render(request, 'management/competition_form.html', {'form': form,'id':id})
 
-@login_required(login_url='/account/login/')
+@login_required(login_url='/account/login/admin/')
 def competition_delete(request):
     Competition.objects.filter(id=request.GET.get('id')).delete()
     return HttpResponse(status=200)
@@ -68,7 +68,7 @@ def session_list(request):
     }
     return render(request, 'management/session_list.html', context)
 
-@login_required(login_url='/account/login/')
+@login_required(login_url='/account/login/admin/')
 def session_form(request):
     if request.method == 'POST':
         id = request.POST.get('id','-1')
@@ -89,12 +89,12 @@ def session_form(request):
             form = SessionForm()
         return render(request, 'management/session_form.html', {'form': form,'id':id})
 
-@login_required(login_url='/account/login/')
+@login_required(login_url='/account/login/admin/')
 def session_delete(request):
     Session.objects.filter(id=request.GET.get('id')).delete()
     return HttpResponse(status=200)
 
-@login_required(login_url='/account/login/')
+@login_required(login_url='/account/login/admin/')
 def setup_judges(request,id):
     session = Session.objects.get(pk=id)
     events = Event.objects.filter(disc=session.competition.disc)
@@ -107,7 +107,7 @@ def setup_judges(request,id):
     }
     return render(request,'management/setup_judges.html',context)
 
-@login_required(login_url='/account/login/')
+@login_required(login_url='/account/login/admin/')
 def judge_form(request):
     if request.method == 'POST':
         id = request.POST.get('id','-1')
@@ -152,7 +152,7 @@ def judges_check_missing_call(session_id):
 
     return missed
 
-@login_required(login_url='/account/login/')
+@login_required(login_url='/account/login/admin/')
 def setup_athletes(request,id):
     session = Session.objects.get(pk=id)
     context = {
@@ -162,7 +162,7 @@ def setup_athletes(request,id):
     }
     return render(request,'management/setup_athletes.html',context)
 
-@login_required(login_url='/account/login/')
+@login_required(login_url='/account/login/admin/')
 def team_form(request):
     if request.method == 'POST':
         id = request.POST.get('id','-1')
@@ -183,7 +183,7 @@ def team_form(request):
             form = TeamForm()
         return render(request, 'management/team_form.html', {'form': form,'id':id})
 
-@login_required(login_url='/account/login/')
+@login_required(login_url='/account/login/admin/')
 def team_list(request,session_id):
     teams = Team.objects.filter(session_id=session_id)
     context = {
@@ -191,12 +191,12 @@ def team_list(request,session_id):
     }
     return render(request, 'management/team_list.html', context)
 
-@login_required(login_url='/account/login/')
+@login_required(login_url='/account/login/admin/')
 def team_delete(request,id):
     Team.objects.filter(id=id).delete()
     return HttpResponse(status=200)
 
-@login_required(login_url='/account/login/')
+@login_required(login_url='/account/login/admin/')
 def athlete_form(request):
     if request.method == 'POST':
         id = request.POST.get('id','-1')
@@ -220,7 +220,7 @@ def athlete_form(request):
             form = AthleteForm(session=request.GET.get('session'))
         return render(request, 'management/athlete_form.html', {'form': form,'id':id})
 
-@login_required(login_url='/account/login/')
+@login_required(login_url='/account/login/admin/')
 def athlete_list(request,team_id):
     athletes = Athlete.objects.filter(team__session_id=team_id).order_by('rotation','order')
     context = {
@@ -228,12 +228,12 @@ def athlete_list(request,team_id):
     }
     return render(request, 'management/athlete_list.html', context)
 
-@login_required(login_url='/account/login/')
+@login_required(login_url='/account/login/admin/')
 def athlete_delete(request,id):
     Athlete.objects.filter(id=id).delete()
     return HttpResponse(status=200)
 
-@login_required(login_url='/account/login/')
+@login_required(login_url='/account/login/admin/')
 def create_start_lists(request,session_id):
     session = Session.objects.get(pk=session_id)
     athletes = Athlete.objects.filter(team__session=session).order_by('-rotation','order')
@@ -248,7 +248,7 @@ def create_start_lists(request,session_id):
         order = 0
         rotation_list.append(chr(rotation_ord)) #add this rotation to list and increment to next rotation letter
         rotation_ord = rotation_ord + 1
-        sub_ath = athletes.filter(rotation__in=rotation_list) #get the starting rotations for this even in reverse order
+        sub_ath = athletes.filter(rotation__in=rotation_list) #get the starting rotations for this event in reverse order
         for ath in sub_ath:
             order = order + 1
             sl = StartList(session=session,event=e,athlete=ath,order=order)
@@ -273,7 +273,7 @@ def athlete_update_order(request):
     return HttpResponse(status=200)
 
 
-@login_required(login_url='/account/login/')
+@login_required(login_url='/account/login/admin/')
 def setup_cameras(request,id):
     session = Session.objects.get(pk=id)
     context = {
@@ -283,7 +283,7 @@ def setup_cameras(request,id):
     }
     return render(request,'management/setup_cameras.html',context)
 
-@login_required(login_url='/account/login/')
+@login_required(login_url='/account/login/admin/')
 def camera_form(request):
     if request.method == 'POST':
         id = request.POST.get('id','-1')
@@ -306,7 +306,7 @@ def camera_form(request):
             form = CameraForm(session=request.GET.get('session'))
         return render(request, 'management/camera_form.html', {'form': form,'id':id})
 
-@login_required(login_url='/account/login/')
+@login_required(login_url='/account/login/admin/')
 def camera_list(request,session_id):
     cameras = Camera.objects.filter(session_id=session_id)
     context = {
@@ -314,7 +314,7 @@ def camera_list(request,session_id):
     }
     return render(request, 'management/camera_list.html', context)
 
-@login_required(login_url='/account/login/')
+@login_required(login_url='/account/login/admin/')
 def camera_delete(request,id):
     Camera.objects.filter(id=id).delete()
     return HttpResponse(status=200)
@@ -344,7 +344,7 @@ def cameras_check_missing_call(session_id):
 
     return missed
 
-@login_required(login_url='/account/login/')
+@login_required(login_url='/account/login/admin/')
 def setup_sponsors(request,id):
     session = Session.objects.get(pk=id)
     context = {
@@ -354,7 +354,7 @@ def setup_sponsors(request,id):
     }
     return render(request,'management/setup_sponsors.html',context)
 
-@login_required(login_url='/account/login/')
+@login_required(login_url='/account/login/admin/')
 def sponsor_form(request):
     if request.method == 'POST':
         id = request.POST.get('id','-1')
@@ -375,7 +375,7 @@ def sponsor_form(request):
             form = SponsorForm()
         return render(request, 'management/sponsor_form.html', {'form': form,'id':id})
 
-@login_required(login_url='/account/login/')
+@login_required(login_url='/account/login/admin/')
 def sponsor_list(request,session_id):
     sponsors = Sponsor.objects.filter(session_id=session_id)
     context = {
@@ -383,12 +383,12 @@ def sponsor_list(request,session_id):
     }
     return render(request, 'management/sponsor_list.html', context)
 
-@login_required(login_url='/account/login/')
+@login_required(login_url='/account/login/admin/')
 def sponsor_delete(request,id):
     Sponsor.objects.filter(id=id).delete()
     return HttpResponse(status=200)
 
-@login_required(login_url='/account/login/')
+@login_required(login_url='/account/login/admin/')
 def setup_finish(request,id):
     session = Session.objects.get(pk=id)
     missed_athlete = False
@@ -415,7 +415,7 @@ def setup_finish(request,id):
     }
     return render(request,'management/setup_finish.html',context)
 
-@login_required(login_url='/account/login/')
+@login_required(login_url='/account/login/admin/')
 def send_session_emails(request,session_id):
     judges = Judge.objects.filter(session_id=session_id)
     cameras = Camera.objects.filter(session_id=session_id)

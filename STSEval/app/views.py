@@ -592,17 +592,35 @@ def athlete_get_next(request):
     event = request.session.get('event')
     session_id = request.session.get('session')
     sl = athlete_get_next_do(event,session_id)
+    event_on = athlete_get_event_on(sl.athlete,session_id)
     if sl != None:
         return JsonResponse({'id':sl.athlete.id,
-                             'label':str(sl.athlete),
-                             'level':sl.athlete.level.name,
-                             'team':str(sl.athlete.team)})
+                            'label':str(sl.athlete),
+                            'level':sl.athlete.level.name,
+                            'team':str(sl.athlete.team),
+                            'event_on':event_on})
+
     else:
         return JsonResponse({'id':'-1'})
 
 def athlete_get_next_do(event,session_id):
     sl = StartList.objects.filter(session_id=session_id,event__name=event,active=True,completed=False).order_by('order','athlete__rotation').first()
+   
     return sl
+
+def athlete_get_event_on(athlete,session_id):
+    rotation_basis = ord('A')
+    rotation_adjust = ord(athlete.rotation) - rotation_basis #get the offset for order by
+    next_event = 'done'
+    sl = StartList.objects.filter(athlete=athlete,session_id=session_id).order_by('event__display_order')
+    for i in range(sl.count()):
+        j = i + rotation_adjust
+        if j > sl.count():
+            j = j - sl.count() - 1
+        if sl[j].active and not sl[j].completed:
+            next_event = sl[j].event.name
+            break
+    return next_event
 
 def athlete_start_list(request,event_name,team_id):
     session_id = request.session.get('session')
@@ -617,10 +635,10 @@ def athlete_start_list(request,event_name,team_id):
             else:
                 start_list=StartList.objects.filter(session_id=session_id,event__name=event_name,athlete__rotation=ath_rotation_team.rotation).order_by('order','athlete__rotation')
                 fc = start_list.filter(completed=False,active=True).first()
+                first_not_completed = -1
                 if fc != None:
-                    first_not_completed = fc.id
-                else:
-                    first_not_completed = -1;
+                    if event_name == athlete_get_event_on(fc.athlete,session_id):
+                        first_not_completed = fc.id
         else:
             rotation = start_list[0].athlete.rotation
             start_list=start_list.filter(athlete__rotation=rotation)
@@ -721,12 +739,14 @@ def athlete_mark_done_get_next(request,athlete_id):
     session_id = request.session.get('session')
     athlete_mark_done_do(event,session_id,athlete_id)
     sl = athlete_get_next_do(event,session_id)
+    event_on = athlete_get_event_on(sl.athlete,session_id)
 
     if sl != None:
         return JsonResponse({'id':sl.athlete.id,
                              'label':str(sl.athlete),
                              'level':sl.athlete.level.name,
-                             'team':str(sl.athlete.team)})
+                             'team':str(sl.athlete.team),
+                             'event_on':event_on})
     else:
         return JsonResponse({'id':'-1'})
 
@@ -739,7 +759,7 @@ def save_video(request):
   
     return HttpResponse(status=200)
 
-@login_required(login_url='/account/login/')
+@login_required(login_url='/account/login/admin/')
 def overview(request,session_id,event_name='-1'):
     request.session['session'] = session_id
     session = Session.objects.get(pk=request.session.get('session'))
@@ -784,6 +804,7 @@ def setup_firebase_managers(session,event_name=''):
 
     return HttpResponse(status=200)
 
+@login_required(login_url='/account/login/spectator/')
 def select_session(request):
 
     context = {

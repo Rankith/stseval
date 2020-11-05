@@ -6,7 +6,7 @@ from management.models import Judge,Camera,Session,Competition,Team
 import datetime
 from django.db.models import Q
 
-def signup(request):
+def signup(request,type='spectator'):
     if request.method == 'POST':
         form = SignUpForm(request.POST)
         if form.is_valid():
@@ -16,12 +16,15 @@ def signup(request):
             user = authenticate(request, email=email, password=password)
             login(request, user)
             #now create the stripe customer
-            return redirect('/management/setup_competition/')
+            if type == "admin":
+                return redirect('/management/setup_competition/')
+            else:
+                return redirect('/select_session/')
     else:
         form = SignUpForm()
     return render(request, 'account/signup.html', {'form': form})
 
-def login_admin(request):
+def login_admin(request,type='spectator'):
     err = ''
     if request.method == 'POST':
         login_form = LoginForm(data=request.POST)
@@ -31,7 +34,10 @@ def login_admin(request):
             user = authenticate(request, email=email, password=raw_password)
             if user is not None:
                 login(request, user,backend='django.contrib.auth.backends.ModelBackend')
-                return redirect('/management/setup_competition/')
+                if type == "admin":
+                    return redirect('/management/setup_competition/')
+                else:
+                    return redirect('/select_session/')
             else:
                 err = "Incorrect Login Inforation"
     else:
@@ -39,7 +45,8 @@ def login_admin(request):
 
     context = {
         'form': login_form,
-        'err':err
+        'err':err,
+        'type':type,
     }
     return render(request, 'account/login.html', context)
 

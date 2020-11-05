@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="d-flex justify-content-center">
-    <div><h2>Meet Admin Login</h2>
+    <div><h2>Login</h2>
   <form method="post">
           {% csrf_token %}
           {% for field in form %}
@@ -24,7 +24,7 @@
             {% endif %}
           <button type="submit" class="btn btn-main mt-2">Login</button><br/><br/>
       
-      No Account? <a href="/account/signup/">Sign Up</a><br/>
+      No Account? <a href="/account/signup/{{type}}/">Sign Up</a><br/>
       Forgot Password? <a href="/account/password_reset/">Request Password Reset</a>
         </form>
     <br/>

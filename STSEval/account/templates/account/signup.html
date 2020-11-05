@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="d-flex justify-content-center">
-    <div><h2>Meet Admin Sign Up</h2>
+    <div><h2>{{type}} Sign Up</h2>
   <form method="post">
           {% csrf_token %}
           {% for field in form %}
