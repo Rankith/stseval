@@ -15,6 +15,7 @@ def signup(request,type='spectator'):
             password = form.cleaned_data.get('password1')
             user = authenticate(request, email=email, password=password)
             login(request, user)
+            request.session['type'] = type
             #now create the stripe customer
             if type == "admin":
                 return redirect('/management/setup_competition/')
@@ -34,6 +35,7 @@ def login_admin(request,type='spectator'):
             user = authenticate(request, email=email, password=raw_password)
             if user is not None:
                 login(request, user,backend='django.contrib.auth.backends.ModelBackend')
+                request.session['type'] = type
                 if type == "admin":
                     return redirect('/management/setup_competition/')
                 else:
