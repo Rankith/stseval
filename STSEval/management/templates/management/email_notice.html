@@ -1,0 +1,43 @@
+﻿<body>
+    {% load staticfiles %}
+<table width='100%' cellpadding='15px'bgcolor='black'><tr><td align='center'><img src='https://static.stslivegym.com/stseval-static/static/app/images/stslivegym-white.png' height='70'></td></table>
+
+<div align='left' style='font-family:arial;margin-left:15%;margin-right:15%;font-size:14;'><p style='font-weight:bold;'>{{name}},</p>
+<p>You have been assigned {{assigned}} the following competition:</p>
+
+<table width='100%' style='border-style:solid;border-width:1px;' cellpadding='15px'><tr><td><b>Competition:</b> {{session.competition.name}} {{session.name}}<br>
+    <b>Competition Date:</b> {{session.competition.date|date:'l, F d, Y'}}<br><b>Competition Time:</b> {{session.time|date:'g:i A'}} (PST)<br><b>Assignment:</b> {{assigned_full}} </td></tr></table>
+
+
+<p>To sign in to the competition, go to <a href='https://stslivegym.com{{url_extra}}' target='_blank'>STS Live Gym</a>. Your login information for this assignment is as follows:</p>
+
+
+<table cellpadding='10px;' align='center'>
+<tr><td>Email:</td><td style='border-style:solid;border-width:1px;'>{{email}}</td></tr>
+<tr><td>Password:</td><td style='border-style:solid;border-width:1px;'>{{password}}</td></tr>
+</table>
+
+<br>
+
+<div align='center'>
+<a href='https://stslivegym.com{{url_extra}}' target='_blank' style="padding:10px;background-color:#4a8eed;color:white;border:none;display:inline-block;border-radius:6px;font-size:18px;cursor:pointer;text-decoration:none">LOGIN</a>
+
+</div>
+
+<br>
+
+
+
+</div>
+<hr>
+
+<div style='font-size:10px;margin-left:5%;'>
+<p>If you do not wish to participate in this competition, contact the Meet Host <a href='{{session.competition.admin.email}}'>{{session.competition.admin.email}}</a>.</p>
+
+<p>In order {{assigned}} this competition, the following requirements must be met:</p><ul>
+    {% for req in reqs %}
+        <li>{{req}}</li>
+    {% endfor %}
+    </ul>
+</div>
+</body>

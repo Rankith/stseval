@@ -41,6 +41,7 @@ urlpatterns = [
     path('sponsor_list/<int:session_id>', views.sponsor_list, name='sponsor_list'),
     path('sponsor_delete/<int:id>', views.sponsor_delete, name='sponsor_delete'),
     path('send_session_emails/<int:session_id>', views.send_session_emails, name='send_session_emails'),
+    path('email_test/', views.email_test, name='email_test'),
     #path('competition_manage/', views.competition_manage, name='competition_manage'),
     #path('competition_create_update/', views.competition_create_update, name='competition_create_update'),
     #path('session_manage/', views.session_manage, name='session_manage'),

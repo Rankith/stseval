@@ -1,12 +1,15 @@
 from django.shortcuts import render,redirect
 from django.http import HttpRequest,JsonResponse,HttpResponse
 from django.template import RequestContext
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
 from datetime import datetime
 from .forms import CompetitionForm,SessionForm,JudgeForm,TeamForm,AthleteForm,CameraForm,SponsorForm
 from .models import Competition,Session,Athlete,Judge,Team,Disc,Event,Camera,Sponsor,StartList
 from django.core.mail import send_mail
 from django.contrib.auth.decorators import login_required,user_passes_test
 from django.db.models import Count
+from django.core.mail import get_connection, EmailMultiAlternatives
 
 # Create your views here.
 @login_required(login_url='/account/login/admin/')
@@ -421,52 +424,160 @@ def send_session_emails(request,session_id):
     cameras = Camera.objects.filter(session_id=session_id)
     teams = Team.objects.filter(session_id=session_id)
     session = Session.objects.get(pk=session_id)
+    messages = []
     
     for judge in judges:
         if judge.d1_email != None and judge.d1_email != '':
-            send_judge_notice(session,judge.d1_email,judge.d1_password,'D1')
+            messages.append(build_judge_notice(session,judge.event.full_name,judge.d1,judge.d1_email,judge.d1_password,'D1'))
         if judge.d2_email != None and judge.d2_email != '':
-            send_judge_notice(session,judge.d2_email,judge.d2_password,'D2')
+            messages.append(build_judge_notice(session,judge.event.full_name,judge.d2,judge.d2_email,judge.d2_password,'D2'))
         if judge.e1_email != None and judge.e1_email != '':
-            send_judge_notice(session,judge.e1_email,judge.e1_password,'E1')
+            messages.append(build_judge_notice(session,judge.event.full_name,judge.e1,judge.e1_email,judge.e1_password,'E1'))
         if judge.e2_email != None and judge.e2_email != '':
-            send_judge_notice(session,judge.e2_email,judge.e2_password,'E2')
+            messages.append(build_judge_notice(session,judge.event.full_name,judge.e2,judge.e2_email,judge.e2_password,'E2'))
         if judge.e3_email != None and judge.e3_email != '':
-            send_judge_notice(session,judge.e3_email,judge.e3_password,'E3')
+            messages.append(build_judge_notice(session,judge.event.full_name,judge.e3,judge.e3_email,judge.e3_password,'E3'))
         if judge.e4_email != None and judge.e4_email != '':
-            send_judge_notice(session,judge.e4_email,judge.e4_password,'E4')
+            messages.append(build_judge_notice(session,judge.event.full_name,judge.e4,judge.e4_email,judge.e4_password,'E4'))
+
 
     for camera in cameras:
         if camera.email != None and camera.email != '':
-            send_camera_notice(session,camera)
+            messages.append(build_camera_notice(session,camera))
 
     for team in teams:
         if team.head_coach_email != None and team.head_coach_email != '':
-            send_coach_notice(session,team)
+            messages.append(build_coach_notice(session,team))
+
+    send_mass_html_mail(messages)
     
     return HttpResponse(status=200)
 
-def send_judge_notice(session,email,password,type):
-    subject = "Judge " + str(type) + " Login for " + str(session.full_name())
-    message = "You will be the " + str(type) + " judge for " + str(session.full_name()) + " on " + session.competition.date.strftime('%Y-%m-%d') + " " + str(session.time) +"<br/>"
-    message += "Login at <a href='https://www.stslivegym.com'>https://www.stslivegym.com</a> with:<br/>"
-    message += "Email: " + str(email) + "<br/>Password: " + str(password)
-    send_mail(subject, message, 'noreply@stslivegym.com', [email],html_message=message)
+def build_judge_notice(session,event,name,email,password,type):
+    reqs = []
+    reqs.append("An internet connection - broadband wired or wireless (3G or 4G/LTE)")
+    reqs.append("2.5Mbps (up/down) bandwidth")
+    reqs.append("Google Chrome 46+")
+    reqs.append("8 Gb or higher RAM")
+    context = {
+        'name': name,
+        'email': email,
+        'password': password,
+        'session': session,
+        'assigned': 'to judge',
+        'assigned_full': type + ' Judge on ' + event,
+        'url_extra':'/account/login_judge',
+        'reqs':reqs
+    }
+    html_message = render_to_string('management/email_notice.html', context)
+    plain_message = strip_tags(html_message)
+    subject = str(type) + " Judge Login for " + str(session.full_name())
+    #message = "You will be the " + str(type) + " judge for " + str(session.full_name()) + " on " + session.competition.date.strftime('%Y-%m-%d') + " " + str(session.time) +"<br/>"
+    #message += "Login at <a href='https://www.stslivegym.com'>https://www.stslivegym.com</a> with:<br/>"
+    #message += "Email: " + str(email) + "<br/>Password: " + str(password)
+    test = ('test','test')
+    message = (subject, plain_message, html_message, 'noreply@stslivegym.com', [email])
+    return message
 
-def send_camera_notice(session,camera):
+def build_camera_notice(session,camera):
+    reqs = []
+    reqs.append("A wired internet connection")
+    reqs.append("20 Mbps (up/down) bandwidth")
+    reqs.append("Iphone IOS 13+, Android 9+, Windows 8.1+ with Chrome 46+")
+    reqs.append("Camera and microphone access allowed in settings")
+    teams = ""
+    events = ""
+    for t in camera.teams.all():
+        teams = teams + ", " + t.abbreviation
+    for e in camera.events.all():
+        events = events + ", " + e.name 
+    context = {
+        'name': camera.name,
+        'email': camera.email,
+        'password': camera.password,
+        'session': session,
+        'assigned': 'to operate a camera for',
+        'assigned_full': 'Camera Operator for' + teams[1:] + " on" + events[1:],
+        'url_extra':'/account/login_camera',
+        'reqs':reqs
+    }
+    html_message = render_to_string('management/email_notice.html', context)
+    plain_message = strip_tags(html_message)
     subject = "Camera Login for " + str(session.full_name())
-    message = "You will be a camera operator for " + str(session.full_name()) + " on " + session.competition.date.strftime('%Y-%m-%d') + " " + str(session.time) +"<br/>"
-    message += "Login at <a href='https://www.stslivegym.com'>https://www.stslivegym.com</a> with:<br/>"
-    message += "Email: " + str(camera.email) + "<br/>Password: " + str(camera.password)
-    send_mail(subject, message, 'noreply@stslivegym.com', [camera.email],html_message=message)
+    #message = "You will be the " + str(type) + " judge for " + str(session.full_name()) + " on " + session.competition.date.strftime('%Y-%m-%d') + " " + str(session.time) +"<br/>"
+    #message += "Login at <a href='https://www.stslivegym.com'>https://www.stslivegym.com</a> with:<br/>"
+    #message += "Email: " + str(email) + "<br/>Password: " + str(password)
+    test = ('test','test')
+    message = (subject, plain_message, html_message, 'noreply@stslivegym.com', [camera.email])
+    return message
 
-def send_coach_notice(session,team):
+def build_coach_notice(session,team):
+    reqs = []
+    reqs.append("An internet connection - broadband wired or wireless (3G or 4G/LTE)")
+    reqs.append("2.5Mbps (up/down) bandwidth")
+    reqs.append("Google Chrome 46+")
+    context = {
+        'name': team.name,
+        'email': team.head_coach_email,
+        'password': team.coach_password,
+        'session': session,
+        'assigned': 'to coach',
+        'assigned_full': 'Coach for ' + team.name,
+        'url_extra':'/account/login_coach',
+        'reqs':reqs
+    }
+    html_message = render_to_string('management/email_notice.html', context)
+    plain_message = strip_tags(html_message)
     subject = "Coach Login for " + str(session.full_name())
-    message = "You will be a coach for " + str(team.name) + " at " + str(session.full_name()) + " on " + session.competition.date.strftime('%Y-%m-%d') + " " + str(session.time) +"<br/>"
-    message += "Login at <a href='https://www.stslivegym.com'>https://www.stslivegym.com</a> with:<br/>"
-    message += "Email: " + str(team.head_coach_email) + "<br/>Password: " + str(team.coach_password)
-    message += "<br/><br/>All your team coaches can login with this email."
-    send_mail(subject, message, 'noreply@stslivegym.com', [team.head_coach_email],html_message=message)
+    #message = "You will be the " + str(type) + " judge for " + str(session.full_name()) + " on " + session.competition.date.strftime('%Y-%m-%d') + " " + str(session.time) +"<br/>"
+    #message += "Login at <a href='https://www.stslivegym.com'>https://www.stslivegym.com</a> with:<br/>"
+    #message += "Email: " + str(email) + "<br/>Password: " + str(password)
+    test = ('test','test')
+    message = (subject, plain_message, html_message, 'noreply@stslivegym.com', [team.head_coach_email])
+    return message
+
+def send_mass_html_mail(datatuple, fail_silently=False, user=None, password=None, 
+                        connection=None):
+    """
+    Given a datatuple of (subject, text_content, html_content, from_email,
+    recipient_list), sends each message to each recipient list. Returns the
+    number of emails sent.
+
+    If from_email is None, the DEFAULT_FROM_EMAIL setting is used.
+    If auth_user and auth_password are set, they're used to log in.
+    If auth_user is None, the EMAIL_HOST_USER setting is used.
+    If auth_password is None, the EMAIL_HOST_PASSWORD setting is used.
+
+    """
+    connection = connection or get_connection(
+        username=user, password=password, fail_silently=fail_silently)
+    messages = []
+    for subject, text, html, from_email, recipient in datatuple:
+        message = EmailMultiAlternatives(subject, text, from_email, recipient)
+        message.attach_alternative(html, 'text/html')
+        messages.append(message)
+    return connection.send_messages(messages)
+
+def email_test(request):
+    session = Session.objects.all().first()
+    judge = Judge.objects.filter(session=session).first()
+    reqs = []
+    reqs.append("An internet connection - broadband wired or wireless (3G or 4G/LTE)")
+    reqs.append("2.5Mbps (up/down) bandwidth")
+    reqs.append("Google Chrome 46+")
+    reqs.append("8 Gb or higher RAM")
+    
+    context = {
+        'name': judge.d1,
+        'email': judge.d1_email,
+        'password': judge.d1_password,
+        'session': session,
+        'assigned': 'to judge',
+        'assigned_full': 'D1 Judge on ' + judge.event.full_name,
+        'url_extra':'/account/login_judge',
+        'reqs':reqs
+    }
+    return render(request,'management/email_notice.html',context)
 
 def judges_get(request):
     comp = request.GET.get('comp')
