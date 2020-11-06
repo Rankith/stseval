@@ -13,6 +13,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='athletelevel',
             name='scoring_type',
-            field=models.CharField(choices=[('JO4567', 'JO4567'), ('JO8910', 'JO8910'), ('FIG', 'FIG')], default='FIG', max_length=2),
+            field=models.CharField(choices=[('JO4567', 'JO4567'), ('JO8910', 'JO8910'), ('FIG', 'FIG')], default='FIG', max_length=10),
         ),
     ]
