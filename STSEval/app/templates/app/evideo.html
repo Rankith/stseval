@@ -116,11 +116,12 @@
     var DeductionsConfirmed = true;
     var GymnastLevels = new Array();
     var GymnastTeams = new Array();
-    var GymnastLabels = new Array();
+     var GymnastScoringType = new Array();
     {% for athlete in athletes %}
         GymnastLevels[{{athlete.id}}] = "{{athlete.level}}";
         GymnastTeams[{{athlete.id}}] = "{{athlete.team}}";
         GymnastLabels[{{athlete.id}}] = "{{athlete}}";
+        GymnastScoringType[{{athlete.id}}] = "{{athlete.level.scoring_type}}";
     {% endfor %}
     var token = "{{ csrf_token }}";
     var ThisJudge = {{ej}};
@@ -299,16 +300,7 @@
 
 
     function SetDScoreType(AthleteIn) {
-        if (GymnastLevels[AthleteIn] == "L4" || GymnastLevels[AthleteIn] == "L5" || GymnastLevels[AthleteIn] == "L6" || GymnastLevels[AthleteIn] == "L7") {
-            ScoringType = "4567";
-        }
-        else if (GymnastLevels[AthleteIn] == "L8" || GymnastLevels[AthleteIn] == "L9" || GymnastLevels[AthleteIn] == "L10") {
-            ScoringType = "8910";
-        }
-        else//fig or elite
-        {
-            ScoringType = "FIG";
-        }
+         ScoringType = GymnastScoringType[AthleteIn]; 
     }
 
     function LoadRoutine() {
@@ -343,8 +335,8 @@
     }
 
     function SetDScoreDefaults() {
-        if (ScoringType == "4567") {
-            //console.log("Setting Scoring 4567");
+        if (ScoringType == "JO4567") {
+            //console.log("Setting Scoring JO4567");
             $("#tdDifficulty").html("Base Score:");
             $("#tdDScore").html("Start Value:");
             $("#tdE1").html(EJudges[1] + " Deduction:");
@@ -356,8 +348,8 @@
             $("#tdBonus").html("Bonus: ");
             $("#tdEScore").html("Average Deduction: ");
         }
-        else if (ScoringType == "8910") {
-            //console.log("Setting Scoring 8910");
+        else if (ScoringType == "JO8910") {
+            //console.log("Setting Scoring JO8910");
             if (ev == "FX" || ev == "HB")
                 $("#tdBonus").html("Connections and Bonus: ");
             else

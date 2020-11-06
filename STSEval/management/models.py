@@ -61,9 +61,21 @@ class Team(models.Model):
 class AthleteLevel(models.Model):
     disc = models.ForeignKey(Disc, on_delete=models.CASCADE,default=None,null=True)
     name = models.CharField(max_length=25)
-    abbreviation = models.CharField(max_length=6, blank=True)
+    abbreviation = models.CharField(max_length=14, blank=True)
+    order = models.IntegerField(default=1)
+    JO4567 = 'JO4567'
+    JO8910 = 'JO8910'
+    FIG = 'FIG'
+    SCORING_TYPE = [
+        (JO4567,'JO4567'),
+        (JO8910,'JO8910'),
+        (FIG,'FIG'),
+        ]
+    scoring_type = models.CharField(max_length=10,choices=SCORING_TYPE,default=FIG)
     def __str__(self):
         return self.name
+    class Meta:
+        ordering = ['order']
 
 class Athlete(models.Model):
     team = models.ForeignKey(Team, on_delete=models.CASCADE,default=None,null=True)

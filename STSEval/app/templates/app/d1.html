@@ -171,10 +171,12 @@
     var GymnastLevels = new Array();
     var GymnastTeams = new Array();
     var GymnastLabels = new Array();
+    var GymnastScoringType = new Array();
     {% for athlete in athletes %}
         GymnastLevels[{{athlete.id}}] = "{{athlete.level}}";
         GymnastTeams[{{athlete.id}}] = "{{athlete.team}}";
         GymnastLabels[{{athlete.id}}] = "{{athlete}}";
+        GymnastScoringType[{{athlete.id}}] = "{{athlete.level.scoring_type}}";
     {% endfor %}
     var LoadRot = "{{loadroutine}}";
     var FirstAthlete = "{{athletes.first.id}}";
@@ -444,7 +446,7 @@
 
         //$("#ddlAthlete").val(FirstGymnast).change();
 
-        if ((ev == "FX" || ev == "HB") && ScoringType != "4567")
+        if ((ev == "FX" || ev == "HB") && ScoringType != "JO4567")
             $("#tdBonus").html("Connections and Bonus: ");
 
        
@@ -703,13 +705,13 @@
             groups = parseFloat($("#lblGroups").html());
         }
 
-        if (ScoringType == "4567") {
+        if (ScoringType == "JO4567") {
             StartValueScore = parseFloat(Score).toFixed(1);
             DeductFrom = -1;//ignore if -1
             var TotalDeductions = CalcDeductions(DeductFrom);
             EScore = parseFloat(TotalDeductions).toFixed(3);
             DScore = StartValueScore;
-            f (EScore < 0)
+            if (EScore < 0)
                 EScore = 0;
             //console.log ("TotalDeductions: " + TotalDeductions + " | StartValueScore: " + StartValueScore )
             document.getElementById('divEScore').innerHTML =  parseFloat(EScore).toFixed(2);
@@ -718,9 +720,9 @@
             let tot = (parseFloat(StartValueScore - TotalDeductions).toFixed(2))
             if (tot < 0)
                 tot = 0
-            document.getElementById('divTotalScore').innerHTML = (tot.toFixed(2));
+            document.getElementById('divTotalScore').innerHTML = (parseFloat(tot).toFixed(2));
         }
-        else if (ScoringType == "8910") {
+        else if (ScoringType == "JO8910") {
             if (countedE > 1 && countedE <= 3)
                 DeductFrom = 2;
             else if (countedE > 3 && countedE <= 5)
@@ -743,7 +745,7 @@
             let tot =  (parseFloat(+StartValueScore + +EScore).toFixed(2));
             if (tot < 0)
                 tot = 0
-            document.getElementById('divTotalScore').innerHTML = tot.toFixed(2);
+            document.getElementById('divTotalScore').innerHTML = parseFloat(tot).toFixed(2);
         }
         else //fig
         {
@@ -1058,16 +1060,7 @@
         SetDScoreDefaults();
     }
     function SetDScoreType(AthleteIn) {
-        if (GymnastLevels[AthleteIn] == "L4" || GymnastLevels[AthleteIn] == "L5" || GymnastLevels[AthleteIn] == "L6" || GymnastLevels[AthleteIn] == "L7") {
-            ScoringType = "4567";
-        }
-        else if (GymnastLevels[AthleteIn] == "L8" || GymnastLevels[AthleteIn] == "L9" || GymnastLevels[AthleteIn] == "L10") {
-            ScoringType = "8910";
-        }
-        else//fig or elite
-        {
-            ScoringType = "FIG";
-        }
+        ScoringType = GymnastScoringType[AthleteIn]; 
     }
     function isNumberKey(evt) {
         var charCode = (evt.which) ? evt.which : evt.keyCode;
@@ -1078,8 +1071,8 @@
         return true;
     }
     function SetDScoreDefaults() {
-        if (ScoringType == "4567") {
-            console.log("Setting Scoring 4567");
+        if (ScoringType == "JO4567") {
+            console.log("Setting Scoring JO4567");
             $("#tdDifficulty").html("Base Score:");
             $("#tdDScore").html("Start Value:");
             $("#btnSetDScore").children(0).children(0).text("Set Start Value");
@@ -1098,8 +1091,8 @@
             $("#tdBonus").html("Bonus: ");
             $("#tdEScore").html("Average Deduction: ");
         }
-        else if (ScoringType == "8910") {
-            console.log("Setting Scoring 8910");
+        else if (ScoringType == "JO8910") {
+            console.log("Setting Scoring JO8910");
             if (ev == "FX" || ev == "HB")
                 $("#tdBonus").html("Connections and Bonus: ");
             else

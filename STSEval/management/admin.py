@@ -6,9 +6,9 @@ from import_export import resources
 from import_export.admin import ImportExportModelAdmin
 
 class AthleteLevelAdmin(ImportExportModelAdmin):
-    list_display=('id', 'disc','name','abbreviation')
-    list_editable=('disc','name','abbreviation')
-    list_filter=('disc',)
+    list_display=('id', 'disc','name','abbreviation','order','scoring_type')
+    list_editable=('disc','name','abbreviation','order','scoring_type')
+    list_filter=('disc','scoring_type')
 
 class EventAdmin(ImportExportModelAdmin):
     list_display=('id', 'disc','name','full_name','display_order')
