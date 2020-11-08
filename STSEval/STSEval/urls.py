@@ -37,6 +37,7 @@ urlpatterns = [
     path('routine_start_judging/', views.routine_start_judging, name='routine_start_judging'),
     path('routine_athlete_done/', views.routine_athlete_done, name='routine_athlete_done'),
     path('routine_ejudge_done/', views.routine_ejudge_done, name='routine_ejudge_done'),
+    path('set_judge_ready/<int:session_id>', views.set_judge_ready, name='set_judge_ready'),
     path('routine_get_info/', views.routine_get_info, name='routine_get_info'),
     path('routine_delete/', views.routine_delete, name='routine_delete'),
     path('routine_finished/', views.routine_finished, name='routine_finished'),

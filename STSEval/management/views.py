@@ -10,6 +10,7 @@ from django.core.mail import send_mail
 from django.contrib.auth.decorators import login_required,user_passes_test
 from django.db.models import Count
 from django.core.mail import get_connection, EmailMultiAlternatives
+import app.views
 
 # Create your views here.
 @login_required(login_url='/account/login/admin/')
@@ -425,6 +426,7 @@ def send_session_emails(request,session_id):
     teams = Team.objects.filter(session_id=session_id)
     session = Session.objects.get(pk=session_id)
     messages = []
+    app.views.setup_firebase_managers(session)
     
     for judge in judges:
         if judge.d1_email != None and judge.d1_email != '':

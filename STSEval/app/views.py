@@ -267,6 +267,14 @@ def set_judges_participating(request):
     app.firebase.routine_set_ejudge_include(str(routine.session.id) , routine.event,routine)
     return HttpResponse(status=200)
 
+def set_judge_ready(request,session_id):
+    judge = request.POST.get('judge')
+    ready = True
+    if request.POST.get('ready') == "false":
+        ready = False
+    app.firebase.routine_set_ejudge_ready(str(session_id), request.POST.get('event'),judge,ready)
+    return HttpResponse(status=200)
+
 @valid_login_type(match='e')
 def ejudge_select(request):
     context = {

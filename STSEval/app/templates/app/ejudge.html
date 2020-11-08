@@ -53,6 +53,9 @@
         </div>
     </div>
 </div>
+ <div id="divReady" style="height:100%;display:none;justify-content:center;flex-grow:1;color:black">
+        <div id="divReadyButton" class="div-button" style="background:#4af335;color:black" onclick="ReadyUp()">Ready</div>
+    </div>
 <div id="divMain" align="center" style="flex-grow:1;display:flex;flex-direction:column">
     <div id="divPhases" style="height:25%;width:80%;margin:auto;display:flex;justify-content:center;display:none">
         <div id="divP1" style="padding-top:2.5%;border-bottom:2px solid;border-right:2px solid;flex-grow:1;display:flex;position:relative">
@@ -72,6 +75,7 @@
             <div id="divPDots4" style="position:absolute;left:5%;top:60%"></div>
         </div>
     </div>
+   
     <div id="divDeduct" style="height:100%;display:flex;justify-content:center;flex-grow:1;color:black">
         <div id="divDeduct1" class="div-button deduct-1 deduct-button ui-disabled" onclick="Deduct(1)">Deduct 0.1</div>
         <div id="divDeductMiddle" style="display: flex; justify-content: center;flex-direction:column;flex-grow:1;color:black">
@@ -161,10 +165,41 @@
                 }
                 Status = doc.data().status;
             }
+            if (ej == 1 && doc.data().e1ready == false || ej == 2 && doc.data().e2ready == false || ej == 3 && doc.data().e3ready == false || ej == 4 && doc.data().e4ready == false)
+                ShowReadyButton();
+
             console.log("Current data: ", doc.data());
             //$("#divStatus").html(doc.data().stream + " | " + doc.data().status);
         }
     }
+
+    function ShowReadyButton() {
+        HideArtETC();
+        $("#divDeduct").hide();
+        $("#divReady").css("display", "flex");
+    }
+    function HideReadyButton()
+    {
+        $("#divReady").hide();
+        $("#divDeduct").css("display", "flex");
+    }
+
+    function ReadyUp() {
+        $.ajax({
+            url: "/set_judge_ready/" + Session,
+            type: "POST",
+            headers: { "X-CSRFToken": token },
+            data: {
+                'ready': true,
+                'judge': "e" + ej + "ready",
+                'event':ev,
+            },
+            success: function (data) {
+                HideReadyButton();
+            }
+        });
+    }
+
 
 
     function SetEditMode(data) {

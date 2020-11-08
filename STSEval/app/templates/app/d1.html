@@ -46,22 +46,26 @@
                 <div id="divEJudges" align="left" style="float:left;padding-left:5px;padding-top:5px;position:absolute;top:0px;left:0px;">
 	  		        <div>
 		                <table cellspacing="0" border=0 cellpadding="0">
-			                <tr>
+			                <tr id="trE1">
+                                <td><span id="divJudgeDotE1" style="display:none" class="status-dot-small status-dot-red mr-1"></span></td>
                                 <td><input type="checkbox" id="chkE1" data-role="none" style="display:none" onclick="EJudgeCheckCalc(1)"></td>
 			                    <!--<td id="divJT1" style="width:30px;font-weight:bold"></td>-->
 			                    <td id="divE1N">&nbsp;E1</td>
 			                </tr>
-			                <tr>
+			                <tr id="trE2">
+                                 <td><span id="divJudgeDotE2" style="display:none" class="status-dot-small status-dot-red mr-1"></span></td>
                                 <td><input type="checkbox" id="chkE2" data-role="none" style="display:none" onclick="EJudgeCheckCalc(2)"></td>
 			                        <!--<td id="divJT2" style="width:30px;font-weight:bold"></td>-->
 			                    <td id="divE2N">&nbsp;E2</td>
 			                </tr>
-			                <tr>
+			                <tr id="trE3">
+                                 <td><span id="divJudgeDotE3" style="display:none" class="status-dot-small status-dot-red mr-1"></span></td>
                                 <td><input type="checkbox" id="chkE3" data-role="none" style="display:none" onclick="EJudgeCheckCalc(3)"></td>
 			                        <!--<td id="divJT3" style="width:30px;font-weight:bold"></td>-->
 			                    <td id="divE3N">&nbsp;E3</td>
 			                </tr>
-			                <tr>
+			                <tr id="trE4">
+                                <td><span id="divJudgeDotE4" style="display:none" class="status-dot-small status-dot-red mr-1"></span></td>
                                 <td><input type="checkbox" id="chkE4" data-role="none" style="display:none" onclick="EJudgeCheckCalc(4)"></td>
 			                        <!--<td id="divJT4" style="width:30px;font-weight:bold"></td>-->
 			                    <td id="divE4N">&nbsp;E4</td>
@@ -198,6 +202,7 @@
     var HoldEventChange = false;
     var NumJudges;
     var EJudgesDone = new Array();
+    var EJudgesReady = new Array();
     var NumJudges = 4;
     var Status = status.BLANK;
     var JudgingArtistry = false;
@@ -215,6 +220,9 @@
     var ScoringType;
     var StartListChange = -1;
     var db = firebase.firestore();
+    for (var i = 1; i <= 4; i++) {
+        EJudgesReady[i] = false;
+    }
    
     $( "#video-playback" ).click(function(e) {
         e.preventDefault(); // <=====================
@@ -316,6 +324,10 @@
                 EJudgesInclude[3] = doc.data().e3include;
                 EJudgesInclude[4] = doc.data().e4include;
                 SetJudgeChecks();
+                EJudgesReady[1] = doc.data().e1ready;
+                EJudgesReady[2] = doc.data().e2ready;
+                EJudgesReady[3] = doc.data().e3ready;
+                EJudgesReady[4] = doc.data().e4ready;
             }
             if (doc.data().status == status.STARTED || doc.data().status == status.ATHLETE_DONE || doc.data().status == status.REVIEW_DONE) {
                 //started
@@ -354,6 +366,7 @@
     function CheckAthlete(doc) {
         if (doc.data().start_list_change != undefined) {
             if (doc.data().start_list_change != StartListChange) {
+                StartListChange = doc.data().start_list_change;
                 //update the gymnast if on status New
                 if (Status == status.NEW)
                     GetNextAthlete(true);
@@ -388,6 +401,34 @@
                     else
                         BuildDots(true);
                 }
+            }
+            if (EJudgesReady[1] != doc.data().e1ready) {
+                EJudgesReady[1] = doc.data().e1ready;
+                if (EJudgesReady[1])
+                    $("#divJudgeDotE1").removeClass("status-dot-red").addClass("status-dot-green");
+                else
+                    $("#divJudgeDotE1").addClass("status-dot-red").removeClass("status-dot-green");
+            }
+            if (EJudgesReady[2] != doc.data().e2ready) {
+                EJudgesReady[2] = doc.data().e2ready;
+                if (EJudgesReady[2])
+                    $("#divJudgeDotE2").removeClass("status-dot-red").addClass("status-dot-green");
+                else
+                    $("#divJudgeDotE2").addClass("status-dot-red").removeClass("status-dot-green");
+            }
+            if (EJudgesReady[3] != doc.data().e3ready) {
+                EJudgesReady[3] = doc.data().e3ready;
+                if (EJudgesReady[3])
+                    $("#divJudgeDotE3").removeClass("status-dot-red").addClass("status-dot-green");
+                else
+                    $("#divJudgeDotE3").addClass("status-dot-red").removeClass("status-dot-green");
+            }
+            if (EJudgesReady[4] != doc.data().e4ready) {
+                EJudgesReady[4] = doc.data().e4ready;
+                if (EJudgesReady[4])
+                    $("#divJudgeDotE4").removeClass("status-dot-red").addClass("status-dot-green");
+                else
+                    $("#divJudgeDotE4").addClass("status-dot-red").removeClass("status-dot-green");
             }
         }
     }
@@ -502,18 +543,22 @@
 
     function StartJudgingClick(Syncing = false) {
         if (StreamConnected || Syncing) {
-            $("#btnStartJudging").addClass('ui-disabled');
-            if (!Syncing) {
-                //RoutineStartJudging();
-                StartRecording();
-            }
+            if (CheckJudgesReady() || Syncing) {
+                $("#btnStartJudging").addClass('ui-disabled');
+                if (!Syncing) {
+                    //RoutineStartJudging();
+                    StartRecording();
+                }
 
-            //$("#btnJudgesReady").addClass('ui-disabled');
-            //$("#txtVideoURL").addClass('ui-disabled');
-            //$("#ddlAthlete").addClass('ui-disabled');
-            $("#btnExerciseDone").removeClass('ui-disabled');
-            $("#btnNuke").removeClass('ui-disabled');
-            Status = status.STARTED;
+                //$("#btnJudgesReady").addClass('ui-disabled');
+                //$("#txtVideoURL").addClass('ui-disabled');
+                //$("#ddlAthlete").addClass('ui-disabled');
+                $("#btnExerciseDone").removeClass('ui-disabled');
+                $("#btnNuke").removeClass('ui-disabled');
+                Status = status.STARTED;
+            }
+            else
+                alert("All EJudges Not Ready");
         }
         else
             alert("Waiting for Camera");
@@ -1154,6 +1199,16 @@
         }
     }
 
+    function CheckJudgesReady() {
+        for (var i = 1; i <= 4; i++) {
+            if (EJudges[i] != "" && EJudges[i] != " " && EJudgesInclude[i]) {
+                if (!EJudgesReady[i])
+                    return false;
+            }
+        }
+        return true;
+    }
+
 
     function SetJudges() {
         NumJudges = 0;
@@ -1171,6 +1226,7 @@
                 //$("#divJT" + i).empty();
                 console.log("Set Judges " + i);
                 $("#chkE" + i).show();
+                $("#divJudgeDotE" + i).show();
                 $("#chkE" + i).prop('checked', true);
                 $("#divET" + i).show();
                 $("#tdE" + i).show();
@@ -1178,6 +1234,7 @@
                 $("#divE" + i + "N").removeClass("judge-strike");
                 AddJudge(i);
                 JudgeDeductions[i] = 0;
+                EJudgesInclude[i] = true;
                 //}
                 //DedArrayJudges[i] = new Array();
                 //$("#divDotsArea").append("<div id='divJT" + i + "' style='position:absolute;right:5px;top:" + (((i*JudgeYOffset)-(DotSize/2))-2) + "px;font-size:14px;font-weight:bold'></div>");

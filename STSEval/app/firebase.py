@@ -12,12 +12,27 @@ def routine_set_status(s,e,routine):
     db = firestore.Client()
 
     doc_ref = db.collection(u'sessions').document(str(s)).collection(u'event_managers').document(str(e))
-    doc_ref.set({
+    doc_dict = doc_ref.get().to_dict()
+    if doc_dict['rotation'] != routine.athlete.rotation:
+        doc_ref.set({
         u'status': routine.status,
         u'athlete': routine.athlete.name,
         u'athlete_id': routine.athlete.id,
-        u'routine':routine.id
-    },merge=True)
+        u'rotation': routine.athlete.rotation,
+        u'routine':routine.id,
+        u'e1ready':False,
+        u'e2ready':False,
+        u'e3ready':False,
+        u'e4ready':False,
+        },merge=True)
+    else:
+        doc_ref.set({
+            u'status': routine.status,
+            u'athlete': routine.athlete.name,
+            u'athlete_id': routine.athlete.id,
+            u'rotation': routine.athlete.rotation,
+            u'routine':routine.id,
+        },merge=True)
 
 def routine_set_ejudge_done(s,e,ejudge,done):
     db = firestore.Client()
@@ -31,22 +46,70 @@ def routine_setup(session,e,athlete,camera):
     db = firestore.Client()
 
     doc_ref = db.collection(u'sessions').document(str(session.id)).collection(u'event_managers').document(str(e))
-    doc_ref.set({
-        u'id': e,
-        u'status': Routine.NEW,
-        u'athlete': athlete.name,
-        u'athlete_id': athlete.id,
-        u'routine':-1,
-        u'e1done':False,
-        u'e2done':False,
-        u'e3done':False,
-        u'e4done':False,
-        u'e1include':True,
-        u'e2include':True,
-        u'e3include':True,
-        u'e4include':True,
-        u'stream':camera,
-    },merge=True)
+    if doc_ref.get().exists:
+        doc_dict = doc_ref.get().to_dict()
+        if doc_dict['rotation'] != athlete.rotation:
+            doc_ref.set({
+                u'id': e,
+                u'status': Routine.NEW,
+                u'athlete': athlete.name,
+                u'athlete_id': athlete.id,
+                u'rotation': athlete.rotation,
+                u'routine':-1,
+                u'e1done':False,
+                u'e2done':False,
+                u'e3done':False,
+                u'e4done':False,
+                u'e1include':True,
+                u'e2include':True,
+                u'e3include':True,
+                u'e4include':True,
+                u'e1ready':False,
+                u'e2ready':False,
+                u'e3ready':False,
+                u'e4ready':False,
+                u'stream':camera,
+            },merge=True)
+        else:
+             doc_ref.set({
+                u'id': e,
+                u'status': Routine.NEW,
+                u'athlete': athlete.name,
+                u'athlete_id': athlete.id,
+                u'rotation': athlete.rotation,
+                u'routine':-1,
+                u'e1done':False,
+                u'e2done':False,
+                u'e3done':False,
+                u'e4done':False,
+                u'e1include':True,
+                u'e2include':True,
+                u'e3include':True,
+                u'e4include':True,
+                u'stream':camera,
+            },merge=True)
+    else:
+        doc_ref.set({
+            u'id': e,
+            u'status': Routine.NEW,
+            u'athlete': athlete.name,
+            u'athlete_id': athlete.id,
+            u'rotation': athlete.rotation,
+            u'routine':-1,
+            u'e1done':False,
+            u'e2done':False,
+            u'e3done':False,
+            u'e4done':False,
+            u'e1include':True,
+            u'e2include':True,
+            u'e3include':True,
+            u'e4include':True,
+            u'e1ready':False,
+            u'e2ready':False,
+            u'e3ready':False,
+            u'e4ready':False,
+            u'stream':camera,
+        },merge=True)
 
     # set startlist change if not in there
     if 'start_list_change' not in doc_ref.get().to_dict():
@@ -72,6 +135,14 @@ def routine_set_ejudge_include(s,e,routine):
         u'e2include':routine.e2_include,
         u'e3include':routine.e3_include,
         u'e4include':routine.e4_include,
+    },merge=True)
+
+def routine_set_ejudge_ready(s,e,judge,ready):
+    db = firestore.Client()
+
+    doc_ref = db.collection(u'sessions').document(str(s)).collection(u'event_managers').document(str(e))
+    doc_ref.set({
+        judge:ready,
     },merge=True)
 
 def routine_set_stream(s,e,stream):
