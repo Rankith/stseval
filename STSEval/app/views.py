@@ -352,7 +352,7 @@ def deduct(request):
     if relative_time == -1:
         relative_time = mili - routine.start_time
 
-    if routine.athlete_done_time != None and routine.event != 'V':
+    if routine.athlete_done_time != None and routine.event != 'V' and routine.routine_length() < relative_time:
         relative_time = routine.routine_length()-50
     
 
@@ -395,6 +395,8 @@ def build_dots(request):
     y_offset = int(request.POST.get('y_offset',22))
     playback_only = request.POST.get('playback_only','0')
     initial_offset = int(request.POST.get('initial_offset',15))
+    if width == 0:
+        width = 854
     delay=0
     #e1done = request.POST.get('e1done','true')
     #e2done = request.POST.get('e2done','true')

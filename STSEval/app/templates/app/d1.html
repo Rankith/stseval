@@ -673,14 +673,19 @@
                 $("#divHeader").html("<h2 style='display:inline'>" + GymnastLabels[data['athlete_id']] + "</h2>");
                 LoadVideo();
                 console.log($("#divDotsArea").width());
-                BuildDots(false,'1');
-                $("#btnAccountability").removeClass("ui-disabled");
-                CalculateScores();
                 
-                RedLineInterval = setInterval(UpdateRedLine, 250);
+                $("#btnAccountability").removeClass("ui-disabled");
+                setTimeout(RoutineLoadBuildDots,1000)
+                if (ev != "V")
+                    RedLineInterval = setInterval(UpdateRedLine, 250);
                
             }
         });
+    }
+
+    function RoutineLoadBuildDots() {
+        BuildDots(false,'1');
+                CalculateScores();
     }
 
     function SetDScoreClick() {
@@ -936,6 +941,7 @@
             dataType: 'json',
             success: function (data) {
                 RoutineID = data['routine'];
+                SetJudgesParticipating();
             }
         });
     }
@@ -1226,7 +1232,8 @@
                 //$("#divJT" + i).empty();
                 console.log("Set Judges " + i);
                 $("#chkE" + i).show();
-                $("#divJudgeDotE" + i).show();
+                if (LoadRot == "")
+                    $("#divJudgeDotE" + i).show();
                 $("#chkE" + i).prop('checked', true);
                 $("#divET" + i).show();
                 $("#tdE" + i).show();

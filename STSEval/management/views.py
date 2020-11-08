@@ -458,7 +458,7 @@ def send_session_emails(request,session_id):
 def build_judge_notice(session,event,name,email,password,type):
     reqs = []
     reqs.append("An internet connection - broadband wired or wireless (3G or 4G/LTE)")
-    reqs.append("2.5Mbps (up/down) bandwidth")
+    reqs.append("5Mbps (up/down) bandwidth")
     reqs.append("Google Chrome 46+")
     reqs.append("8 Gb or higher RAM")
     context = {

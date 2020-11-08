@@ -1,5 +1,5 @@
 {% extends 'app/layout.html' %}
-
+{% load static %}
 {% block content %}
 <div class="d-flex justify-content-center">
     <div><h2>{{type}} Login</h2>
@@ -28,4 +28,7 @@
     <br/>
     </div>
 </div>
+{% endblock %}
+{% block scripts %}
+    <script src="{% static 'app/scripts/check_browser.js' %}"></script>
 {% endblock %}
