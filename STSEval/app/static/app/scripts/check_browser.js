@@ -1,3 +1,5 @@
+
+
 // Opera 8.0+
 var isOpera = (!!window.opr && !!opr.addons) || !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0;
 
@@ -22,7 +24,40 @@ var isEdgeChromium = isChrome && (navigator.userAgent.indexOf("Edg") != -1);
 // Blink engine detection
 var isBlink = (isChrome || isOpera) && !!window.CSS;
 
-//if (!isSafari && !isChrome) {
-//    alert("You must use Chrome on Android or PC, or Safari on IOS");
-//    window.location = "/";
-//}
+// Get the user-agent string 
+let userAgentString =
+    navigator.userAgent;
+
+// Detect Chrome 
+let chromeAgent =
+    userAgentString.indexOf("Chrome") > -1;
+
+// Detect Internet Explorer 
+let IExplorerAgent =
+    userAgentString.indexOf("MSIE") > -1 ||
+    userAgentString.indexOf("rv:") > -1;
+
+// Detect Firefox 
+let firefoxAgent =
+    userAgentString.indexOf("Firefox") > -1;
+
+// Detect Safari 
+let safariAgent =
+    userAgentString.indexOf("Safari") > -1;
+
+// Discard Safari since it also matches Chrome 
+if ((chromeAgent) && (safariAgent))
+    safariAgent = false;
+
+// Detect Opera 
+let operaAgent =
+    userAgentString.indexOf("OP") > -1;
+
+// Discard Chrome since it also matches Opera      
+if ((chromeAgent) && (operaAgent))
+    chromeAgent = false; 
+
+if (!isSafari && !isChrome  && !chromeAgent) {
+    alert("You must use Chrome on Android or PC, or Safari on IOS");
+   window.location = "/";
+}
