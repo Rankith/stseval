@@ -22,7 +22,7 @@ var isEdgeChromium = isChrome && (navigator.userAgent.indexOf("Edg") != -1);
 // Blink engine detection
 var isBlink = (isChrome || isOpera) && !!window.CSS;
 
-if (!isSafari && !isChrome) {
-    alert("You must use Chrome on Android or PC, or Safari on IOS");
-    window.location = "/";
-}
+//if (!isSafari && !isChrome) {
+//    alert("You must use Chrome on Android or PC, or Safari on IOS");
+//    window.location = "/";
+//}
