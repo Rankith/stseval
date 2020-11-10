@@ -735,7 +735,7 @@ def coach(request,event_name='FX'):
     team = Team.objects.get(pk=team_id)
     events = Event.objects.filter(disc=session.competition.disc)
     context = {
-        'title': 'Start List - ' + team.abbreviation,
+        'title': 'Coach - ' + team.abbreviation,
         'event_name':event_name,
         'events':events,
         'session':session,
