@@ -414,7 +414,7 @@ input[type="checkbox"].input-validation-error {
     border-radius: 1em;
     border: 1px solid black;
     background-color: lightgrey;
-    width: 400px;
+    max-width: 400px;
     padding-bottom: .5rem;
     padding-top: .5rem;
     color: black;
