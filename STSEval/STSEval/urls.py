@@ -70,6 +70,7 @@ urlpatterns = [
     path('streaming/', include('streaming.urls')),
     path('management/', include('management.urls')),
     path('account/', include('account.urls')),
+    path('chat/', include('chat.urls')),
     #url(r'^login/$',
     #    django.contrib.auth.views.login,
     #    {

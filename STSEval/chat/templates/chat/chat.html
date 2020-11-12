@@ -1,0 +1,67 @@
+{% block content %}
+<div class="chat-container">
+    <div id="divChats">
+
+    </div>
+		
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript">
+    var chatter = "{{request.session.chat_name}}";
+</script>
+<script type="text/javascript">
+    function AddChatMessage(id,data) {
+        CheckCreateChat(id);
+        console.log(data.message);
+        console.log($("#divChat" + id));
+        $("#divChat" + id).append("<div class='chat-message'>" + data.message + "</div>");
+    }
+
+    function CheckCreateChat(id) {
+        if ($("#divChat" + id).length <= 0) {
+            $("#divChats").append("<div id='divChat" + id + "' class='chat-box'></div>");
+        }
+    }
+
+    function SetupChatListener() {
+        db.collection("sessions").doc(Session).collection("chats").where("participants", "array-contains", chatter)
+        .onSnapshot(function (querySnapshot) {
+            var m = [];
+            console.log("chat snap");
+            querySnapshot.docChanges().forEach(function (change) {
+                if (change.type === "added") {
+                    console.log(change.doc.id);
+                    db.collection("sessions").doc(Session).collection("chats").doc(change.doc.id).collection("messages").onSnapshot(function (message) {
+                        message.docChanges().forEach(function (m) {
+                            if (m.type === "added") {
+                                AddChatMessage(change.doc.id.replaceAll(' ',''),  m.doc.data());
+                                //console.log("message: " + m.doc.data().message);
+                            }
+                        });
+
+                    });
+                }
+            });
+        });
+    }
+    function ChatSendMessage(to,message) {
+        $.ajax({
+            type: 'POST',
+            url: '/chat/send_message/',
+            dataType: 'json',
+            headers: { "X-CSRFToken": token },
+            data: {
+                'to': to,
+                'message':message,
+            },
+            success: function (data) {
+            }
+        });
+
+    }
+
+</script>
+{% endblock %}

@@ -4,6 +4,7 @@ import os
 from firebase_admin import firestore, initialize_app
 from app.models import Competition,Judge,Athlete,Twitch,Routine,Session
 from streaming.models import WowzaStream
+from datetime import datetime
 
 initialize_app()
 
@@ -204,3 +205,37 @@ def check_event_manager_setup(s,e):
     doc_ref = db.collection(u'sessions').document(str(s)).collection(u'event_managers').document(str(e))
     doc = doc_ref.get()
     return doc.exists
+
+def chat_get_create(s,p1,p2):
+    db = firestore.Client()
+
+    chat_name = ''
+    #set the names lexographically so always the same
+    if p1 < p2:
+        chat_name= p1 + '-' + p2
+    else:
+        chat_name= p2 + '-' + p1
+
+    doc_ref = db.collection(u'sessions').document(str(s)).collection(u'chats').document(str(chat_name))
+    if doc_ref.get().exists:
+        return doc_ref
+    else:
+        #didnt exist so make one
+        doc_ref.set({
+            u'id':chat_name,
+            u'participants': [p1,p2],
+            })
+        return doc_ref
+
+def chat_send_message(s,sender,to,message,sender_name=''):
+    db = firestore.Client()
+
+    doc_ref = chat_get_create(s,sender,to)
+    if sender_name=='':
+        sender_name = sender
+    doc_ref.collection("messages").add({
+        u'sender':sender,
+        u'sender_name':sender_name,
+        u'message':message,
+        u'timestamp':datetime.now(),
+    })

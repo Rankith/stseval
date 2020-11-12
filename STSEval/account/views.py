@@ -36,6 +36,8 @@ def login_admin(request,type='spectator'):
             if user is not None:
                 login(request, user,backend='django.contrib.auth.backends.ModelBackend')
                 request.session['type'] = type
+                request.session['email'] = email
+                request.session['chat_name'] = user.first_name + " " + user.last_name
                 if type == "admin":
                     return redirect('/management/setup_competition/')
                 else:
@@ -103,6 +105,8 @@ def login_camera_do(request,camera):
     request.session['camera'] = camera.id
     request.session['type'] = 'camera'
     request.session['disc'] = camera.session.competition.disc.name
+    request.session['email'] = camera.email
+    request.session['chat_name'] = 'camera - ' + camera.name
     request.session.set_expiry(0)#until they close browser
     return redirect('/streaming/camera/')
 
@@ -110,7 +114,9 @@ def login_coach_do(request,session,team):
     request.session['session'] = session.id
     request.session['team'] = team.id
     request.session['disc'] = session.competition.disc.name
+    request.session['email'] = team.head_coach_email
     request.session['type'] = 'coach'
+    request.session['chat_name'] = 'coach - ' + team.abbreviation
     request.session.set_expiry(0)#until they close browser
     return redirect('/coach/')          
 
@@ -121,11 +127,14 @@ def login_judge_do(request,session,event,name,email,jt,ej):
     request.session['name'] = name
     request.session['email'] = email
     request.session['type'] = jt.lower()
+   
     request.session.set_expiry(0)#until they close browser
     if jt[0:1] == 'E':
         request.session['ej'] = ej
+        request.session['chat_name'] = event.name + " " + jt + ej + " - " + name
         return redirect('/ejudge_select/')
     else:
+        request.session['chat_name'] = event.name + " D1 - " + name
         return redirect('/d1/')
 
 def login_judge(request):
