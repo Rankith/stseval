@@ -2,6 +2,7 @@
 
 {% block content %}
 {% load staticfiles %}
+{% include "chat/chat.html" %}
 <div id="AccountabilityReportBlackOut" style="width:100%;height:100%;background-color:#000000;opacity: .3;position:fixed;z-index:103;display:none" onclick="CloseAccountabilityReport()"></div>
 <div id="divAccountabilityReport" style="position:absolute;z-index:104;text-align:center;padding:5px;overflow:auto;display:none;background-color:rgb(97, 97, 106);color:white;top:10%;left:35%;width:40%"  class="rounded"></div>
 <div style="margin:10px;padding:0" align="center">
@@ -116,6 +117,7 @@
     var DeductionsConfirmed = true;
     var GymnastLevels = new Array();
     var GymnastTeams = new Array();
+     var GymnastLabels = new Array();
      var GymnastScoringType = new Array();
     {% for athlete in athletes %}
         GymnastLevels[{{athlete.id}}] = "{{athlete.level}}";
@@ -141,6 +143,7 @@
         .onSnapshot(function (doc) {
             SetBasedOnStatus(doc);
         });
+    SetupChatListener();
 
     SetDotsArea();
 

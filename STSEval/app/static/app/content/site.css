@@ -452,9 +452,3 @@ input[type="checkbox"].input-validation-error {
     height:200px;
     max-width: 100%
 }
-
-.chat-container {
-    position:fixed;
-    bottom:3px;
-    right:10px;
-}

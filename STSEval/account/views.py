@@ -131,7 +131,7 @@ def login_judge_do(request,session,event,name,email,jt,ej):
     request.session.set_expiry(0)#until they close browser
     if jt[0:1] == 'E':
         request.session['ej'] = ej
-        request.session['chat_name'] = event.name + " " + jt + ej + " - " + name
+        request.session['chat_name'] = event.name + " " + jt + " - " + name
         return redirect('/ejudge_select/')
     else:
         request.session['chat_name'] = event.name + " D1 - " + name

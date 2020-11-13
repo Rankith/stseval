@@ -1,8 +1,27 @@
 {% block content %}
+{% load staticfiles %}
+<link rel="stylesheet" type="text/css" href="{% static 'app/content/chat.css' %}?v=1" />
 <div class="chat-container">
-    <div id="divChats">
+    <div id="divChatBox" class="chat-box" style="display:none">
+        <div class="chat-header">
+            <div>Messages</div>
+        </div>
+        <div id="divChatMessages" class="chat-messages">
 
+        </div>
+        <div id="divChatSendingArea">
+            <div class="chat-hr"></div>
+            <div class="chat-sending-area">
+                To: <select class="chat-dropdown"><option>PH - D1 - Doug Hills</option><option>PH - E1 - Some Hills</option><option>Coach - OGA</option></select>
+                <br/>
+                <div>
+                    <input type="text" id="txtChatSend" placeholder="Type message here..." class="chat-input">
+                    <button id="btnSend" type="button" class="btn btn-main" onclick="SendMessageClick()" ><i class="fa fa-arrow-up"></i></button>
+                </div>
+            </div>
+        </div>
     </div>
+    <button id="btnShowChats" type="button" class="btn btn-main" onclick="ShowChats()" ><i class="fa fa-comments"></i></button>
 		
 </div>
 
@@ -13,16 +32,23 @@
     var chatter = "{{request.session.chat_name}}";
 </script>
 <script type="text/javascript">
+    function ShowChats() {
+        $("#btnShowChats").hide();
+        $("#divChatBox").show();
+    }
+
     function AddChatMessage(id,data) {
         CheckCreateChat(id);
         console.log(data.message);
         console.log($("#divChat" + id));
+        if ($("#divChat" + id).children(".chat-message-name").last().data("sender") != data.sender)
+            $("#divChat" + id).append("<div class='chat-message-name' data-sender='" + data.sender + "'>" + data.sender + ":</div>");
         $("#divChat" + id).append("<div class='chat-message'>" + data.message + "</div>");
     }
 
     function CheckCreateChat(id) {
         if ($("#divChat" + id).length <= 0) {
-            $("#divChats").append("<div id='divChat" + id + "' class='chat-box'></div>");
+            $("#divChatMessages").append("<div id='divChat" + id + "'></div>");
         }
     }
 
@@ -34,7 +60,7 @@
             querySnapshot.docChanges().forEach(function (change) {
                 if (change.type === "added") {
                     console.log(change.doc.id);
-                    db.collection("sessions").doc(Session).collection("chats").doc(change.doc.id).collection("messages").onSnapshot(function (message) {
+                    db.collection("sessions").doc(Session).collection("chats").doc(change.doc.id).collection("messages").orderBy("timestamp","asc").onSnapshot(function (message) {
                         message.docChanges().forEach(function (m) {
                             if (m.type === "added") {
                                 AddChatMessage(change.doc.id.replaceAll(' ',''),  m.doc.data());
@@ -47,6 +73,11 @@
             });
         });
     }
+
+    function SendMessageClick() {
+        ChatSendMessage("FX E1 - ASDF", $("#txtChatSend").val());
+    }
+
     function ChatSendMessage(to,message) {
         $.ajax({
             type: 'POST',
