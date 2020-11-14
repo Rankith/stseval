@@ -106,6 +106,7 @@
     <Folder Include="account\migrations\" />
     <Folder Include="account\templates\" />
     <Folder Include="account\templates\account\" />
+    <Folder Include="app\static\app\sounds\" />
     <Folder Include="app\templates\registration\" />
     <Folder Include="app\" />
     <Folder Include="app\migrations\" />
@@ -144,6 +145,8 @@
     <Content Include="app\static\app\scripts\check_browser.js" />
     <Content Include="app\static\app\scripts\start_list.js" />
     <Content Include="app\static\app\scripts\stream_listener_spectator.js" />
+    <Content Include="app\static\app\sounds\message_notice.mp3" />
+    <Content Include="app\static\app\sounds\message_notice.ogg" />
     <Content Include="app\templates\app\sponsor_display.html" />
     <Content Include="app\templates\app\athlete_start_list_swap.html" />
     <Content Include="app\templates\app\athlete_start_list_admin.html" />

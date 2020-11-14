@@ -1,43 +1,51 @@
 {% block content %}
 {% load staticfiles %}
 <link rel="stylesheet" type="text/css" href="{% static 'app/content/chat.css' %}?v=1" />
-<div class="chat-container">
-    <div id="divChatBox" class="chat-box" style="display:none">
+<div id="divChatBox" class="chat-container" style="display:none">
+    <div  class="chat-box d-flex flex-column">
         <div class="chat-header">
             <div>Messages</div>
             <button type="button" class="btn chat-x" onclick="HideChats()" aria-label="Close">
                 <i class="fa fa-times"></i>
             </button>
         </div>
-        <div id="divChatMessages" class="chat-messages">
+        <div class="d-flex flex-column h-100">
+            <div id="divChatMessages" class="chat-messages flex-grow-1">
 
-        </div>
-        <div id="divChatSendingArea">
-            <div class="chat-hr"></div>
-            <div class="chat-sending-area">
-                <div class="d-flex align-items-center pb-2 position-relative">
-                    <div id="divChatNoticesIn" class="chat-notify-badge" style="display:none"></div>
-                    <div>To:</div>
-                    <div class="flex-grow-1 pl-1">
-                        <select id="ChatSelect" class="chat-dropdown selectpicker" data-style="chat-dropdown" onchange="SetChatMessages()"></select>
+            </div>
+            <div id="divChatSendingArea">
+                <div class="chat-hr"></div>
+                <div class="chat-sending-area">
+                    <div class="d-flex align-items-center pb-2 position-relative">
+                        <div id="divChatNoticesIn" class="chat-notify-badge" style="display:none"></div>
+                        <div>To:</div>
+                        <div class="flex-grow-1 pl-1">
+                            <select id="ChatSelect" class="chat-dropdown selectpicker" data-style="chat-dropdown" onchange="SetChatMessages()"></select>
+                        </div>
                     </div>
-                </div>
-                <div>
-                    <div class="input-group chatcustom">
-                        <input type="text" id="txtChatSend" placeholder="Type message here...">
-                        <div class="input-group-prepend">
-                             <button id="btnSend" type="button" class="btn chat-send-button" onclick="SendMessageClick()" ><i class="fa fa-arrow-up"></i></button>
+                    <div>
+                        <div class="input-group chatcustom">
+                            <input type="text" id="txtChatSend" placeholder="Type message here...">
+                            <div class="input-group-prepend">
+                                 <button id="btnSend" type="button" class="btn chat-send-button" onclick="SendMessageClick()" ><i class="fa fa-arrow-up"></i></button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
+<div class="chat-button-container">
     <div id="divShowChats" class="position-relative">
         <button id="btnShowChats" type="button" class="btn chat-button" onclick="ShowChats()" ><i class="fa fa-comments"></i></button>
         <div id="divChatNoticesOut" class="chat-notify-badge" style="display:none"></div>
     </div>
-		
+<audio id="NotificationSound">
+  <source src="{% static 'app/sounds/' %}message_notice.mp3" type="audio/mpeg">
+  <source src="{% static 'app/sounds/' %}message_notice.ogg" type="audio/ogg">
+  <!-- fallback for non supporting browsers goes here -->
+</audio>		
 </div>
 
 {% endblock %}
@@ -91,6 +99,11 @@
         }
     }
 
+    function PlayNotificationSound() {
+        document.getElementById("NotificationSound").volume = 0.4;
+        document.getElementById("NotificationSound").play();
+    }
+
     function SetChatMessages() {
         $(".chat-history").hide();
         ChatNotices[$("#ChatSelect").val()] = 0;
@@ -112,6 +125,7 @@
         $("#divChat" + id).append("<div class='chat-message'>" + data.message + "</div>");
         //check that its not coming from self, that we arent building initial list and that we arent ON that chat
         if (data.sender != chatter && !ChatInitialRead && ($("#ChatSelect").val() != id || ChatVisible == false)) {
+            PlayNotificationSound();
             //add notification
             if (ChatNotices[id] !== undefined)
                 ChatNotices[id] = ChatNotices[id] + 1;
