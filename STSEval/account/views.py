@@ -37,8 +37,9 @@ def login_admin(request,type='spectator'):
                 login(request, user,backend='django.contrib.auth.backends.ModelBackend')
                 request.session['type'] = type
                 request.session['email'] = email
-                request.session['chat_name'] = user.first_name + " " + user.last_name
+                #request.session['chat_name'] = user.first_name + " " + user.last_name
                 if type == "admin":
+                    request.session['chat_name'] = "Meet Administrator"
                     return redirect('/management/setup_competition/')
                 else:
                     return redirect('/select_session/')
@@ -106,7 +107,7 @@ def login_camera_do(request,camera):
     request.session['type'] = 'camera'
     request.session['disc'] = camera.session.competition.disc.name
     request.session['email'] = camera.email
-    request.session['chat_name'] = 'camera - ' + camera.name
+    request.session['chat_name'] = 'Camera - ' + camera.name
     request.session.set_expiry(0)#until they close browser
     return redirect('/streaming/camera/')
 
@@ -116,7 +117,7 @@ def login_coach_do(request,session,team):
     request.session['disc'] = session.competition.disc.name
     request.session['email'] = team.head_coach_email
     request.session['type'] = 'coach'
-    request.session['chat_name'] = 'coach - ' + team.abbreviation
+    request.session['chat_name'] = 'Coach - ' + team.abbreviation
     request.session.set_expiry(0)#until they close browser
     return redirect('/coach/')          
 

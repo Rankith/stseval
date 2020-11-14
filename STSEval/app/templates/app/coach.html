@@ -2,6 +2,7 @@
 
 {% block content %}
 {% load staticfiles %}
+{% include "chat/chat.html" %}
 <div id="LockBlackout" style="width:100%;height:100%;background-color:#000000;opacity: .2;position:fixed;z-index:103;display:none" onclick="HideDetails()"></div>
 <div align="center" style="margin:auto" >
     {% include "app/event_select.html" %}  
@@ -22,6 +23,7 @@
     var SessionName = "{{session}}";
     var Team= "{{team.id}}";
     var ev = "{{event_name}}";
+    var token = "{{ csrf_token }}";
 </script>
 <script type="text/javascript">
     //const firebase = require("firebase");
@@ -35,7 +37,7 @@
         .onSnapshot(function (doc) {
             UpdateStatus(doc);
         });
-    
+    SetupChatListener();
 
     
     function UpdateStatus(doc) {
@@ -73,7 +75,7 @@
             }
             else if (Status == "N") {
                 StatusDotsYellow();
-                $("#divStatus").html("RAISE HAND TO START").addClass("timer-yellow").removeClass("timer-green").removeClass("timer-red");
+                $("#divStatus").html("RAISE HAND").addClass("timer-yellow").removeClass("timer-green").removeClass("timer-red");
                 $("#" + $("#hdnUpNext").val()).addClass("status-dot-yellow").removeClass("status-dot-green").removeClass("status-dot-red");
             }
             else if (Status == "S") {

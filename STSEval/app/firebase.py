@@ -209,23 +209,49 @@ def check_event_manager_setup(s,e):
 def chat_get_create(s,p1,p2):
     db = firestore.Client()
 
-    chat_name = ''
-    #set the names lexographically so always the same
-    if p1 < p2:
-        chat_name= p1 + '-' + p2
-    else:
-        chat_name= p2 + '-' + p1
-
-    doc_ref = db.collection(u'sessions').document(str(s)).collection(u'chats').document(str(chat_name))
-    if doc_ref.get().exists:
-        return doc_ref
-    else:
-        #didnt exist so make one
-        doc_ref.set({
-            u'id':chat_name,
-            u'participants': [p1,p2],
+    #check if its a panel
+    if "Panel" in p2:
+        chat_name = p2
+        doc_ref = db.collection(u'sessions').document(str(s)).collection(u'chats').document(str(chat_name))
+        if doc_ref.get().exists:
+            return doc_ref
+        else:
+            judge = Judge.objects.filter(session_id=s,event__name=p2.split(' ')[0]).first()
+            participants = []
+            if judge.d1 != "" and judge.d1 != " ":
+                participants.append(judge.event.name + " D1 - " + judge.d1)
+            if judge.e1 != "" and judge.e1 != " ":
+                participants.append(judge.event.name + " E1 - " + judge.e1)
+            if judge.e2 != "" and judge.e2 != " ":
+                participants.append(judge.event.name + " E2 - " + judge.e2)
+            if judge.e3 != "" and judge.e3 != " ":
+                participants.append(judge.event.name + " E3 - " + judge.e3)
+            if judge.e4 != "" and judge.e4 != " ":
+                participants.append(judge.event.name + " E4 - " + judge.e4)
+            participants.append("Meet Administrator")
+            doc_ref.set({
+                u'id':chat_name,
+                u'participants': participants,
             })
-        return doc_ref
+            return doc_ref
+    else:
+        chat_name = ''
+        #set the names lexographically so always the same
+        if p1 < p2:
+            chat_name= p1 + '-' + p2
+        else:
+            chat_name= p2 + '-' + p1
+
+        doc_ref = db.collection(u'sessions').document(str(s)).collection(u'chats').document(str(chat_name))
+        if doc_ref.get().exists:
+            return doc_ref
+        else:
+            #didnt exist so make one
+            doc_ref.set({
+                u'id':chat_name,
+                u'participants': [p1,p2],
+                })
+            return doc_ref
 
 def chat_send_message(s,sender,to,message,sender_name=''):
     db = firestore.Client()
@@ -237,5 +263,5 @@ def chat_send_message(s,sender,to,message,sender_name=''):
         u'sender':sender,
         u'sender_name':sender_name,
         u'message':message,
-        u'timestamp':datetime.now(),
+        u'timestamp':datetime.utcnow(),
     })

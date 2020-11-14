@@ -2,6 +2,7 @@
 
 {% block content %}
 {% load staticfiles %}
+{% include "chat/chat.html" %}
 <div  align="center">
     {% include "app/event_select.html" %}  
     <div id="divHeader"><h4>{{session.full_name}}</h4></div>
@@ -97,7 +98,7 @@
                 SetCameraDots(doc);
             });
         });
-
+    SetupChatListener();
     function SetCameraDots(doc) {
         console.log(doc.id + " | " + doc.data().connected + " | " + doc.data().status);
         if (doc.data().connected == true) {

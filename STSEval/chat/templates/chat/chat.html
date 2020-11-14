@@ -5,6 +5,9 @@
     <div id="divChatBox" class="chat-box" style="display:none">
         <div class="chat-header">
             <div>Messages</div>
+            <button type="button" class="btn chat-x" onclick="HideChats()" aria-label="Close">
+                <i class="fa fa-times"></i>
+            </button>
         </div>
         <div id="divChatMessages" class="chat-messages">
 
@@ -12,16 +15,28 @@
         <div id="divChatSendingArea">
             <div class="chat-hr"></div>
             <div class="chat-sending-area">
-                To: <select class="chat-dropdown"><option>PH - D1 - Doug Hills</option><option>PH - E1 - Some Hills</option><option>Coach - OGA</option></select>
-                <br/>
+                <div class="d-flex align-items-center pb-2 position-relative">
+                    <div id="divChatNoticesIn" class="chat-notify-badge" style="display:none"></div>
+                    <div>To:</div>
+                    <div class="flex-grow-1 pl-1">
+                        <select id="ChatSelect" class="chat-dropdown selectpicker" data-style="chat-dropdown" onchange="SetChatMessages()"></select>
+                    </div>
+                </div>
                 <div>
-                    <input type="text" id="txtChatSend" placeholder="Type message here..." class="chat-input">
-                    <button id="btnSend" type="button" class="btn btn-main" onclick="SendMessageClick()" ><i class="fa fa-arrow-up"></i></button>
+                    <div class="input-group chatcustom">
+                        <input type="text" id="txtChatSend" placeholder="Type message here...">
+                        <div class="input-group-prepend">
+                             <button id="btnSend" type="button" class="btn chat-send-button" onclick="SendMessageClick()" ><i class="fa fa-arrow-up"></i></button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    <button id="btnShowChats" type="button" class="btn btn-main" onclick="ShowChats()" ><i class="fa fa-comments"></i></button>
+    <div id="divShowChats" class="position-relative">
+        <button id="btnShowChats" type="button" class="btn chat-button" onclick="ShowChats()" ><i class="fa fa-comments"></i></button>
+        <div id="divChatNoticesOut" class="chat-notify-badge" style="display:none"></div>
+    </div>
 		
 </div>
 
@@ -32,38 +47,105 @@
     var chatter = "{{request.session.chat_name}}";
 </script>
 <script type="text/javascript">
+    var ChatInitialRead = true;
+    var ChatNotices = {};
+    var ChatVisible = false;
+    var ChatOnChatter = "";
     function ShowChats() {
-        $("#btnShowChats").hide();
+        $("#divShowChats").hide();
         $("#divChatBox").show();
+        ChatVisible = true;
+        ScrollChatDown();
+        ChatNotices[$("#ChatSelect").val()] = 0;
+        SetChatNotices();
+    }
+
+    function HideChats() {
+        $("#divShowChats").show();
+        $("#divChatBox").hide();
+        ChatVisible = false;
+    }
+
+    function SetChatNotices() {
+        let TotalNotifications = 0;
+        for (var key in ChatNotices) {
+            console.log("on key: " + key);
+            let Notifications = ChatNotices[key];
+            TotalNotifications += Notifications;
+            console.log(Notifications);
+            if (Notifications > 0) {
+                $("#opt" + key).addClass("chat-notice");
+            }
+            else
+                $("#opt" + key).removeClass("chat-notice");
+        }
+        $("#ChatSelect").selectpicker("refresh");
+        if (TotalNotifications > 0) {
+            $(".chat-notify-badge").html(TotalNotifications);
+            $(".chat-notify-badge").show();
+        }
+        else {
+            $(".chat-notify-badge").html(TotalNotifications);
+            $(".chat-notify-badge").hide();
+        }
+    }
+
+    function SetChatMessages() {
+        $(".chat-history").hide();
+        ChatNotices[$("#ChatSelect").val()] = 0;
+        SetChatNotices();
+        $("#divChat" + $("#ChatSelect").val()).show();
+        ScrollChatDown();
     }
 
     function AddChatMessage(id,data) {
         CheckCreateChat(id);
         console.log(data.message);
         console.log($("#divChat" + id));
-        if ($("#divChat" + id).children(".chat-message-name").last().data("sender") != data.sender)
-            $("#divChat" + id).append("<div class='chat-message-name' data-sender='" + data.sender + "'>" + data.sender + ":</div>");
+        if ($("#divChat" + id).children(".chat-message-name").last().data("sender") != data.sender) {
+            let header = data.sender;
+            if (header == chatter)
+                header = "Me";
+            $("#divChat" + id).append("<div class='chat-message-name' data-sender='" + data.sender + "'><div class='flex-grow-1'>" + header + ":</div><div>" + data.timestamp.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + "</div></div>");
+        }
         $("#divChat" + id).append("<div class='chat-message'>" + data.message + "</div>");
+        //check that its not coming from self, that we arent building initial list and that we arent ON that chat
+        if (data.sender != chatter && !ChatInitialRead && ($("#ChatSelect").val() != id || ChatVisible == false)) {
+            //add notification
+            if (ChatNotices[id] !== undefined)
+                ChatNotices[id] = ChatNotices[id] + 1;
+            else
+                ChatNotices[id] = 1;
+            SetChatNotices();
+        }
+        ScrollChatDown();
     }
 
     function CheckCreateChat(id) {
         if ($("#divChat" + id).length <= 0) {
-            $("#divChatMessages").append("<div id='divChat" + id + "'></div>");
+            $("#divChatMessages").append("<div id='divChat" + id + "' class='chat-history'></div>");
         }
     }
 
+    function InitializeDone() {
+        ChatInitialRead = false;
+    }
+
     function SetupChatListener() {
+        ChatGetEligable();
         db.collection("sessions").doc(Session).collection("chats").where("participants", "array-contains", chatter)
         .onSnapshot(function (querySnapshot) {
             var m = [];
+            MessageHolder = querySnapshot;
             console.log("chat snap");
             querySnapshot.docChanges().forEach(function (change) {
                 if (change.type === "added") {
                     console.log(change.doc.id);
-                    db.collection("sessions").doc(Session).collection("chats").doc(change.doc.id).collection("messages").orderBy("timestamp","asc").onSnapshot(function (message) {
+                    db.collection("sessions").doc(Session).collection("chats").doc(change.doc.id).collection("messages").orderBy("timestamp", "asc").onSnapshot(function (message) {
+                        
                         message.docChanges().forEach(function (m) {
                             if (m.type === "added") {
-                                AddChatMessage(change.doc.id.replaceAll(' ',''),  m.doc.data());
+                                AddChatMessage(change.doc.id.replace(chatter,'').replaceAll(' ','').replaceAll('-',''),  m.doc.data());
                                 //console.log("message: " + m.doc.data().message);
                             }
                         });
@@ -72,23 +154,74 @@
                 }
             });
         });
+        setTimeout(InitializeDone, 2000);
+
+        $(document).keyup(function (e) {
+            if (e.keyCode === 13) {
+                e.preventDefault();
+                SendMessageClick();
+            }
+            else {
+                EnableSend();
+            }
+        });
     }
 
     function SendMessageClick() {
-        ChatSendMessage("FX E1 - ASDF", $("#txtChatSend").val());
+        ChatSendMessage($("#ChatSelect option:selected").text(), $("#txtChatSend").val());
+        $("#txtChatSend").val('');
+        EnableSend();
+        
     }
 
-    function ChatSendMessage(to,message) {
+    function EnableSend() {
+        if ($("#txtChatSend").val().replaceAll(' ', '') != "")
+            $(".chat-send-button").addClass("chat-send-button-purple");
+        else
+            $(".chat-send-button").removeClass("chat-send-button-purple");
+    }
+
+    function ScrollChatDown() {
+        var divChat = document.getElementById("divChatMessages");
+        divChat.scrollTop = divChat.scrollHeight;
+    }
+
+    function ChatSendMessage(to, message) {
+        if (message.replaceAll(' ', '') != "") {
+            $.ajax({
+                type: 'POST',
+                url: '/chat/send_message/',
+                dataType: 'json',
+                headers: { "X-CSRFToken": token },
+                data: {
+                    'to': to,
+                    'message': message,
+                },
+                success: function (data) {
+                }
+            });
+        }
+    }
+
+    function ChatGetEligable() {
         $.ajax({
             type: 'POST',
-            url: '/chat/send_message/',
+            url: '/chat/get_eligable_chats/',
             dataType: 'json',
             headers: { "X-CSRFToken": token },
             data: {
-                'to': to,
-                'message':message,
+             
             },
             success: function (data) {
+                $("#ChatSelect").empty();
+                data.forEach(function (chatter) {
+                    $("#ChatSelect").append("<option id='opt" + chatter.replaceAll(' ', '').replaceAll('-', '') + "' value='" + chatter.replaceAll(' ', '').replaceAll('-', '') + "'>" + chatter + "</option>");
+                });
+                $("#ChatSelect").selectpicker("refresh");
+                setTimeout(SetChatMessages, 1500);
+                $("#ChatSelect").selectpicker("refresh");
+                ScrollChatDown();
+                
             }
         });
 
