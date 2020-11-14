@@ -51,6 +51,7 @@
     var ChatNotices = {};
     var ChatVisible = false;
     var ChatOnChatter = "";
+
     function ShowChats() {
         $("#divShowChats").hide();
         $("#divChatBox").show();
@@ -123,7 +124,11 @@
 
     function CheckCreateChat(id) {
         if ($("#divChat" + id).length <= 0) {
-            $("#divChatMessages").append("<div id='divChat" + id + "' class='chat-history'></div>");
+            let disp = " style='display:none'";
+            if ($("#ChatSelect").val() == id)
+                disp = "";
+            console.log("disp: " + disp);
+            $("#divChatMessages").append("<div id='divChat" + id + "' class='chat-history'" + disp + "></div>");
         }
     }
 
