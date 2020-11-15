@@ -8,6 +8,8 @@
 </div>
 <div id="divResults" align="center" style="color:black;margin:auto" >
     {% include "app/event_select.html" %}  
+    <div id="jsGridTeam" ></div>
+    <br/>
     <div id="jsGrid" ></div>
 </div>
 <div id="desktopTest" class="d-none d-lg-block"></div>
@@ -47,6 +49,7 @@
                 ScoreboardRoutineID = doc.data().routine
                 if (doc.data().status == "F" || Status == "" || doc.data().status == "N") {
                     GetRoutineData();
+                    GetTeamData();
                 }
             }
 
@@ -69,6 +72,23 @@
             }
         });
     }
+
+    function GetTeamData() {
+        $.ajax({
+            url: "/get_team_scores/",
+            type: "POST",
+            dataType: 'json',
+            headers: { "X-CSRFToken": token },
+            data: {
+                'Session': Session,
+                'Ev': ev,
+            },
+            success: function (data) {
+                UpdateTeams(data)
+            }
+        });
+    }
+
 
     function SwapEvent(evIn) {
         window.location = "/scoreboard/" + evIn;
@@ -116,34 +136,7 @@
                 MaxTotal = parseFloat(data[i]["score_final"]);
 
             LastID = data[i]["id"];
-            /*for (let v = 1; v <= 4; v++) {
-                if (data[i]["E" + v] == "-1")
-                    DataMod[i]["E" + v] = "";
-                else {
-                    DataMod[i]["E" + v] = (Math.round(parseFloat(data[i]["E" + v]) * 1000) / 1000).toString();
-                    if (DataMod[i]["E" + v].length == 1)
-                        DataMod[i]["E" + v] += ".0";
-                }
-            }*/
 
-            /*  if (data[i]["E2"] == "-1")
-                DataMod[i]["E2"] = "";
-              if (data[i]["E3"] == "-1")
-                DataMod[i]["E3"] = "";
-              if (data[i]["E4"] == "-1")
-                DataMod[i]["E4"] = "";*/
-
-            /*DataMod[i]["E"] = (Math.round(parseFloat(data[i]["E"]) * 1000) / 1000).toString();
-            if (DataMod[i]["E"].length == 1)
-                DataMod[i]["E"] += ".0";
-
-            DataMod[i]["D"] = (Math.round(parseFloat(data[i]["D"]) * 1000) / 1000).toString();
-            if (DataMod[i]["D"].length == 1)
-                DataMod[i]["D"] += ".0";
-
-            DataMod[i]["Total"] = (Math.round(parseFloat(data[i]["Total"]) * 1000) / 1000).toString();
-            if (DataMod[i]["Total"].length == 1)
-                DataMod[i]["Total"] += ".0";*/
 
 
         }
@@ -178,6 +171,34 @@
         AverageD = (AverageD / data.length).toFixed(3);
         AverageE = (AverageE / data.length).toFixed(3);
         AverageTotal = (AverageTotal / data.length).toFixed(3);
+
+    }
+
+    function UpdateTeams(data) {
+        console.log(data);
+        //$('#divShorthandResults').empty();
+        for (var i = 0; i < data.length; i++) {
+            data[i]["Place"] = i + 1;
+        }
+
+        $("#jsGridTeam").jsGrid({
+            width: "100%",
+            height: "120px",
+            inserting: false,
+            editing: false,
+            sorting: true,
+            paging: false,
+
+            data: data,
+
+            fields: [
+                { name: "Place", title: "#", type: "number", width: 25 },
+                { name: "lvl", title: "Level", type: "text"},
+                { name: "team", title: "Team", type: "text" },
+                { name: "score", title: "Score", type: "number" },
+
+            ]
+        });
 
     }
 

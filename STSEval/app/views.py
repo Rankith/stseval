@@ -19,7 +19,7 @@ from binascii import a2b_base64
 import distutils.util
 import os
 from django.contrib.auth.decorators import login_required,user_passes_test
-from django.db.models import F
+from django.db.models import F, Sum
 
 def valid_login_type(match=None):
     def decorator(func):
@@ -568,6 +568,28 @@ def accountability_report(request):
 def get_routines_by_SE(request):
     routines = Routine.objects.values('athlete__name','athlete__team__name','athlete__level__name','id','score_e1','score_e2','score_e3','score_e4','score_e','score_d','score_final').filter(session_id=request.POST.get('Session'),event=request.POST.get('Ev'),status=Routine.FINISHED).order_by('id')
     return JsonResponse(list(routines),safe=False)
+
+def get_team_scores(request):
+    routines = Routine.objects.filter(session_id=request.POST.get('Session'),event=request.POST.get('Ev'),status=Routine.FINISHED).order_by('athlete__team','athlete__level','-score_final')
+    team = ""
+    lvl = ""
+    count = 0
+    max = 3
+    scores = []
+    for routine in routines:
+        if team != routine.athlete.team.name or level != routine.athlete.level.name:
+            #setup new dict entry and set count to 0
+            scores.append({'team': routine.athlete.team.name,'lvl':routine.athlete.level.name,'score':0})
+            count = 0
+            team = routine.athlete.team.name
+            level = routine.athlete.level.name
+        if count < max:
+            count += 1
+            scores[-1]['score'] += routine.score_final
+
+    #sort by score
+    scores = sorted(scores,key = lambda i: i['score'],reverse=True)
+    return JsonResponse(scores,safe=False)
 
 @valid_login_type(match='session')
 def scoreboard(request,event_name='-1'):
