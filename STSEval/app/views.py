@@ -618,7 +618,7 @@ def video_scoreboard(request):
             team_scores.append({'team':team.abbreviation,'score':this_score['score']})
         else:
             team_scores.append({'team':team.abbreviation,'score':0})
-    team_scores = sorted(team_scores,key = lambda i: i['score'],reverse=True)
+    #team_scores = sorted(team_scores,key = lambda i: i['score'],reverse=True)
     context = {
         'scores': team_scores
         }
