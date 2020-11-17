@@ -31,7 +31,10 @@ def competition_list(request):
     return render(request, 'management/competition_list.html', context)
 
 def competition_list_all(request):
-    comps = Competition.objects.filter(disc=request.GET.get('disc'))
+    if request.GET.get('current','0') == '0':
+        comps = Competition.objects.filter(disc=request.GET.get('disc'))
+    else:
+        comps = Competition.objects.filter(disc=request.GET.get('disc'),date_gte=datetime.datetime.now() - datetime.timedelta(days=3))
 
     context = {
         'comps':comps,

@@ -610,8 +610,17 @@ def scoreboard(request,event_name='-1'):
 
 def video_scoreboard(request):
     scores = calc_team_scores(request.GET.get('Session'))
+    teams = Team.objects.filter(session_id=request.GET.get('Session'))
+    team_scores = []
+    for team in teams:
+        this_score = next((s for s in scores if s['team'] == team.name),None)
+        if this_score != None:
+            team_scores.append({'team':team.abbreviation,'score':this_score['score']})
+        else:
+            team_scores.append({'team':team.abbreviation,'score':0})
+    team_scores = sorted(team_scores,key = lambda i: i['score'],reverse=True)
     context = {
-        'scores': scores
+        'scores': team_scores
         }
     return render(request,'app/video_scoreboard.html',context)
 

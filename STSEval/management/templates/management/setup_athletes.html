@@ -224,7 +224,9 @@
 
     function TeamManageFinishParent() {
         $("#modalMain").modal('hide');
-        $("#divTeamList").load("/management/team_list/" +SessionID, function () {
+        $("#divTeamList").load("/management/team_list/" + SessionID, function () {
+            if (TeamCount > 0) 
+                $("#divAthletes").removeClass("ui-disabled");
             console.log("comp finish " + SelectedTeam);
             if (SelectedTeam != -1) 
                 TeamClick(SelectedTeam);
