@@ -44,7 +44,7 @@ def login_admin(request,type='spectator'):
                 else:
                     return redirect('/select_session/')
             else:
-                err = "Incorrect Login Inforation"
+                err = "Incorrect Login Information"
     else:
         login_form = LoginForm()
 
@@ -213,9 +213,9 @@ def login_judge(request):
                         }
                         return render(request, 'account/login_multiple.html', context)
                 else:
-                    err = "Incorrect Login Inforation"
+                    err = "Incorrect Login Information"
             else:
-                err = "Incorrect Login Inforation"
+                err = "Incorrect Login Information"
     else:
         login_form = EmailPasswordForm()
 
@@ -257,7 +257,7 @@ def login_camera(request):
                     }
                     return render(request, 'account/login_multiple.html', context)
  
-            err = "Incorrect Login Inforation"
+            err = "Incorrect Login Information"
     else:
         login_form = EmailPasswordForm()
 
@@ -299,7 +299,7 @@ def login_coach(request):
                     }
                     return render(request, 'account/login_multiple.html', context)
  
-            err = "Incorrect Login Inforation"
+            err = "Incorrect Login Information"
     else:
         login_form = EmailPasswordForm()
 
