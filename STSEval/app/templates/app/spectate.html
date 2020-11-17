@@ -2,6 +2,7 @@
 
 {% block content %}
 {% load staticfiles %}
+
 <div  align="center">
     {% if display_type == 'single' %}
         {% include "app/event_select.html" %} 
@@ -10,7 +11,11 @@
    <div class="row no-gutters">
        {% if display_type == 'single' %}
             <div class="col-12" align="center">
-                <div id="play-video-container1" class="live-container d-flex align-items-center justify-content-center">
+                <div id="play-video-container1" class="live-container d-flex align-items-center justify-content-center position-relative">
+                    <div id="divScoreboard" style="width:150px;position:absolute;top:5px;left:5px;z-index:104">
+
+                    </div>
+                    
                     <div id="player-waiting1" style="height:480px;display:flex" class="align-items-center"><h1>Waiting for Camera</h1></div>
                     <video id="player-video1" class="live-video video-js vjs-16-9" style="display:none" disablePictureInPicture autoplay muted></video>
                 </div>
@@ -60,6 +65,9 @@
 {% endblock %}
 
 {% block scripts %}
+<link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid.min.css" />
+<link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid-theme.min.css" />
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid.min.js"></script>
 <script src="https://vjs.zencdn.net/7.6.6/video.js"></script>
 <script src="{% static 'app/scripts/stream_listener_spectator.js' %}"></script>
 <script type="text/javascript">
@@ -75,6 +83,7 @@
     var token = "{{ csrf_token }}";
     var VidJSPlayer = new Array();
     var AthleteNames = new Array();
+    var ScoreboardOverlay = {{scoreboard_overlay|lower}};
     {% for athlete in athletes %}
         AthleteNames[{{athlete.id}}] = "{{athlete}}";
     {% endfor %}
@@ -102,6 +111,8 @@
     function HandleEventChanges(doc, which) {
         if (doc.data() != undefined) {
             if (CurrentAthlete[which] != doc.data().athlete_id) {
+                if (ScoreboardOverlay)
+                    LoadScoreboard();
                 $("#divAthlete" + which).html(AthleteNames[doc.data().athlete_id]);
                 CheckStream(doc,which);
             }
@@ -121,6 +132,53 @@
         $("#btn" + evIn + which).addClass("btn-event-selected");
         ev[which] = evIn;
         SetEventListeners(which)
+    }
+
+    function LoadScoreboard() {
+        $("#divScoreboard").load("/video_scoreboard/?Session=" + Session);
+    }
+
+    function GetTeamData() {
+        $.ajax({
+            url: "/get_team_scores/",
+            type: "POST",
+            dataType: 'json',
+            headers: { "X-CSRFToken": token },
+            data: {
+                'Session': Session,
+                'Ev': ev[1],
+            },
+            success: function (data) {
+                UpdateTeams(data)
+            }
+        });
+    }
+    function UpdateTeams(data) {
+        console.log(data);
+        //$('#divShorthandResults').empty();
+        for (var i = 0; i < data.length; i++) {
+            data[i]["Place"] = i + 1;
+        }
+
+        $("#jsGridTeam").jsGrid({
+            width: "100%",
+            height: "120px",
+            inserting: false,
+            editing: false,
+            sorting: true,
+            paging: false,
+
+            data: data,
+
+            fields: [
+                { name: "Place", title: "#", type: "number", width: 25 },
+                { name: "lvl", title: "Level", type: "text"},
+                { name: "team", title: "Team", type: "text" },
+                { name: "score", title: "Score", type: "number" },
+
+            ]
+        });
+
     }
 
 </script>

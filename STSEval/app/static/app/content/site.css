@@ -445,10 +445,15 @@ input[type="checkbox"].input-validation-error {
 .live-container {
     max-width: 854px;
     max-height: 720px;
-    width: 100%
+    width: 100%;
 }
 
 .sponsor-image {
     height:200px;
-    max-width: 100%
+    max-width: 100%;
+}
+
+.scoreboard-section {
+    background-color: #4848bd;
+    border: 1px solid #353535;
 }

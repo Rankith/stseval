@@ -1,0 +1,9 @@
+{% load staticfiles %}
+<div>
+    {% for score in scores %}
+     <div class="d-flex justify-content-between scoreboard-section pl-1 pr-1">
+        <div>{{score.abbv}}</div>
+        <div>{{score.score}}</div>
+    </div>
+    {% endfor %}
+</div>

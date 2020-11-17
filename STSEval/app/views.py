@@ -608,6 +608,39 @@ def scoreboard(request,event_name='-1'):
     }
     return render(request,'app/scoreboard.html',context)
 
+def video_scoreboard(request):
+    scores = calc_team_scores(request.GET.get('Session'))
+    context = {
+        'scores': scores
+        }
+    return render(request,'app/video_scoreboard.html',context)
+
+def calc_team_scores(session,event=''):
+    if event != '':
+        routines = Routine.objects.filter(session_id=session,event=event,status=Routine.FINISHED).order_by('athlete__team','athlete__level','-score_final')
+    else:
+        routines = Routine.objects.filter(session_id=session,status=Routine.FINISHED).order_by('athlete__team','athlete__level','-score_final')
+    team = ""
+    lvl = ""
+    count = 0
+    max = 5
+    scores = []
+    for routine in routines:
+        if team != routine.athlete.team.name or level != routine.athlete.level.name:
+            #setup new dict entry and set count to 0
+            scores.append({'team': routine.athlete.team.name,'abbv':routine.athlete.team.abbreviation,'lvl':routine.athlete.level.name,'score':0})
+            count = 0
+            team = routine.athlete.team.name
+            level = routine.athlete.level.name
+        if count < max:
+            count += 1
+            scores[-1]['score'] += routine.score_final
+            scores[-1]['score'] = round(scores[-1]['score'],2)
+
+    #sort by score
+    scores = sorted(scores,key = lambda i: i['score'],reverse=True)
+    return scores
+
 def athlete_mark_done(request,athlete_id):
     event = request.session.get('event')
     session_id = request.session.get('session')
@@ -867,6 +900,10 @@ def spectate(request,session_id,display_type,event_name='-1'):
         event_name2 = ''
     #setup_firebase_managers(session,event.name)
 
+    scoreboard_overlay = False
+    if session.competition.type == Competition.DUAL:
+        scoreboard_overlay = True
+
     context = {
         'title': 'Spectator',
         'event_name':event_name,
@@ -877,6 +914,7 @@ def spectate(request,session_id,display_type,event_name='-1'):
         'athletes':athletes,
         'sponsors':sponsors,
         'display_type':display_type,
+        'scoreboard_overlay':scoreboard_overlay,
     }
     return render(request,'app/spectate.html',context)
 
@@ -885,7 +923,6 @@ def spectator_video(request):
         'player_id':request.POST.get('player_id'),
     }
     return render(request,'app/spectator_video.html',context)
-
 
 def wowza_broadcast(request):
     return render(request,'app/dev-view-publish.html')

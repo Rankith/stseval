@@ -66,6 +66,7 @@ urlpatterns = [
     path('overview/<int:session_id>', views.overview, name='overview'),
     path('spectator_video/', views.spectator_video, name='spectator_video'),
     path('select_session/', views.select_session, name='select_session'),
+    path('video_scoreboard/', views.video_scoreboard, name='video_scoreboard'),
     path('spectate/<int:session_id>/<str:display_type>/<str:event_name>/', views.spectate, name='spectate'),
     path('spectate/<int:session_id>/<str:display_type>/', views.spectate, name='spectate'),
     path('streaming/', include('streaming.urls')),

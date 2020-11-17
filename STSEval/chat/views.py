@@ -34,15 +34,15 @@ def get_eligable_chats(request):
         if judges.e4 != "" and judges.e4 != " ":
             chats.append(event + " E4 - " + judges.e4)
         chats.append(event + " Panel")
-        teams = Team.objects.filter(session_id=session_id)
-        for team in teams:
-            chats.append('Coach - ' + team.abbreviation)
+        #teams = Team.objects.filter(session_id=session_id)
+        #for team in teams:
+            #chats.append('Coach - ' + team.abbreviation)
         chats.append("Meet Administrator")
     elif type == 'coach':
         judges = Judge.objects.filter(session_id=session_id).order_by('event__display_order')
-        for judge in judges:
-            if judge.d1 != "" and judge.d1 != " ":
-                chats.append(judge.event.name + " D1 - " + judge.d1)
+        #for judge in judges:
+            #if judge.d1 != "" and judge.d1 != " ":
+                #chats.append(judge.event.name + " D1 - " + judge.d1)
         chats.append("Meet Administrator")
     elif type == 'admin':
         judges = Judge.objects.filter(session_id=session_id).order_by('event__display_order')
