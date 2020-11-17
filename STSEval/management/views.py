@@ -3,7 +3,7 @@ from django.http import HttpRequest,JsonResponse,HttpResponse
 from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
-from datetime import datetime
+import datetime
 from .forms import CompetitionForm,SessionForm,JudgeForm,TeamForm,AthleteForm,CameraForm,SponsorForm
 from .models import Competition,Session,Athlete,Judge,Team,Disc,Event,Camera,Sponsor,StartList
 from django.core.mail import send_mail
@@ -34,7 +34,7 @@ def competition_list_all(request):
     if request.GET.get('current','0') == '0':
         comps = Competition.objects.filter(disc=request.GET.get('disc'))
     else:
-        comps = Competition.objects.filter(disc=request.GET.get('disc'),date_gte=datetime.datetime.now() - datetime.timedelta(days=2))
+        comps = Competition.objects.filter(disc=request.GET.get('disc'),date__gte=datetime.datetime.now() - datetime.timedelta(days=2))
 
     context = {
         'comps':comps,
