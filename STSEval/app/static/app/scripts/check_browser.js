@@ -61,7 +61,7 @@ let operaAgent =
 if ((chromeAgent) && (operaAgent))
     chromeAgent = false; 
 
-if (!isSafari && !isChrome  && !chromeAgent) {
+/*if (!isSafari && !isChrome  && !chromeAgent) {
     alert("You must use Chrome on Android or PC, or Safari on IOS");
    window.location = "/";
-}
+}*/
