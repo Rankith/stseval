@@ -6,6 +6,7 @@ var StreamConnected = new Array();
 StreamConnected[1] = false;
 StreamConnected[2] = false;
 var ReCheck = new Array();
+var ReadyStateCheck = new Array();
 var hls_playback_url = new Array();
 hls_playback_url[1] = "";
 hls_playback_url[2] = "";
@@ -30,12 +31,14 @@ function HandleStreamChanges(doc,which) {
             StreamConnected[which] = true;
             hls_playback_url[which] = doc.data().hls_playback_url;
             clearTimeout(ReCheck[which]);
+            clearInterval(ReadyStateCheck[which]);
             StartStream(which);
         }
         else if (doc.data().connected == false) {
             StreamConnected[which] = false;
             console.log("dispose " + which);
             clearTimeout(ReCheck[which]);
+            clearInterval(ReadyStateCheck[which]);
             if (VidJSPlayer[which] != undefined) {
                 VidJSPlayer[which].src({
                     "type": "none",
@@ -65,7 +68,9 @@ function StartStream(which) {
         VidJSPlayer[which].on('error', function () {
             console.log("error " + which);
             if (VidJSPlayer[which].error().code == 4) {
-                ReCheck[which] = setTimeout(CheckStreamIsStreaming(which), 2000);
+                ReCheck[which] = setTimeout(function () {
+                    CheckStreamIsStreaming(which);
+                }, 2000);
                 console.log("4");
                 $("#player-video" + which).hide();
                 $("#player-waiting" + which).css("display", "flex");
@@ -76,14 +81,18 @@ function StartStream(which) {
                 $("#player-waiting").css("display", "flex");
             }*/
         });
-        /*VidJSPlayer.tech().on('retryplaylist', () => {
+        /*VidJSPlayer[which].tech().on('retryplaylist', () => {
             console.log('retryplaylist');
-        });*/
-        /*VidJSPlayer.on('warning', function () {
+        });
+        VidJSPlayer[which].on('warning', function () {
             console.log(VidJSPlayer.warning());
         });*/
 
     }
+    clearInterval(ReadyStateCheck[which]);
+    ReadyStateCheck[which] = setInterval(function () {
+        CheckReadyState(which);
+    }, 4000);
     $("#player-waiting" + which).hide();
     $("#player-video" + which).show();
     clearTimeout(ReCheck[which]);
@@ -95,6 +104,16 @@ function StartStream(which) {
 }
 
 function CheckStreamIsStreaming(which) {
+    console.log("Check streaming");
     if (StreamConnected[which])
         StartStream(which);
+}
+
+function CheckReadyState(which) {
+    console.log("Ready State Check: " + VidJSPlayer[which].readyState());
+    if (VidJSPlayer[which].readyState() == 1) {
+        clearInterval(ReadyStateCheck[which]);
+
+        StartStream(which);
+    }
 }
