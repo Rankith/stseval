@@ -146,7 +146,7 @@ def login_judge(request):
             email = login_form.cleaned_data.get('email')
             password = login_form.cleaned_data.get('password')
             type = None
-            judges = Judge.objects.filter(session__competition__date__gte= datetime.datetime.now() -  datetime.timedelta(days=2)) #got possible judges
+            judges = Judge.objects.filter(Q(session__competition__date__gte=datetime.datetime.now() - datetime.timedelta(days=1)) | Q(session__competition__test=True)) #got possible judges
             if len(judges) > 0:
                 judges = judges.filter(Q(d1_email=email,d1_password=password) | Q(d2_email=email,d2_password=password) | Q(e1_email=email,e1_password=password) | Q(e2_email=email,e2_password=password) | Q(e3_email=email,e3_password=password) | Q(e4_email=email,e4_password=password))
                 possibles = []
@@ -234,7 +234,7 @@ def login_camera(request):
             email = login_form.cleaned_data.get('email')
             password = login_form.cleaned_data.get('password')
             type = None
-            cameras = Camera.objects.filter(session__competition__date__gte= datetime.datetime.now() -  datetime.timedelta(days=2)) #got possible cameras
+            cameras = Camera.objects.filter(Q(session__competition__date__gte=datetime.datetime.now() - datetime.timedelta(days=1)) | Q(session__competition__test=True))  #got possible cameras
             if len(cameras) > 0:
                 camera = cameras.filter(email=email,password=password)
                 if len(camera) == 1:
@@ -276,7 +276,7 @@ def login_coach(request):
             email = login_form.cleaned_data.get('email')
             password = login_form.cleaned_data.get('password')
             type = None
-            teams = Team.objects.filter(session__competition__date__gte= datetime.datetime.now() -  datetime.timedelta(days=2)) #got possible teams
+            teams = Team.objects.filter(Q(session__competition__date__gte=datetime.datetime.now() - datetime.timedelta(days=1)) | Q(session__competition__test=True))  #got possible teams
             if len(teams) > 0:
                 coach = teams.filter(head_coach_email=email,coach_password=password)
                 if len(coach) == 1:
