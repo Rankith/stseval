@@ -35,7 +35,7 @@ function addAudio(sdpStr, audioLine) {
   return sdpStrRet;
 }
 
-function addVideo(sdpStr, videoLine) {
+function addVideo(sdpStr, videoLine,bitrate) {
   let sdpLines = sdpStr.split(/\r\n/);
   let sdpSection = 'header';
   let hitMID = false;
@@ -82,6 +82,8 @@ function addVideo(sdpStr, videoLine) {
     }
 
   }
+    alert("Setting Custom AS");
+    sdpStrRet += 'b=AS:' + bitrate + '\r\n';
   return sdpStrRet;
 }
 
@@ -194,7 +196,7 @@ export function mungeSDPPublish(sdpStr, mungeData) {
 
   }
   sdpStrRet = addAudio(sdpStrRet, deliverCheckLine(audioChoice, "audio"));
-  sdpStrRet = addVideo(sdpStrRet, deliverCheckLine(videoChoice, "video"));
+  sdpStrRet = addVideo(sdpStrRet, deliverCheckLine(videoChoice, "video"),mungeData.videoBitrate);
   sdpStr = sdpStrRet;
   sdpLines = sdpStr.split(/\r\n/);
   sdpStrRet = '';
@@ -235,7 +237,8 @@ export function mungeSDPPublish(sdpStr, mungeData) {
       hitMID = false;
     }
 
-    if (browserDetails.browser === 'chrome') {
+      if (browserDetails.browser === 'chrome') {
+          //console.log("building chrome " + sdpLine);
       if (sdpLine.indexOf("a=mid:") === 0 || sdpLine.indexOf("a=rtpmap") == 0) {
         if (!hitMID) {
           if ('audio'.localeCompare(sdpSection) == 0) {
@@ -246,7 +249,9 @@ export function mungeSDPPublish(sdpStr, mungeData) {
             hitMID = true;
           }
           else if ('video'.localeCompare(sdpSection) == 0) {
-            if (mungeData.videoBitrate !== undefined) {
+              //console.log("chrome vid " + sdpLine);
+              if (mungeData.videoBitrate !== undefined) {
+                  //console.log("chrome vid add " + sdpLine);
               sdpStrRet += '\r\nb=CT:' + (mungeData.videoBitrate);
               sdpStrRet += '\r\nb=AS:' + (mungeData.videoBitrate);
               if (mungeData.videoFrameRate !== undefined) {
@@ -263,7 +268,8 @@ export function mungeSDPPublish(sdpStr, mungeData) {
               if (('vp9'.localeCompare(match) == 0) || ('vp8'.localeCompare(match) == 0) || ('h264'.localeCompare(match) == 0) ||
                 ('red'.localeCompare(match) == 0) || ('ulpfec'.localeCompare(match) == 0) || ('rtx'.localeCompare(match) == 0)) {
                 if (mungeData.videoBitrate !== undefined) {
-                  sdpStrRet += '\r\na=fmtp:' + rtpmapID[1] + ' x-google-min-bitrate=' + (mungeData.videoBitrate) + ';x-google-max-bitrate=' + (mungeData.videoBitrate);
+                    sdpStrRet += '\r\na=fmtp:' + rtpmapID[1] + ' x-google-min-bitrate=' + (mungeData.videoBitrate) + ';x-google-max-bitrate=' + (mungeData.videoBitrate);
+                    //sdpStrRet += '\r\na=fmtp:' + rtpmapID[1] + ' x-google-min-bitrate=' + (mungeData.videoBitrate) + ';x-google-max-bitrate=' + (mungeData.videoBitrate);
                 }
               }
 

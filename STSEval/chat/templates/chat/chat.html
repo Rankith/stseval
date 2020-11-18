@@ -78,10 +78,10 @@
     function SetChatNotices() {
         let TotalNotifications = 0;
         for (var key in ChatNotices) {
-            console.log("on key: " + key);
+            //console.log("on key: " + key);
             let Notifications = ChatNotices[key];
             TotalNotifications += Notifications;
-            console.log(Notifications);
+            //console.log(Notifications);
             if (Notifications > 0) {
                 $("#opt" + key).addClass("chat-notice");
             }
@@ -114,8 +114,8 @@
 
     function AddChatMessage(id,data) {
         CheckCreateChat(id);
-        console.log(data.message);
-        console.log($("#divChat" + id));
+        //console.log(data.message);
+        //console.log($("#divChat" + id));
         if ($("#divChat" + id).children(".chat-message-name").last().data("sender") != data.sender) {
             let header = data.sender;
             if (header == chatter)
@@ -141,7 +141,7 @@
             let disp = " style='display:none'";
             if ($("#ChatSelect").val() == id)
                 disp = "";
-            console.log("disp: " + disp);
+            //console.log("disp: " + disp);
             $("#divChatMessages").append("<div id='divChat" + id + "' class='chat-history'" + disp + "></div>");
         }
     }
@@ -156,10 +156,10 @@
         .onSnapshot(function (querySnapshot) {
             var m = [];
             MessageHolder = querySnapshot;
-            console.log("chat snap");
+            //console.log("chat snap");
             querySnapshot.docChanges().forEach(function (change) {
                 if (change.type === "added") {
-                    console.log(change.doc.id);
+                    //console.log(change.doc.id);
                     db.collection("sessions").doc(Session).collection("chats").doc(change.doc.id).collection("messages").orderBy("timestamp", "asc").onSnapshot(function (message) {
                         
                         message.docChanges().forEach(function (m) {

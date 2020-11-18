@@ -105,8 +105,8 @@ $(document).ready(() => {
     let constraints = JSON.parse(JSON.stringify(WowzaWebRTCPublish.getState().constraints));
     if (frameSize === 'default')
     {
-      constraints.video["width"] = { min: "640", ideal: "1280", max: "1920" };
-      constraints.video["height"] = { min: "360", ideal: "720", max: "1080" };
+      constraints.video["width"] = { min: "640", ideal: "1280", max: "1280" };
+      constraints.video["height"] = { min: "360", ideal: "720", max: "720" };
     }
     else
     {
