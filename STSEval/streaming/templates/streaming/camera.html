@@ -245,6 +245,7 @@
 </script>
 <script type="text/javascript">
     var SetupInterval;
+    var LastStatus = "";
     CheckStreamStatus().then((state) => {
         if (state != "started") {
             $('#modalLoading').modal('show');
@@ -273,19 +274,23 @@
     }
 
     function UpdateStreamStatus(status) {
-         $.ajax({
-            url: "/streaming/update_stream_status/",
-            type: "POST",
-            headers: { "X-CSRFToken": token },
-            data: {
-                'camera': Camera,
-                'status':status,
-            },
-            dataType: 'json',
-            success: function (data) {
-               
-            }
-        });
+        if (status != "connecting" && status != LastStatus) {
+            LastStatus = status;
+            console.log("Updateing Status: " + status);
+            $.ajax({
+                url: "/streaming/update_stream_status/",
+                type: "POST",
+                headers: { "X-CSRFToken": token },
+                data: {
+                    'camera': Camera,
+                    'status': status,
+                },
+                dataType: 'json',
+                success: function (data) {
+
+                }
+            });
+        }
     }
 
     async function CheckStreamStats() {
