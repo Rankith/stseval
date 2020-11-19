@@ -23,6 +23,7 @@ def check_update_wowza_player():
         app.firebase.set_stream(stream.camera_set.first().session.id,stream)
 
 def check_and_stop_streams():
+    
     AUTO_SHUTOFF = 900#15 minutes
     streams = WowzaStream.objects.filter(status=WowzaStream.STARTED)
     wowza_instance = LiveStreams(
@@ -30,6 +31,7 @@ def check_and_stop_streams():
         access_key = WOWZA_ACCESS_KEY
     )
     for s in streams:
+        #this sometimes marks a stream as not connected.  Maybe remove the connection status update if we can?
         response = wowza_instance.info(s.stream_id,'stats')
         con = response["live_stream"]["connected"]["value"]
         if con == 'No':
