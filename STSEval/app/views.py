@@ -575,7 +575,7 @@ def get_team_scores(request):
     team = ""
     lvl = ""
     count = 0
-    max = 3
+    max = 5
     scores = []
     for routine in routines:
         if team != routine.athlete.team.name or level != routine.athlete.level.name:
@@ -586,7 +586,7 @@ def get_team_scores(request):
             level = routine.athlete.level.name
         if count < max:
             count += 1
-            scores[-1]['score'] += routine.score_final
+            scores[-1]['score'] += round(routine.score_final,2)
 
     #sort by score
     scores = sorted(scores,key = lambda i: i['score'],reverse=True)
