@@ -69,6 +69,7 @@
 <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid-theme.min.css" />
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid.min.js"></script>
 <script src="https://vjs.zencdn.net/7.6.6/video.js"></script>
+<!--<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>-->
 <script src="{% static 'app/scripts/stream_listener_spectator.js' %}?v=1"></script>
 <script type="text/javascript">
     var ev = new Array();
@@ -82,6 +83,7 @@
     var SessionName = "{{session}}";
     var token = "{{ csrf_token }}";
     var VidJSPlayer = new Array();
+    var HLSPlayer = new Array();
     var AthleteNames = new Array();
     var ScoreboardOverlay = {{scoreboard_overlay|lower}};
     {% for athlete in athletes %}

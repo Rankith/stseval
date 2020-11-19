@@ -144,6 +144,7 @@
     <Content Include="app\static\app\scripts\sortable.min.js" />
     <Content Include="app\static\app\scripts\check_browser.js" />
     <Content Include="app\static\app\scripts\start_list.js" />
+    <Content Include="app\static\app\scripts\stream_listener_spectator_hls.js" />
     <Content Include="app\static\app\scripts\stream_listener_spectator.js" />
     <Content Include="app\static\app\sounds\message_notice.mp3" />
     <Content Include="app\static\app\sounds\message_notice.ogg" />
