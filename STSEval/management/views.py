@@ -242,6 +242,11 @@ def athlete_delete(request,id):
 
 @login_required(login_url='/account/login/admin/')
 def create_start_lists(request,session_id):
+    create_start_List_direct(session_id)
+    
+    return HttpResponse(status=200)
+
+def create_start_List_direct(session_id):
     session = Session.objects.get(pk=session_id)
     athletes = Athlete.objects.filter(team__session=session).order_by('-rotation','order')
     events = Event.objects.filter(disc=session.competition.disc).order_by('display_order')
@@ -265,8 +270,6 @@ def create_start_lists(request,session_id):
             order = order + 1
             sl = StartList(session=session,event=e,athlete=ath,order=order)
             sl.save()
-    
-    return HttpResponse(status=200)
 
 def athlete_update_order(request):
     session = Session.objects.get(pk=request.POST.get('session'))
@@ -424,6 +427,8 @@ def setup_finish(request,id):
 
 @login_required(login_url='/account/login/admin/')
 def send_session_emails(request,session_id):
+    if len(StartList.objects.filter(session_id=session_id)) <= 0:
+        create_start_List_direct(session_id)
     judges = Judge.objects.filter(session_id=session_id)
     cameras = Camera.objects.filter(session_id=session_id)
     teams = Team.objects.filter(session_id=session_id)
