@@ -235,7 +235,7 @@
 {% endblock %}
 
 {% block scripts %}
-<script type="module" src="{% static 'app/scripts/wowza/publish.js' %}?v=1"></script>
+<script type="module" src="{% static 'app/scripts/wowza/publish.js' %}?v=1.1"></script>
 <script type="text/javascript">
     $("#sdpURL").val('{{stream.sdp_url}}');
     $("#applicationName").val('{{stream.application_name}}');
