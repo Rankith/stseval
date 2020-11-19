@@ -3,7 +3,7 @@
  * This code is licensed pursuant to the BSD 3-Clause License.
  */
 
-import { mungeSDPPublish } from './WowzaMungeSDP.js?v=1.1';
+import { mungeSDPPublish } from './WowzaMungeSDP.js?v=1.2';
 import WowzaPeerConnectionPublish from './WowzaPeerConnectionPublish.js';
 import SoundMeter from './SoundMeter.js';
 

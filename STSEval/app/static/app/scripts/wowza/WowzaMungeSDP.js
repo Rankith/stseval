@@ -82,7 +82,7 @@ function addVideo(sdpStr, videoLine,bitrate) {
     }
 
   }
-    alert("Setting Custom AS bitrate: " + bitrate);
+    //alert("Setting Custom AS bitrate: " + bitrate);
     sdpStrRet += 'b=AS:' + bitrate + '\r\n';
   return sdpStrRet;
 }

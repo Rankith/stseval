@@ -62,7 +62,7 @@
             </div>
              
         </div>
-        <div class="col-md-4 col-sm-12" id="publish-settings" >
+        <div class="col-md-4 col-sm-12" id="publish-settings" style="display:none" >
             <form id="publish-settings-form">
             <div class="row">
                 <div class="col-12">
@@ -235,7 +235,7 @@
 {% endblock %}
 
 {% block scripts %}
-<script type="module" src="{% static 'app/scripts/wowza/publish.js' %}?v=1.1"></script>
+<script type="module" src="{% static 'app/scripts/wowza/publish.js' %}?v=1.21"></script>
 <script type="text/javascript">
     $("#sdpURL").val('{{stream.sdp_url}}');
     $("#applicationName").val('{{stream.application_name}}');
