@@ -10,15 +10,18 @@ var ReadyStateCheck = new Array();
 var hls_playback_url = new Array();
 hls_playback_url[1] = "";
 hls_playback_url[2] = "";
+var VideoPlayer = new Array();
 
 function CheckStream(doc,which) {
     console.log("Check Stream " + which);
     if (doc.data().stream != Stream[which]) {
-        if (StreamListener[which] != undefined)
+        if (StreamListener[which] != undefined) {
+            //console.log("Release Stream Listener " + which);
             StreamListener[which]();//release stream listener
+        }
         Stream[which] = doc.data().stream;
         console.log("Setting Stream Listener " + which + " To " + Stream[which]);
-        StreamListener = db.collection("sessions").doc(Session).collection("streams").doc(Stream[which].toString()).onSnapshot(function (doc) {
+        StreamListener[which] = db.collection("sessions").doc(Session).collection("streams").doc(Stream[which].toString()).onSnapshot(function (doc) {
             HandleStreamChanges(doc,which);
         });
     }
@@ -32,15 +35,24 @@ function HandleStreamChanges(doc,which) {
             hls_playback_url[which] = doc.data().hls_playback_url;
             clearTimeout(ReCheck[which]);
             clearInterval(ReadyStateCheck[which]);
+            if (HLSPlayer[which] != undefined) {
+                HLSPlayer[which].destroy();
+                //HLSPlayer[which].loadSource("");
+                HLSPlayer[which] = undefined;
+            }
             StartStream(which);
         }
         else if (doc.data().connected == false) {
             StreamConnected[which] = false;
             console.log("dispose " + which);
+            $("#player-waiting" + which).show();
+            $("#player-video" + which).hide();
             clearTimeout(ReCheck[which]);
             clearInterval(ReadyStateCheck[which]);
             if (HLSPlayer[which] != undefined) {
-                HLSPlayer[which].loadSource("");
+                HLSPlayer[which].destroy();
+                //HLSPlayer[which].loadSource("");
+                HLSPlayer[which] = undefined;
             }
         }
         /*if (doc.data().connected == true) {
@@ -59,12 +71,17 @@ function HandleStreamChanges(doc,which) {
 
 }
 function StartStream(which) {
+    console.log("Start Stream");
     if (HLSPlayer[which] == undefined) {
         HLSPlayer[which] = new Hls();
-        console.log(document.getElementById("player-video" + which));
-        HLSPlayer[which].attachMedia(document.getElementById("player-video" + which));
+        VideoPlayer[which] = document.getElementById("player-video" + which);
+        //console.log(document.getElementById("player-video" + which));
+        HLSPlayer[which].attachMedia(VideoPlayer[which]);
+        HLSPlayer[which].on(Hls.Events.MANIFEST_PARSED, function () {
+            VideoPlayer[which].play();
+        });
         //$(".vjs-tech").show();
-        HLSPlayer[which].on('error', function () {
+        /*HLSPlayer[which].on('error', function () {
             console.log("error " + which);
             if (HLSPlayer[which].error().code == 4) {
                 ReCheck[which] = setTimeout(function () {
@@ -78,8 +95,8 @@ function StartStream(which) {
                 ReCheck = setInterval(StartStream, 2000);
                 $("#player-video").hide();
                 $("#player-waiting").css("display", "flex");
-            }*/
-        });
+            }
+        });*/
         /*VidJSPlayer[which].tech().on('retryplaylist', () => {
             console.log('retryplaylist');
         });
@@ -88,17 +105,15 @@ function StartStream(which) {
         });*/
 
     }
-    clearInterval(ReadyStateCheck[which]);
-    ReadyStateCheck[which] = setInterval(function () {
+    //clearInterval(ReadyStateCheck[which]);
+    /*ReadyStateCheck[which] = setInterval(function () {
         CheckReadyState(which);
-    }, 4000);
+    }, 4000);*/
     $("#player-waiting" + which).hide();
     $("#player-video" + which).show();
-    clearTimeout(ReCheck[which]);
-    HLSPlayer[which].attachMedia(hls_playback_url[which]);
-    HLSPlayer[which].on(Hls.Events.MANIFEST_PARSED, function () {
-        document.getElementById("player-video" + which).play();
-    });
+    //clearTimeout(ReCheck[which]);
+    HLSPlayer[which].loadSource(hls_playback_url[which]);
+   
    
 }
 
@@ -109,8 +124,8 @@ function CheckStreamIsStreaming(which) {
 }
 
 function CheckReadyState(which) {
-    //console.log("Ready State Check: " + HLSPlayer[which].readyState());
-    /*if (HLSPlayer[which].readyState() == 1) {
+   /* console.log("Ready State Check: " + HLSPlayer[which].readyState());
+    if (HLSPlayer[which].readyState() == 1) {
         clearInterval(ReadyStateCheck[which]);
 
         StartStream(which);

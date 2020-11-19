@@ -440,6 +440,7 @@ input[type="checkbox"].input-validation-error {
 .live-video {
     max-width: 854px;
     max-height: 500px;
+    min-height: 480px;
 }
 
 .live-container {

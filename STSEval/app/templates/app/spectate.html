@@ -17,7 +17,7 @@
                     </div>
                     
                     <div id="player-waiting1" style="height:480px;display:flex" class="align-items-center"><h1>Waiting for Camera</h1></div>
-                    <video id="player-video1" class="live-video video-js vjs-16-9" style="display:none" disablePictureInPicture autoplay muted></video>
+                    <video id="player-video1" class="live-video" style="display:none" controls autoplay></video>
                 </div>
                 <div id="divAthlete1" align="center"></div>
             </div>
@@ -25,7 +25,7 @@
             <div class="col-12 col-xl-6 pr-4" align="right">
                 <div id="play-video-container1" class="live-container d-flex align-items-center justify-content-center flex-column">
                     <div id="player-waiting1" style="height:480px;display:flex" class="align-items-center"><h1>Waiting for Camera</h1></div>
-                    <video id="player-video1" class="live-video video-js vjs-16-9" style="display:none" disablePictureInPicture autoplay muted></video>
+                    <video id="player-video1" class="live-video video-js" style="display:none" controls autoplay></video>
                     <div class="d-flex w-100">
                         {% for ev in events %}
                             <div class="flex-grow-1">
@@ -39,7 +39,7 @@
             <div class="col-12 col-xl-6" align="left">
                 <div id="play-video-container2" class="live-container d-flex align-items-center justify-content-center flex-column">
                     <div id="player-waiting2" style="height:480px;display:flex" class="align-items-center"><h1>Waiting for Camera</h1></div>
-                    <video id="player-video2" class="live-video video-js vjs-16-9" style="display:none" disablePictureInPicture autoplay muted></video>
+                    <video id="player-video2" class="live-video video-js" style="display:none" controls autoplay></video>
                     <div class="d-flex w-100">
                         {% for ev in events %}
                             <div class="flex-grow-1">
@@ -68,9 +68,9 @@
 <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid.min.css" />
 <link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid-theme.min.css" />
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid.min.js"></script>
-<script src="https://vjs.zencdn.net/7.6.6/video.js"></script>
-<!--<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>-->
-<script src="{% static 'app/scripts/stream_listener_spectator.js' %}?v=1"></script>
+<!--<script src="https://vjs.zencdn.net/7.6.6/video.js"></script>-->
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<script src="{% static 'app/scripts/stream_listener_spectator_hls.js' %}?v=1"></script>
 <script type="text/javascript">
     var ev = new Array();
     {% if display_type == 'single' %}
@@ -105,6 +105,7 @@
         if (refs[which] != undefined)
             refs[which]();//release event listener
         console.log("Setting Event Listener " + which + " To " + ev[which]);
+        CurrentAthlete[which] = -1;
         refs[which] = db.collection("sessions").doc(Session).collection("event_managers").doc(ev[which]).onSnapshot(function (doc) {
             HandleEventChanges(doc,which);
         });
@@ -112,7 +113,9 @@
 
     function HandleEventChanges(doc, which) {
         if (doc.data() != undefined) {
+            //console.log("Handle Evet Changes " + which);
             if (CurrentAthlete[which] != doc.data().athlete_id) {
+                CurrentAthlete[which] = doc.data().athlete_id;
                 if (ScoreboardOverlay)
                     LoadScoreboard();
                 $("#divAthlete" + which).html(AthleteNames[doc.data().athlete_id]);

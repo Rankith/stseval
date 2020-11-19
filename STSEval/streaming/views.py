@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render,redirect
 from datetime import datetime,timezone
 from django.http import HttpRequest,JsonResponse,HttpResponse
 from streaming.wowza import LiveStreams, Transcoders, StreamTargets, WOWZA_API_KEY, WOWZA_ACCESS_KEY
@@ -6,7 +6,20 @@ from streaming.models import WowzaStream
 import app.firebase
 from management.models import Camera
 
+def valid_login_type(match=None):
+    def decorator(func):
+        def decorated(request, *args, **kwargs):
+            if match in request.session.get('type'):
+                return func(request, *args, **kwargs)
+            elif match == 'session' and request.session.get('session',None) != None:
+                return func(request, *args, **kwargs)
+            else:
+                return redirect('/')
+        return decorated
+    return decorator
+
 # Create your views here.
+@valid_login_type(match='camera')
 def camera(request):
     camera = Camera.objects.get(pk=request.session.get('camera'))
     #make stream target
