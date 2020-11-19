@@ -571,22 +571,15 @@ def get_routines_by_SE(request):
     return JsonResponse(list(routines),safe=False)
 
 def get_team_scores(request):
-    routines = Routine.objects.filter(session_id=request.POST.get('Session'),event=request.POST.get('Ev'),status=Routine.FINISHED).order_by('athlete__team','athlete__level','-score_final')
-    team = ""
-    lvl = ""
-    count = 0
-    max = 3
-    scores = []
-    for routine in routines:
-        if team != routine.athlete.team.name or level != routine.athlete.level.name:
-            #setup new dict entry and set count to 0
-            scores.append({'team': routine.athlete.team.name,'lvl':routine.athlete.level.name,'score':0})
-            count = 0
-            team = routine.athlete.team.name
-            level = routine.athlete.level.name
-        if count < max:
-            count += 1
-            scores[-1]['score'] += round(routine.score_final,2)
+    scores = calc_team_scores(request.POST.get('Session'),request.POST.get('Ev'))
+    teams = Team.objects.filter(session_id=request.POST.get('Session'))
+    team_scores = []
+    for team in teams:
+        this_score = next((s for s in scores if s['team'] == team.name),None)
+        if this_score != None:
+            team_scores.append({'team':team.name,'score':this_score['score']})
+        else:
+            team_scores.append({'team':team.name,'score':0})
 
     #sort by score
     scores = sorted(scores,key = lambda i: i['score'],reverse=True)
