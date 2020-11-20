@@ -284,7 +284,21 @@
        // console.log("hide stuff");
         // $("#play-video-container").hide();
     }
-
+    function ReadyUp() {
+        $.ajax({
+            url: "/set_judge_ready/" + Session,
+            type: "POST",
+            headers: { "X-CSRFToken": token },
+            data: {
+                'ready': true,
+                'judge': "d1ready",
+                'event':ev,
+            },
+            success: function (data) {
+              
+            }
+        });
+    }
     function ShowStartList() {
          
         //$("#modalMainDoc").addClass("modal-lg");
@@ -501,7 +515,7 @@
         if ((ev == "FX" || ev == "HB") && ScoringType != "JO4567")
             $("#tdBonus").html("Connections and Bonus: ");
 
-       
+        ReadyUp();
         SetDotsArea();
         //$("#divDotsArea").width(VidWidth - VideoLossRight);
         document.getElementById('divDotsArea').addEventListener('click', NewDeduction);

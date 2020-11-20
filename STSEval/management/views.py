@@ -162,10 +162,13 @@ def judges_check_missing_call(session_id):
 @login_required(login_url='/account/login/admin/')
 def setup_athletes(request,id):
     session = Session.objects.get(pk=id)
+    events = Event.objects.filter(disc=session.competition.disc).order_by('display_order')
+    rotation_note = "A = " + events[0].name + " B = " + events[1].name + " etc."
     context = {
         'title': 'Competition Setup (3/6)',
         'session_name': session.full_name,
         'id':session.id,
+        'rotation_note':rotation_note,
     }
     return render(request,'management/setup_athletes.html',context)
 
@@ -242,9 +245,13 @@ def athlete_delete(request,id):
 
 @login_required(login_url='/account/login/admin/')
 def create_start_lists(request,session_id):
-    create_start_List_direct(session_id)
-    
-    return HttpResponse(status=200)
+    if len(StartList.objects.filter(session_id=session_id,completed=True)) <= 0:
+        create_start_List_direct(session_id)
+        message = "Start lists generated."
+    else:
+        message = "Session in progress, make any changes on the Session Overview screen."
+
+    return JsonResponse({'message':message})
 
 def create_start_List_direct(session_id):
     session = Session.objects.get(pk=session_id)

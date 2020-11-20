@@ -105,6 +105,7 @@ def routine_setup(session,e,athlete,camera):
             u'e2include':True,
             u'e3include':True,
             u'e4include':True,
+            u'd1ready':False,
             u'e1ready':False,
             u'e2ready':False,
             u'e3ready':False,

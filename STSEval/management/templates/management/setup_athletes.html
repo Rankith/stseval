@@ -47,7 +47,10 @@
 	        </div>
 	    </div>
     </div>
+    <div id="divRotationNote" style="font-size:.85rem">NOTE: Athlete rotation signifies which event they start on. {{rotation_note}}</div>
     <br/>
+    
+    <div id="divRotationNote"  style="font-size:.85rem">Once all athletes are entered and in the correct order, use the button below to create the start lists.<br/>If you make changes just click this button again.</div>
     <button href="#" id="btnGenStartList" type="button" class="btn btn-main management-button" onclick="GenerateStartList()">Generate Start Lists</button>
     <br/>
     <div>
@@ -292,8 +295,9 @@
          $("#modalMainDoc").removeClass("modal-lg");
         $.ajax({
             url: "/management/create_start_lists/" + SessionID,
-            success: function () {
-                alert("Start lists generated");
+            dataType: 'json',
+            success: function (data) {
+                alert(data.message);
                 //$("#btnNext").addClass("ui-disabled");
             }
         });

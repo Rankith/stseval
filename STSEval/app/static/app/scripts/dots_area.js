@@ -225,13 +225,13 @@ function DedClick(ded) {
 function VibrateDeduction(ded) {
     try {
         if (ded == 1)
-            window.navigator.vibrate(50);
+            window.navigator.vibrate(10);
         else if (ded == 3)
-            window.navigator.vibrate(100);
+            window.navigator.vibrate(20);
         else if (ded == 5)
-            window.navigator.vibrate(150);
+            window.navigator.vibrate(30);
         else if (ded == 10)
-            window.navigator.vibrate(200);
+            window.navigator.vibrate(40);
     } catch (error) {
 
     }

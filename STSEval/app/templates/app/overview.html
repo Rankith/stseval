@@ -19,19 +19,19 @@
             <h3 class="pl-4">Officials</h3>
             <div id="divOfficials">
                 {% if judges.d1 != '' %}
-                    <div id="divD1">D1: {{judges.d1}}</div>
+                    <div id="divD1"><span id="divJudgeDotD1" class="status-dot-small status-dot-red mr-1"></span> D1: {{judges.d1}}</div>
                 {% endif %}
                 {% if judges.e1 != '' %}
-                    <div id="divE1">E1: {{judges.e1}}</div>
+                    <div id="divE1"><span id="divJudgeDotE1" class="status-dot-small status-dot-red mr-1"></span> E1: {{judges.e1}}</div>
                 {% endif %}
                 {% if judges.e2 != '' %}
-                    <div id="divE2">E2: {{judges.e2}}</div>
+                    <div id="divE2"><span id="divJudgeDotE2" class="status-dot-small status-dot-red mr-1"></span> E2: {{judges.e2}}</div>
                 {% endif %}
                 {% if judges.e3 != '' %}
-                    <div id="divE3">E3: {{judges.e3}}</div>
+                    <div id="divE3"><span id="divJudgeDotE3" class="status-dot-small status-dot-red mr-1"></span> E3: {{judges.e3}}</div>
                 {% endif %}
                 {% if judges.e4 != '' %}
-                    <div id="divE4">E4: {{judges.e4}}</div>
+                    <div id="divE4"><span id="divJudgeDotE4" class="status-dot-small status-dot-red mr-1"></span> E4: {{judges.e4}}</div>
                 {% endif %}
             </div>
             <div id="divCameras">
@@ -88,6 +88,7 @@
         if (CurrentAthlete != doc.data().athlete_id) {
             $("#divAthlete").html(AthleteNames[doc.data().athlete_id]);
             CheckStream(doc);
+            CheckJudges(doc);
             LoadStartList();
         }
     });
@@ -119,6 +120,32 @@
 
     function SwapEvent(evIn) {
         window.location = "/overview/" + Session + "/" + evIn;
+    }
+
+    function CheckJudges(doc) {
+        if (doc.data().routine != undefined) {
+            if (doc.data().d1ready)
+                $("#divJudgeDotD1").removeClass("status-dot-red").addClass("status-dot-green");
+            else
+                $("#divJudgeDotD1").addClass("status-dot-red").removeClass("status-dot-green");
+            if (doc.data().e1ready)
+                $("#divJudgeDotE1").removeClass("status-dot-red").addClass("status-dot-green");
+            else
+                $("#divJudgeDotE1").addClass("status-dot-red").removeClass("status-dot-green");
+            if (doc.data().e2ready)
+                $("#divJudgeDotE2").removeClass("status-dot-red").addClass("status-dot-green");
+            else
+                $("#divJudgeDotE2").addClass("status-dot-red").removeClass("status-dot-green");
+            if (doc.data().e3ready)
+                $("#divJudgeDotE3").removeClass("status-dot-red").addClass("status-dot-green");
+            else
+                $("#divJudgeDotE3").addClass("status-dot-red").removeClass("status-dot-green");
+
+            if (doc.data().e4ready)
+                $("#divJudgeDotE4").removeClass("status-dot-red").addClass("status-dot-green");
+            else
+                $("#divJudgeDotE4").addClass("status-dot-red").removeClass("status-dot-green");
+        }
     }
 
     
