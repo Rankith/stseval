@@ -19,7 +19,7 @@ def check_convert_video():
     for routine in routines:
         vidfile=settings.MEDIA_ROOT + '/routine_videos/' + str(routine.id) + ".webm"
         if os.path.exists(vidfile):
-            os.system("ffmpeg -i {0} -vcodec libx264 -profile:v main -level 3.1 -preset medium -crf 23 -x264-params ref=4 -acodec copy -movflags +faststart {1}".format(vidfile,vidfile.replace("webm","mp4")))
+            os.system("ffmpeg -i {0} -c:v libx264 -profile:v main -vf format=yuv420p -c:a aac -movflags +faststart {1}".format(vidfile,vidfile.replace("webm","mp4")))
             routine.video_converted = True
             routine.save()
 
