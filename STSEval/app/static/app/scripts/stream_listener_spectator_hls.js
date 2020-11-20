@@ -33,8 +33,8 @@ function HandleStreamChanges(doc,which) {
         if (doc.data().hls_playback_url != undefined && doc.data().hls_playback_url != "" && doc.data().connected == true) {
             StreamConnected[which] = true;
             hls_playback_url[which] = doc.data().hls_playback_url;
-            clearTimeout(ReCheck[which]);
-            clearInterval(ReadyStateCheck[which]);
+            //clearTimeout(ReCheck[which]);
+            //clearInterval(ReadyStateCheck[which]);
             if (HLSPlayer[which] != undefined) {
                 HLSPlayer[which].destroy();
                 //HLSPlayer[which].loadSource("");
@@ -47,8 +47,8 @@ function HandleStreamChanges(doc,which) {
             console.log("dispose " + which);
             $("#player-waiting" + which).show();
             $("#player-video" + which).hide();
-            clearTimeout(ReCheck[which]);
-            clearInterval(ReadyStateCheck[which]);
+            //clearTimeout(ReCheck[which]);
+            //clearInterval(ReadyStateCheck[which]);
             if (HLSPlayer[which] != undefined) {
                 HLSPlayer[which].destroy();
                 //HLSPlayer[which].loadSource("");
@@ -73,13 +73,23 @@ function HandleStreamChanges(doc,which) {
 function StartStream(which) {
     console.log("Start Stream");
     if (HLSPlayer[which] == undefined) {
-        HLSPlayer[which] = new Hls();
         VideoPlayer[which] = document.getElementById("player-video" + which);
-        //console.log(document.getElementById("player-video" + which));
-        HLSPlayer[which].attachMedia(VideoPlayer[which]);
-        HLSPlayer[which].on(Hls.Events.MANIFEST_PARSED, function () {
-            VideoPlayer[which].play();
-        });
+        if (Hls.isSupported()) { 
+            HLSPlayer[which] = new Hls();
+            
+            //console.log(document.getElementById("player-video" + which));
+            HLSPlayer[which].attachMedia(VideoPlayer[which]);
+            HLSPlayer[which].on(Hls.Events.MANIFEST_PARSED, function () {
+                VideoPlayer[which].play();
+            });
+            HLSPlayer[which].loadSource(hls_playback_url[which]);
+        }
+        else if (VideoPlayer[which].canPlayType('application/vnd.apple.mpegurl')) {
+            VideoPlayer[which].src = hls_playback_url[which];
+            VideoPlayer[which].addEventListener('loadedmetadata', function () {
+                VideoPlayer[which].play();
+            });
+        }
         //$(".vjs-tech").show();
         /*HLSPlayer[which].on('error', function () {
             console.log("error " + which);
@@ -112,7 +122,7 @@ function StartStream(which) {
     $("#player-waiting" + which).hide();
     $("#player-video" + which).show();
     //clearTimeout(ReCheck[which]);
-    HLSPlayer[which].loadSource(hls_playback_url[which]);
+    
    
    
 }

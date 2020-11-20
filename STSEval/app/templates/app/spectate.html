@@ -25,7 +25,7 @@
             <div class="col-12 col-xl-6 pr-4" align="right">
                 <div id="play-video-container1" class="live-container d-flex align-items-center justify-content-center flex-column">
                     <div id="player-waiting1" style="height:480px;display:flex" class="align-items-center"><h1>Waiting for Camera</h1></div>
-                    <video id="player-video1" class="live-video video-js" style="display:none" controls autoplay></video>
+                    <video id="player-video1" class="live-video" style="display:none" controls autoplay></video>
                     <div class="d-flex w-100">
                         {% for ev in events %}
                             <div class="flex-grow-1">
@@ -39,7 +39,7 @@
             <div class="col-12 col-xl-6" align="left">
                 <div id="play-video-container2" class="live-container d-flex align-items-center justify-content-center flex-column">
                     <div id="player-waiting2" style="height:480px;display:flex" class="align-items-center"><h1>Waiting for Camera</h1></div>
-                    <video id="player-video2" class="live-video video-js" style="display:none" controls autoplay></video>
+                    <video id="player-video2" class="live-video" style="display:none" controls autoplay></video>
                     <div class="d-flex w-100">
                         {% for ev in events %}
                             <div class="flex-grow-1">
@@ -70,7 +70,7 @@
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid.min.js"></script>
 <!--<script src="https://vjs.zencdn.net/7.6.6/video.js"></script>-->
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-<script src="{% static 'app/scripts/stream_listener_spectator_hls.js' %}?v=1"></script>
+<script src="{% static 'app/scripts/stream_listener_spectator_hls.js' %}?v=1.1"></script>
 <script type="text/javascript">
     var ev = new Array();
     {% if display_type == 'single' %}
@@ -100,6 +100,10 @@
     SetEventListeners(1);
     if (ev[2] != undefined)
         SetEventListeners(2);
+
+    if (Hls.isSupported())
+        alert("HLS Supported");
+    alert("Can Play = " + document.getElementById("player-video1").canPlayType('application/vnd.apple.mpegurl'));
 
     function SetEventListeners(which) {
         if (refs[which] != undefined)
