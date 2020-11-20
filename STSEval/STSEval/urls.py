@@ -27,7 +27,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('judge_select/', views.judge_select, name='judge_select'),
     path('d1/', views.d1, name='d1'),
-    path('view_routine/<int:routine_id>', views.view_routine, name='view_routine'),
+    path('view_routine/<int:routine_id>/<int:popup>', views.view_routine, name='view_routine'),
     path('ejudge_select/', views.ejudge_select, name='ejudge_select'),
     path('ejudge/', views.ejudge, name='ejudge'),
     path('evideo/', views.evideo, name='evideo'),

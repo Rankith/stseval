@@ -82,14 +82,18 @@ def d1(request):
     }
     return render(request,'app/d1.html',context)
 
-def view_routine(request,routine_id):
+def view_routine(request,routine_id,popup):
     routine = Routine.objects.get(pk=routine_id)
     event = routine.event
     session_id = routine.session.id
     judges = Judge.objects.filter(session_id=session_id,event__name=event)
     athletes = Athlete.objects.filter(team__session_id=session_id)
     session = routine.session
-    layout = 'app/layout_empty.html'
+    if popup == 1:
+        layout = 'app/layout_empty.html'
+    else:
+        layout = 'app/layout.html'
+
     routine = routine.id
     context = {
         'title': 'D1 Overview - ' + event + ' ' + session.full_name(),
@@ -610,9 +614,9 @@ def video_scoreboard(request):
     for team in teams:
         this_score = next((s for s in scores if s['team'] == team.name),None)
         if this_score != None:
-            team_scores.append({'team':team.abbreviation,'score':this_score['score']})
+            team_scores.append({'team':team.abbreviation,'score':"{:.2f}".format(this_score['score'])})
         else:
-            team_scores.append({'team':team.abbreviation,'score':0})
+            team_scores.append({'team':team.abbreviation,'score':0.00})
     #team_scores = sorted(team_scores,key = lambda i: i['score'],reverse=True)
     context = {
         'scores': team_scores

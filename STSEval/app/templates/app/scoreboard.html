@@ -136,7 +136,13 @@
                 MaxTotal = parseFloat(data[i]["score_final"]);
 
             LastID = data[i]["id"];
-
+            data[i]["score_d"] = FormatWith0(data[i]["score_d"]);
+            data[i]["score_e"] = FormatWith0(data[i]["score_e"]);
+            data[i]["score_e1"] = FormatWith0(data[i]["score_e1"]);
+            data[i]["score_e2"] = FormatWith0(data[i]["score_e2"]);
+            data[i]["score_e3"] = FormatWith0(data[i]["score_e3"]);
+            data[i]["score_e4"] = FormatWith0(data[i]["score_e4"]);
+            data[i]["score_final"] = FormatWith0(data[i]["score_final"]);
 
 
         }
@@ -174,11 +180,20 @@
 
     }
 
+    function FormatWith0(num) {
+         if (Number.isInteger(num)) { 
+            return num + ".0"
+        } else {
+            return num.toString(); 
+        }
+    }
+
     function UpdateTeams(data) {
         console.log(data);
         //$('#divShorthandResults').empty();
         for (var i = 0; i < data.length; i++) {
             data[i]["Place"] = i + 1;
+            data[i]["score"] = data[i]["score"].toFixed(2);
         }
 
         $("#jsGridTeam").jsGrid({
@@ -215,18 +230,25 @@
 
     function ShowDetails(IDIn, GymIn, ev) {
 
-        $("#DetailsArea").empty();
-        $("#DetailsArea").load("/view_routine/" + IDIn, function () {
-            $("#LockBlackout").show();
-             if ($('#desktopTest').is(':hidden')) {
+        if ($('#desktopTest').is(':hidden')) {
             // device is small
-                 $("#DetailsArea").show();
-                 $("#DetailsArea").css("height","92%");
+            window.open("/view_routine/" + IDIn + "/0", '_blank');
+        }
+        else {
+            $("#DetailsArea").empty();
+            $("#DetailsArea").load("/view_routine/" + IDIn + "/1", function () {
+                $("#LockBlackout").show();
+                if ($('#desktopTest').is(':hidden')) {
+                    // device is small
+
+                    $("#DetailsArea").show();
+                    $("#DetailsArea").css("height", "92%");
                 } else {
                     AnimateShow("DetailsArea", ev);
                 }
-            
-        });
+
+            });
+        }
         /*if (TrainName != "")
             $("#DetailsArea").append("<div id='divDetails'><iframe src='master.php?id=" + IDIn + "&d=<?php echo $_GET['d'];?>&e=<?php echo $_GET['e'];?>&c=<?php echo $_GET['c'];?>&train=<?php echo $_GET['train'];?>&vid=" + Videos[IDIn] + "<?php if (isset($_GET['scoreboard'])) { echo ('&scoreboard=1');}?>' width='1600px' height='750px'>");
         else
