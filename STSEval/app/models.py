@@ -69,6 +69,8 @@ class Routine(models.Model):
     start_time = models.BigIntegerField(blank=True,null=True)
     athlete_done_time = models.BigIntegerField(blank=True,null=True)
     d1_done_time = models.BigIntegerField(blank=True,null=True)
+    video_saved = models.BooleanField(default=False)
+    video_converted = models.BooleanField(default=False)
     #stream = models.CharField(max_length=255)
     def routine_length(self):
         return self.athlete_done_time - self.start_time

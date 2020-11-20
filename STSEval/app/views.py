@@ -20,6 +20,7 @@ import distutils.util
 import os
 from django.contrib.auth.decorators import login_required,user_passes_test
 from django.db.models import F, Sum
+from apscheduler.schedulers.background import BackgroundScheduler
 
 def valid_login_type(match=None):
     def decorator(func):
@@ -819,11 +820,22 @@ def athlete_mark_done_get_next(request,athlete_id):
         return JsonResponse({'id':'-1'})
 
 def save_video(request):
-    output = open('/' + settings.MEDIA_ROOT + '/routine_videos/' + request.POST.get('video-filename'), 'wb+')
+    vidfile = settings.MEDIA_ROOT + '/routine_videos/' + request.POST.get('video-filename')
+    output = open(vidfile, 'wb+')
     #output.write(request.FILES.get('video-blob').file.read())
     for chunk in request.FILES['video-blob'].chunks():
         output.write(chunk)
     output.close()
+    routine = Routine.objects.get(pk=request.POST.get('video-filename').replace(".webm",""))
+    routine.video_saved = True
+    routine.save()
+    os.system("ffmpeg -i {0} -vcodec libx264 -profile:v main -level 3.1 -preset medium -crf 23 -x264-params ref=4 -acodec copy -movflags +faststart {1}".format(vidfile,vidfile.replace("webm","mp4")))
+    routine.video_converted = True
+    routine.save()
+    #scheduler = BackgroundScheduler()
+    #scheduler.add_job(convert_video,'interval', args=[settings.MEDIA_ROOT + '/routine_videos/' + request.POST.get('video-filename')], seconds=10)
+    #scheduler.start()
+    #scheduler.shutdown()
   
     return HttpResponse(status=200)
 

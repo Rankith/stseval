@@ -2,13 +2,26 @@ from datetime import datetime,timezone
 from apscheduler.schedulers.background import BackgroundScheduler
 from streaming.wowza import LiveStreams, WOWZA_API_KEY, WOWZA_ACCESS_KEY
 from streaming.models import WowzaStream
+from app.models import Routine
 import app.firebase
+from django.conf import settings
+import os
 
 def start():
     scheduler = BackgroundScheduler()
     scheduler.add_job(check_and_stop_streams, 'interval', seconds=20)
+    #scheduler.add_job(check_convert_video, 'interval', seconds=30)
     #scheduler.add_job(check_update_wowza_player, 'interval', seconds=5)
     scheduler.start()
+
+def check_convert_video():
+    routines = Routine.objects.filter(video_converted=False,video_saved=True).exclude(status=Routine.DELETED)
+    for routine in routines:
+        vidfile=settings.MEDIA_ROOT + '/routine_videos/' + str(routine.id) + ".webm"
+        if os.path.exists(vidfile):
+            os.system("ffmpeg -i {0} -vcodec libx264 -profile:v main -level 3.1 -preset medium -crf 23 -x264-params ref=4 -acodec copy -movflags +faststart {1}".format(vidfile,vidfile.replace("webm","mp4")))
+            routine.video_converted = True
+            routine.save()
 
 def check_update_wowza_player():
     streams = WowzaStream.objects.filter(wowza_player_code='')

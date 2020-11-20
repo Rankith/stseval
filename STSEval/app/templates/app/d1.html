@@ -22,9 +22,17 @@
                 </select>
 
             </div>-->
+            {% if loadroutine == '' %}
             <video id="video-playback"  style="max-width:854px;max-height:720px;display:none;width:100%;min-height:480px" controls webkit-playsinline>
 		        Your browser does not support the video tag.
 	        </video>
+            {% else %}
+            <video id="video-playback"  style="max-width:854px;max-height:720px;display:none;width:100%;min-height:480px" controls webkit-playsinline>
+		        <source src="/media/routine_videos/{{loadroutine}}.webm" type='video/webm; codecs="vp8, vorbis"' />
+                <source src="/media/routine_videos/{{loadroutine}}.mp4" type='video/mp4;' />
+                Video not yet ready, try again in 15 seconds
+	        </video>
+            {% endif %}
             <div id="play-video-container" class="live-container d-flex align-items-center justify-content-center">
                 <div id="player-waiting" style="height:480px;display:flex" class="align-items-center"><h1>Waiting for Camera</h1></div>
                 <video id="player-video" class="live-video" autoplay playsinline controls style="display:none"></video>
@@ -1076,7 +1084,7 @@
         let vp = document.getElementById("video-playback");
         vp.pause();
         vp.currentTime = 0;
-        vp.src = VideoLocation + RoutineID + ".webm";
+        //vp.src = VideoLocation + RoutineID + ".webm";
         vp.load();
         vp.play();
         
