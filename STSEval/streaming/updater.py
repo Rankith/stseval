@@ -10,7 +10,7 @@ import os
 def start():
     scheduler = BackgroundScheduler()
     scheduler.add_job(check_and_stop_streams, 'interval', seconds=20)
-    #scheduler.add_job(check_convert_video, 'interval', seconds=30)
+    scheduler.add_job(check_convert_video, 'interval', seconds=30)
     #scheduler.add_job(check_update_wowza_player, 'interval', seconds=5)
     scheduler.start()
 

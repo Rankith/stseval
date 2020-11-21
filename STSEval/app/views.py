@@ -833,9 +833,9 @@ def save_video(request):
     routine = Routine.objects.get(pk=request.POST.get('video-filename').replace(".webm",""))
     routine.video_saved = True
     routine.save()
-    os.system("ffmpeg -i {0} -c:v libx264 -profile:v main -vf format=yuv420p -c:a aac -movflags +faststart {1}".format(vidfile,vidfile.replace("webm","mp4")))
-    routine.video_converted = True
-    routine.save()
+    #os.system("ffmpeg -i {0} -c:v libx264 -profile:v main -vf format=yuv420p -c:a aac -movflags +faststart {1}".format(vidfile,vidfile.replace("webm","mp4")))
+    #routine.video_converted = True
+    #routine.save()
     #scheduler = BackgroundScheduler()
     #scheduler.add_job(convert_video,'interval', args=[settings.MEDIA_ROOT + '/routine_videos/' + request.POST.get('video-filename')], seconds=10)
     #scheduler.start()
