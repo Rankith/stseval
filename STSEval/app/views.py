@@ -665,8 +665,9 @@ def athlete_get_next(request):
     event = request.session.get('event')
     session_id = request.session.get('session')
     sl = athlete_get_next_do(event,session_id)
-    event_on = athlete_get_event_on(sl.athlete,session_id)
+    
     if sl != None:
+        event_on = athlete_get_event_on(sl.athlete,session_id)
         return JsonResponse({'id':sl.athlete.id,
                             'label':str(sl.athlete),
                             'level':sl.athlete.level.name,
@@ -812,9 +813,10 @@ def athlete_mark_done_get_next(request,athlete_id):
     session_id = request.session.get('session')
     athlete_mark_done_do(event,session_id,athlete_id)
     sl = athlete_get_next_do(event,session_id)
-    event_on = athlete_get_event_on(sl.athlete,session_id)
+   
 
     if sl != None:
+        event_on = athlete_get_event_on(sl.athlete,session_id)
         return JsonResponse({'id':sl.athlete.id,
                              'label':str(sl.athlete),
                              'level':sl.athlete.level.name,
