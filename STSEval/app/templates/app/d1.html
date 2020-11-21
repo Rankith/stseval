@@ -705,21 +705,21 @@
                 SetDScoreType(data['athlete_id']);
                 SetDScoreDefaults();
                 $("#lblElements").html(data['score_elements']);
-                $("#lblDifficulty").html(data['score_difficulty']);
+                $("#lblDifficulty").html(FormatWith0(data['score_difficulty']));
                 $("#lblGroups").html(data['score_groups']);
-                $("#lblBonus").html(data['score_bonus']);
-                $("#lblNeutralDed").html(data['score_neutral']);
-                $("#lblDScore").html(data['score_d']);
-                $("#divET1").html(data['score_e1']);
-                $("#divET2").html(data['score_e2']);
-                $("#divET3").html(data['score_e3']);
-                $("#divET4").html(data['score_e4']);
+                $("#lblBonus").html(FormatWith0(data['score_bonus']));
+                $("#lblNeutralDed").html(FormatWith0(data['score_neutral']));
+                $("#lblDScore").html(FormatWith0(data['score_d']));
+                $("#divET1").html(FormatWith0(data['score_e1']));
+                $("#divET2").html(FormatWith0(data['score_e2']));
+                $("#divET3").html(FormatWith0(data['score_e3']));
+                $("#divET4").html(FormatWith0(data['score_e4']));
                 $("#chkE1").prop('checked',data['e1_include']);
                 $("#chkE2").prop('checked',data['e2_include']);
                 $("#chkE3").prop('checked',data['e3_include']);
                 $("#chkE4").prop('checked',data['e4_include']);
-                $("#divEScore").html(data['score_e']);
-                $("#divTotalScore").html(data['score_final']);
+                $("#divEScore").html(FormatWith0(data['score_e']));
+                $("#divTotalScore").html(FormatWith0(data['score_final']));
                 $("#divHeader").html("<h2 style='display:inline'>" + GymnastLabels[data['athlete_id']] + "</h2>");
                 LoadVideo();
                 console.log($("#divDotsArea").width());
@@ -732,10 +732,16 @@
             }
         });
     }
-
+    function FormatWith0(num) {
+         if (Number.isInteger(num)) { 
+            return num + ".0"
+        } else {
+            return num.toString(); 
+        }
+    }
     function RoutineLoadBuildDots() {
         BuildDots(false,'1');
-                CalculateScores();
+        CalculateScores();
     }
 
     function SetDScoreClick() {
@@ -815,7 +821,7 @@
                 EScore = 0;
             //console.log ("TotalDeductions: " + TotalDeductions + " | StartValueScore: " + StartValueScore )
             document.getElementById('divEScore').innerHTML =  parseFloat(EScore).toFixed(2);
-            document.getElementById('lblDScore').innerHTML = StartValueScore;
+            document.getElementById('lblDScore').innerHTML = FormatWith0(StartValueScore);
             //StartValueScore = parseFloat(DeductFrom) + parseFloat(StartValueScore);
             let tot = (parseFloat(StartValueScore - TotalDeductions).toFixed(2))
             if (tot < 0)
@@ -840,12 +846,12 @@
             DScore = StartValueScore;
             if (EScore < 0)
                 EScore = 0;
-            document.getElementById('divEScore').innerHTML = parseFloat(EScore).toFixed(2);
-            document.getElementById('lblDScore').innerHTML = StartValueScore;
+            document.getElementById('divEScore').innerHTML = FormatWith0(parseFloat(EScore));
+            document.getElementById('lblDScore').innerHTML = FormatWith0(StartValueScore);
             let tot =  (parseFloat(+StartValueScore + +EScore).toFixed(2));
             if (tot < 0)
                 tot = 0
-            document.getElementById('divTotalScore').innerHTML = parseFloat(tot).toFixed(2);
+            document.getElementById('divTotalScore').innerHTML = FormatWith0(parseFloat(tot));
         }
         else //fig
         {
@@ -867,10 +873,10 @@
             DScore = StartValueScore;
             if (EScore < 0)
                 EScore = 0;
-            document.getElementById('divEScore').innerHTML =  parseFloat(EScore).toFixed(2);
-            document.getElementById('lblDScore').innerHTML = StartValueScore;
+            document.getElementById('divEScore').innerHTML = FormatWith0(parseFloat(EScore));
+            document.getElementById('lblDScore').innerHTML = FormatWith0(StartValueScore);
 
-            document.getElementById('divTotalScore').innerHTML = (parseFloat(+StartValueScore + +EScore).toFixed(2));
+            document.getElementById('divTotalScore').innerHTML = FormatWith0(parseFloat(+StartValueScore + +EScore));
         }
     }
 
@@ -903,7 +909,7 @@
                         EScores[j] = parseFloat(JudgeDeductions[j]).toPrecision(2);
                     if (EScores[j] < 0)
                         EScores[j] = 0
-                    $("#divET" + j).html(EScores[j])
+                    $("#divET" + j).html(FormatWith0(parseFloat(EScores[j])))
                     JudgesCounting += 1;
                     if (parseFloat(JudgeDeductions[j]).toPrecision(2) > highest) {
                         highest = parseFloat(JudgeDeductions[j]);
