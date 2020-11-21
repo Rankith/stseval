@@ -14,6 +14,18 @@ function CheckStream(doc) {
         });
     }
 }
+function CheckStreamManual(StreamIn) {
+    console.log("Check Stream Manual");
+    if (StreamIn != Stream) {
+        if (StreamListener != undefined)
+            StreamListener();//release stream listener
+        Stream = StreamIn;
+        console.log("Setting Stream Listener To " + Stream);
+        StreamListener = db.collection("sessions").doc(Session).collection("streams").doc(Stream.toString()).onSnapshot(function (doc) {
+            HandleStreamChanges(doc);
+        });
+    }
+}
 function HandleStreamChanges(doc) {
     if (doc.data() != undefined) {
         console.log(doc.data());

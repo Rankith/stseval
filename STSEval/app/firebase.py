@@ -170,18 +170,18 @@ def set_stream(s,stream):
         u'hls_playback_url':stream.hls_playback_url,
     },merge=True)
 
-def set_stream_status(s,stream_id,stream_status):
+def set_stream_status(s,camera_id,stream_status):
     db = firestore.Client()
 
-    doc_ref = db.collection(u'sessions').document(str(s)).collection(u'streams').document(str(stream_id))
+    doc_ref = db.collection(u'sessions').document(str(s)).collection(u'streams').document(str(camera_id))
     doc_ref.set({
         u'status':stream_status,
     },merge=True)
 
-def set_stream_connected(s,stream_id,stream_connected):
+def set_stream_connected(s,camera_id,stream_connected):
     db = firestore.Client()
 
-    doc_ref = db.collection(u'sessions').document(str(s)).collection(u'streams').document(str(stream_id))
+    doc_ref = db.collection(u'sessions').document(str(s)).collection(u'streams').document(str(camera_id))
     doc_ref.set({
         u'connected':stream_connected,
     },merge=True)

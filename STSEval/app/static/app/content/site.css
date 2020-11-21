@@ -462,3 +462,11 @@ input[type="checkbox"].input-validation-error {
 .navbar-dark .navbar-nav .nav-link {
     color: rgba(255,255,255,.75);
 }
+
+.camera-text{
+    cursor:pointer;
+}
+
+.camera-text-selected{
+    border:1px solid;
+}

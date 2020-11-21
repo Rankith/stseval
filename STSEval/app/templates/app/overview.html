@@ -36,7 +36,10 @@
             </div>
             <div id="divCameras">
                 {% for camera in cameras %}
-                    <div id="divCam{{camera.id}}"><span id="camdot{{camera.id}}" class="status-dot-small status-dot-red mr-1"></span> CAMERA: {{camera.name}} ({% for team in camera.teams.all %}{% if not forloop.first %},{% endif %}{{team.abbreviation}}{% endfor %})</div>
+                    <div id="divCam{{camera.id}}" onclick="CamClick({{camera.id}})">
+                        <span id="camdot{{camera.id}}" class="status-dot-small status-dot-red mr-1"></span>
+                        <span id="camtext{{camera.id}}" class="camera-text pl-1 pr-1">CAMERA: {{camera.name}} ({% for team in camera.teams.all %}{% if not forloop.first %},{% endif %}{{team.abbreviation}}{% endfor %})</span>
+                    </div>
                 {% endfor %}
             </div>
             <br/>
@@ -60,7 +63,7 @@
 {% block scripts %}
 <script src="https://www.webrtc-experiment.com/EBML.js"></script> 
 <script type="module" src="{% static 'app/scripts/wowza/play.js' %}?v=1"></script>
-<script src="{% static 'app/scripts/stream_listener.js' %}"></script>
+<script src="{% static 'app/scripts/stream_listener.js' %}?v=1.11"></script>
 <script src="{% static 'app/scripts/start_list.js' %}"></script>
 <script type="text/javascript">
 
@@ -90,6 +93,7 @@
             CheckStream(doc);
             CheckJudges(doc);
             LoadStartList();
+            HighlightCamera();
         }
     });
 
@@ -120,6 +124,16 @@
 
     function SwapEvent(evIn) {
         window.location = "/overview/" + Session + "/" + evIn;
+    }
+
+    function CamClick(cam) {
+        CheckStreamManual(cam);
+        HighlightCamera();
+    }
+
+    function HighlightCamera() {
+        $(".camera-text").removeClass("camera-text-selected");
+        $("#camtext" + Stream).addClass("camera-text-selected");
     }
 
     function CheckJudges(doc) {
