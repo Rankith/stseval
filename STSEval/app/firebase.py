@@ -266,3 +266,23 @@ def chat_send_message(s,sender,to,message,sender_name=''):
         u'message':message,
         u'timestamp':datetime.utcnow(),
     })
+
+def set_fall(s,e,team,fall):
+    db = firestore.Client()
+
+    doc_ref = db.collection(u'sessions').document(str(s)).collection(u'event_managers').document(str(e) + "_falls")
+    doc_ref.set({
+        u'fall':fall,
+        u'team':team,
+        u'start':datetime.utcnow(),
+        u'credit':'',
+    })
+
+def set_credit(s,e,team,credit):
+    db = firestore.Client()
+
+    doc_ref = db.collection(u'sessions').document(str(s)).collection(u'event_managers').document(str(e) + "_falls")
+    doc_ref.set({
+        u'team':team,
+        u'credit':credit,
+    },merge=True)

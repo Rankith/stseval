@@ -37,7 +37,7 @@
             {% endif %}
             <div id="play-video-container" class="live-container d-flex align-items-center justify-content-center">
                 <div id="player-waiting" style="height:480px;display:flex" class="align-items-center"><h1>Waiting for Camera</h1></div>
-                <video id="player-video" class="live-video" autoplay playsinline controls style="display:none"></video>
+                <video id="player-video" class="live-video" autoplay playsinline controls muted style="display:none"></video>
             </div>
             {% if loadroutine != '' %} 
                 <div class="row no-gutters" style="max-width:854px;">
@@ -114,11 +114,18 @@
     <div class="col-xl-4 col-12" align="left">
         <div class="ml-4">
                 {% if loadroutine == '' %}
-                    <button id="btnStartJudging" type="button" class="btn btn-main mb-2" onclick="StartJudgingClick()" style="width:143px">Start Judging</button><br/>
+                    <button id="btnStartJudging" type="button" class="btn btn-main mb-2" onclick="StartJudgingClick()" style="width:200px">Start Judging</button><br/>
 	                <button id="btnRestartD" type="button" class="btn btn-main mb-2" onclick="RestartD()" style="display:none">Judge D</button>
 	                <button id="btnRestartE" type="button" class="btn btn-main mb-2" onclick="RestartE()" style="display:none">Judge E</button>
 	                <button id="btnRestartBoth" type="button" class="btn btn-main mb-2" onclick="RestartBoth()" style="display:none">Both</button>
-	                <button id="btnExerciseDone" type="button" class="btn btn-main mb-2" onclick="ExerciseDoneClick()" style="width:143px">Exercise Done</button>
+	                <button id="btnExerciseDone" type="button" class="btn btn-main mb-2" onclick="ExerciseDoneClick()" style="width:200px">Exercise Done</button><br/>
+                    <button id="btnFallTimer" type="button" class="btn btn-red mb-2 ui-disabled" onclick="FallTimerClick()" style="width:200px">Fall Timer</button>
+                    <div id="divCreditButtons" style="width:200px;display:none;">
+                        <div class="d-flex">
+                            <button id="btnCredit" type="button" class="btn btn-main mb-2 col-6 mr-1" onclick="CreditClick(true)" style="font-size:.8rem;padding-left:.3rem!important;padding-right:.3rem!important;">Credit</button>
+	                        <button id="btnNoCredit" type="button" class="btn btn-main mb-2 col-6" onclick="CreditClick(false)"  style="font-size:.8rem;padding-left:.3rem!important;padding-right:.3rem!important;">No Credit</button>
+                        </div>
+                    </div>
 		            <button id="btnStopRecording" type="button" class="btn btn-main mb-2" onclick="StopRecording()" style="display:none">Stop Recording</button>
 		            <button id="btnStartPlayBack" type="button" class="btn btn-main mb-2" onclick="StartPlayBack()" style="display:none">Playback</button>
 
@@ -253,6 +260,9 @@
     var ScoringType;
     var StartListChange = -1;
     var FrameStepTimer;
+    var Falling = false;
+    var FallTimerStart;
+    var FallTimerInterval;
     var db = firebase.firestore();
     for (var i = 1; i <= 4; i++) {
         EJudgesReady[i] = false;
@@ -554,12 +564,14 @@
         Status = status.BLANK;
         SetJudges();
         SetJudgesDone(false);
+        ClearFall();
         
         RoutineID = 0;
         //$("#btnStartJudging").show();
         $("#btnStartJudging").addClass('ui-disabled');
         //$("#btnExerciseDone").hide();
         $("#btnExerciseDone").addClass('ui-disabled');
+        $("#btnFallTimer").addClass('ui-disabled');
         $("#btnNuke").addClass('ui-disabled');
         //$("#btnJudgesReady").removeClass('ui-disabled');
         //$("#txtVideoURL").removeClass('ui-disabled');
@@ -604,6 +616,7 @@
                 //$("#txtVideoURL").addClass('ui-disabled');
                 //$("#ddlAthlete").addClass('ui-disabled');
                 $("#btnExerciseDone").removeClass('ui-disabled');
+                $("#btnFallTimer").removeClass('ui-disabled');
                 $("#btnNuke").removeClass('ui-disabled');
                 Status = status.STARTED;
             }
@@ -667,7 +680,9 @@
         $("#btnSetDScore").removeClass('ui-disabled');
         Status = status.ATHLETE_DONE;
         $("#btnStartJudging").addClass('ui-disabled');
-        $("#btnExerciseDone").addClass('ui-disabled');;
+        $("#btnExerciseDone").addClass('ui-disabled');
+        ClearFall();
+        $("#btnFallTimer").addClass('ui-disabled');
     }
 
     function GetDScore() {
@@ -1407,6 +1422,82 @@
         clearTimeout(FrameStepTimer);
     }
 
+    function FallTimerClick() {
+        if (Falling)
+            ClearFall();
+        else
+            StartFall();
+    }
+
+    function ClearFall() {
+        Falling = false;
+        $("#btnFallTimer").addClass("btn-red").removeClass("btn-main-selected");
+        $("#btnFallTimer").html("Fall Timer");
+        $("#divCreditButtons").hide();
+        clearInterval(FallTimerInterval);
+        SetFall(false);
+        ResetCreditButtons();
+    }
+
+    function StartFall() {
+        Falling = true;
+        $("#btnFallTimer").removeClass("btn-red").addClass("btn-main-selected");
+        $("#btnFallTimer").html("Resume (0 sec)");
+        $("#divCreditButtons").show();
+        clearInterval(FallTimerInterval);
+        SetFall(true);
+        ResetCreditButtons();
+    }
+
+    function UpdateFallTimer() {
+        $("#btnFallTimer").html("Resume (" + (Math.round(Date.now() / 1000) - FallTimerStart) + " sec)");
+    }
+
+    function SetFall(fall) {
+        $.ajax({
+            url: "/set_fall/",
+            type: "POST",
+            headers: { "X-CSRFToken": token },
+            data: {
+                'athlete': CurrentAthlete,
+                'fall': fall,
+                'event':ev,
+            },
+            success: function (data) {
+                if (fall) {
+                    FallTimerStart = Math.round(Date.now() / 1000);
+                    clearInterval(FallTimerInterval);
+                    FallTimerInterval = setInterval(UpdateFallTimer, 1000);
+                }
+            }
+        });
+    }
+
+    function ResetCreditButtons() {
+        $("#btnCredit").removeClass("btn-main-selected").addClass("btn-main");
+        $("#btnNoCredit").removeClass("btn-main-selected").addClass("btn-main");
+    }
+
+    function CreditClick(credit) {
+        ResetCreditButtons();
+        if (credit)
+            $("#btnCredit").addClass("btn-main-selected").removeClass("btn-main");
+        else
+            $("#btnNoCredit").addClass("btn-main-selected").removeClass("btn-main");
+        $.ajax({
+            url: "/set_credit/",
+            type: "POST",
+            headers: { "X-CSRFToken": token },
+            data: {
+                'athlete': CurrentAthlete,
+                'credit': credit,
+                'event':ev,
+            },
+            success: function (data) {
+               
+            }
+        });
+    }
 
 </script>
 {% endblock %}

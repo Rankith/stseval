@@ -470,3 +470,21 @@ input[type="checkbox"].input-validation-error {
 .camera-text-selected{
     border:1px solid;
 }
+
+.coach-fall-container{
+    position:absolute;
+    top:40%;
+    width:100%;
+    z-index:103;
+    color:black;
+    font-weight:bold;
+}
+
+.coach-fall-background {
+    border-radius: 1rem;
+    background-color: #d3d3d3eb;
+    border:2px solid red;
+}
+.coach-fall-timer {
+    font-size:1.3rem;
+}

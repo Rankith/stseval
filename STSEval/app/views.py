@@ -945,6 +945,27 @@ def spectator_video(request):
     }
     return render(request,'app/spectator_video.html',context)
 
+def set_fall(request):
+    ath = Athlete.objects.filter(pk=request.POST.get('athlete')).first()
+    if ath != None:
+        if request.POST.get('fall') == "true":
+            fall = True
+        else:
+            fall = False
+        app.firebase.set_fall(ath.team.session.id,request.POST.get('event'),ath.team.id,fall)
+
+    return HttpResponse(status=200)
+
+def set_credit(request):
+    ath = Athlete.objects.get(pk=request.POST.get('athlete'))
+    if request.POST.get('credit') == "true":
+        credit = "CREDIT AWARDED"
+    else:
+        credit = "CREDIT NOT AWARDED"
+    app.firebase.set_credit(ath.team.session.id,request.POST.get('event'),ath.team.id,credit)
+
+    return HttpResponse(status=200)
+
 def wowza_broadcast(request):
     return render(request,'app/dev-view-publish.html')
 
