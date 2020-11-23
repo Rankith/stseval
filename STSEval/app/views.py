@@ -578,7 +578,7 @@ def get_routines_by_SE(request):
 
 def get_routines_aa(request):
     routines = Routine.objects.values('athlete__name','athlete__team__name','athlete__level__name').filter(session_id=request.POST.get('Session'),status=Routine.FINISHED).annotate(total_score=Sum('score_final')).order_by('-total_score')
-
+        
     return JsonResponse(list(routines),safe=False)
 
 @valid_login_type(match='session')
