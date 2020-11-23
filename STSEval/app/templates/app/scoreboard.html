@@ -7,7 +7,7 @@
     <div id="DetailsHeader" style="font-weight:bold;font-size:18px"></div>
 </div>
 <div id="divResults" align="center" style="color:black;margin:auto" >
-    {% include "app/event_select.html" %}  
+    {% include "app/event_select_with_aa.html" %}  
     <div id="jsGridTeam" ></div>
     <br/>
     <div id="jsGrid" ></div>
@@ -35,22 +35,30 @@
     var Status = "";
     var Videos = new Array();
     var dbF = firebase.firestore();
-
-    dbF.collection("sessions").doc(Session).collection("event_managers").doc(ev)
-        .onSnapshot(function (doc) {
-            console.log("scoreboard");
-            SetBasedOnStatusScoreboard(doc);
-        });
+    if (ev == "AA") {
+        //just check every x seconds
+        GetRoutineAAData();
+        setInterval(GetRoutineAAData, 20000);
+    }
+    else {
+        dbF.collection("sessions").doc(Session).collection("event_managers").doc(ev)
+            .onSnapshot(function (doc) {
+                console.log("scoreboard");
+                SetBasedOnStatusScoreboard(doc);
+            });
+    }
     function SetBasedOnStatusScoreboard(doc) {
         if (doc.data() != undefined) {
             console.log("Status: " + Status + " | " + doc.data().status);
             console.log("Routine: " + ScoreboardRoutineID + " | " + doc.data().routine);
             if (Status != doc.data().status || ScoreboardRoutineID != doc.data().routine) {
-                ScoreboardRoutineID = doc.data().routine
+                ScoreboardRoutineID = doc.data().routine;
                 if (doc.data().status == "F" || Status == "" || doc.data().status == "N") {
+                    
                     GetRoutineData();
                     GetTeamData();
                 }
+                Status = doc.data().status;
             }
 
             //$("#divStatus").html(doc.data().stream + " | " + doc.data().status);
@@ -69,6 +77,21 @@
             },
             success: function (data) {
                 UpdateRoutines(data)
+            }
+        });
+    }
+
+    function GetRoutineAAData() {
+        $.ajax({
+            url: "/get_routines_aa/",
+            type: "POST",
+            dataType: 'json',
+            headers: { "X-CSRFToken": token },
+            data: {
+                'Session': Session,
+            },
+            success: function (data) {
+                UpdateAA(data)
             }
         });
     }
@@ -186,6 +209,35 @@
         } else {
             return num.toString(); 
         }
+    }
+
+    function UpdateAA(data) {
+        console.log(data);
+        //$('#divShorthandResults').empty();
+        for (var i = 0; i < data.length; i++) {
+            data[i]["Place"] = i + 1;
+            data[i]["total_score"] = FormatWith0(data[i]["total_score"]);
+        }
+
+        $("#jsGrid").jsGrid({
+            width: "100%",
+            height: "600px",
+            inserting: false,
+            editing: false,
+            sorting: true,
+            paging: false,
+
+            data: data,
+
+            fields: [
+                { name: "Place", title: "#", type: "number", width: 25 },
+                { name: "athlete__name", title: "Gymnast", type: "text" },
+                { name: "athlete__team__name", title: "Team", type: "text" },
+                { name: "total_score", title: "Final Score", type: "number" }
+
+            ]
+        });
+
     }
 
     function UpdateTeams(data) {

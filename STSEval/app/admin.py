@@ -8,5 +8,9 @@ class EJuryDeductionAdmin(ImportExportModelAdmin):
     list_editable=('routine','judge','deduction','action','editor','time_stamp','time_stamp_relative','artistry_type')
     list_filter = ('routine__session__competition','routine__event')
 
-admin.site.register(Routine)
+class RoutineAdmin(ImportExportModelAdmin):
+    list_display=('id', 'event','athlete','status')
+    list_filter = ('session','event')
+
+admin.site.register(Routine,RoutineAdmin)
 admin.site.register(EJuryDeduction,EJuryDeductionAdmin)

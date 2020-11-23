@@ -573,22 +573,13 @@ def accountability_report(request):
 
 def get_routines_by_SE(request):
     routines = Routine.objects.values('athlete__name','athlete__team__name','athlete__level__name','id','score_e1','score_e2','score_e3','score_e4','score_e','score_d','score_final').filter(session_id=request.POST.get('Session'),event=request.POST.get('Ev'),status=Routine.FINISHED).order_by('id')
+
     return JsonResponse(list(routines),safe=False)
 
-def get_team_scores(request):
-    scores = calc_team_scores(request.POST.get('Session'),request.POST.get('Ev'))
-    teams = Team.objects.filter(session_id=request.POST.get('Session'))
-    team_scores = []
-    for team in teams:
-        this_score = next((s for s in scores if s['team'] == team.name),None)
-        if this_score != None:
-            team_scores.append({'team':team.name,'score':this_score['score']})
-        else:
-            team_scores.append({'team':team.name,'score':0})
+def get_routines_aa(request):
+    routines = Routine.objects.values('athlete__name','athlete__team__name','athlete__level__name').filter(session_id=request.POST.get('Session'),status=Routine.FINISHED).annotate(total_score=Sum('score_final')).order_by('-total_score')
 
-    #sort by score
-    scores = sorted(scores,key = lambda i: i['score'],reverse=True)
-    return JsonResponse(scores,safe=False)
+    return JsonResponse(list(routines),safe=False)
 
 @valid_login_type(match='session')
 def scoreboard(request,event_name='-1'):
@@ -606,6 +597,22 @@ def scoreboard(request,event_name='-1'):
         'event_name':event_name,
     }
     return render(request,'app/scoreboard.html',context)
+
+
+def get_team_scores(request):
+    scores = calc_team_scores(request.POST.get('Session'),request.POST.get('Ev'))
+    teams = Team.objects.filter(session_id=request.POST.get('Session'))
+    team_scores = []
+    for team in teams:
+        this_score = next((s for s in scores if s['team'] == team.name),None)
+        if this_score != None:
+            team_scores.append({'team':team.name,'score':this_score['score']})
+        else:
+            team_scores.append({'team':team.name,'score':0})
+
+    #sort by score
+    scores = sorted(scores,key = lambda i: i['score'],reverse=True)
+    return JsonResponse(scores,safe=False)
 
 def video_scoreboard(request):
     scores = calc_team_scores(request.GET.get('Session'))
