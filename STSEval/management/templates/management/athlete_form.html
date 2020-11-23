@@ -25,6 +25,20 @@
         </div>
         {{form.session}}
         <br/>
+        <div class="row">
+            <div class="col-6 pl-4" align="left">
+                EVENT(S) COMPETING<br/>
+                {{ form.events_competing }}<br/>
+                {{form.events_competing.errors}}
+            </div>
+            <div class="col-6 pl-4" align="left">
+                EVENT(S) COUNT FOR TEAM SCORE<br/>
+                {{ form.events_count_for_team }}<br/>
+                {{form.events_count_for_team.errors}}
+            </div>
+            
+        </div>
+        
         <input type="hidden" id="id" name="id" value="{{id}}" />
         <input type="submit" href="#" id="btnAthleteFinish" class="btn btn-main" value="Save">
         <button href="#" id="btnAthleteCancel" type="button" class="btn btn-red" data-dismiss="modal">Cancel</button>

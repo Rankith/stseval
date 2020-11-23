@@ -15,7 +15,10 @@ import app.views
 # Create your views here.
 @login_required(login_url='/account/login/admin/')
 def setup_competition(request):
-
+    events = Event.objects.filter(disc__name="MAG")
+    for ath in Athlete.objects.all():
+        ath.events_competing.add(*[e for e in events])
+        ath.events_count_for_team.add(*[e for e in events])
     context = {
         'title': 'Competition Setup (1/6)',
         'discs': Disc.objects.all(),

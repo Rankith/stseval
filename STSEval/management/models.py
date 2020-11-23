@@ -86,6 +86,8 @@ class Athlete(models.Model):
     age = models.IntegerField(default=8)
     rotation =  models.CharField(max_length=2,default='A')
     order = models.IntegerField(default=1)
+    events_competing = models.ManyToManyField(Event,related_name='events_competing_related',blank=True)
+    events_count_for_team = models.ManyToManyField(Event,blank=True)
     def __str__(self):
         return self.team.name + " - " + self.level.name + " - " + self.name
 

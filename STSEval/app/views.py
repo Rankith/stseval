@@ -640,7 +640,7 @@ def calc_team_scores(session,event=''):
             count = 0
             team = routine.athlete.team.name
             level = routine.athlete.level.name
-        if count < max:
+        if count < max and routine.athlete.events_count_for_team.filter(name=routine.event).exists(): #fix routines to have actual event link not a freaking char field
             count += 1
             scores[-1]['score'] += routine.score_final
             scores[-1]['score'] = round(scores[-1]['score'],2)

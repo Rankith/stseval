@@ -104,7 +104,7 @@ class AthleteForm(ModelForm):
                 ('E', 'E'),
                 ('F', 'F'),
                 )
-        fields = ['team','level','name','rotation']
+        fields = ['team','level','name','rotation','events_count_for_team','events_competing']
         widgets = {'name':forms.TextInput(attrs={'class':'management-input'}),
                    'rotation':forms.Select(choices=ROTATION_CHOICES,attrs={'class':'selectpicker management-input','data-style':'btn-main'}),
                    'level':forms.Select(attrs={'class':'selectpicker management-input','data-style':'btn-main'})}
@@ -117,6 +117,17 @@ class AthleteForm(ModelForm):
         self.fields["team"].widget.attrs['class'] = 'selectpicker management-input'
         self.fields["team"].widget.attrs['data-style'] = 'btn-main'
         self.fields["team"].queryset = Team.objects.filter(session=session)
+        events = Event.objects.filter(disc=session.competition.disc) 
+        self.fields["events_count_for_team"].widget = CheckboxSelectMultiple()
+        self.fields["events_count_for_team"].widget.attrs['class'] = 'camera-checkbox'
+        self.fields["events_count_for_team"].queryset = events
+        self.fields["events_count_for_team"].initial=[c.id for c in events]
+        self.fields['events_count_for_team'].label_from_instance = lambda obj: "%s - %s" % (obj.name, obj.full_name)
+        self.fields["events_competing"].widget = CheckboxSelectMultiple()
+        self.fields["events_competing"].widget.attrs['class'] = 'camera-checkbox'
+        self.fields["events_competing"].queryset = events
+        self.fields["events_competing"].initial=[c.id for c in events]
+        self.fields['events_competing'].label_from_instance = lambda obj: "%s - %s" % (obj.name, obj.full_name)
 
 class CameraForm(ModelForm):
     class Meta:
