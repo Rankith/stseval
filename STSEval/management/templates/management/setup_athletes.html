@@ -50,14 +50,14 @@
     <div id="divRotationNote" style="font-size:.85rem">NOTE: Athlete rotation signifies which event they start on. {{rotation_note}}</div>
     <br/>
     
-    <div id="divRotationNote"  style="font-size:.85rem">Once all athletes are entered and in the correct order, use the button below to create the start lists.<br/>If you make changes just click this button again.</div>
-    <button href="#" id="btnGenStartList" type="button" class="btn btn-main management-button" onclick="GenerateStartList()">Generate Start Lists</button>
+    <div id="divRotationNote"  style="font-size:.85rem">Once all athletes are entered and in the correct order, use the button below to create the start lists.</div>
+    <button href="#" id="btnGenStartList" type="button" class="btn btn-main management-button" onclick="GenerateStartListClick()">Generate Start Lists</button>
     <br/>
     <div>
         <button id="btnBack" type="button" class="btn-main pt-4 pb-4" style="border-radius: 1rem;" onclick="GoBack()">Return to<br/>Previous Page</button>
         <button id="btnNext" type="button" class="btn-main pt-4 pb-4" style="border-radius: 1rem;" onclick="NextClick()">Save and<br/>Continue (3/6)</button>
     </div>
-		
+
 </div>
 
 {% endblock %}
@@ -291,8 +291,11 @@
         }
     }
 
+    function GenerateStartListClick() {
+        CheckStartList();
+    }
+
     function GenerateStartList() {
-         $("#modalMainDoc").removeClass("modal-lg");
         $.ajax({
             url: "/management/create_start_lists/" + SessionID,
             dataType: 'json',
@@ -302,6 +305,31 @@
             }
         });
 
+    }
+
+    function CheckStartList() {
+        $.ajax({
+            url: "/management/check_start_lists/" + SessionID,
+            dataType: 'json',
+            success: function (data) {
+                if (data.message == "ok")
+                    GenerateStartList();
+                else if (data.message == "live")
+                    alert("Session in progress, make any changes on the Session Overview screen.");
+                else
+                    ConfirmStartListGenerate();
+            }
+        });
+
+    }
+
+    function ConfirmStartListGenerate() {
+        $("#modalMainDoc").removeClass("modal-lg");
+        $("#modalMainTitle").html("Generate Start List");
+        $("#modalBodyArea2").hide();
+        $("#modalBodyArea1").empty();
+        $("#modalBodyArea1").load("/management/start_list_warn/")
+         $("#modalMain").modal('show');
     }
 
     function FillAthletes() {

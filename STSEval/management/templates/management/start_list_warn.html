@@ -1,0 +1,8 @@
+{% block content %}
+<div>WARNING: Start lists have already been generated, any changes made on the overview screen will be lost.<br/><br/>Do you still want to re-generate the start lists?</div>
+<div class="w-100" align="right">
+    <button type="button" class="btn btn-success"  data-toggle="modal" data-target="#modalMain" onclick="GenerateStartList()">Yes</button>
+    <button type="button" class="btn btn-red"  data-toggle="modal" data-target="#modalMain">No</button>
+</div>
+
+{% endblock %}

@@ -247,13 +247,27 @@ def athlete_delete(request,id):
     Athlete.objects.filter(id=id).delete()
     return HttpResponse(status=200)
 
+def start_list_warn(request):
+    return render(request,'management/start_list_warn.html')
+
 @login_required(login_url='/account/login/admin/')
 def create_start_lists(request,session_id):
-    if len(StartList.objects.filter(Q(session_id=session_id)&(Q(completed=True)|Q(active=False)))) <= 0:
+    if len(StartList.objects.filter(session_id=session_id,completed=True)) <= 0:
         create_start_List_direct(session_id)
         message = "Start lists generated."
     else:
         message = "Session in progress, make any changes on the Session Overview screen."
+
+    return JsonResponse({'message':message})
+
+@login_required(login_url='/account/login/admin/')
+def check_start_lists(request,session_id):
+    if len(StartList.objects.filter(session_id=session_id)) <= 0:
+        message = "ok"
+    elif len(StartList.objects.filter(session_id=session_id,completed=True)) > 0:
+        message = "live"
+    else:
+        message="warn"
 
     return JsonResponse({'message':message})
 
