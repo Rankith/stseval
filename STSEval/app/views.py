@@ -615,15 +615,25 @@ def get_team_scores(request):
     return JsonResponse(scores,safe=False)
 
 def video_scoreboard(request):
-    scores = calc_team_scores(request.GET.get('Session'))
+    session = Session.objects.get(pk=request.GET.get('Session'))
+    events = Event.objects.filter(disc=session.competition.disc)
     teams = Team.objects.filter(session_id=request.GET.get('Session'))
     team_scores = []
     for team in teams:
-        this_score = next((s for s in scores if s['team'] == team.name),None)
-        if this_score != None:
-            team_scores.append({'team':team.abbreviation,'score':"{:.2f}".format(this_score['score'])})
-        else:
-            team_scores.append({'team':team.abbreviation,'score':0.00})
+        team_scores.append({'team':team.abbreviation,'score':0.00})
+   
+    for event in events:
+        scores = calc_team_scores(request.GET.get('Session'),event.name)
+        for team in teams:
+            this_score = next((s for s in scores if s['team'] == team.name),None)
+            if this_score != None:
+                for t in team_scores:
+                    if t['team'] == team.abbreviation:
+                        t['score'] = t['score'] + this_score['score']
+                        break
+    
+    for t in team_scores:
+        t['score'] = "{:.2f}".format(t['score'])
     #team_scores = sorted(team_scores,key = lambda i: i['score'],reverse=True)
     context = {
         'scores': team_scores
@@ -929,7 +939,7 @@ def spectate(request,session_id,display_type,event_name='-1'):
     #setup_firebase_managers(session,event.name)
 
     scoreboard_overlay = False
-    if session.competition.type == Competition.DUAL:
+    if session.competition.type == Competition.DUAL or session.competition.type == Competition.INTRASQUAD:
         scoreboard_overlay = True
 
     context = {
