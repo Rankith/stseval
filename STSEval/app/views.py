@@ -212,47 +212,47 @@ def routine_set_score(request):
     except:
         routine.score_elements = 0
     try:
-        routine.score_difficulty = float(request.POST.get('score_difficulty'))
+        routine.score_difficulty = round(float(request.POST.get('score_difficulty')),2)
     except:
         routine.score_difficulty = 0
     try:
-        routine.score_groups = float(request.POST.get('score_groups'))
+        routine.score_groups = round(float(request.POST.get('score_groups')),2)
     except:
         routine.score_groups = 0
     try:
-        routine.score_bonus = float(request.POST.get('score_bonus'))
+        routine.score_bonus = round(float(request.POST.get('score_bonus')),2)
     except:
         routine.score_bonus = 0
     try:
-        routine.score_neutral = float(request.POST.get('score_neutral'))
+        routine.score_neutral = round(float(request.POST.get('score_neutral')),2)
     except:
         routine.score_neutral = 0
     try:
-        routine.score_e1 = float(request.POST.get('score_e1',0))
+        routine.score_e1 = round(float(request.POST.get('score_e1',0)),2)
     except:
         routine.score_e1 = 0
     try:
-        routine.score_e2 = float(request.POST.get('score_e2',0))
+        routine.score_e2 = round(float(request.POST.get('score_e2',0)),2)
     except:
         routine.score_e2 = 0
     try:
-        routine.score_e3 = float(request.POST.get('score_e3',0))
+        routine.score_e3 = round(float(request.POST.get('score_e3',0)),2)
     except:
         routine.score_e3 = 0
     try:
-        routine.score_e4 = float(request.POST.get('score_e4',0))
+        routine.score_e4 = round(float(request.POST.get('score_e4',0)),2)
     except:
         routine.score_e4 = 0
     try:
-        routine.score_e = float(request.POST.get('score_e',0))
+        routine.score_e = round(float(request.POST.get('score_e',0)),2)
     except:
         routine.score_e = 0
     try:
-        routine.score_d = float(request.POST.get('score_d',0))
+        routine.score_d = round(float(request.POST.get('score_d',0)),2)
     except:
         routine.score_d = 0
     try:
-        routine.score_final = float(request.POST.get('score_final',0))
+        routine.score_final = round(float(request.POST.get('score_final',0)),3)
     except:
         routine.score_final = 0
 
@@ -715,7 +715,7 @@ def athlete_get_event_on(athlete,session_id):
 
 def athlete_start_list(request,event_name,team_id):
     session_id = request.session.get('session')
-    start_list = StartList.objects.filter(session_id=session_id,event__name=event_name,completed=False).order_by('order','athlete__rotation')
+    start_list = StartList.objects.filter(session_id=session_id,event__name=event_name,completed=False,active=True).order_by('order','athlete__rotation')
     first_not_completed = -1
     if start_list.count() > 0:
         if team_id != 0:

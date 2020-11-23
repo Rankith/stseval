@@ -23,11 +23,16 @@ class StartListAdmin(ImportExportModelAdmin):
     list_editable=('order','completed','active')
     list_filter=('session','event')
 
+class JudgeAdmin(ImportExportModelAdmin):
+    list_display=('id', 'session','event','d1_email','d2_email','e1_email','e2_email','e3_email','e4_email')
+    list_display=('session','event','d1_email','d2_email','e1_email','e2_email','e3_email','e4_email')
+    list_filter=('session','event')
+
 admin.site.register(AthleteLevel,AthleteLevelAdmin)
 admin.site.register(Event,EventAdmin)
 admin.site.register(Disc,DiscAdmin)
 admin.site.register(Competition)
-admin.site.register(Judge)
+admin.site.register(Judge,JudgeAdmin)
 admin.site.register(Athlete)
 admin.site.register(Session)
 admin.site.register(Team)
