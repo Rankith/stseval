@@ -28,6 +28,7 @@ urlpatterns = [
     path('judge_select/', views.judge_select, name='judge_select'),
     path('d1/', views.d1, name='d1'),
     path('view_routine/<int:routine_id>/<int:popup>', views.view_routine, name='view_routine'),
+    path('d1_edit_score/<int:routine_id>', views.d1_edit_score, name='d1_edit_score'),
     path('ejudge_select/', views.ejudge_select, name='ejudge_select'),
     path('ejudge/', views.ejudge, name='ejudge'),
     path('evideo/', views.evideo, name='evideo'),

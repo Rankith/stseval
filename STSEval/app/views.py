@@ -93,6 +93,12 @@ def view_routine(request,routine_id,popup):
         layout = 'app/layout_empty.html'
     else:
         layout = 'app/layout.html'
+    editable = False
+    if request.session.get('type') == 'd1':#d1 can edit if its their event
+        if request.session.get('event','').lower() == event.lower():
+            editable = True
+    elif request.session.get('type') == 'admin':#admin can always edit
+        editable = True
 
     routine = routine.id
     context = {
@@ -102,9 +108,25 @@ def view_routine(request,routine_id,popup):
         'event':event,
         'session':session,
         'loadroutine':routine,
-        'layout':layout
+        'layout':layout,
+        'editable':editable,
     }
     return render(request,'app/d1.html',context)
+
+def d1_edit_score(request,routine_id):
+    routine = Routine.objects.get(pk=routine_id)
+    event = routine.event
+    loadroutine = ''
+    if request.session.get('type') == 'd1':#d1 can edit if its their event
+        if request.session.get('event','').lower() == event.lower():
+            loadroutine = routine
+    elif request.session.get('type') == 'admin':#admin can always edit
+        loadroutine = routine
+
+    context = {
+        'loadroutine':routine,
+    }
+    return render(request,'app/d1_edit_score.html',context)
 
 def routine_setup(request):
     athlete = Athlete.objects.get(pk=request.POST.get('athlete'))
@@ -206,7 +228,8 @@ def routine_finished(request):
 
 def routine_set_score(request):
     routine = Routine.objects.get(pk=request.POST.get('routine'))
-    routine.status = Routine.REVIEW_DONE
+    if request.POST.get('just_edit','') != '':
+        routine.status = Routine.REVIEW_DONE
     try:
         routine.score_elements = int(request.POST.get('score_elements'))
     except:

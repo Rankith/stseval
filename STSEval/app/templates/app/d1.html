@@ -172,13 +172,17 @@
 	                    <button href="#" id="btnAccountability" type="button" class="btn btn-main mb-2 ui-disabled" style="width:200px" onclick="ViewAccountabilityReport()">Report</button><br/>
 	                    <button href="#" id="btnNuke"  type="button" class="btn btn-main mb-2 ui-disabled" style="width:200px" onclick="DeleteRoutineClick()">Delete Routine</button>
                     {% else %}
+                        {% if editable %}
+                            <button href="#" id="btnEdit" type="button" class="btn btn-main mb-2" style="width:200px" onclick="EditDScoreClick()">Edit Score</button><br/>
+                            <div id="divEditDScore" style="display:none;width:200px"></div>
+                        {% endif %}
 	                    <button href="#" id="btnAccountability" type="button" class="btn btn-main mb-2" style="width:200px" onclick="ViewAccountabilityReport()">Report</button><br/>
 	                    <button href="#" id="btnCloseMain" type="button" class="btn btn-main mb-2" style="width:200px" onclick="HideDetails()">Close</button>
                     {% endif  %}
 	            </div>
 	        </div>
         </div>
-        
+                                       
     </div>
 </div>
 <div id="play-settings" style="display:none">
@@ -345,6 +349,35 @@
         });
 
         $("#modalBodyArea1").show();
+    }
+
+    function EditDScoreClick() {
+
+        $("#divEditDScore").load("/d1_edit_score/" + LoadRot,  function () {
+            $("#divEditDScore").show();
+            $("#btnEdit").addClass("ui-disabled");
+        });
+       
+    }
+
+    function EditDScoreDoneClick() {
+        $("#lblElements").html($("#txtElements").val());
+        $("#lblDifficulty").html($("#txtDifficulty").val());
+        $("#lblGroups").html($("#txtGroups").val());
+        $("#lblBonus").html($("#txtBonus").val());
+        $("#lblNuetralDed").html($("#txtNeutralDed").val());
+        SetDScore();
+        CloseDScoreEdit();
+    }
+
+    function EditDScoreCancelClick() {
+        CloseDScoreEdit();
+    }
+
+    function CloseDScoreEdit() {
+        $("#divEditDScore").hide();
+        $("#divEditDScore").empty();
+        $("#btnEdit").removeClass("ui-disabled");
     }
 
     function SetAthleteDisplay() {
@@ -871,11 +904,11 @@
         else //fig
         {
             if (countedE > 1 && countedE <= 3)
-                DeductFrom = 2;
-            else if (countedE > 3 && countedE <= 5)
                 DeductFrom = 4;
-            else if (countedE > 5 && countedE <= 7)
+            else if (countedE > 3 && countedE <= 5)
                 DeductFrom = 6;
+            else if (countedE > 5 && countedE <= 7)
+                DeductFrom = 8;
             else if (countedE > 7)
                 DeductFrom = 10;
 
@@ -904,6 +937,7 @@
         let lowest = 1000;
         JudgesCounting = 0;
         console.log("Calc deductins");
+        console.log(Against);
         //console.log("Deductions:");
         for (var j = 1; j <= 4; j++) {
             EScores[j] = -1;
