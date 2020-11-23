@@ -874,7 +874,7 @@
             let tot = (parseFloat(StartValueScore - TotalDeductions).toFixed(2))
             if (tot < 0)
                 tot = 0
-            document.getElementById('divTotalScore').innerHTML = (parseFloat(tot).toFixed(2));
+            document.getElementById('divTotalScore').innerHTML = (parseFloat(tot).toFixed(2).toFixed(2));
         }
         else if (ScoringType == "JO8910") {
             /*if (countedE > 1 && countedE <= 3)
@@ -899,7 +899,7 @@
             let tot =  (parseFloat(+StartValueScore + +EScore).toFixed(2));
             if (tot < 0)
                 tot = 0
-            document.getElementById('divTotalScore').innerHTML = FormatWith0(parseFloat(tot));
+            document.getElementById('divTotalScore').innerHTML = FormatWith0(parseFloat(tot).toFixed(2));
         }
         else //fig
         {
@@ -924,7 +924,7 @@
             document.getElementById('divEScore').innerHTML = FormatWith0(parseFloat(EScore));
             document.getElementById('lblDScore').innerHTML = FormatWith0(StartValueScore);
 
-            document.getElementById('divTotalScore').innerHTML = FormatWith0(parseFloat(+StartValueScore + +EScore));
+            document.getElementById('divTotalScore').innerHTML = FormatWith0(parseFloat(+StartValueScore + +EScore).toFixed(2));
         }
     }
 
