@@ -11,6 +11,7 @@ from django.contrib.auth.decorators import login_required,user_passes_test
 from django.db.models import Count
 from django.core.mail import get_connection, EmailMultiAlternatives
 import app.views
+from django.db.models import Q
 
 # Create your views here.
 @login_required(login_url='/account/login/admin/')
@@ -248,7 +249,7 @@ def athlete_delete(request,id):
 
 @login_required(login_url='/account/login/admin/')
 def create_start_lists(request,session_id):
-    if len(StartList.objects.filter(session_id=session_id,completed=True)) <= 0:
+    if len(StartList.objects.filter(Q(session_id=session_id)&(Q(completed=True)|Q(active=False)))) <= 0:
         create_start_List_direct(session_id)
         message = "Start lists generated."
     else:
