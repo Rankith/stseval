@@ -15,10 +15,10 @@ import app.views
 # Create your views here.
 @login_required(login_url='/account/login/admin/')
 def setup_competition(request):
-    events = Event.objects.filter(disc__name="MAG")
-    for ath in Athlete.objects.all():
-        ath.events_competing.add(*[e for e in events])
-        ath.events_count_for_team.add(*[e for e in events])
+   # events = Event.objects.filter(disc__name="MAG")
+    #for ath in Athlete.objects.all():
+     #   ath.events_competing.add(*[e for e in events])
+      #  ath.events_count_for_team.add(*[e for e in events])
     context = {
         'title': 'Competition Setup (1/6)',
         'discs': Disc.objects.all(),
@@ -37,7 +37,7 @@ def competition_list_all(request):
     if request.GET.get('current','0') == '0':
         comps = Competition.objects.filter(disc=request.GET.get('disc'))
     else:
-        comps = Competition.objects.filter(disc=request.GET.get('disc'),date__gte=datetime.datetime.now() - datetime.timedelta(days=2),finished=False)
+        comps = Competition.objects.filter(disc=request.GET.get('disc'),date__gte=datetime.datetime.now() - datetime.timedelta(days=7),finished=False)
 
     context = {
         'comps':comps,
