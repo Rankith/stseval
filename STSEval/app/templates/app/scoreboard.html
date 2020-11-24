@@ -38,7 +38,9 @@
     if (ev == "AA") {
         //just check every x seconds
         GetRoutineAAData();
+        GetTeamData();
         setInterval(GetRoutineAAData, 20000);
+        setInterval(GetTeamData, 20000);
     }
     else {
         dbF.collection("sessions").doc(Session).collection("event_managers").doc(ev)
@@ -246,8 +248,15 @@
         console.log(data);
         //$('#divShorthandResults').empty();
         for (var i = 0; i < data.length; i++) {
+           // console.log(data[i]);
+            //console.log(data[i]["score"]);
             data[i]["Place"] = i + 1;
-            data[i]["score"] = data[i]["score"].toFixed(2);
+            //console.log("to fixed " + i);
+            try {
+                data[i]["score"] = data[i]["score"].toFixed(2);
+            }
+            catch {
+            }
         }
 
         $("#jsGridTeam").jsGrid({

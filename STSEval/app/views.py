@@ -623,15 +623,38 @@ def scoreboard(request,event_name='-1'):
 
 
 def get_team_scores(request):
-    scores = calc_team_scores(request.POST.get('Session'),request.POST.get('Ev'))
-    teams = Team.objects.filter(session_id=request.POST.get('Session'))
-    team_scores = []
-    for team in teams:
-        this_score = next((s for s in scores if s['team'] == team.name),None)
-        if this_score != None:
-            team_scores.append({'team':team.name,'score':this_score['score']})
-        else:
-            team_scores.append({'team':team.name,'score':0})
+    if request.POST.get('Ev','') != 'AA':
+        scores = calc_team_scores(request.POST.get('Session'),request.POST.get('Ev'))
+        teams = Team.objects.filter(session_id=request.POST.get('Session'))
+        team_scores = []
+        for team in teams:
+            this_score = next((s for s in scores if s['team'] == team.name),None)
+            if this_score != None:
+                team_scores.append({'team':team.name,'score':this_score['score']})
+            else:
+                team_scores.append({'team':team.name,'score':0.00})
+
+    else:
+        session = Session.objects.get(pk=request.POST.get('Session'))
+        events = Event.objects.filter(disc=session.competition.disc)
+        teams = Team.objects.filter(session_id=request.POST.get('Session'))
+        team_scores = []
+        for team in teams:
+            team_scores.append({'team':team.name,'score':0.00})
+   
+        for event in events:
+            scores = calc_team_scores(request.POST.get('Session'),event.name)
+            for team in teams:
+                this_score = next((s for s in scores if s['team'] == team.name),None)
+                if this_score != None:
+                    for t in team_scores:
+                        if t['team'] == team.name:
+                            t['score'] = t['score'] + this_score['score']
+                            break
+    
+        for t in team_scores:
+            t['score'] = "{:.2f}".format(t['score'])
+        scores = team_scores
 
     #sort by score
     scores = sorted(scores,key = lambda i: i['score'],reverse=True)
