@@ -849,18 +849,21 @@
         var DeductFrom = 0;
         let countedE = 0;
         let groups = 0;
+        let neutral = 0;
         var StartValueScore = 0;
         if (LoadRot == "") {
-            Score = parseFloat($("#txtDifficulty").val()) + parseFloat($("#txtBonus").val()) - parseFloat($("#txtNeutralDed").val());
+            Score = parseFloat($("#txtDifficulty").val()) + parseFloat($("#txtBonus").val());
             difScore = parseFloat(Score).toFixed(2);
             countedE = parseInt($("#txtElements").val());
             groups = parseFloat($("#txtGroups").val());
+            neutral = parseFloat($("#txtNeutralDed").val());
         }
         else {
-            Score = parseFloat($("#lblDifficulty").html()) + parseFloat($("#lblBonus").html()) - parseFloat($("#lblNeutralDed").html());
+            Score = parseFloat($("#lblDifficulty").html()) + parseFloat($("#lblBonus").html());
             difScore = parseFloat(Score).toFixed(2);
             countedE = parseInt($("#lblElements").html());
             groups = parseFloat($("#lblGroups").html());
+            neutral = parseFloat($("#lblNeutralDed").html());
         }
 
         if (ScoringType == "JO4567") {
@@ -875,7 +878,7 @@
             document.getElementById('divEScore').innerHTML =  parseFloat(EScore).toFixed(2);
             document.getElementById('lblDScore').innerHTML = FormatWith0(StartValueScore);
             //StartValueScore = parseFloat(DeductFrom) + parseFloat(StartValueScore);
-            let tot = (parseFloat(StartValueScore - TotalDeductions).toFixed(2))
+            let tot = (parseFloat(StartValueScore - neutral - TotalDeductions).toFixed(2))
             if (tot < 0)
                 tot = 0
             document.getElementById('divTotalScore').innerHTML = (parseFloat(tot).toFixed(2).toFixed(2));
@@ -900,7 +903,7 @@
                 EScore = 0;
             document.getElementById('divEScore').innerHTML = FormatWith0(parseFloat(EScore));
             document.getElementById('lblDScore').innerHTML = FormatWith0(StartValueScore);
-            let tot =  (parseFloat(+StartValueScore + +EScore).toFixed(2));
+            let tot =  (parseFloat(+StartValueScore + +EScore - +neutral).toFixed(2));
             if (tot < 0)
                 tot = 0
             document.getElementById('divTotalScore').innerHTML = FormatWith0(parseFloat(tot).toFixed(2));
@@ -928,7 +931,7 @@
             document.getElementById('divEScore').innerHTML = FormatWith0(parseFloat(EScore));
             document.getElementById('lblDScore').innerHTML = FormatWith0(StartValueScore);
 
-            document.getElementById('divTotalScore').innerHTML = FormatWith0(parseFloat(+StartValueScore + +EScore).toFixed(2));
+            document.getElementById('divTotalScore').innerHTML = FormatWith0(parseFloat(+StartValueScore + +EScore - +neutral).toFixed(2));
         }
     }
 
