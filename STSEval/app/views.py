@@ -753,9 +753,7 @@ def athlete_get_event_on(athlete,session_id):
     for i in range(sl.count()):
         j = i + rotation_adjust
         if j >= sl.count():
-            j = j - sl.count() - 1
-        if j == -1:
-            j = 1
+            j = j - sl.count()
         if sl[j].active and not sl[j].completed:
             next_event = sl[j].event.name
             break
