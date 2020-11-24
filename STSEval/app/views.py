@@ -397,8 +397,8 @@ def deduction_change(request):
     deduction = EJuryDeduction.objects.get(pk=id)
     if deduction:
         #make sure the routine is not fully done
-        if deduction.routine.status == Routine.FINISHED:
-             return HttpResponse(status=403) 
+        #if deduction.routine.status == Routine.FINISHED:
+             #return HttpResponse(status=403) 
         deduction.pk = None
         deduction.editor = editor
         if ded == 0:

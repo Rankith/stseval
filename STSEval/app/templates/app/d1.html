@@ -173,7 +173,7 @@
 	                    <button href="#" id="btnNuke"  type="button" class="btn btn-main mb-2 ui-disabled" style="width:200px" onclick="DeleteRoutineClick()">Delete Routine</button>
                     {% else %}
                         {% if editable %}
-                            <button href="#" id="btnEdit" type="button" class="btn btn-main mb-2" style="width:200px" onclick="EditDScoreClick()">Edit Score</button><br/>
+                            <button href="#" id="btnEdit" type="button" class="btn btn-main mb-2" style="width:200px" onclick="EditScoreClick()">Edit Score</button><br/>
                             <div id="divEditDScore" style="display:none;width:200px"></div>
                         {% endif %}
 	                    <button href="#" id="btnAccountability" type="button" class="btn btn-main mb-2" style="width:200px" onclick="ViewAccountabilityReport()">Report</button><br/>
@@ -196,7 +196,7 @@
 {% endblock %}
 
 {% block scripts %}
-<script src="{% static 'app/scripts/dots_area.js' %}?v=1.1"></script>
+<script src="{% static 'app/scripts/dots_area.js' %}?v=1.3"></script>
 <script type="module" src="{% static 'app/scripts/wowza/play.js' %}?v=1"></script>
 <script src="https://www.webrtc-experiment.com/EBML.js"></script> 
 <script src="{% static 'app/scripts/RecordRTC.js' %}"></script>
@@ -351,33 +351,36 @@
         $("#modalBodyArea1").show();
     }
 
-    function EditDScoreClick() {
-
+    function EditScoreClick() {
+        BuildDots();
         $("#divEditDScore").load("/d1_edit_score/" + LoadRot,  function () {
             $("#divEditDScore").show();
             $("#btnEdit").addClass("ui-disabled");
+            EditableDots = true;
         });
        
     }
 
-    function EditDScoreDoneClick() {
+    function EditScoreDoneClick() {
         $("#lblElements").html($("#txtElements").val());
         $("#lblDifficulty").html($("#txtDifficulty").val());
         $("#lblGroups").html($("#txtGroups").val());
         $("#lblBonus").html($("#txtBonus").val());
         $("#lblNuetralDed").html($("#txtNeutralDed").val());
         SetDScore();
-        CloseDScoreEdit();
+        CloseScoreEdit();
     }
 
-    function EditDScoreCancelClick() {
-        CloseDScoreEdit();
+    function EditScoreCancelClick() {
+        CloseScoreEdit();
     }
 
-    function CloseDScoreEdit() {
+    function CloseScoreEdit() {
         $("#divEditDScore").hide();
         $("#divEditDScore").empty();
         $("#btnEdit").removeClass("ui-disabled");
+        BuildDots(false, '1');
+        EditableDots = false;
     }
 
     function SetAthleteDisplay() {
@@ -799,6 +802,7 @@
 
     function SetDScore(completeRoutine = false) {
         CalculateScores();
+        console.log(token);
         $.ajax({
             url: "/routine_set_score/",
             type: "POST",

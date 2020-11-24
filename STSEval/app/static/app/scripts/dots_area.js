@@ -169,11 +169,18 @@ function ChangeEjury(dot, artistry = false) {
 
         if (artistry) {
             $("#divChangeDed").css({ top: $("#imgDotA" + dot).offset().top + DotSize + 4 });
-            $("#divChangeDed").css({ left: $("#imgDotA" + dot).offset().left + (DotSize/2) - $("#divChangeDed").width() / 2 });
+            $("#divChangeDed").css({ left: $("#imgDotA" + dot).offset().left + (DotSize / 2) - $("#divChangeDed").width() / 2 });
         }
         else {
-            $("#divChangeDed").css({ top: $("#imgDot" + dot).offset().top + DotSize + 4 });
-            $("#divChangeDed").css({ left: $("#imgDot" + dot).offset().left + (DotSize/2) - $("#divChangeDed").width() / 2 });
+            if (typeof LoadRot == "undefined") {
+                $("#divChangeDed").css({ top: $("#imgDot" + dot).offset().top + DotSize + 4 });
+                $("#divChangeDed").css({ left: $("#imgDot" + dot).offset().left + (DotSize / 2) - $("#divChangeDed").width() / 2 });
+            }
+            else {
+                $("#divChangeDed").css({ top: $("#imgDot" + dot).offset().top + DotSize + 4 - 150 });
+                
+                $("#divChangeDed").css({ left: $("#imgDot" + dot).offset().left + (DotSize / 2) - $("#divChangeDed").width() / 2 });
+            }
         }
 
         if (artistry) {
