@@ -119,7 +119,7 @@
 	                <button id="btnRestartE" type="button" class="btn btn-main mb-2" onclick="RestartE()" style="display:none">Judge E</button>
 	                <button id="btnRestartBoth" type="button" class="btn btn-main mb-2" onclick="RestartBoth()" style="display:none">Both</button>
 	                <button id="btnExerciseDone" type="button" class="btn btn-main mb-2" onclick="ExerciseDoneClick()" style="width:200px">Exercise Done</button><br/>
-                    <button id="btnFallTimer" type="button" class="btn btn-red mb-2 ui-disabled" onclick="FallTimerClick()" style="width:200px">Fall Timer</button>
+                    <button id="btnFallTimer" type="button" class="btn btn-red mb-2 mt-3 ui-disabled" onclick="FallTimerClick()" style="width:200px">Fall Timer</button>
                     <div id="divCreditButtons" style="width:200px;display:none;">
                         <div class="d-flex">
                             <button id="btnCredit" type="button" class="btn btn-main mb-2 col-6 mr-1" onclick="CreditClick(true)" style="font-size:.8rem;padding-left:.3rem!important;padding-right:.3rem!important;">Credit</button>
@@ -907,13 +907,13 @@
         }
         else //fig
         {
-            if (countedE > 1 && countedE <= 3)
+            if (countedE > 1 && countedE <= 2)
+                DeductFrom = 2;
+            else if (countedE > 3 && countedE <= 4)
                 DeductFrom = 4;
-            else if (countedE > 3 && countedE <= 5)
+            else if (countedE > 5 && countedE <= 6)
                 DeductFrom = 6;
-            else if (countedE > 5 && countedE <= 7)
-                DeductFrom = 8;
-            else if (countedE > 7)
+            else if (countedE >= 7)
                 DeductFrom = 10;
 
             if (ev == "V")
