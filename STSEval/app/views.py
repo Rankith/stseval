@@ -838,6 +838,18 @@ def athlete_start_list_swap_do(request):
 
     return HttpResponse(status=200)
 
+def athlete_routine_remove(request):
+    sl_orig = StartList.objects.get(pk=request.POST.get('sl_orig'))
+   
+    sl_orig.completed = False
+    sl_orig.save()
+
+    Routine.objects.filter(athlete=sl_orig.athlete,event=sl_orig.event.name,session=sl_orig.session,status=Routine.FINISHED).delete()
+
+    app.firebase.update_start_list(sl_orig.session.id,sl_orig.event.name)
+
+    return HttpResponse(status=200)
+
 def athlete_set_active(request,sl_id):
     sl = StartList.objects.get(pk=sl_id)
     if request.POST.get('active','1') == '1':
@@ -855,6 +867,20 @@ def athlete_set_active(request,sl_id):
         sl.active = False
         sl.save()
     app.firebase.update_start_list(sl.session.id,sl.event.name)
+
+    return HttpResponse(status=200)
+
+def athlete_start_list_update_order(request):
+    session = Session.objects.get(pk=request.session.get('session'))
+    sls = StartList.objects.filter(session=session,event__name=request.POST.get('ev'))
+    sl_order = request.POST.get('sl_order').split(',')
+
+    for index, val in enumerate(sl_order,start=1):
+        sl = sls.get(pk=val)
+        sl.order = index
+        sl.save()
+
+    app.firebase.update_start_list(session.id,request.POST.get('ev'))
 
     return HttpResponse(status=200)
 

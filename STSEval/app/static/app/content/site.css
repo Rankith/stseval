@@ -307,20 +307,6 @@ input[type="checkbox"].input-validation-error {
     width:100%;
 }
 
-.btn-event:hover {
-    background-color: #313184;
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#313184), to(#8282c4));
-    background-image: -webkit-linear-gradient(top, #313184, #8282c4);
-    background-image: -moz-linear-gradient(top, #313184, #8282c4);
-    background-image: -ms-linear-gradient(top, #313184, #8282c4);
-    background-image: -o-linear-gradient(top, #313184, #8282c4);
-    background-image: linear-gradient(to bottom, #313184, #8282c4);
-    filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#313184, endColorstr=#8282c4);
-    font-weight: bold;
-    color: #ffffff /*{c-bup-color}*/;
-    border: 0px;
-}
-
 .btn-event-selected {
     font-weight: bold;
     color: #ffffff /*{c-bup-color}*/;
@@ -434,7 +420,8 @@ input[type="checkbox"].input-validation-error {
 }
 
 .start-list-completed {
-    background-color: #ff0000 !important;
+    /*background-color: #ff0000 !important;*/
+    color: #8e8e8e;
 }
 
 .live-video {

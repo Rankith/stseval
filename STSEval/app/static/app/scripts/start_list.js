@@ -18,18 +18,43 @@ function SLCheck(id) {
         }
     });
 }
-
+function StartListDragSetup() {
+    Sortable.create(document.getElementById("StartListDrag"), { onEnd: SortEnd, handle: ".start-list-drag-handle", draggable: ".start-list-draggable" });
+}
 function LoadStartList() {
     $("#divStartList").load("/athlete_start_list_admin/" + ev + "/", function () {
         if ($("#hdnTopPosition").val() != 'divSL-1')
             document.getElementById($("#hdnTopPosition").val()).scrollIntoView(true);
+        StartListDragSetup();
     });
 }
 
-function ShowStartList(sl) {
+function SortEnd(evt) {
+    UpdateStartlistOrder();
+}
+function UpdateStartlistOrder() {
+    var OrderList = "";
+    $("#StartListDrag").children("tr").each(function () {
+        OrderList += "," + $(this).attr("athid");
+    });
+    OrderList = OrderList.substring(1);
+    $.ajax({
+        url: '/athlete_start_list_update_order/',
+        data: {
+            'ev': ev,
+            'sl_order': OrderList
+        },
+        headers: { "X-CSRFToken": token },
+        type: 'POST',
+        success: function (data) {
+        }
+    });
+}
+
+function ShowRoutineOptions(sl) {
 
     //$("#modalMainDoc").addClass("modal-lg");
-    $("#modalSecondTitle").html("Swap Athlete Positions");
+    $("#modalSecondTitle").html("Manage Athlete Routine");
     $("#modalSecondArea1").empty();
     $("#modalSecondArea1").load("/athlete_start_list_swap/" + sl, function () {
 
@@ -46,6 +71,21 @@ function StartListSwapClick(sl) {
         data: {
             'sl_orig': $("#hdnSLtoSwap").val(),
             'sl_target':sl,
+        },
+        success: function (data) {
+            LoadStartList();
+            $("#modalSecond").modal('hide');
+        }
+    });
+}
+
+function StartListRoutineDelete(sl) {
+    $.ajax({
+        type: 'POST',
+        url: '/athlete_routine_remove/',
+        headers: { "X-CSRFToken": token },
+        data: {
+            'sl_orig': $("#hdnSLtoSwap").val(),
         },
         success: function (data) {
             LoadStartList();

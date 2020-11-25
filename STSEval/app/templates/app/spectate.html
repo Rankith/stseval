@@ -24,6 +24,9 @@
         {% else %}
             <div class="col-12 col-xl-6 pr-4" align="right">
                 <div id="play-video-container1" class="live-container d-flex align-items-center justify-content-center flex-column">
+                     <div id="divScoreboard" style="width:150px;position:absolute;top:5px;left:5px;z-index:104">
+
+                    </div>
                     <div id="player-waiting1" style="height:480px;display:flex" class="align-items-center"><h1>Waiting for Camera</h1></div>
                     <video id="player-video1" class="live-video" style="display:none" controls autoplay muted></video>
                     <div class="d-flex w-100">
@@ -38,6 +41,9 @@
             </div>
             <div class="col-12 col-xl-6" align="left">
                 <div id="play-video-container2" class="live-container d-flex align-items-center justify-content-center flex-column">
+                     <div id="divScoreboard2" style="width:150px;position:absolute;top:5px;left:5px;z-index:104">
+
+                    </div>
                     <div id="player-waiting2" style="height:480px;display:flex" class="align-items-center"><h1>Waiting for Camera</h1></div>
                     <video id="player-video2" class="live-video" style="display:none" controls autoplay muted></video>
                     <div class="d-flex w-100">
@@ -75,9 +81,11 @@
     var ev = new Array();
     {% if display_type == 'single' %}
     ev[1] = "{{event_name}}";
+    var dual = false;
     {% else %}
     ev[1] = "{{event_name}}";
     ev[2] = "{{event_name2}}";
+    var dual = true;
     {% endif %}
     var Session = "{{session.id}}";
     var SessionName = "{{session}}";
@@ -144,7 +152,11 @@
     }
 
     function LoadScoreboard() {
-        $("#divScoreboard").load("/video_scoreboard/?Session=" + Session);
+        $("#divScoreboard").load("/video_scoreboard/?Session=" + Session, function()
+        {
+            if (dual)
+                $("#divScoreboard2").html($("#divScoreboard").html());
+        });
     }
 
     function GetTeamData() {

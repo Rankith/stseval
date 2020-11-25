@@ -1,7 +1,8 @@
 <div align="center">
-    Swapping: {{sl_to_swap.athlete.team.abbreviation}} - {{sl_to_swap.athlete.level.name}} - {{sl_to_swap.athlete.name}} - {{sl_to_swap.athlete.rotation}}<br/>
-    This will swap their start list positions AND any completed routines on {{sl_to_swap.event.name}}<br/>
-    Select athlete to swap with below:<br/><br/>
+    {{sl_to_swap.athlete.team.abbreviation}} - {{sl_to_swap.athlete.name}}<br />
+    This athlete has performed a routine on this event. If this is incorrect, you can remove this routine and put them back in the start list by clicking this button:<br/>
+    <button id="btnStartListRoutineDelete" type="button" class="btn btn-main mb-2" onclick="StartListRoutineDelete({{sl.id}})">Remove Routine</button><br/>
+    Or if this routine was attributed to the wrong athlete, you can swap them with the correct athlete by clicking one of the buttons below:<br/>
     <div id="divStartSwapList" style="max-height:600px;overflow:auto">
         {% for sl in start_list %}
             <button id="btnStartListSwap{{sl.id}}" type="button" class="btn btn-main mb-2" onclick="StartListSwapClick({{sl.id}})" style="width:300px">{{sl.athlete.team.abbreviation}} - {{sl.athlete.level.name}} - {{sl.athlete.name}} - {{sl.athlete.rotation}}</button><br/>
