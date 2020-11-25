@@ -13,7 +13,7 @@ def send_message(request):
     return HttpResponse(status=200)
 
 def get_eligable_chats(request):
-    type = request.session.get('type')
+    type = request.session.get('type',',').split(',')[1]
     event = request.session.get('event','')
     session_id = request.session.get('session')
     chats = []

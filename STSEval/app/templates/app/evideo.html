@@ -152,6 +152,7 @@
             $("#divHeader").html("<h2 style='display:inline'>" + doc.data().athlete + "</h2>");
             if (Status != doc.data().status || RoutineID != doc.data().routine) {
                 RoutineID = doc.data().routine
+                console.log(doc.data().status + " | " + Status);
                 if (doc.data().status == "N" || doc.data().status == "S" || Status == "") {
                     SetDScoreType(doc.data().athlete_id);
                     SetDScoreDefaults();
@@ -257,7 +258,7 @@
             if (RedoDots) {
                 BuildDots(false);
                 if (Status == "RD")
-                    LoadRoutine
+                    LoadRoutine();
 
             }
         }

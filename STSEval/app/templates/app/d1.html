@@ -366,7 +366,7 @@
         $("#lblDifficulty").html($("#txtDifficulty").val());
         $("#lblGroups").html($("#txtGroups").val());
         $("#lblBonus").html($("#txtBonus").val());
-        $("#lblNuetralDed").html($("#txtNeutralDed").val());
+        $("#lblNeutralDed").html($("#txtNeutralDed").val());
         SetDScore();
         CloseScoreEdit();
     }
@@ -801,6 +801,12 @@
     }
 
     function SetDScore(completeRoutine = false) {
+        try {
+            //set neutral ded label here in case its an edit and cant figure it out
+        }
+        catch{
+
+        }
         CalculateScores();
         console.log(token);
         $.ajax({

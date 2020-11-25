@@ -30,38 +30,8 @@
                 <div class="navbar-collapse collapse justify-content-end order-2 w-50 pull-right" id="collapsingNavbar">
                     
                     <ul class="navbar-nav">
-                        {% if user.is_authenticated %}
-                            <form id="logoutForm" action="/account/logout/" method="post">
-                                {% csrf_token %}
-                                <ul class="nav navbar-nav ml-auto justify-content-end">
-                                     <!--<li class="nav-item dropdown">
-                                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            {{event|upper}}
-                                        </a>
-                                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                            <a class="dropdown-item" onclick="EventChanged('FX')">FX</a>
-                                            <a class="dropdown-item" onclick="EventChanged('PH')">PH</a>
-                                            <a class="dropdown-item" onclick="EventChanged('R')">R</a>
-                                            <a class="dropdown-item" onclick="EventChanged('V')">V</a>
-                                            <a class="dropdown-item" onclick="EventChanged('PB')">PB</a>
-                                            <a class="dropdown-item" onclick="EventChanged('HB')">HB</a>
-                                        </div>
-                                    </li>-->
-                                    {% if display_type %}
-                                        {% if display_type == 'single' %}
-                                            <li class="nav-item align-self-center"><a class="nav-link" href="/spectate/{{session.id}}/dual/{{event_name}}">dual display</a></li>
-                                        {% else %}
-                                            <li class="nav-item align-self-center"><a class="nav-link" href="/spectate/{{session.id}}/single/{{event_name}}">single display</a></li>
-                                        {% endif %}
-                                    {% endif %}
-                                    {% if scoreboard %}
-                                        <li class="nav-item align-self-center"><a target="_blank" class="nav-link" href="/scoreboard/{{event_name}}">scoreboard</a></li>
-                                    {% endif %}
-                                    
-                                    <li class="nav-item align-self-center"><a class="nav-link" href="javascript:document.getElementById('logoutForm').submit()">logout</a></li>
-                                </ul>
-                            </form>
-                        {% else %}
+                        <form id="logoutForm" action="/account/logout/" method="post">
+                            {% csrf_token %}
                             <ul class="nav navbar-nav ml-auto justify-content-end">
                                     <!--<li class="nav-item dropdown">
                                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -76,12 +46,21 @@
                                         <a class="dropdown-item" onclick="EventChanged('HB')">HB</a>
                                     </div>
                                 </li>-->
+                                {% if display_type %}
+                                    {% if display_type == 'single' %}
+                                        <li class="nav-item align-self-center"><a class="nav-link" href="/spectate/{{session.id}}/dual/{{event_name}}">dual display</a></li>
+                                    {% else %}
+                                        <li class="nav-item align-self-center"><a class="nav-link" href="/spectate/{{session.id}}/single/{{event_name}}">single display</a></li>
+                                    {% endif %}
+                                {% endif %}
                                 {% if scoreboard %}
                                     <li class="nav-item align-self-center"><a target="_blank" class="nav-link" href="/scoreboard/{{event_name}}">scoreboard</a></li>
                                 {% endif %}
-                                <li class="nav-item align-self-center"><a class="nav-link" href="/">logout</a></li>
+                                    
+                                <li class="nav-item align-self-center"><a class="nav-link" href="javascript:document.getElementById('logoutForm').submit()">logout</a></li>
                             </ul>
-                        {% endif %}
+                        </form>
+
                     </ul>
                 </div>
                         

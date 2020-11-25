@@ -35,7 +35,7 @@ def login_admin(request,type='spectator'):
             user = authenticate(request, email=email, password=raw_password)
             if user is not None:
                 login(request, user,backend='django.contrib.auth.backends.ModelBackend')
-                request.session['type'] = type
+                request.session['type'] = request.session.get('type','') + ',' + type
                 request.session['email'] = email
                 #request.session['chat_name'] = user.first_name + " " + user.last_name
                 if type == "admin":
@@ -104,7 +104,7 @@ def login_multiple(request,type,sub_type,id):
 def login_camera_do(request,camera):
     request.session['session'] = camera.session.id
     request.session['camera'] = camera.id
-    request.session['type'] = 'camera'
+    request.session['type'] = request.session.get('type','') + ',' +  'camera'
     request.session['disc'] = camera.session.competition.disc.name
     request.session['email'] = camera.email
     request.session['chat_name'] = 'Camera - ' + camera.name
@@ -116,7 +116,7 @@ def login_coach_do(request,session,team):
     request.session['team'] = team.id
     request.session['disc'] = session.competition.disc.name
     request.session['email'] = team.head_coach_email
-    request.session['type'] = 'coach'
+    request.session['type'] = request.session.get('type','') + ',' + 'coach'
     request.session['chat_name'] = 'Coach - ' + team.abbreviation
     request.session.set_expiry(0)#until they close browser
     return redirect('/coach/')          
@@ -127,7 +127,7 @@ def login_judge_do(request,session,event,name,email,jt,ej):
     request.session['disc'] = session.competition.disc.name
     request.session['name'] = name
     request.session['email'] = email
-    request.session['type'] = jt.lower()
+    request.session['type'] = request.session.get('type','') + ',' + jt.lower()
    
     request.session.set_expiry(0)#until they close browser
     if jt[0:1] == 'E':

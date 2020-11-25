@@ -94,10 +94,10 @@ def view_routine(request,routine_id,popup):
     else:
         layout = 'app/layout.html'
     editable = False
-    if request.session.get('type') == 'd1':#d1 can edit if its their event
+    if 'd1' in request.session.get('type'):#d1 can edit if its their event
         if request.session.get('event','').lower() == event.lower():
             editable = True
-    elif request.session.get('type') == 'admin':#admin can always edit
+    elif 'admin' in request.session.get('type'):#admin can always edit
         editable = True
 
     routine = routine.id
@@ -117,10 +117,10 @@ def d1_edit_score(request,routine_id):
     routine = Routine.objects.get(pk=routine_id)
     event = routine.event
     loadroutine = ''
-    if request.session.get('type') == 'd1':#d1 can edit if its their event
+    if 'd1' in request.session.get('type'):#d1 can edit if its their event
         if request.session.get('event','').lower() == event.lower():
             loadroutine = routine
-    elif request.session.get('type') == 'admin':#admin can always edit
+    elif 'admin' in request.session.get('type'):#admin can always edit
         loadroutine = routine
 
     context = {
@@ -279,8 +279,12 @@ def routine_set_score(request):
     except:
         routine.score_final = 0
 
-    routine.save()
-    app.firebase.routine_set_status(str(routine.session.id) , routine.event,routine)
+    if routine.status == Routine.ATHLETE_DONE:
+        routine.status = Routine.REVIEW_DONE
+        routine.save()
+        app.firebase.routine_set_status(str(routine.session.id) , routine.event,routine)
+    else:
+        routine.save()
 
     return HttpResponse(status=200)
 
