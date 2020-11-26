@@ -38,7 +38,7 @@ def competition_list_all(request):
     if request.GET.get('current','0') == '0':
         comps = Competition.objects.filter(disc=request.GET.get('disc'))
     else:
-        comps = Competition.objects.filter(disc=request.GET.get('disc'),date__gte=datetime.datetime.now() - datetime.timedelta(days=7),finished=False)
+        comps = Competition.objects.filter(disc=request.GET.get('disc'),date__gte=datetime.datetime.now() - datetime.timedelta(days=7),session__finished=False,session__active=True).distinct()
 
     context = {
         'comps':comps,
@@ -72,6 +72,14 @@ def competition_delete(request):
     return HttpResponse(status=200)
 
 def session_list(request):
+    sessions = Session.objects.filter(competition_id=request.GET.get('comp'),active=True,finished=False)
+
+    context = {
+        'sessions':sessions,
+    }
+    return render(request, 'management/session_list.html', context)
+
+def session_list_admin(request):
     sessions = Session.objects.filter(competition_id=request.GET.get('comp'))
 
     context = {
@@ -452,6 +460,7 @@ def setup_finish(request,id):
         'missed_judge':missed_judge,
         'missed_camera':missed_camera,
         'setup_complete':setup_complete,
+        'session_active':session.active,
     }
     return render(request,'management/setup_finish.html',context)
 
@@ -464,7 +473,6 @@ def send_session_emails(request,session_id):
     teams = Team.objects.filter(session_id=session_id)
     session = Session.objects.get(pk=session_id)
     messages = []
-    app.views.setup_firebase_managers(session)
     
     for judge in judges:
         if judge.d1_email != None and judge.d1_email != '':
@@ -618,6 +626,17 @@ def email_test(request):
         'reqs':reqs
     }
     return render(request,'management/email_notice.html',context)
+
+def session_activate(request,session_id):
+    if len(StartList.objects.filter(session_id=session_id)) <= 0:
+        create_start_List_direct(session_id)
+    session = Session.objects.get(pk=session_id)
+    session.active = True
+    session.save()
+
+    app.views.setup_firebase_managers(session)
+
+    return HttpResponse(status=200)
 
 def judges_get(request):
     comp = request.GET.get('comp')

@@ -33,8 +33,8 @@ function LoadStartList(doc=-1) {
 }
 function SetStartListDot(doc) {
     $(".athlete-dot").hide();
-    //console.log("Set start list dot: #divAthleteDots" + doc.data().athlete_id + " | " + doc.data().status);
-    if (doc.data().status == "AD" || status == "F" || status == "RD") {
+    console.log("Set start list dot: #divAthleteDots" + doc.data().athlete_id + " | " + doc.data().status);
+    if (doc.data().status == "AD" || doc.data().status == "F" || doc.data().status == "RD") {
         $("#divAthleteDots" + doc.data().athlete_id).removeClass("status-dot-yellow").removeClass("status-dot-green").addClass("status-dot-red");
     }
     else if (doc.data().status == "N") {

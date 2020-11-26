@@ -1,6 +1,6 @@
 {% block content %}
     {% for session in sessions %}
-        <div id="divSession{{session.id}}" onclick="SessionClick({{session.id}});"class="row no-gutters session-list">
+        <div id="divSession{{session.id}}" onclick="SessionClick({{session.id}},{{session.active|lower}});"class="row no-gutters session-list">
             <div class="col-7 pl-2" align="left">{{session.name}}</div>
             <div class="col-5 pr-2" align="right">{{session.time}}</div>
         </div>

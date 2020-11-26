@@ -36,7 +36,8 @@
     <br/>
     <br/>
     <div>
-        <button href="#" id="btnNext" type="button" class="btn-main btn-wide ui-disabled pt-4 pb-4" style="border-radius: 1rem;" onclick="btnNextClick()">Session<br/>Setup</button><br/><br/>
+        <button href="#" id="btnNext" type="button" class="btn-main btn-wide ui-disabled pt-4 pb-4" style="border-radius: 1rem;" onclick="btnNextClick()">Session<br/>Setup</button><br/>
+        <span style="font-size:.8rem;color:red;display:none" id="spanNotActive">Session must be activated to goto overview</span><br/>
         <button href="#" id="btnAdministrate" type="button" class="btn-main btn-wide ui-disabled pt-4 pb-4" style="border-radius: 1rem;" onclick="btnAdministrateClick()">Session Overview</button>
     </div>
 		
@@ -68,11 +69,18 @@
         }
     }
 
-    function SessionClick(sesIn) {
+    function SessionClick(sesIn,activeIn=false) {
         $('.session-list').removeClass("ctxSelected");
         $("#divSession" + sesIn).addClass("ctxSelected");
         SelectedSession = sesIn;
-        $("#btnAdministrate").removeClass("ui-disabled");
+        if (activeIn) {
+            $("#btnAdministrate").removeClass("ui-disabled");
+            $("#spanNotActive").hide();
+        }
+        else {
+            $("#spanNotActive").show();
+            $("#btnAdministrate").addClass("ui-disabled");
+        }
         $("#btnNext").removeClass("ui-disabled");
         EnableDisableButtons("Session", true);
 
@@ -262,9 +270,9 @@
 
      function SessionManageFinishParent() {
         $("#modalMain").modal('hide');
-        $("#divSessionList").load("/management/session_list/?comp="+ SelectedComp, function () {
+        $("#divSessionList").load("/management/session_list_admin/?comp="+ SelectedComp, function () {
             if (SelectedSession != -1)
-                SessionClick(SelectedSession);
+                $("#divSession" + SelectedSession).click();//SessionClick(SelectedSession);
         });
         
     }
@@ -288,7 +296,7 @@
     }
 
     function FillSession() {
-        $("#divSessionList").load("/management/session_list/?comp="+ SelectedComp);
+        $("#divSessionList").load("/management/session_list_admin/?comp="+ SelectedComp);
     }
 
     function EnableDisableButtons(typeIn, enabledIn) {

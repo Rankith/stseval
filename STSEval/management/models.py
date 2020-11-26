@@ -38,8 +38,6 @@ class Competition(models.Model):
         ]
     type = models.CharField(max_length=2,choices=COMPETITION_TYPE,default=TOURNAMENT)
     date = models.DateField()
-    test =  models.BooleanField(default=False)
-    finished = models.BooleanField(default=False)
     def __str__(self):
        return self.name
 
@@ -48,6 +46,9 @@ class Session(models.Model):
     name = models.CharField(max_length=75)
     time = models.TimeField()
     spectator_fee = models.DecimalField(max_digits=6, decimal_places=2)
+    test =  models.BooleanField(default=False)
+    finished = models.BooleanField(default=False)
+    active = models.BooleanField(default=False)
     def full_name(self):
        return self.competition.name + " - " + self.competition.get_type_display() + " - " + self.name
 

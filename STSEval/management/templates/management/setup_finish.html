@@ -22,10 +22,18 @@
     {% endif %}
      <br/>
         Send competition information to judges, coaches, and camera operators
-        <br/><br/>
+        <br/>
         <button id="btnSendEmails" type="button" class="btn-main btn-wide pt-4 pb-4" style="border-radius: 1rem;" onclick="Send()">Send</button>
-        <br/>
-        <br/>
+        <br/><br/>
+    {% if not session_active %}
+    <div id="divActivate">
+        Activate the competition when ready.<br/>
+        <button id="btnActivate" type="button" class="btn-main btn-wide pt-4 pb-4" style="border-radius: 1rem;" onclick="Activate()">Activate</button>
+    </div>
+    {% endif %}
+     <button id="btnSessionOverview" type="button" class="btn-main btn-wide pt-4 pb-4" style="border-radius: 1rem;{% if not session_active %}display:none{% endif %}" onclick="Activate()">Session<br/>Overview</button>
+    <br/>
+    <br/>
     <div>
         <button id="btnBack" type="button" class="btn-main btn-wide pt-4 pb-4" style="border-radius: 1rem;" onclick="GoBack()">Return to<br/>Previous Page</button>
         <button id="btnFirst" type="button" class="btn-main btn-wide pt-4 pb-4" style="border-radius: 1rem;" onclick="FirstClick()">Return to<br/>First Page</button>
@@ -54,6 +62,20 @@
             }
         });
         alert("Email Notifications Sending");
+
+    }
+
+     function Activate() {
+        $("#btnActivate").addClass("ui-disabled");
+        $.ajax({
+            url: "/management/session_activate/" + SessionID,
+            success: function () {
+                $("#divActivate").hide();
+                $("#btnSessionOverview").show();
+                 alert("Session activated, please review start lists on the overview page.");
+            }
+        });
+       
 
     }
 
