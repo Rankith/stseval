@@ -356,6 +356,10 @@ input[type="checkbox"].input-validation-error {
     background-color: #37c837 !important;
 }
 
+.status-dot-grey {
+    background-color: #8e8e8e !important;
+}
+
 .judge-strike {
     text-decoration:line-through;
 }

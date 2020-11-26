@@ -125,7 +125,12 @@ def judge_form(request):
         if id != '-1':
             form = JudgeForm(request.POST,instance=Judge.objects.get(pk=id))
         else:
-            form = JudgeForm(request.POST)
+            #double check to overrid
+            judge = Judge.objects.filter(session_id=request.POST.get('session'),event=request.POST.get('event'))
+            if len(judge) > 0:
+                form = JudgeForm(request.POST,instance=Judge.objects.get(pk=id))
+            else:
+                form = JudgeForm(request.POST)
         if form.is_valid():
             form.save()
             return HttpResponse(status=200)

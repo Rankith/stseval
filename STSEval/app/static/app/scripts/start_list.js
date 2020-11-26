@@ -21,12 +21,29 @@ function SLCheck(id) {
 function StartListDragSetup() {
     Sortable.create(document.getElementById("StartListDrag"), { onEnd: SortEnd, handle: ".start-list-drag-handle", draggable: ".start-list-draggable" });
 }
-function LoadStartList() {
+function LoadStartList(doc=-1) {
     $("#divStartList").load("/athlete_start_list_admin/" + ev + "/", function () {
+        console.log("start list loaded");
         if ($("#hdnTopPosition").val() != 'divSL-1')
             document.getElementById($("#hdnTopPosition").val()).scrollIntoView(true);
         StartListDragSetup();
+        if (doc != -1)
+            SetStartListDot(doc);
     });
+}
+function SetStartListDot(doc) {
+    $(".athlete-dot").hide();
+    //console.log("Set start list dot: #divAthleteDots" + doc.data().athlete_id + " | " + doc.data().status);
+    if (doc.data().status == "AD" || status == "F" || status == "RD") {
+        $("#divAthleteDots" + doc.data().athlete_id).removeClass("status-dot-yellow").removeClass("status-dot-green").addClass("status-dot-red");
+    }
+    else if (doc.data().status == "N") {
+        $("#divAthleteDots" + doc.data().athlete_id).addClass("status-dot-yellow").removeClass("status-dot-green").removeClass("status-dot-red");
+    }
+    else if (doc.data().status == "S") {
+        $("#divAthleteDots" + doc.data().athlete_id).removeClass("status-dot-yellow").addClass("status-dot-green").removeClass("status-dot-red");
+    }
+    $("#divAthleteDots" + doc.data().athlete_id).show();
 }
 
 function SortEnd(evt) {

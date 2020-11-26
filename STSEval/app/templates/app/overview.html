@@ -94,8 +94,11 @@
             $("#divAthlete").html(AthleteNames[doc.data().athlete_id]);
             CheckStream(doc);
             CheckJudges(doc);
-            LoadStartList();
+            LoadStartList(doc);
             HighlightCamera();
+        }
+        else {
+            SetStartListDot(doc);
         }
     });
 
