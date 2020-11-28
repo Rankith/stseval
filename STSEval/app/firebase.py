@@ -14,26 +14,28 @@ def routine_set_status(s,e,routine):
 
     doc_ref = db.collection(u'sessions').document(str(s)).collection(u'event_managers').document(str(e))
     doc_dict = doc_ref.get().to_dict()
-    if doc_dict['rotation'] != routine.athlete.rotation:
-        doc_ref.set({
-        u'status': routine.status,
-        u'athlete': routine.athlete.name,
-        u'athlete_id': routine.athlete.id,
-        u'rotation': routine.athlete.rotation,
-        u'routine':routine.id,
-        u'e1ready':False,
-        u'e2ready':False,
-        u'e3ready':False,
-        u'e4ready':False,
-        },merge=True)
-    else:
-        doc_ref.set({
+    #make sure its right d judge actor
+    if doc_dict['djudge'] == routine.d_judge:
+        if doc_dict['rotation'] != routine.athlete.rotation:
+            doc_ref.set({
             u'status': routine.status,
             u'athlete': routine.athlete.name,
             u'athlete_id': routine.athlete.id,
             u'rotation': routine.athlete.rotation,
             u'routine':routine.id,
-        },merge=True)
+            u'e1ready':False,
+            u'e2ready':False,
+            u'e3ready':False,
+            u'e4ready':False,
+            },merge=True)
+        else:
+            doc_ref.set({
+                u'status': routine.status,
+                u'athlete': routine.athlete.name,
+                u'athlete_id': routine.athlete.id,
+                u'rotation': routine.athlete.rotation,
+                u'routine':routine.id,
+            },merge=True)
 
 def routine_set_ejudge_done(s,e,ejudge,done):
     db = firestore.Client()
@@ -43,7 +45,7 @@ def routine_set_ejudge_done(s,e,ejudge,done):
         u'e' + str(ejudge) + 'done': done
     },merge=True)
 
-def routine_setup(session,e,athlete,camera):
+def routine_setup(session,e,athlete,camera,judge):
     db = firestore.Client()
 
     doc_ref = db.collection(u'sessions').document(str(session.id)).collection(u'event_managers').document(str(e))
@@ -57,6 +59,7 @@ def routine_setup(session,e,athlete,camera):
                     u'athlete': athlete.name,
                     u'athlete_id': athlete.id,
                     u'rotation': athlete.rotation,
+                    u'djudge':judge,
                     u'routine':-1,
                     u'e1done':False,
                     u'e2done':False,
@@ -79,6 +82,7 @@ def routine_setup(session,e,athlete,camera):
                     u'athlete': athlete.name,
                     u'athlete_id': athlete.id,
                     u'rotation': athlete.rotation,
+                    u'djudge':judge,
                     u'routine':-1,
                     u'e1done':False,
                     u'e2done':False,
@@ -97,6 +101,7 @@ def routine_setup(session,e,athlete,camera):
                     u'athlete': athlete.name,
                     u'athlete_id': athlete.id,
                     u'rotation': athlete.rotation,
+                    u'djudge':judge,
                     u'routine':-1,
                     u'e1done':False,
                     u'e2done':False,
@@ -119,6 +124,7 @@ def routine_setup(session,e,athlete,camera):
             u'athlete': athlete.name,
             u'athlete_id': athlete.id,
             u'rotation': athlete.rotation,
+            u'djudge':judge,
             u'routine':-1,
             u'e1done':False,
             u'e2done':False,

@@ -25,7 +25,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 def valid_login_type(match=None):
     def decorator(func):
         def decorated(request, *args, **kwargs):
-            if match in request.session.get('type'):
+            if match in request.session.get('type',''):
                 return func(request, *args, **kwargs)
             elif match == 'session' and request.session.get('session',None) != None:
                 return func(request, *args, **kwargs)
@@ -68,9 +68,21 @@ def d1(request):
     athletes = Athlete.objects.filter(team__session=session)
     disc = session.competition.disc.name
     layout = 'app/layout.html'
+    type = request.session.get('type')
+    if 'd2' in type:
+        judge_type = "D2"
+        this_judge = judges[0].d2 
+    else:
+        judge_type = "D1"
+        this_judge = judges[0].d1
+
+    if judges[0].d2_email != '':
+        multi_d = True
+    else:
+        multi_d = False
     
     context = {
-        'title': 'D1 Overview - ' + event + ' ' + session.full_name(),
+        'title':  judge_type + ' Overview - ' + event + ' ' + session.full_name(),
         'judges':judges[0],
         'athletes':athletes,
         'disc':disc,
@@ -79,6 +91,10 @@ def d1(request):
         'loadroutine':'',
         'layout':layout,
         'scoreboard':True,
+        'judge_type':judge_type,
+        'this_judge':this_judge,
+        'multi_d':multi_d,
+
     }
     return render(request,'app/d1.html',context)
 
@@ -94,7 +110,7 @@ def view_routine(request,routine_id,popup):
     else:
         layout = 'app/layout.html'
     editable = False
-    if 'd1' in request.session.get('type'):#d1 can edit if its their event
+    if 'd1' in request.session.get('type') or 'd2' in request.session.get('type'):#d1 can edit if its their event
         if request.session.get('event','').lower() == event.lower():
             editable = True
     elif 'admin' in request.session.get('type'):#admin can always edit
@@ -129,20 +145,46 @@ def d1_edit_score(request,routine_id):
     return render(request,'app/d1_edit_score.html',context)
 
 def routine_setup(request):
-    athlete = Athlete.objects.get(pk=request.POST.get('athlete'))
-    #check for camera
-    camera = Camera.objects.filter(teams=athlete.team,events__name=request.session.get('event')).first()
-    if camera == None:
-        resp = {'routine':-1,
-                 'error':'No Camera for ' + athlete.team.name + ' on ' + request.session.get('event') + '.  Contact your Meet Administrator'}
-        return JsonResponse(resp)
+    #athlete = Athlete.objects.get(pk=request.POST.get('athlete'))
     session = Session.objects.get(pk=request.session.get('session'))
-    app.firebase.routine_setup(session,request.session.get('event'),athlete,camera.id)
+    sl = athlete_get_next_do(request.session.get('event'),session.id)
+    if sl != None:
+    #check for camera
+        athlete = sl.athlete
+        camera = Camera.objects.filter(teams=athlete.team,events__name=request.session.get('event')).first()
+        if camera == None:
+            resp = {'routine':-1,
+                     'error':'No Camera for ' + athlete.team.name + ' on ' + request.session.get('event') + '.  Contact your Meet Administrator'}
+            return JsonResponse(resp)
+    
+        app.firebase.routine_setup(session,request.session.get('event'),athlete,camera.id,request.session.get('djudge','D1'))
+
+        return HttpResponse(status=200)
+    else:
+        return HttpResponse(status=404)
+
+def routine_swap_d(request):
+    #update this routine and check if it should swap
+    routine = Routine.objects.get(pk=request.POST.get('routine'))
+    sl = athlete_get_next_do(routine.event,routine.session.id,skip_first=True)
+    if sl != None:
+        next_rotation = sl.athlete.rotation
+    else:
+        next_rotation = ''
+    judges = Judge.objects.filter(session=routine.session,event__name=routine.event).first()
+    if judges.d2_email != '' and next_rotation == routine.athlete.rotation:
+        #d2 was filled out and this wasnt last gymnast in rotation, swap d judges
+        if routine.d_judge == 'D1':
+            next_judge = 'D2'
+        else:
+            next_judge = 'D1'
+        camera = Camera.objects.filter(teams=sl.athlete.team,events__name=routine.event).first()
+        app.firebase.routine_setup(routine.session,routine.event,sl.athlete,camera.id,next_judge)
 
     return HttpResponse(status=200)
 
 def routine_start_judging(request):
-    routine = Routine(session_id=request.session.get('session'),disc=request.session.get('disc'),event=request.session.get('event'),athlete_id=request.POST.get('athlete'))
+    routine = Routine(session_id=request.session.get('session'),disc=request.session.get('disc'),event=request.session.get('event'),athlete_id=request.POST.get('athlete'),d_judge=request.POST.get('djudge','D1'))
     judges = Judge.objects.filter(session_id=request.session.get('session'),event__name=request.session.get('event')).first()
     routine.e1_name = judges.e1
     routine.e2_name = judges.e2
@@ -207,7 +249,7 @@ def routine_delete(request):
     if os.path.exists('/' + settings.MEDIA_ROOT + '/routine_videos/' + str(routine.id) + '.webm'):
         os.remove('/' + settings.MEDIA_ROOT + '/routine_videos/' + str(routine.id) + '.webm')
 
-    app.firebase.routine_set_status(str(routine.session.id) , routine.event,routine)
+    app.firebase.routine_set_status(str(routine.session.id),routine.event,routine)
 
     return HttpResponse(status=200)
 
@@ -222,7 +264,7 @@ def routine_finished(request):
     routine.d1_done_time = mili
     
     routine.save()
-    app.firebase.routine_set_status(str(routine.session.id) , routine.event,routine)
+    app.firebase.routine_set_status(str(routine.session.id) ,routine.event,routine)
 
     return HttpResponse(status=200)
 
@@ -282,11 +324,14 @@ def routine_set_score(request):
     if routine.status == Routine.ATHLETE_DONE:
         routine.status = Routine.REVIEW_DONE
         routine.save()
-        app.firebase.routine_set_status(str(routine.session.id) , routine.event,routine)
+        app.firebase.routine_set_status(str(routine.session.id),routine.event,routine)
     else:
         routine.save()
 
     return HttpResponse(status=200)
+
+def get_last_routine_status(request):
+    return JsonResponse(Routine.objects.values().filter(session_id=request.POST.get('session'),d_judge=request.POST.get('this_judge'),event=request.POST.get('event')).order_by('-id').first(),safe=False)
 
 def set_judges_participating(request):
     if request.POST.get('routine') != '-1':
@@ -744,8 +789,24 @@ def athlete_get_next(request):
     else:
         return JsonResponse({'id':'-1'})
 
-def athlete_get_next_do(event,session_id):
-    sl = StartList.objects.filter(session_id=session_id,event__name=event,active=True,completed=False).order_by('order','athlete__rotation').first()
+def athlete_get_info(request,athlete_id):
+    athlete = Athlete.objects.get(pk=athlete_id)
+
+    return JsonResponse({'id':athlete.id,
+                            'label':str(athlete),
+                            'level':athlete.level.name,
+                            'team':str(athlete.team)
+                            })
+
+def athlete_get_next_do(event,session_id,skip_first = False):
+    sl = StartList.objects.filter(session_id=session_id,event__name=event,active=True,completed=False).order_by('order','athlete__rotation')
+    if skip_first:
+        if len(sl) > 1:
+            sl = sl[1]
+        else:
+            sl=None
+    else:
+        sl=sl.first()
    
     return sl
 
@@ -837,6 +898,9 @@ def athlete_start_list_swap_do(request):
     app.firebase.update_start_list(sl_orig.session.id,sl_orig.event.name)
 
     return HttpResponse(status=200)
+
+def athlete_start_list_change_check_manager():
+    pass
 
 def athlete_routine_remove(request):
     sl_orig = StartList.objects.get(pk=request.POST.get('sl_orig'))
@@ -976,7 +1040,7 @@ def setup_firebase_managers(session,event_name=''):
             #check for camera
             camera = Camera.objects.filter(teams=athlete.team,events__name=event.name).first()
             try:
-                app.firebase.routine_setup(session,event.name,athlete,camera.id)
+                app.firebase.routine_setup(session,event.name,athlete,camera.id,'D1')
             except:
                 pass
     

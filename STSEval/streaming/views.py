@@ -27,6 +27,7 @@ def camera(request):
         create_stream(camera)
     #create_stream_passthrough(camera)
     context = {
+        'title': camera.name,
         'stream':camera.stream,
         'disc':camera.session.competition.disc,
         'comp':camera.session.competition,
