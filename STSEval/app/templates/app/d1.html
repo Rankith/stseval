@@ -581,7 +581,7 @@
         }
     }
 
-    function ReleaseEJudges() {
+    function ReleaseEJudges(alsofinish = false) {
         if (MultiD) {
             $("#btnNuke").addClass('ui-disabled');
             $("#btnReleaseEJudges").addClass('ui-disabled');
@@ -595,6 +595,10 @@
                 success: function () {
                     console.log("swap d done");
                     LoadFrom = "old";
+                    if (!MultiD || !$("#btnAccountability").hasClass('ui-disabled'))
+                         $("#btnFinish").removeClass('ui-disabled');
+                    if (alsofinish)
+                        MarkDoneAndGetNextAthlete();
                 }
             });
         }
@@ -955,7 +959,6 @@
 
         }
         CalculateScores();
-        console.log(token);
         $.ajax({
             url: "/routine_set_score/",
             type: "POST",
@@ -979,13 +982,21 @@
                 if (completeRoutine) {
                     FinishRoutine();
                     Status = status.BLANK;
-                    MarkDoneAndGetNextAthlete();
+                    /*if (MultiD && !$("#btnReleaseEJudges").hasClass('ui-disabled'))
+                    {
+                        $("#btnFinish").addClass("ui-disabled");
+                        $("#btnAccountability").addClass("ui-disabled");
+                        ReleaseEJudges(true);
+                    }
+                    else*/
+                        MarkDoneAndGetNextAthlete();
                     
                    
                 }
             }
         });
-        $("#btnFinish").removeClass("ui-disabled");
+        if (!MultiD || $("#btnReleaseEJudges").hasClass('ui-disabled'))
+            $("#btnFinish").removeClass("ui-disabled");
         $("#btnAccountability").removeClass("ui-disabled");
     }
 

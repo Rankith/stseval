@@ -10,7 +10,7 @@
         {% endifchanged %}
         -->
         <div class="col-12 mb-2">
-            <div id="divAthlete{{sl.id}}"  class="start-list-athlete {% if not sl.active %}start-list-scratched{% endif %} {% if sl.completed %}start-list-completed{% endif %}">{{sl.athlete.team.abbreviation}} - {{sl.athlete.level.name}} - {{sl.athlete.name}}</div>
+            <div id="divAthlete{{sl.id}}"  class="start-list-athlete {% if not sl.active %}start-list-scratched{% endif %} {% if sl.completed or sl.secondary_judging %}start-list-completed start-list-red{% endif %}">{{sl.athlete.team.abbreviation}} - {{sl.athlete.level.name}} - {{sl.athlete.name}}</div>
         </div>
         
     {% endfor %} 

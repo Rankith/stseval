@@ -13,8 +13,8 @@ function SLCheck(id) {
             'active': checked,
         },
         success: function (data) {
-            if (checked)
-                LoadStartList();
+            //if (checked)
+                //LoadStartList();
         }
     });
 }
@@ -23,7 +23,7 @@ function StartListDragSetup() {
 }
 function LoadStartList(doc=-1) {
     $("#divStartList").load("/athlete_start_list_admin/" + ev + "/", function () {
-        console.log("start list loaded");
+        console.log("start list loaded doc: " + doc);
         if ($("#hdnTopPosition").val() != 'divSL-1')
             document.getElementById($("#hdnTopPosition").val()).scrollIntoView(true);
         StartListDragSetup();
@@ -90,7 +90,7 @@ function StartListSwapClick(sl) {
             'sl_target':sl,
         },
         success: function (data) {
-            LoadStartList();
+            //LoadStartList();
             $("#modalSecond").modal('hide');
         }
     });
@@ -105,7 +105,7 @@ function StartListRoutineDelete(sl) {
             'sl_orig': $("#hdnSLtoSwap").val(),
         },
         success: function (data) {
-            LoadStartList();
+            //LoadStartList();
             $("#modalSecond").modal('hide');
         }
     });

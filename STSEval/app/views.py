@@ -126,6 +126,7 @@ def view_routine(request,routine_id,popup):
         'loadroutine':routine,
         'layout':layout,
         'editable':editable,
+        'multi_d':False,
     }
     return render(request,'app/d1.html',context)
 
@@ -156,8 +157,12 @@ def routine_setup(request):
             resp = {'routine':-1,
                      'error':'No Camera for ' + athlete.team.name + ' on ' + request.session.get('event') + '.  Contact your Meet Administrator'}
             return JsonResponse(resp)
-    
-        app.firebase.routine_setup(session,request.session.get('event'),athlete,camera.id,request.POST.get('djudge','D1'))
+        #check if its first of this rotation and hard set to D1
+        if sl == StartList.objects.filter(session_id=session.id,event__name=request.session.get('event'),active=True,athlete__rotation=sl.athlete.rotation).order_by('order').first():
+            djudge = 'D1'
+        else:
+            djudge = request.POST.get('djudge','D1')
+        app.firebase.routine_setup(session,request.session.get('event'),athlete,camera.id,djudge)
 
         return HttpResponse(status=200)
     else:
@@ -841,7 +846,7 @@ def athlete_start_list(request,event_name,team_id):
                 start_list = None
             else:
                 start_list=StartList.objects.filter(session_id=session_id,event__name=event_name,athlete__rotation=ath_rotation_team.rotation).order_by('order','athlete__rotation')
-                fc = start_list.filter(completed=False,active=True).first()
+                fc = start_list.filter(completed=False,active=True,secondary_judging=False).first()
                 first_not_completed = -1
                 if fc != None:
                     if event_name == athlete_get_event_on(fc.athlete,session_id):

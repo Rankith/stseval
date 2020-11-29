@@ -90,6 +90,7 @@
     var db = firebase.firestore();
     var docRef = db.collection("sessions").doc(Session).collection("event_managers").doc(ev);
     docRef.onSnapshot(function (doc) {
+        console.log("Event Manager Snapshot CurAth: " + CurrentAthlete + " | NewAth: " + doc.data().athlete_id);
         if (CurrentAthlete != doc.data().athlete_id) {
             $("#divAthlete").html(AthleteNames[doc.data().athlete_id]);
             CheckStream(doc);
