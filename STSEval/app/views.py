@@ -157,7 +157,7 @@ def routine_setup(request):
                      'error':'No Camera for ' + athlete.team.name + ' on ' + request.session.get('event') + '.  Contact your Meet Administrator'}
             return JsonResponse(resp)
     
-        app.firebase.routine_setup(session,request.session.get('event'),athlete,camera.id,request.session.get('djudge','D1'))
+        app.firebase.routine_setup(session,request.session.get('event'),athlete,camera.id,request.POST.get('djudge','D1'))
 
         return HttpResponse(status=200)
     else:
@@ -166,7 +166,11 @@ def routine_setup(request):
 def routine_swap_d(request):
     #update this routine and check if it should swap
     routine = Routine.objects.get(pk=request.POST.get('routine'))
-    sl = athlete_get_next_do(routine.event,routine.session.id,skip_first=True)
+    sl = StartList.objects.filter(session=routine.session,event__name=routine.event,athlete=routine.athlete).first()
+    sl.secondary_judging=True
+    sl.save()
+
+    sl = athlete_get_next_do(routine.event,routine.session.id)
     if sl != None:
         next_rotation = sl.athlete.rotation
     else:
@@ -180,6 +184,7 @@ def routine_swap_d(request):
             next_judge = 'D1'
         camera = Camera.objects.filter(teams=sl.athlete.team,events__name=routine.event).first()
         app.firebase.routine_setup(routine.session,routine.event,sl.athlete,camera.id,next_judge)
+        app.firebase.routine_set_status(routine.session.id,routine.event,routine)
 
     return HttpResponse(status=200)
 
@@ -798,15 +803,15 @@ def athlete_get_info(request,athlete_id):
                             'team':str(athlete.team)
                             })
 
-def athlete_get_next_do(event,session_id,skip_first = False):
-    sl = StartList.objects.filter(session_id=session_id,event__name=event,active=True,completed=False).order_by('order','athlete__rotation')
-    if skip_first:
-        if len(sl) > 1:
-            sl = sl[1]
-        else:
-            sl=None
-    else:
-        sl=sl.first()
+def athlete_get_next_do(event,session_id):
+    sl = StartList.objects.filter(session_id=session_id,event__name=event,active=True,completed=False,secondary_judging=False).order_by('order','athlete__rotation')
+    #if skip_first:
+    #   if len(sl) > 1:
+    #        sl = sl[1]
+    #    else:
+    #        sl=None
+    #else:
+    sl=sl.first()
    
     return sl
 
@@ -853,8 +858,8 @@ def athlete_start_list(request,event_name,team_id):
 
 def athlete_start_list_admin(request,event_name):
     session_id = request.session.get('session')
-    start_list = StartList.objects.filter(session_id=session_id,event__name=event_name).order_by('-completed','order','athlete__rotation')
-    first_not_completed = start_list.filter(completed=False,active=True).first()
+    start_list = StartList.objects.filter(session_id=session_id,event__name=event_name).order_by('-completed','-secondary_judging','order','athlete__rotation')
+    first_not_completed = start_list.filter(completed=False,active=True,secondary_judging=False).first()
     if first_not_completed != None:
         first_not_completed = first_not_completed.id
     else:
@@ -895,22 +900,38 @@ def athlete_start_list_swap_do(request):
     Routine.objects.filter(id__in=rot_orig_swap_ids).update(athlete=sl_target.athlete)
     Routine.objects.filter(id__in=rot_target_swap_ids).update(athlete=sl_orig.athlete)
 
+    athlete_start_list_change_check_manager(sl_orig.session.id,sl_orig.event.name)
+
     app.firebase.update_start_list(sl_orig.session.id,sl_orig.event.name)
 
     return HttpResponse(status=200)
 
-def athlete_start_list_change_check_manager():
-    pass
+def athlete_start_list_change_check_manager(session,event):
+    rot = app.firebase.routine_get(session,event)
+    if rot['status'] == 'N' or rot['status'] == 'F':
+            #previous routine all done so check first
+            sl = athlete_get_next_do(event,session)
+            camera = Camera.objects.filter(teams=sl.athlete.team,events__name=event).first()
+            if sl.athlete.id != rot['athlete_id'] or rot['status'] == 'F':
+                if rot['status'] == 'F':
+                    app.firebase.routine_setup(sl.session,event,sl.athlete,camera.id,'D1')
+                else:
+                    app.firebase.routine_update_athlete(session,event,sl.athlete,camera.id)
+
+
 
 def athlete_routine_remove(request):
     sl_orig = StartList.objects.get(pk=request.POST.get('sl_orig'))
    
     sl_orig.completed = False
+    sl_orig.secondary_judging = False
     sl_orig.save()
 
     Routine.objects.filter(athlete=sl_orig.athlete,event=sl_orig.event.name,session=sl_orig.session,status=Routine.FINISHED).delete()
 
+    athlete_start_list_change_check_manager(sl_orig.session.id,sl_orig.event.name)
     app.firebase.update_start_list(sl_orig.session.id,sl_orig.event.name)
+    
 
     return HttpResponse(status=200)
 
@@ -930,6 +951,7 @@ def athlete_set_active(request,sl_id):
     else:
         sl.active = False
         sl.save()
+    athlete_start_list_change_check_manager(sl.session.id,sl.event.name)
     app.firebase.update_start_list(sl.session.id,sl.event.name)
 
     return HttpResponse(status=200)
@@ -944,6 +966,7 @@ def athlete_start_list_update_order(request):
         sl.order = index
         sl.save()
 
+    athlete_start_list_change_check_manager(session.id,request.POST.get('ev'))
     app.firebase.update_start_list(session.id,request.POST.get('ev'))
 
     return HttpResponse(status=200)

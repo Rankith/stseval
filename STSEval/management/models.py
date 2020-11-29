@@ -97,6 +97,7 @@ class StartList(models.Model):
     athlete = models.ForeignKey(Athlete, on_delete=models.CASCADE)
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     completed = models.BooleanField(default=False)
+    secondary_judging = models.BooleanField(default=False)
     active = models.BooleanField(default=True)
     order = models.IntegerField(default=1)
 

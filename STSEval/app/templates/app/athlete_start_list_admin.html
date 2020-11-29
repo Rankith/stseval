@@ -2,13 +2,13 @@
      <table cellspacing="0" border=0 cellpadding="0">
          <tbody id="StartListDrag">
             {% for sl in start_list %}
-                <tr class="{% if sl.completed %}start-list-completed{% else %}start-list-draggable{% endif %}" athid="{{sl.id}}">
+                <tr class="{% if sl.completed or sl.secondary_judging %}start-list-completed{% else %}start-list-draggable{% endif %}" athid="{{sl.id}}">
                     <td class="pl-1"><span id="divAthleteDots{{sl.athlete.id}}" class="status-dot-small mr-1 athlete-dot pt-1" style="display:none"></span></td>
                     <td><input type="checkbox" id="chkSL{{sl.id}}" onclick="SLCheck({{sl.id}})" {% if sl.active %} checked="checked" {% endif %}>&nbsp; &nbsp;</td>
 			        <td id="divSL{{sl.id}}" class="pr-1 {% if not sl.active %}start-list-scratched{% endif %}">{{sl.athlete.team.abbreviation}} - {{sl.athlete.name}} - {{sl.athlete.rotation}}</td>
                     {% if sl.completed %}
                     <td>Complete <a href="" onclick="ShowRoutineOptions({{sl.id}})" data-toggle="modal" data-target="#modalSecond"><i class="fa fa-cog"></i></td>
-                    {% else %}
+                    {% elif not sl.secondary_judging %}
                     <td><a href="" title="Drag To Re-Order"><i class="fa fa-exchange fa-rotate-90 start-list-drag-handle"></i></a></td>
                     {% endif %}
 		        </tr>

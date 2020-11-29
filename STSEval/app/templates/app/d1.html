@@ -274,6 +274,8 @@
     var Falling = false;
     var FallTimerStart;
     var FallTimerInterval;
+    var JudgeOnFirebase;
+    var PrevRotation = "";
     var db = firebase.firestore();
     for (var i = 1; i <= 4; i++) {
         EJudgesReady[i] = false;
@@ -308,14 +310,24 @@
         });
 
         docRef.onSnapshot(function (doc) {
+            //
             //CurrentAthlete = FirstAthlete;
             //SetAthleteDisplay();
-            if (doc.data().djudge == DType) {
+            console.log("snapshot");
+            JudgeOnFirebase = doc.data().djudge;
+            if (doc.data().djudge == DType && (Status == status.DELETED || Status == status.FINISHED || Status == "" || Status == status.NEW)) {
+                console.log("same judge and status");
+                PrevRotation = doc.data().rotation;
                 CheckAthlete(doc);
-                CheckJudges(doc); 
+
                 if (doc.data().status == status.NEW)
-                    JudgesReadyClick(true);
+                    JudgesReadyClick();
             }
+            else if (Status == status.DELETED || Status == status.FINISHED || Status == "") {
+                console.log("status check ath");
+                CheckAthlete(doc);
+            }
+            CheckJudges(doc); 
             CheckStream(doc);
         });
         SetupChatListener();
@@ -400,7 +412,7 @@
     function SetBasedOnStatus(doc) {
         if (doc.data() != undefined) {
             doc_data = doc.data();
-            console.log("Set Based On Status " + doc_data.djudge);
+            //console.log("Set Based On Status " + doc_data.djudge);
             //CheckStream(doc);
             /*Stream = doc_data.stream;
             if (Stream != "") {
@@ -413,7 +425,10 @@
 
             //cascade status so it does them in order.
             LoadFrom = "active";
+            JudgeOnFirebase = doc_data.djudge;
             if (doc_data.djudge == DType) {
+                //Status = doc_data.status;
+                PrevRotation = doc_data.rotation;
                 if (doc_data.status == status.NEW || doc_data.status == status.STARTED || doc_data.status == status.ATHLETE_DONE || doc_data.status == status.REVIEW_DONE) {
                     //new
                     RoutineID = doc_data.routine;
@@ -424,7 +439,8 @@
                     console.log("Status Set Athlete: " + AthleteLabel);
                     SetAthleteDisplay();*/
                     //$("#ddlAthlete").val(doc_data.athlete_id).change();
-                    JudgesReadyClick(true);
+                    //console.log("New status");
+                    JudgesReadyClick();
                     EJudgesDone[1] = doc_data.e1done;
                     EJudgesDone[2] = doc_data.e2done;
                     EJudgesDone[3] = doc_data.e3done;
@@ -449,7 +465,7 @@
                 }
                 if (doc_data.status == status.REVIEW_DONE) {
                     //athlete done
-                    Status = status.REVIEW_DONE;
+
                     ExerciseDoneClick(true, true);//second true makes it grab score after
                     $("#btnFinish").removeClass("ui-disabled");
                     $("#btnAccountability").removeClass("ui-disabled");
@@ -466,54 +482,83 @@
                     data: {
                         'session': Session,
                         'event': ev,
-                        'this_judge':DType,
+                        'this_judge': DType,
                     },
                     success: function (data) {
-                        console.log("Got Previous Status: " + data.status);
-                        LoadFrom = "old";
-                        //console.log(data);
-                        CurrentAthlete = data.athlete_id;
-                        GetAthleteInfo();
-                        if (data.status == status.NEW || data.status == status.STARTED || data.status == status.ATHLETE_DONE || data.status == status.REVIEW_DONE) {
-                            //new
-                            RoutineID = data.id;
-                            //$("#txtVideoURL").val(data.stream);
+                        if (data != null) {
+                            console.log("Got Previous Status: " + data.status);
+                            LoadFrom = "old";
+                            //console.log(data);
+                            PrevRotation = data.athlete_rotation;
+                            if (data.status == status.NEW || data.status == status.STARTED || data.status == status.ATHLETE_DONE || data.status == status.REVIEW_DONE) {
+                                //new
+                                RoutineID = data.id;
+                                //$("#txtVideoURL").val(data.stream);
 
-                            /*CurrentAthlete = data.athlete_id;
-                            AthleteLabel = GymnastLabels[CurrentAthlete];
-                            console.log("Status Set Athlete: " + AthleteLabel);
-                            SetAthleteDisplay();*/
-                            //$("#ddlAthlete").val(data.athlete_id).change();
-                            JudgesReadyClick(true);
-                            EJudgesDone[1] = data.e1_done;
-                            EJudgesDone[2] = data.e2_done;
-                            EJudgesDone[3] = data.e3_done;
-                            EJudgesDone[4] = data.e4_done;
-                            EJudgesInclude[1] = data.e1_include;
-                            EJudgesInclude[2] = data.e2_include;
-                            EJudgesInclude[3] = data.e3_include;
-                            EJudgesInclude[4] = data.e4_include;
+                                /*CurrentAthlete = data.athlete_id;
+                                AthleteLabel = GymnastLabels[CurrentAthlete];
+                                console.log("Status Set Athlete: " + AthleteLabel);
+                                SetAthleteDisplay();*/
+                                //$("#ddlAthlete").val(data.athlete_id).change();
+                                JudgesReadyClick();
+                                EJudgesDone[1] = data.e1_done;
+                                EJudgesDone[2] = data.e2_done;
+                                EJudgesDone[3] = data.e3_done;
+                                EJudgesDone[4] = data.e4_done;
+                                EJudgesInclude[1] = data.e1_include;
+                                EJudgesInclude[2] = data.e2_include;
+                                EJudgesInclude[3] = data.e3_include;
+                                EJudgesInclude[4] = data.e4_include;
+                                SetJudgeChecks();
+                                EJudgesReady[1] = true;
+                                EJudgesReady[2] = true;
+                                EJudgesReady[3] = true;
+                                EJudgesReady[4] = true;
+                            }
+                            if (data.status == status.STARTED || data.status == status.ATHLETE_DONE || data.status == status.REVIEW_DONE) {
+                                //started
+                                StartJudgingClick(true);
+                            }
+                            if (data.status == status.ATHLETE_DONE) {
+                                //athlete done
+                                ExerciseDoneClick(true);
+                            }
+                            if (data.status == status.REVIEW_DONE) {
+                                //athlete done
+                                Status = status.REVIEW_DONE;
+                                ExerciseDoneClick(true, true);//second true makes it grab score after
+                                $("#btnFinish").removeClass("ui-disabled");
+                                $("#btnAccountability").removeClass("ui-disabled");
+                                Status = status.REVIEW_DONE;
+                            }
+                            if (data.status == status.FINISHED || data.status == status.DELETED) {
+                                CurrentAthlete = doc_data.athlete_id;
+                                GetAthleteInfo();
+                            }
+                            else {
+                                CurrentAthlete = data.athlete_id;
+                                GetAthleteInfo();
+                            }
+                            
+                        }
+                        else
+                        {
+                            PrevRotation = doc_data.rotation;
+                            CurrentAthlete = doc_data.athlete_id;
+                            GetAthleteInfo();
+                            EJudgesDone[1] = doc_data.e1done;
+                            EJudgesDone[2] = doc_data.e2done;
+                            EJudgesDone[3] = doc_data.e3done;
+                            EJudgesDone[4] = doc_data.e4done;
+                            EJudgesInclude[1] = doc_data.e1include;
+                            EJudgesInclude[2] = doc_data.e2include;
+                            EJudgesInclude[3] = doc_data.e3include;
+                            EJudgesInclude[4] = doc_data.e4include;
                             SetJudgeChecks();
-                            EJudgesReady[1] = true;
-                            EJudgesReady[2] = true;
-                            EJudgesReady[3] = true;
-                            EJudgesReady[4] = true;
-                        }
-                        if (data.status == status.STARTED || data.status == status.ATHLETE_DONE || data.status == status.REVIEW_DONE) {
-                            //started
-                            StartJudgingClick(true);
-                        }
-                        if (data.status == status.ATHLETE_DONE) {
-                            //athlete done
-                            ExerciseDoneClick(true);
-                        }
-                        if (data.status == status.REVIEW_DONE) {
-                            //athlete done
-                            Status = status.REVIEW_DONE;
-                            ExerciseDoneClick(true, true);//second true makes it grab score after
-                            $("#btnFinish").removeClass("ui-disabled");
-                            $("#btnAccountability").removeClass("ui-disabled");
-                            Status = status.REVIEW_DONE;
+                            EJudgesReady[1] = doc_data.e1ready;
+                            EJudgesReady[2] = doc_data.e2ready;
+                            EJudgesReady[3] = doc_data.e3ready;
+                            EJudgesReady[4] = doc_data.e4ready;
                         }
                     }
                 });
@@ -538,6 +583,7 @@
 
     function ReleaseEJudges() {
         if (MultiD) {
+            $("#btnNuke").addClass('ui-disabled');
             $("#btnReleaseEJudges").addClass('ui-disabled');
             $.ajax({
                 type: 'POST',
@@ -560,6 +606,7 @@
             if (doc.data().start_list_change != StartListChange || CurrentAthlete != doc.data().athlete_id) {
                 StartListChange = doc.data().start_list_change;
                 CurrentAthlete = doc.data().athlete_id;
+                console.log("Athlete changed: " + Status);
                 GetAthleteInfo();
                 //update the gymnast if on status New
                 //if (Status == status.NEW)
@@ -690,12 +737,13 @@
         document.getElementById('divDotsArea').addEventListener('click', NewDeduction);
         $("#divHeader").html("<h4 style='display:inline'>" + ThisJudge + "</h4>");
 
-        Reset(false);
+        Reset();
 
     }
 
-    function Reset(judgesready = true) {
+    function Reset() {
         Status = status.BLANK;
+        console.log("Reset called");
         SetJudges();
         SetJudgesDone(false);
         ClearFall();
@@ -723,19 +771,12 @@
             $("#tdE" + i).removeClass("judge-strike");
             $("#divET" + i).removeClass("judge-strike");
         }
-        if (LoadRot == "") {
-            //GetNextAthlete(judgesready);
-            if (judgesready)
-                JudgesReadyClick();
-        }
     }
 
-    function JudgesReadyClick(Syncing = false) {
+    function JudgesReadyClick() {
         //window.WowzaWebRTCPlay.stop();
         //SetupStream();
         //console.log(Syncing);
-        if (!Syncing)
-            SetupRoutine();
         $("#btnStartJudging").removeClass('ui-disabled');
         //$("#btnNuke").addClass('ui-disabled');
         Status = status.NEW;
@@ -1120,9 +1161,12 @@
             DeleteRoutine();
             Status = status.BLANK;
             if (MultiD && LoadFrom == "old")
-                Reset(false);
-            else
-                Reset(true);
+                Reset();
+            else {
+                Reset();
+                JudgesReadyClick();
+                SetupRoutine();
+            }
         }
     }
 
@@ -1189,6 +1233,7 @@
     }
 
     function SetupRoutine() {
+        console.log("Setup Routine");
         $.ajax({
             url: "/routine_setup/",
             type: "POST",
@@ -1213,14 +1258,22 @@
             data: {
             },
             success: function (data) {
-                if (MultiD)//only make the reset load next if its not multi D setup
-                    Reset(false);
-                else
-                    Reset(true);
+                if (MultiD && JudgeOnFirebase != DType)//only make the reset load next if its not multi D setup
+                    Reset();
+                else if (MultiD && JudgeOnFirebase == DType) {
+                    Reset();
+                    GetNextAthlete(true);
+                }
+                else {
+                    Reset();
+                    JudgesReadyClick();
+                    SetupRoutine();
+                }
             }
         });
     }
-    function GetNextAthlete(judgesready=false) {
+    function GetNextAthlete(judgesready = false) {
+        console.log("Get next athlete");
         $.ajax({
             url: "/athlete_get_next/",
             type: "POST",
@@ -1235,11 +1288,17 @@
                     AthleteLabel = data['label'];
                     AthleteLevel = data['level'];
                     AthleteTeam = data['team'];
-
+                    
                     SetAthlete();
-                    if (judgesready)
-                        JudgesReadyClick();
-                }
+                   
+                    if (judgesready) {
+                        if (PrevRotation == data['rotation'] || DType == "D1") {
+                            JudgesReadyClick();
+                            }
+                        SetupRoutine();
+                        }
+                    }
+                
                 else {
                     alert("All Athletes Done, Going To Scoreboard");
                     window.location = "/scoreboard/" + ev;

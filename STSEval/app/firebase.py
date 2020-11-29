@@ -8,6 +8,23 @@ from datetime import datetime
 
 initialize_app()
 
+def routine_update_athlete(s,e,athlete,camera):
+    db = firestore.Client()
+
+    doc_ref = db.collection(u'sessions').document(str(s)).collection(u'event_managers').document(str(e))
+    doc_ref.set({
+                u'athlete': athlete.name,
+                u'athlete_id': athlete.id,
+                u'rotation': athlete.rotation,
+                u'stream':camera,
+            },merge=True)
+
+def routine_get(s,e):
+    db = firestore.Client()
+
+    doc_ref = db.collection(u'sessions').document(str(s)).collection(u'event_managers').document(str(e))
+    doc_dict = doc_ref.get().to_dict()
+    return doc_dict
 
 def routine_set_status(s,e,routine):
     db = firestore.Client()
@@ -35,6 +52,12 @@ def routine_set_status(s,e,routine):
                 u'athlete_id': routine.athlete.id,
                 u'rotation': routine.athlete.rotation,
                 u'routine':routine.id,
+            },merge=True)
+    else:
+        doc_ref.set({
+                u'previous_routine_status': routine.status,
+                u'previous_routine_id': routine.id,
+                u'previous_routine_athlete_id': routine.athlete.id,
             },merge=True)
 
 def routine_set_ejudge_done(s,e,ejudge,done):

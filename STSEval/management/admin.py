@@ -19,8 +19,8 @@ class DiscAdmin(ImportExportModelAdmin):
     list_editable=('name','full_name','active','display_order')
 
 class StartListAdmin(ImportExportModelAdmin):
-    list_display=('id', 'session','event','athlete','order','completed','active')
-    list_editable=('order','completed','active')
+    list_display=('id', 'session','event','athlete','order','completed','active','secondary_judging')
+    list_editable=('order','completed','active','secondary_judging')
     list_filter=('session','event')
 
 class JudgeAdmin(ImportExportModelAdmin):
