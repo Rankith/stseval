@@ -585,26 +585,37 @@
     }
 
     function ReleaseEJudges(alsofinish = false) {
-        if (MultiD) {
-            $("#btnNuke").addClass('ui-disabled');
-            $("#btnReleaseEJudges").addClass('ui-disabled');
-            $.ajax({
-                type: 'POST',
-                url: '/routine_swap_d/',
-                headers: { "X-CSRFToken": token },
-                data: {
-                    'routine': RoutineID,
-                },
-                success: function () {
-                    console.log("swap d done");
-                    LoadFrom = "old";
-                    if (!MultiD || !$("#btnAccountability").hasClass('ui-disabled'))
-                         $("#btnFinish").removeClass('ui-disabled');
-                    if (alsofinish)
-                        MarkDoneAndGetNextAthlete();
-                }
-            });
+        let ok = true;
+        for (var i = 1; i <= NumJudges; i++) {
+            if (EJudgesInclude[i] && !EJudgesDone[i]) {
+                ok = false;
+                break;
+            }
         }
+        if (ok) {
+            if (MultiD) {
+                $("#btnNuke").addClass('ui-disabled');
+                $("#btnReleaseEJudges").addClass('ui-disabled');
+                $.ajax({
+                    type: 'POST',
+                    url: '/routine_swap_d/',
+                    headers: { "X-CSRFToken": token },
+                    data: {
+                        'routine': RoutineID,
+                    },
+                    success: function () {
+                        console.log("swap d done");
+                        LoadFrom = "old";
+                        if (!MultiD || !$("#btnAccountability").hasClass('ui-disabled'))
+                            $("#btnFinish").removeClass('ui-disabled');
+                        if (alsofinish)
+                            MarkDoneAndGetNextAthlete();
+                    }
+                });
+            }
+        }
+        else
+            alert("All E Judges must submit their score before you can release them.");
 
     }
 
