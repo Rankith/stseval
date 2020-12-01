@@ -21,6 +21,9 @@
                 {% if judges.d1 != '' %}
                     <div id="divD1"><span id="divJudgeDotD1" class="status-dot-small status-dot-red mr-1"></span> D1: {{judges.d1}}</div>
                 {% endif %}
+                {% if judges.d2 != '' and has_d2 %}
+                    <div id="divD2"><span id="divJudgeDotD2" class="status-dot-small status-dot-red mr-1"></span> D2: {{judges.d2}}</div>
+                {% endif %}
                 {% if judges.e1 != '' %}
                     <div id="divE1"><span id="divJudgeDotE1" class="status-dot-small status-dot-red mr-1"></span> E1: {{judges.e1}}</div>
                 {% endif %}
@@ -73,6 +76,7 @@
     var Session = "{{session.id}}";
     var SessionName = "{{session}}";
     var token = "{{ csrf_token }}";
+    var HasD2 = {{has_d2|lower}};
     var VidJSPlayer;
     var AthleteNames = new Array();
     {% for athlete in athletes %}
@@ -148,6 +152,12 @@
                 $("#divJudgeDotD1").removeClass("status-dot-red").addClass("status-dot-green");
             else
                 $("#divJudgeDotD1").addClass("status-dot-red").removeClass("status-dot-green");
+            if (HasD2) {
+                if (doc.data().d2ready)
+                    $("#divJudgeDotD2").removeClass("status-dot-red").addClass("status-dot-green");
+                else
+                    $("#divJudgeDotD2").addClass("status-dot-red").removeClass("status-dot-green");
+            }
             if (doc.data().e1ready)
                 $("#divJudgeDotE1").removeClass("status-dot-red").addClass("status-dot-green");
             else

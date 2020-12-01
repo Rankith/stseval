@@ -58,6 +58,7 @@ class Routine(models.Model):
     score_difficulty = models.FloatField(default=0)
     score_groups = models.FloatField(default=0)
     score_bonus = models.FloatField(default=0)
+    score_connection = models.FloatField(default=0)
     score_neutral = models.FloatField(default=0)
     score_e1 = models.FloatField(default=0)
     score_e2 = models.FloatField(default=0)

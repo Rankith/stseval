@@ -120,7 +120,7 @@
 	                <button id="btnRestartBoth" type="button" class="btn btn-main mb-2" onclick="RestartBoth()" style="display:none">Both</button>
 	                <button id="btnExerciseDone" type="button" class="btn btn-main mb-2" onclick="ExerciseDoneClick()" style="width:200px">Exercise Done</button><br/>
                     <div id="divReleaseEJudges" {% if not multi_d %}style="display:none"{% endif %}>
-                        <button id="btnReleaseEJudges" type="button" class="btn btn-main mb-2 ui-disabled" onclick="ReleaseEJudges()" style="width:200px">Release EJudges</button>
+                        <button id="btnReleaseEJudges" type="button" class="btn btn-main-selected  mb-2 ui-disabled" onclick="ReleaseEJudges()" style="width:200px">Release EJudges</button>
                     </div>
                     <button id="btnFallTimer" type="button" class="btn btn-red mb-2 mt-3 ui-disabled" onclick="FallTimerClick()" style="width:200px">Fall Timer</button>
                     <div id="divCreditButtons" style="width:200px;display:none;">
@@ -136,7 +136,8 @@
 	                    <tr><td id="tdElements" align="right">Elements:</td><td><input type="text" id="txtElements" placeholder="Elements" class="ui-disabled entrybox" onkeypress="return isNumberKey(event)" ></td></tr>
 	                    <tr><td id="tdDifficulty" align="right">Base Score:</td><td><input type="text" id="txtDifficulty" placeholder="Difficulty" class="ui-disabled entrybox"  onkeypress="return isNumberKey(event)" ></td></tr>
 	                    <tr><td id="tdGroups" align="right">Groups:</td><td><input type="text" id="txtGroups" placeholder="Groups" class="ui-disabled entrybox"  onkeypress="return isNumberKey(event)" ></td></tr>
-	                    <tr><td id="tdBonus" align="right">Bonus:</td><td><input type="text" id="txtBonus" placeholder="Bonus" class="ui-disabled entrybox" onkeypress="return isNumberKey(event)" ></td></tr>
+	                    <tr id="trBonus"><td id="tdBonus" align="right">Bonus:</td><td><input type="text" id="txtBonus" placeholder="Bonus" class="ui-disabled entrybox" onkeypress="return isNumberKey(event)" ></td></tr>
+                        <tr id="trConnection" style="display:none"><td id="tdConnection" align="right">Connection:</td><td><input type="text" id="txtConnection" placeholder="Connection Bonus" class="ui-disabled entrybox" onkeypress="return isNumberKey(event)" ></td></tr>
 	                    <tr><td id="tdNeutralDed" align="right">Neutral Deductions:</td><td><input type="text" id="txtNeutralDed" placeholder="Neutral Ded." class="ui-disabled entrybox" onkeypress="return isNumberKey(event)" ></td></tr>
 	                    <tr><td id="tdDScore" align="right" style="text-decoration:underline">D-Score:</td><td><div id="lblDScore" style="text-decoration:underline"></div></td></tr>
 	                    <tr><td colspan="2" align="right"><a href="#" id="btnSetDScore" type="button" class="btn btn-main mb-2 mt-2 ui-disabled" onclick="SetDScoreClick()" style="font-size:1rem">Set D-Score</a></td></tr>
@@ -153,7 +154,8 @@
 	                    <tr><td id="tdElements" align="right">Elements:</td><td><div id="lblElements"></div></td></tr>
 	                    <tr><td id="tdDifficulty" align="right">Base Score:</td><td><div id="lblDifficulty"></div></td></tr>
 	                    <tr><td id="tdGroups" align="right">Groups:</td><td><div id="lblGroups"></div></td></tr>
-	                    <tr><td id="tdBonus" align="right">Bonus:</td><td><div id="lblBonus"></div></td></tr>
+	                    <tr id="trBonus"><td id="tdBonus" align="right">Bonus:</td><td><div id="lblBonus"></div></td></tr>
+                        <tr id="trConnection" style="display:none"><td id="tdConnection" align="right">Connection:</td><td><div id="lblConnection"></div></td></tr>
 	                    <tr><td id="tdNeutralDed" align="right">Neutral Deductions:</td><td><div id="lblNeutralDed"></div></td></tr>
 	                    <tr><td id="tdDScore" align="right" style="text-decoration:underline">D-Score:</td><td><div id="lblDScore" style="text-decoration:underline"></div></td></tr>
 	                    <tr><td colspan="2" align="right"></td></tr>
@@ -269,6 +271,7 @@
     var RoutineID;
     var CurrentAthlete = -1;
     var ScoringType;
+    var ScoringSpecific;
     var StartListChange = -1;
     var FrameStepTimer;
     var Falling = false;
@@ -353,7 +356,7 @@
             headers: { "X-CSRFToken": token },
             data: {
                 'ready': true,
-                'judge': "d1ready",
+                'judge': DType.toLowerCase() + "ready",
                 'event':ev,
             },
             success: function (data) {
@@ -732,8 +735,8 @@
 
         //$("#ddlAthlete").val(FirstGymnast).change();
 
-        if ((ev == "FX" || ev == "HB") && ScoringType != "JO4567")
-            $("#tdBonus").html("Connections and Bonus: ");
+        //if ((ev == "FX" || ev == "HB") && ScoringType != "JO4567")
+         //   $("#tdBonus").html("Connections and Bonus: ");
 
         ReadyUp();
         SetDotsArea();
@@ -909,6 +912,7 @@
                 $("#lblDifficulty").html(FormatWith0(data['score_difficulty']));
                 $("#lblGroups").html(data['score_groups']);
                 $("#lblBonus").html(FormatWith0(data['score_bonus']));
+                $("#lblConnection").html(FormatWith0(data['score_connection']));
                 $("#lblNeutralDed").html(FormatWith0(data['score_neutral']));
                 $("#lblDScore").html(FormatWith0(data['score_d']));
                 $("#divET1").html(FormatWith0(data['score_e1']));
@@ -969,6 +973,7 @@
                 'score_difficulty': $("#txtDifficulty").val(),
                 'score_groups': $("#txtGroups").val(),
                 'score_bonus': $("#txtBonus").val(),
+                'score_connection': $("#txtConnection").val(),
                 'score_neutral': $("#txtNeutralDed").val(),
                 'score_e1': $("#divET1").html(),
                 'score_e2': $("#divET2").html(),
@@ -1016,14 +1021,14 @@
         let neutral = 0;
         var StartValueScore = 0;
         if (LoadRot == "") {
-            Score = parseFloat($("#txtDifficulty").val()) + parseFloat($("#txtBonus").val());
+            Score = parseFloat($("#txtDifficulty").val()) + parseFloat($("#txtBonus").val()) + parseFloat($("#txtConnection").val());
             difScore = parseFloat(Score).toFixed(2);
             countedE = parseInt($("#txtElements").val());
             groups = parseFloat($("#txtGroups").val());
             neutral = parseFloat($("#txtNeutralDed").val());
         }
         else {
-            Score = parseFloat($("#lblDifficulty").html()) + parseFloat($("#lblBonus").html());
+            Score = parseFloat($("#lblDifficulty").html()) + parseFloat($("#lblBonus").html()) + parseFloat($("#lblConnection").html());
             difScore = parseFloat(Score).toFixed(2);
             countedE = parseInt($("#lblElements").html());
             groups = parseFloat($("#lblGroups").html());
@@ -1434,7 +1439,8 @@
         SetDScoreDefaults();
     }
     function SetDScoreType(AthleteIn) {
-        ScoringType = GymnastScoringType[AthleteIn]; 
+        ScoringType = GymnastScoringType[AthleteIn];
+        ScoringSpecific = GymnastLevels[AthleteIn];
     }
     function isNumberKey(evt) {
         var charCode = (evt.which) ? evt.which : evt.keyCode;
@@ -1458,6 +1464,7 @@
             $("#txtDifficulty").val('9.5');
             $("#txtElements").val('8');
             $("#txtBonus").val('0.0');
+            $("#txtConnection").val('0.0');
             $("#txtNeutralDed").val('0.0');
             $("#txtGroups").hide();
             $("#tdGroups").hide();
@@ -1468,9 +1475,9 @@
         else if (ScoringType == "JO8910") {
             console.log("Setting Scoring JO8910");
             if (ev == "FX" || ev == "HB")
-                $("#tdBonus").html("Connections and Bonus: ");
+                $("#trConnection").show();
             else
-                $("#tdBonus").html("Bonus: ");
+                $("#trConnection").hide();
             $("#tdDifficulty").html("Difficulty:");
             $("#btnSetDScore").children(0).children(0).text("Set D-Score");
             for (var i = 1; i <= 4; i++) {
@@ -1481,6 +1488,7 @@
             $("#tdDScore").html("D-Score:");
             $("#txtDifficulty").val('0.0');
             $("#txtBonus").val('0.0');
+            $("#txtConnection").val('0.0');
             $("#txtNeutralDed").val('0.0');
             $("#txtGroups").val('2.0');
             $("#txtElements").val('8');
@@ -1510,12 +1518,20 @@
             $("#txtGroups").val('2.0');
             $("#txtElements").val('10');
             $("#txtBonus").val('0.0');
+            $("#txtConnection").val('0.0');
             $("#txtNeutralDed").val('0.0');
             $("#tdEScore").html("E-Score: ");
+            if (ScoringSpecific == "NCAA") {
+                $("#tdBonus").html("Stick: ");
+                $("#trBonus").show();
+            }
+            else {
+                $("#trBonus").hide();
+            }
             if (ev == "FX" || ev == "HB")
-                $("#tdBonus").html("Connections and Bonus: ");
+                $("#trConnection").show();
             else
-                $("#tdBonus").html("Bonus: ");
+                $("#trConnection").hide();
             if (LoadRot != "") {
                 $("#txtGroups").hide();
                 $("#lblGroups").show();

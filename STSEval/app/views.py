@@ -299,6 +299,10 @@ def routine_set_score(request):
     except:
         routine.score_bonus = 0
     try:
+        routine.score_connection = round(float(request.POST.get('score_connection')),2)
+    except:
+        routine.score_connection = 0
+    try:
         routine.score_neutral = round(float(request.POST.get('score_neutral')),2)
     except:
         routine.score_neutral = 0
@@ -1042,7 +1046,10 @@ def overview(request,session_id,event_name='-1'):
     athletes = Athlete.objects.filter(team__session=session)
     judges = Judge.objects.filter(session=session,event=event)
     cameras = Camera.objects.filter(events=event,session=session)
-
+    if judges.first().d2_email != '':
+        has_d2 = True
+    else:
+        has_d2 = False
     setup_firebase_managers(session,event.name)
     
     context = {
@@ -1054,6 +1061,7 @@ def overview(request,session_id,event_name='-1'):
         'athletes':athletes,
         'judges':judges.first(),
         'cameras':cameras,
+        'has_d2':has_d2,
     }
     return render(request,'app/overview.html',context)
 
