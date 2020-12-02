@@ -1,0 +1,64 @@
+{% extends "app/layout.html" %}
+
+{% block content %}
+{% load staticfiles %}
+<div align="center" style="width:600px;margin:auto">
+    <form id="form" action="/video_upload_form/" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div id="divUploadVideo" align="center">
+            <h2>Upload a Routine Video</h2>
+           <div class="row">
+                <div class="col-5">
+                    EVENT<br/>
+                    {{ form.event }}<br/>
+                    {{form.event.errors}}
+                </div>
+                <div class="col-7">
+                    ATHLETE<br/>
+                    {{ form.athlete }}<br/>
+                    {{form.athlete.errors}}
+                </div>
+            </div>
+             <br/>
+            {{form.session}}
+            <div class="row">
+                <div class="col-12" align="left">
+                    VIDEO:
+                    {{ form.video_file }}<br/>
+                    {{form.video_file.errors}}
+                </div>   
+            </div>
+            <div id="divErrors">
+                {% for err in form.non_field_errors %}
+                    <div class="errorlist">{{ err }}</div>
+                {% endfor %}
+            </div>
+            <br/>
+            <button href="#" id="btnUploadGo" type="button" class="btn btn-main" OnClick="UploadCheck()">Upload</button>
+            <input type="submit" href="#" id="btnUploadVideo" class="btn btn-main" value="Save" style="display:none">
+            <button href="#" id="btnUploadCancel" type="button" class="btn btn-red">Cancel</button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript">
+    $("#id_session").val(2);
+    function UploadCheck() {
+        $.ajax({
+            url: "/check_routine_exists/",
+            data: {
+                'event': $("#id_event").val(),
+                'session': $("#id_session").val(),
+                'athlete': $("#id_athlete").val()
+            },
+            dataType: 'json',
+            success: function (data) {
+                console.log(data);
+            }
+        });
+
+    }
+</script>
+{% endblock %}

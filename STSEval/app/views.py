@@ -21,6 +21,7 @@ import os
 from django.contrib.auth.decorators import login_required,user_passes_test
 from django.db.models import F, Sum
 from apscheduler.schedulers.background import BackgroundScheduler
+from .forms import VideoUploadForm
 
 def valid_login_type(match=None):
     def decorator(func):
@@ -1157,7 +1158,34 @@ def set_credit(request):
         credit = "CREDIT NOT AWARDED"
     app.firebase.set_credit(ath.team.session.id,request.POST.get('event'),ath.team.id,credit)
 
+
+@login_required(login_url='/account/login/admin/')
+def video_upload_form(request):
+    if request.method == 'POST':
+        form = VideoUploadForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponse(status=200)
+        else:
+            return render(request, 'video_upload_form.html', {'form': form})
+    else:
+        #check for ownership
+        s = Session.objects.filter(pk=request.GET.get('session'),competition__admin = request.user).first()
+        if s == None:
+            return HttpResponse(status=403)
+        form = VideoUploadForm(session=request.GET.get('session'))
+        return render(request, 'app/video_upload_form.html', {'form': form})
+
     return HttpResponse(status=200)
+
+def check_routine_exists(request):
+    routine = Routine.objects.filter(session_id=request.GET.get('session'),athlete_id=request.GET.get('athlete'),event=request.GET.get('event')).exclude(status=Routine.DELETED).first()
+    if routine == None:
+        resp = {'status':'ok'}
+    else:
+        resp = {'status':routine.status}
+    return JsonResponse(resp)
+
 
 def wowza_broadcast(request):
     return render(request,'app/dev-view-publish.html')
