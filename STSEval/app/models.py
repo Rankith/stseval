@@ -3,7 +3,7 @@ Definition of models.
 """
 
 from django.db import models
-from management.models import Competition, Athlete, Judge, Session
+from management.models import Competition, Athlete, Judge, Session, Event
 
 # Create your models here.
 class Twitch(models.Model):
@@ -98,3 +98,10 @@ class EJuryDeduction(models.Model):
         (DELETE,'Delete'),
         ]
     action = models.CharField(max_length=6,choices=ACTION_TYPE,default=ADD)
+
+class BackupVideo(models.Model):
+    session = models.ForeignKey(Session, on_delete=models.CASCADE,default=None,null=True)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    athlete = models.ForeignKey(Athlete, on_delete=models.SET_NULL,null=True)
+    video_file= models.FileField(upload_to='backup_videos/', null=True)
+    reviewed = models.BooleanField(default=False)

@@ -3,7 +3,7 @@
 {% block content %}
 {% load staticfiles %}
 <div align="center" style="width:600px;margin:auto">
-    <form id="form" action="/video_upload_form/" method="post" enctype="multipart/form-data">
+    <form id="form" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <div id="divUploadVideo" align="center">
             <h2>Upload a Routine Video</h2>
@@ -44,10 +44,49 @@
 
 {% block scripts %}
 <script type="text/javascript">
-    $("#id_session").val(2);
+ $("#id_session").val({{session_id}});
+</script>
+<script type="text/javascript">
+   
     function UploadCheck() {
+        if ($('#form')[0].checkValidity()) {
+            $.ajax({
+                url: "/check_backup_video_exists/",
+                data: {
+                    'event': $("#id_event").val(),
+                    'session': $("#id_session").val(),
+                    'athlete': $("#id_athlete").val()
+                },
+                dataType: 'json',
+                success: function (data) {
+                    if (data.status == "ok") {
+                        $("#modalLoadText").html("Uploading...");
+                        $("#modalLoad").modal('show');
+                        $("#btnUploadVideo").click();
+                    }
+                    else if (data.status == "reviewed")
+                        alert("A video has already been used to judge a routine for " + $("#id_athlete>option:selected").html() + " on " + $("#id_event>option:selected").html() + ", contact the meet admin if there is an issue");
+                    else {
+                        if (confirm("A video has already been uploaded for " + $("#id_athlete>option:selected").html() + " on " + $("#id_event>option:selected").html() + ", do you want to override it?")) {
+                            $("#modalLoadText").html("Uploading...");
+                            $("#modalLoad").modal('show');
+                            $("#btnUploadVideo").click();
+                        }
+                        else {
+
+                        }
+                    }
+
+                }
+            });
+        }
+        else
+            $('#form')[0].reportValidity();
+
+    }
+    function DeleteVideo() {
         $.ajax({
-            url: "/check_routine_exists/",
+            url: "/delete_backup_video/",
             data: {
                 'event': $("#id_event").val(),
                 'session': $("#id_session").val(),
@@ -55,10 +94,10 @@
             },
             dataType: 'json',
             success: function (data) {
-                console.log(data);
+                $("#btnUploadVideo").click();
+
             }
         });
-
     }
 </script>
 {% endblock %}

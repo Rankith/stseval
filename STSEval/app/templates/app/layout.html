@@ -112,6 +112,30 @@
   </div>
 </div>
 
+<div class="modal fade" id="modalLoad" data-backdrop="static" tabindex="-1" role="dialog" aria-labelledby="modalLoadTitle" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header" style="padding-top:0;padding-bottom:0">
+          <div>
+        <h5 class="modal-title" id="modalLoadTitle">Please Wait</h5>
+              </div>
+      </div>
+      <div class="modal-body">
+        <div id="divLoadInfo">
+            <div  class="d-flex align-items-center">
+                <div class="spinner-border" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+                <div class="ml-2" id="modalLoadText">
+                    Loading...
+                </div>
+            </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
     <script src="{% static 'app/scripts/jquery-1.10.2.js' %}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="{% static 'app/scripts/bootstrap.js' %}"></script>

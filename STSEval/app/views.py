@@ -7,7 +7,7 @@ from django.http import HttpRequest,JsonResponse,HttpResponse
 from django.template import RequestContext
 from datetime import datetime
 from django.contrib.auth import authenticate, login
-from app.models import Twitch,Routine,EJuryDeduction
+from app.models import Twitch,Routine,EJuryDeduction,BackupVideo
 from management.models import Competition,Judge,Athlete,Session,Camera,StartList,Team,Event,Disc,Sponsor
 from app.twitch import TwitchAPI
 import app.firebase
@@ -1160,30 +1160,35 @@ def set_credit(request):
 
 
 @login_required(login_url='/account/login/admin/')
-def video_upload_form(request):
+def video_upload_form(request,session_id):
     if request.method == 'POST':
-        form = VideoUploadForm(request.POST)
+        form = VideoUploadForm(request.POST,request.FILES,session=session_id)
         if form.is_valid():
+            #check for existing and delete
+            BackupVideo.objects.filter(session=form.cleaned_data['session'],athlete=form.cleaned_data['athlete'],event=form.cleaned_data['event']).delete()
             form.save()
             return HttpResponse(status=200)
         else:
-            return render(request, 'video_upload_form.html', {'form': form})
+            return render(request, 'app/video_upload_form.html', {'form': form,'session_id':session_id})
     else:
         #check for ownership
-        s = Session.objects.filter(pk=request.GET.get('session'),competition__admin = request.user).first()
+        s = Session.objects.filter(pk=session_id,competition__admin = request.user).first()
         if s == None:
             return HttpResponse(status=403)
-        form = VideoUploadForm(session=request.GET.get('session'))
-        return render(request, 'app/video_upload_form.html', {'form': form})
+        form = VideoUploadForm(session=session_id)
+        return render(request, 'app/video_upload_form.html', {'form': form,'session_id':session_id})
 
     return HttpResponse(status=200)
 
-def check_routine_exists(request):
-    routine = Routine.objects.filter(session_id=request.GET.get('session'),athlete_id=request.GET.get('athlete'),event=request.GET.get('event')).exclude(status=Routine.DELETED).first()
-    if routine == None:
+def check_backup_video_exists(request):
+    bv = BackupVideo.objects.filter(session_id=request.GET.get('session'),athlete_id=request.GET.get('athlete'),event_id=request.GET.get('event')).first()
+    if bv == None:
         resp = {'status':'ok'}
+    elif bv.reviewed:
+        resp = {'status':'reviewed'}
     else:
-        resp = {'status':routine.status}
+        resp = {'status':'exists'}
+
     return JsonResponse(resp)
 
 
