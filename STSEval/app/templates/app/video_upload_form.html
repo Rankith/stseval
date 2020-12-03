@@ -33,7 +33,15 @@
                     <div class="errorlist">{{ err }}</div>
                 {% endfor %}
             </div>
-            <br/>
+
+            {% if bv %}
+                <div style="color:#18ff18" align="left">Video Uploaded<br/>
+                <video id="video-playback"  style="max-width:854px;max-height:720px;width:100%;" controls webkit-playsinline>
+		            <source src="{{bv.video_file.url}}" />
+                    Video not yet ready, try again in 15 seconds
+	                </video>
+            </div>
+            {% endif %}
             <button href="#" id="btnUploadGo" type="button" class="btn btn-main" OnClick="UploadCheck()">Upload</button>
             <input type="submit" href="#" id="btnUploadVideo" class="btn btn-main" value="Save" style="display:none">
             <button href="#" id="btnUploadCancel" type="button" class="btn btn-red">Cancel</button>

@@ -22,6 +22,7 @@ from django.contrib.auth.decorators import login_required,user_passes_test
 from django.db.models import F, Sum
 from apscheduler.schedulers.background import BackgroundScheduler
 from .forms import VideoUploadForm
+from django.core.files import File
 
 def valid_login_type(match=None):
     def decorator(func):
@@ -1165,20 +1166,22 @@ def video_upload_form(request,session_id):
         form = VideoUploadForm(request.POST,request.FILES,session=session_id)
         if form.is_valid():
             #check for existing and delete
-            BackupVideo.objects.filter(session=form.cleaned_data['session'],athlete=form.cleaned_data['athlete'],event=form.cleaned_data['event']).delete()
-            form.save()
-            return HttpResponse(status=200)
+            og = BackupVideo.objects.filter(session=form.cleaned_data['session'],athlete=form.cleaned_data['athlete'],event=form.cleaned_data['event']).first()
+            if og != None:
+                og.video_file.delete()
+                og.delete()
+            bv = form.save()
+            convert_backup_video(bv)
+            return render(request, 'app/video_upload_form.html', {'form': form,'session_id':session_id,'bv':bv})
         else:
             return render(request, 'app/video_upload_form.html', {'form': form,'session_id':session_id})
     else:
         #check for ownership
         s = Session.objects.filter(pk=session_id,competition__admin = request.user).first()
-        if s == None:
+        if s == None or request.user.is_staff:
             return HttpResponse(status=403)
         form = VideoUploadForm(session=session_id)
         return render(request, 'app/video_upload_form.html', {'form': form,'session_id':session_id})
-
-    return HttpResponse(status=200)
 
 def check_backup_video_exists(request):
     bv = BackupVideo.objects.filter(session_id=request.GET.get('session'),athlete_id=request.GET.get('athlete'),event_id=request.GET.get('event')).first()
@@ -1191,6 +1194,13 @@ def check_backup_video_exists(request):
 
     return JsonResponse(resp)
 
+def convert_backup_video(bv):
+    vidfile=bv.video_file.path
+    if os.path.exists(vidfile):
+        os.system("ffmpeg -i {0} -c:v libx264 -profile:v main -vf format=yuv420p -c:a aac -movflags +faststart {1}".format(vidfile,vidfile+".mp4"))
+        bv.video_file.name = bv.video_file.name + ".mp4"
+        bv.save()
+        os.remove(vidfile)
 
 def wowza_broadcast(request):
     return render(request,'app/dev-view-publish.html')
