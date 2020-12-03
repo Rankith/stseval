@@ -1,0 +1,10 @@
+{% block content %}
+    {% for bv in backup_videos %}
+        <div id="divBV{{bv.id}}" onclick="BVClick({{bv.id}});" bvid="{{bv.id}}" class="row no-gutters bv-list">
+            <div class="col-4 pl-2" align="left">{{bv.event.full_name}}</div>
+            <div class="col-2" align="left">{{bv.athlete.team.abbreviation}}</div>
+            <div class="col-2" align="center">{{bv.athlete.level}}</div>
+            <div class="col-4" align="center">{{bv.athlete.name}}</div>
+        </div>
+    {% endfor %}
+{% endblock %}

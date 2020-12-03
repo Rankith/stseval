@@ -148,9 +148,12 @@
     <Content Include="app\static\app\scripts\stream_listener_spectator.js" />
     <Content Include="app\static\app\sounds\message_notice.mp3" />
     <Content Include="app\static\app\sounds\message_notice.ogg" />
+    <Content Include="app\templates\app\backup_video_list.html" />
+    <Content Include="app\templates\app\backup_video_display.html" />
     <Content Include="app\templates\app\d1_edit_score.html" />
     <Content Include="app\templates\app\event_select_with_aa.html" />
-    <Content Include="app\templates\app\video_upload_form.html" />
+    <Content Include="app\templates\app\backup_video_manage.html" />
+    <Content Include="app\templates\app\backup_video_upload.html" />
     <Content Include="app\templates\app\video_scoreboard.html" />
     <Content Include="app\templates\app\sponsor_display.html" />
     <Content Include="app\templates\app\athlete_start_list_swap.html" />

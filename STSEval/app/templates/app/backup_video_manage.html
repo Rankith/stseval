@@ -1,0 +1,84 @@
+{% extends "app/layout.html" %}
+
+{% block content %}
+<div align="center" style="margin:10px;padding:0">
+    <h2>Manage Exercise Video Backups</h2>
+    <div>
+        <div id="divBackupVideos" style="vertical-align: top;padding:3px;display:inline-block;margin-right:30px;">
+		    <div id="divBackupVideosHeader" style="padding-bottom:5px;font-size:22px;font-weight:bold;text-align:center">Backup Videos</div>
+		    <div id="divBackupVideoList" class="listbox mb-2" style="width:400px;height:140px;"></div>
+		    <div id="divBackupVideoButtonsArea">
+		        <button href="#" id="btnBackupVideoAdd" type="button" class="btn btn-main management-button" onclick="AddBackupVideo()">Add</button>
+		        <button href="#" id="btnBackupVideoDelete"   type="button" class="btn btn-red management-button ui-disabled" onclick="BackupVideoDelete()">Delete</button>
+	        </div>
+	    </div>
+        <div id="divBackupVideoPlay">
+
+        </div>
+    </div>		
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript">
+    var token = "{{ csrf_token }}";
+    var SessionID = "{{session.id}}";
+</script>
+<script type="text/javascript">
+    var SelectedBV = -1;
+    
+    FillBVs();
+    function EnableDisableButtons(typeIn, enabledIn) {
+        if (enabledIn) {
+            $("#btn" + typeIn + "Delete").removeClass("ui-disabled");
+        }
+        else {
+            $("#btn" + typeIn + "Delete").addClass("ui-disabled");
+        }
+    }
+
+    function BVClick(bvIn) {
+        $('.bv-list').removeClass("ctxSelected");
+        $("#divBV" + bvIn).addClass("ctxSelected");
+        SelectedBV = bvIn;
+        EnableDisableButtons("BackupVideo", true)
+        $("#divStillProcessing").hide();
+        $("#video-playback").hide();
+        $("#divBackupVideoPlay").load("/backup_video_display/" + bvIn + "/");
+        //$("#btnNext").removeClass("ui-disabled");
+
+    }
+
+    function BackupVideoDelete() {
+        if (SelectedBV != -1) {
+            $.ajax({
+                url: "/backup_video_delete/" + SelectedBV,
+                data: {
+                },
+                dataType:"json",
+                success: function data(data) {
+                    if (data.status == "reviewed")
+                        alert("This video has already been used for scoring and cannot be removed");
+                    else
+                        FillBVs();
+                }
+            });
+        }
+    }
+
+    function FillBVs() {
+        $("#divBackupVideoList").load("/backup_video_list/" + SessionID); 
+        EnableDisableButtons("BackupVideo", false);
+        SelectedBV = -1;
+        $("#divStillProcessing").hide();
+        $("#video-playback").hide();
+    }
+
+    function AddBackupVideo() {
+        window.location = "/backup_video_upload/" + SessionID + "/";
+    }
+
+   
+</script>
+{% endblock %}

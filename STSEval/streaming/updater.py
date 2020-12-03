@@ -2,7 +2,7 @@ from datetime import datetime,timezone
 from apscheduler.schedulers.background import BackgroundScheduler
 from streaming.wowza import LiveStreams, WOWZA_API_KEY, WOWZA_ACCESS_KEY
 from streaming.models import WowzaStream
-from app.models import Routine
+from app.models import Routine,BackupVideo
 import app.firebase
 from django.conf import settings
 import os
@@ -14,12 +14,27 @@ def start():
     #scheduler.add_job(check_update_wowza_player, 'interval', seconds=5)
     scheduler.start()
 
+
+def convert_backup_video(bv):
+    vidfile=bv.video_file.path
+    if os.path.exists(vidfile):
+        os.system("ffmpeg -y -i {0} -c:v libx264 -profile:v main -vf format=yuv420p -c:a aac -movflags +faststart {1}".format(vidfile,vidfile+".mp4"))
+        bv.video_file.name = bv.video_file.name + ".mp4"
+        bv.converted = True
+        bv.save()
+        #os.remove(vidfile)
+    else:
+        bv.converted = True
+        bv.save()
+
 def check_convert_video():
+    for bv in BackupVideo.objects.filter(converted=False):
+        convert_backup_video(bv)
     routines = Routine.objects.filter(video_converted=False,video_saved=True,status=Routine.FINISHED)#.exclude(status=Routine.DELETED)
     for routine in routines:
         vidfile=settings.MEDIA_ROOT + '/routine_videos/' + str(routine.id) + ".webm"
         if os.path.exists(vidfile):
-            os.system("ffmpeg -i {0} -c:v libx264 -profile:v main -vf format=yuv420p -c:a aac -movflags +faststart {1}".format(vidfile,vidfile.replace("webm","mp4")))
+            os.system("ffmpeg -y -i {0} -c:v libx264 -profile:v main -vf format=yuv420p -c:a aac -movflags +faststart {1}".format(vidfile,vidfile.replace("webm","mp4")))
             routine.video_converted = True
             routine.save()
 

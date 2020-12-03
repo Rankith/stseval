@@ -2,11 +2,11 @@
 
 {% block content %}
 {% load staticfiles %}
-<div align="center" style="width:600px;margin:auto">
+<div align="center" style="max-width:600px;margin:auto">
     <form id="form" method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <div id="divUploadVideo" align="center">
-            <h2>Upload a Routine Video</h2>
+            <h2>Upload an Exercise Video</h2>
            <div class="row">
                 <div class="col-5">
                     EVENT<br/>
@@ -36,15 +36,19 @@
 
             {% if bv %}
                 <div style="color:#18ff18" align="left">Video Uploaded<br/>
-                <video id="video-playback"  style="max-width:854px;max-height:720px;width:100%;" controls webkit-playsinline>
-		            <source src="{{bv.video_file.url}}" />
-                    Video not yet ready, try again in 15 seconds
+                {% if bv.converted %}
+                    <video id="video-playback"  style="max-width:854px;max-height:720px;width:100%;" controls webkit-playsinline>
+		                <source src="{{bv.video_file.url}}" />
+                        Video not yet ready, try again in 15 seconds
 	                </video>
+                {% else %}
+                    Video conversion processing...
+                {% endif %}
             </div>
             {% endif %}
             <button href="#" id="btnUploadGo" type="button" class="btn btn-main" OnClick="UploadCheck()">Upload</button>
             <input type="submit" href="#" id="btnUploadVideo" class="btn btn-main" value="Save" style="display:none">
-            <button href="#" id="btnUploadCancel" type="button" class="btn btn-red">Cancel</button>
+            <button href="#" id="btnUploadCancel" type="button" class="btn btn-red" onclick="GoBack()">Go Back</button>
         </div>
     </form>
 </div>
@@ -55,7 +59,9 @@
  $("#id_session").val({{session_id}});
 </script>
 <script type="text/javascript">
-   
+    function GoBack() {
+        window.location = "/backup_video_manage/" + $("#id_session").val() + "/";
+    }
     function UploadCheck() {
         if ($('#form')[0].checkValidity()) {
             $.ajax({
@@ -91,21 +97,6 @@
         else
             $('#form')[0].reportValidity();
 
-    }
-    function DeleteVideo() {
-        $.ajax({
-            url: "/delete_backup_video/",
-            data: {
-                'event': $("#id_event").val(),
-                'session': $("#id_session").val(),
-                'athlete': $("#id_athlete").val()
-            },
-            dataType: 'json',
-            success: function (data) {
-                $("#btnUploadVideo").click();
-
-            }
-        });
     }
 </script>
 {% endblock %}

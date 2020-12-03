@@ -1161,7 +1161,7 @@ def set_credit(request):
 
 
 @login_required(login_url='/account/login/admin/')
-def video_upload_form(request,session_id):
+def backup_video_upload(request,session_id):
     if request.method == 'POST':
         form = VideoUploadForm(request.POST,request.FILES,session=session_id)
         if form.is_valid():
@@ -1171,17 +1171,41 @@ def video_upload_form(request,session_id):
                 og.video_file.delete()
                 og.delete()
             bv = form.save()
-            convert_backup_video(bv)
-            return render(request, 'app/video_upload_form.html', {'form': form,'session_id':session_id,'bv':bv})
+            if bv.video_file.name.endswith(".mp4"):
+                bv.converted = True
+                bv.save()
+            return render(request, 'app/backup_video_upload.html', {'form': form,'session_id':session_id,'bv':bv})
         else:
-            return render(request, 'app/video_upload_form.html', {'form': form,'session_id':session_id})
+            return render(request, 'app/backup_video_upload.html', {'form': form,'session_id':session_id})
     else:
         #check for ownership
         s = Session.objects.filter(pk=session_id,competition__admin = request.user).first()
         if s == None and request.user.is_staff:
             return HttpResponse(status=403)
         form = VideoUploadForm(session=session_id)
-        return render(request, 'app/video_upload_form.html', {'form': form,'session_id':session_id})
+        return render(request, 'app/backup_video_upload.html', {'form': form,'session_id':session_id})
+
+@login_required(login_url='/account/login/admin/')
+def backup_video_manage(request,session_id):
+    session = Session.objects.filter(pk=session_id).first()
+    return render(request, 'app/backup_video_manage.html', {'session':session})
+
+def backup_video_list(request,session_id):
+    backup_videos = BackupVideo.objects.filter(session_id=session_id).order_by('event__display_order','athlete__team','athlete__name')
+    return render(request, 'app/backup_video_list.html', {'backup_videos':backup_videos})
+
+def backup_video_delete(request,backup_video_id):
+    bv = BackupVideo.objects.filter(pk=backup_video_id).first()
+    if bv.reviewed:
+        return JsonResponse({'status':'reviewed'})
+    else:
+        bv.video_file.delete()
+        bv.delete()
+        return JsonResponse({'status':'ok'})
+
+def backup_video_display(request,backup_video_id):
+    bv = BackupVideo.objects.filter(pk=backup_video_id).first()
+    return render(request, 'app/backup_video_display.html', {'bv':bv})
 
 def check_backup_video_exists(request):
     bv = BackupVideo.objects.filter(session_id=request.GET.get('session'),athlete_id=request.GET.get('athlete'),event_id=request.GET.get('event')).first()
@@ -1193,14 +1217,6 @@ def check_backup_video_exists(request):
         resp = {'status':'exists'}
 
     return JsonResponse(resp)
-
-def convert_backup_video(bv):
-    vidfile=bv.video_file.path
-    if os.path.exists(vidfile):
-        os.system("ffmpeg -i {0} -c:v libx264 -profile:v main -vf format=yuv420p -c:a aac -movflags +faststart {1}".format(vidfile,vidfile+".mp4"))
-        bv.video_file.name = bv.video_file.name + ".mp4"
-        bv.save()
-        os.remove(vidfile)
 
 def wowza_broadcast(request):
     return render(request,'app/dev-view-publish.html')

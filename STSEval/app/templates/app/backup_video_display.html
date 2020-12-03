@@ -1,0 +1,11 @@
+{% load staticfiles %}
+{% if bv.converted %}
+    <video id="video-backup"  style="max-width:854px;max-height:720px;width:100%;" controls webkit-playsinline>
+		<source src="{{bv.video_file.url}}" />
+        Video not yet ready, try again in 15 seconds
+	</video>
+{% else %}
+   <div style="color:red">Video still processing please try again shortly...</div>
+{% endif %}
+
+

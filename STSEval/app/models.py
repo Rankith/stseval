@@ -104,3 +104,4 @@ class BackupVideo(models.Model):
     athlete = models.ForeignKey(Athlete, on_delete=models.SET_NULL,null=True)
     video_file= models.FileField(upload_to='backup_videos/', null=True)
     reviewed = models.BooleanField(default=False)
+    converted = models.BooleanField(default=False)
