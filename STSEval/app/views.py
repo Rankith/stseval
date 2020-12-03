@@ -1178,7 +1178,7 @@ def video_upload_form(request,session_id):
     else:
         #check for ownership
         s = Session.objects.filter(pk=session_id,competition__admin = request.user).first()
-        if s == None or request.user.is_staff:
+        if s == None and request.user.is_staff:
             return HttpResponse(status=403)
         form = VideoUploadForm(session=session_id)
         return render(request, 'app/video_upload_form.html', {'form': form,'session_id':session_id})
