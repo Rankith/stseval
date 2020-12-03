@@ -1,17 +1,42 @@
 var Stream = '';
+var BackupVideo = -1;
 var StreamListener;
 var StreamConnected = false;
 
 function CheckStream(doc) {
     console.log("Check Stream");
-    if (doc.data().stream != Stream) {
+    if (doc.data().video == -1) {
+        BackupVideo = -1;
+        $("#video-playback").hide();
+        $("#play-video-container").addClass("d-flex");
+        $("#play-video-container").show();
+        if (doc.data().stream != Stream) {
+            if (StreamListener != undefined)
+                StreamListener();//release stream listener
+            Stream = doc.data().stream;
+            console.log("Setting Stream Listener To " + Stream);
+            StreamListener = db.collection("sessions").doc(Session).collection("streams").doc(Stream.toString()).onSnapshot(function (doc) {
+                HandleStreamChanges(doc);
+            });
+        }
+    }
+    else {
+        Stream = '';
         if (StreamListener != undefined)
-            StreamListener();//release stream listener
-        Stream = doc.data().stream;
-        console.log("Setting Stream Listener To " + Stream);
-        StreamListener = db.collection("sessions").doc(Session).collection("streams").doc(Stream.toString()).onSnapshot(function (doc) {
-            HandleStreamChanges(doc);
-        });
+            StreamListener();//release stream listener since its a video
+        if (BackupVideo != doc.data().video) {
+            //set video
+            BackupVideo = doc.data().video;
+            let vp = document.getElementById("video-playback");
+            vp.pause();
+            vp.currentTime = 0;
+            vp.src = BackupVideo;
+            vp.load();
+            $("#video-playback").show();
+            $("#play-video-container").hide();
+            $("#play-video-container").removeClass("d-flex");
+
+        }
     }
 }
 function CheckStreamManual(StreamIn) {

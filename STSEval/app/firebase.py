@@ -2,14 +2,23 @@ import datetime
 import threading
 import os
 from firebase_admin import firestore, initialize_app
-from app.models import Competition,Judge,Athlete,Twitch,Routine,Session
+from app.models import Competition,Judge,Athlete,Twitch,Routine,Session,BackupVideo
 from streaming.models import WowzaStream
 from datetime import datetime
 
 initialize_app()
 
+def get_backup_video(s,e,athlete):
+    video = BackupVideo.objects.filter(session_id=s,event__name=e,athlete=athlete).first()
+    if video != None:
+        return video.video_file.url
+    else:
+        return -1
+
 def routine_update_athlete(s,e,athlete,camera):
     db = firestore.Client()
+
+    video = get_backup_video(s,e,athlete)
 
     doc_ref = db.collection(u'sessions').document(str(s)).collection(u'event_managers').document(str(e))
     doc_ref.set({
@@ -17,6 +26,7 @@ def routine_update_athlete(s,e,athlete,camera):
                 u'athlete_id': athlete.id,
                 u'rotation': athlete.rotation,
                 u'stream':camera,
+                u'video':video,
             },merge=True)
 
 def routine_get(s,e):
@@ -71,6 +81,9 @@ def routine_set_ejudge_done(s,e,ejudge,done):
 def routine_setup(session,e,athlete,camera,judge):
     db = firestore.Client()
 
+    #check or a backup video for this athlete
+    video = get_backup_video(session,e,athlete)
+
     doc_ref = db.collection(u'sessions').document(str(session.id)).collection(u'event_managers').document(str(e))
     if doc_ref.get().exists:
         doc_dict = doc_ref.get().to_dict()
@@ -97,6 +110,7 @@ def routine_setup(session,e,athlete,camera,judge):
                     u'e3ready':False,
                     u'e4ready':False,
                     u'stream':camera,
+                    u'video':video,
                 },merge=True)
             else:
                  doc_ref.set({
@@ -116,6 +130,7 @@ def routine_setup(session,e,athlete,camera,judge):
                     u'e3include':True,
                     u'e4include':True,
                     u'stream':camera,
+                    u'video':video,
                 },merge=True)
         else:
              doc_ref.set({
@@ -139,6 +154,7 @@ def routine_setup(session,e,athlete,camera,judge):
                     u'e3ready':False,
                     u'e4ready':False,
                     u'stream':camera,
+                    u'video':video,
                 },merge=True)
     else:
         doc_ref.set({
@@ -164,6 +180,7 @@ def routine_setup(session,e,athlete,camera,judge):
             u'e3ready':False,
             u'e4ready':False,
             u'stream':camera,
+            u'video':video,
         },merge=True)
 
     # set startlist change if not in there

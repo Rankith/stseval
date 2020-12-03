@@ -11,7 +11,9 @@
         <tr>
             <td>
                 <!--<div id="divTwitchPlayer" style="width:854px;height:480px"></div>-->
-                 
+                 <video id="video-playback"  style="max-width:854px;max-height:720px;display:none;width:100%" webkit-playsinline muted>
+		        Your browser does not support the video tag.
+	        </video>
                 <div id="play-video-container" class="live-container d-flex align-items-center justify-content-center">
                             <div id="player-waiting"><h1>Waiting for Camera</h1></div>
                             <video id="player-video" autoplay playsinline controls muted class="live-video" style="display:none"></video>
@@ -23,7 +25,8 @@
 	                    <tr><td id="tdElements" align="right">Elements:</td><td><div id="lblElements"></div></td></tr>
 	                    <tr><td id="tdDifficulty" align="right">Base Score:</td><td><div id="lblDifficulty"></div></td></tr>
 	                    <tr><td id="tdGroups" align="right">Groups:</td><td><div id="lblGroups"></div></td></tr>
-	                    <tr><td id="tdBonus" align="right">Bonus:</td><td><div id="lblBonus"></div></td></tr>
+	                    <tr id="trBonus"><td id="tdBonus" align="right">Bonus:</td><td><div id="lblBonus"></div></td></tr>
+                        <tr id="trConnection" style="display:none"><td id="tdConnection" align="right">Connection:</td><td><div id="lblConnection"></div></td></tr>
 	                    <tr><td id="tdNeutralDed" align="right">Neutral Deductions:</td><td><div id="lblNeutralDed"></div></td></tr>
 	                    <tr><td id="tdDScore" align="right" style="text-decoration:underline">D-Score:</td><td><div id="lblDScore" style="text-decoration:underline"></div></td></tr>
 	                    <tr><td colspan="2" align="right"></td></tr>
@@ -50,22 +53,22 @@
 			                <tr>
                                 <td><input type="checkbox" id="chkE1" data-role="none" style="display:none" onclick="EJudgeCheckCalc(1)"></td>
 			                    <!--<td id="divJT1" style="width:30px;font-weight:bold"></td>-->
-			                    <td id="divE1N">&nbsp;E1</td>
+			                    <td id="divE1N">E1</td>
 			                </tr>
 			                <tr>
                                 <td><input type="checkbox" id="chkE2" data-role="none" style="display:none" onclick="EJudgeCheckCalc(2)"></td>
 			                        <!--<td id="divJT2" style="width:30px;font-weight:bold"></td>-->
-			                    <td id="divE2N">&nbsp;E2</td>
+			                    <td id="divE2N">E2</td>
 			                </tr>
 			                <tr>
                                 <td><input type="checkbox" id="chkE3" data-role="none" style="display:none" onclick="EJudgeCheckCalc(3)"></td>
 			                        <!--<td id="divJT3" style="width:30px;font-weight:bold"></td>-->
-			                    <td id="divE3N">&nbsp;E3</td>
+			                    <td id="divE3N">E3</td>
 			                </tr>
 			                <tr>
                                 <td><input type="checkbox" id="chkE4" data-role="none" style="display:none" onclick="EJudgeCheckCalc(4)"></td>
 			                        <!--<td id="divJT4" style="width:30px;font-weight:bold"></td>-->
-			                    <td id="divE4N">&nbsp;E4</td>
+			                    <td id="divE4N">E4</td>
 			                </tr>
 		                </table>
 		            </div>
@@ -160,15 +163,29 @@
                     
                     //SetupStream(doc.data().stream);
                     Status = doc.data().status;
+
+                    if (doc.data().status == "S" && BackupVideo != -1) {
+                        let vp = document.getElementById("video-playback");
+                        vp.currentTime = 0;
+                        vp.play();
+                    }
                 }
                 if (doc.data().status == "AD") {
                     BuildDots(false);
                     Status = doc.data().status;
+                    if (BackupVideo != -1) {
+                        document.getElementById("video-playback").pause();
+                        document.getElementById("video-playback").currentTime = 0;
+                    }
                 }
                 if (doc.data().status == "RD") {
                     BuildDots(false);
                     LoadRoutine();
                     Status = doc.data().status;
+                    if (BackupVideo != -1) {
+                        document.getElementById("video-playback").pause();
+                        document.getElementById("video-playback").currentTime = 0;
+                    }
                 }
                 if (doc.data().status == "D" || doc.data().status == "F") {
                     Reset();
@@ -222,6 +239,7 @@
         $("#lblDifficulty").html('');
         $("#lblGroups").html('');
         $("#lblBonus").html('');
+        $("#lblConnection").html('');
         $("#lblNeutralDed").html('');
         $("#lblDScore").html('');
         $("#divET1").html('');
@@ -233,6 +251,10 @@
         $("#btnAccountability").addClass("ui-disabled");
         SetJudges();
         SetJudgesDone(false);
+        if (BackupVideo != -1) {
+            document.getElementById("video-playback").pause();
+            document.getElementById("video-playback").currentTime = 0;
+        }
     }
 
     function CheckJudges(doc) {
@@ -324,6 +346,7 @@
                 $("#lblDifficulty").html(data['score_difficulty']);
                 $("#lblGroups").html(data['score_groups']);
                 $("#lblBonus").html(data['score_bonus']);
+                $("#lblConnection").html(FormatWith0(data['score_connection']));
                 $("#lblNeutralDed").html(data['score_neutral']);
                 $("#lblDScore").html(data['score_d']);
                 $("#divET1").html(data['score_e1']);
@@ -355,9 +378,9 @@
         else if (ScoringType == "JO8910") {
             //console.log("Setting Scoring JO8910");
             if (ev == "FX" || ev == "HB")
-                $("#tdBonus").html("Connections and Bonus: ");
+                $("#trConnection").show();
             else
-                $("#tdBonus").html("Bonus: ");
+                $("#trConnection").hide();
             $("#tdDifficulty").html("Difficulty:");
            $("#tdE1").html(EJudges[1] + " Execution:");
             $("#tdE2").html(EJudges[2] + " Execution:");
@@ -378,9 +401,9 @@
             $("#tdE4").html(EJudges[4] + " Execution:");
             $("#tdEScore").html("E-Score: ");
             if (ev == "FX" || ev == "HB")
-                $("#tdBonus").html("Connections and Bonus: ");
+                $("#trConnection").show();
             else
-                $("#tdBonus").html("Bonus: ");
+                $("#trConnection").hide();
             $("#tdGroups").show();
         }
     }

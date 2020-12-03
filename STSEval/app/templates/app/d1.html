@@ -25,7 +25,7 @@
 
             </div>-->
             {% if loadroutine == '' %}
-            <video id="video-playback"  style="max-width:854px;max-height:720px;display:none;width:100%;min-height:480px" controls webkit-playsinline>
+            <video id="video-playback"  style="max-width:854px;max-height:720px;display:none;width:100%;" webkit-playsinline>
 		        Your browser does not support the video tag.
 	        </video>
             {% else %}
@@ -205,7 +205,7 @@
 <script type="module" src="{% static 'app/scripts/wowza/play.js' %}?v=1"></script>
 <script src="https://www.webrtc-experiment.com/EBML.js"></script> 
 <script src="{% static 'app/scripts/RecordRTC.js' %}"></script>
-<script src="{% static 'app/scripts/stream_listener.js' %}"></script>
+<script src="{% static 'app/scripts/stream_listener.js' %}?v=1.22"></script>
 <script src="{% static 'app/scripts/sortable.min.js' %}?v=1.1"></script>
 <script src="{% static 'app/scripts/start_list.js' %}?v=1.1"></script>
 <script type="text/javascript">
@@ -789,6 +789,10 @@
             $("#tdE" + i).removeClass("judge-strike");
             $("#divET" + i).removeClass("judge-strike");
         }
+        if (BackupVideo != -1) {
+            document.getElementById("video-playback").pause();
+            document.getElementById("video-playback").currentTime = 0;
+        }
     }
 
     function JudgesReadyClick() {
@@ -801,28 +805,44 @@
     }
 
     function StartJudgingClick(Syncing = false) {
-        if (StreamConnected || Syncing) {
-            if (CheckJudgesReady() || Syncing) {
-                $("#btnStartJudging").addClass('ui-disabled');
-                if (!Syncing) {
-                    //RoutineStartJudging();
-                    StartRecording();
-                    LoadFrom = "active";
-                }
+        if (BackupVideo == -1) {
+            if (StreamConnected || Syncing) {
+                if (CheckJudgesReady() || Syncing) {
+                    $("#btnStartJudging").addClass('ui-disabled');
+                    if (!Syncing) {
+                        //RoutineStartJudging();
+                        StartRecording();
+                        LoadFrom = "active";
+                    }
 
-                //$("#btnJudgesReady").addClass('ui-disabled');
-                //$("#txtVideoURL").addClass('ui-disabled');
-                //$("#ddlAthlete").addClass('ui-disabled');
+                    //$("#btnJudgesReady").addClass('ui-disabled');
+                    //$("#txtVideoURL").addClass('ui-disabled');
+                    //$("#ddlAthlete").addClass('ui-disabled');
+                    $("#btnExerciseDone").removeClass('ui-disabled');
+                    $("#btnFallTimer").removeClass('ui-disabled');
+                    $("#btnNuke").removeClass('ui-disabled');
+                    Status = status.STARTED;
+                }
+                else
+                    alert("All EJudges Not Ready");
+            }
+            else
+                alert("Waiting for Camera");
+        }
+        else {
+            if (CheckJudgesReady() || Syncing) {
+                RoutineStartJudging();
+                document.getElementById("video-playback").currentTime = 0;
+                document.getElementById("video-playback").play();
                 $("#btnExerciseDone").removeClass('ui-disabled');
                 $("#btnFallTimer").removeClass('ui-disabled');
                 $("#btnNuke").removeClass('ui-disabled');
                 Status = status.STARTED;
+                LoadFrom = "active";
             }
             else
-                alert("All EJudges Not Ready");
+                    alert("All EJudges Not Ready");
         }
-        else
-            alert("Waiting for Camera");
         
     }
 
@@ -835,36 +855,43 @@
     }
 
     function StopRecording() {
-        recorder.stopRecording(function () {
-            RoutineAthleteDone();
-            getSeekableBlob(recorder.getBlob(), function(seekableBlob) {
-            //videoElement.src = URL.createObjectURL(seekableBlob);
-                console.log(seekableBlob);
-                //document.getElementById('VideoPlayer').src = URL.createObjectURL(seekableBlob);
-               // $("#VideoPlayer").show();
-                var formData = new FormData();
-                formData.append('video-filename', RoutineID + '.webm');
-                formData.append('video-blob', seekableBlob);
-                $.ajax({
-                    type: 'POST',
-                    url: '/save_video/',
-                    data: formData,
-                    headers: { "X-CSRFToken": token },
-                    processData: false,
-                    contentType: false
-                }).done(function(data) {
-                       console.log(data);
+        if (BackupVideo == -1) {
+            recorder.stopRecording(function () {
+                RoutineAthleteDone();
+                getSeekableBlob(recorder.getBlob(), function (seekableBlob) {
+                    //videoElement.src = URL.createObjectURL(seekableBlob);
+                    console.log(seekableBlob);
+                    //document.getElementById('VideoPlayer').src = URL.createObjectURL(seekableBlob);
+                    // $("#VideoPlayer").show();
+                    var formData = new FormData();
+                    formData.append('video-filename', RoutineID + '.webm');
+                    formData.append('video-blob', seekableBlob);
+                    $.ajax({
+                        type: 'POST',
+                        url: '/save_video/',
+                        data: formData,
+                        headers: { "X-CSRFToken": token },
+                        processData: false,
+                        contentType: false
+                    }).done(function (data) {
+                        console.log(data);
+                    });
+                    // recorder.stream.stop();
+                    //recorder.destroy();
+                    //recorder = null;
+
                 });
-           // recorder.stream.stop();
-            //recorder.destroy();
-            //recorder = null;
-        
-           });
-           
-           
-           
-            //invokeSaveAsDialog(blob);
-        });
+
+
+
+                //invokeSaveAsDialog(blob);
+            });
+        }
+        else {
+            document.getElementById("video-playback").pause();
+            document.getElementById("video-playback").currentTime = 0;
+            RoutineAthleteDone();
+        }
     }
 
     function ExerciseDoneClick(Syncing = false, CalcScoreAfter = false) {
