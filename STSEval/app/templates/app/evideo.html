@@ -7,6 +7,9 @@
 <div id="divAccountabilityReport" style="position:absolute;z-index:104;text-align:center;padding:5px;overflow:auto;display:none;background-color:rgb(97, 97, 106);color:white;top:10%;left:35%;width:40%"  class="rounded"></div>
 <div style="margin:10px;padding:0" align="center">
     <div id="divHeader"></div>
+    <div >
+    <span id="divAthleteLabel" onclick="ShowStartList()" data-toggle="modal" data-target="#modalMain"></span>
+</div>
     <table>
         <tr>
             <td>
@@ -117,6 +120,7 @@
     EJudges[2] = "{{judges.e2}}";
     EJudges[3] = "{{judges.e3}}";
     EJudges[4] = "{{judges.e4}}";
+    var ThisJudgeLabel = "{{this_judge}}";
     var DeductionsConfirmed = true;
     var GymnastLevels = new Array();
     var GymnastTeams = new Array();
@@ -140,6 +144,7 @@
     var SocringType;
     var EJudgesDone = new Array();
     var NumJudges = 0;
+    var CurrentAthlete = -1;
 
     var db = firebase.firestore();
     db.collection("sessions").doc(Session).collection("event_managers").doc(ev)
@@ -152,8 +157,10 @@
 
     function SetBasedOnStatus(doc) {
         if (doc.data() != undefined) {
-            $("#divHeader").html("<h2 style='display:inline'>" + doc.data().athlete + "</h2>");
+            $("#divHeader").html("<h4 style='display:inline'>" + ThisJudgeLabel + "</h2>");
             if (Status != doc.data().status || RoutineID != doc.data().routine) {
+                CurrentAthlete = doc.data().athlete_id;
+                $("#divAthleteLabel").html(GymnastLabels[CurrentAthlete]);
                 RoutineID = doc.data().routine
                 console.log(doc.data().status + " | " + Status);
                 if (doc.data().status == "N" || doc.data().status == "S" || Status == "") {
@@ -256,7 +263,27 @@
             document.getElementById("video-playback").currentTime = 0;
         }
     }
+    function GetAthleteInfo() {
+        $.ajax({
+            url: "/athlete_get_info/" + CurrentAthlete,
+            type: "POST",
+            headers: { "X-CSRFToken": token },
+            data: {
+            },
+            dataType: 'json',
+            success: function (data) {
+                if (data['id'] != '-1') {
+                    console.log("DB set athlete: " + data['label']);
+                    CurrentAthlete = data['id'];
+                    AthleteLabel = data['label'];
+                    AthleteLevel = data['level'];
+                    AthleteTeam = data['team'];
 
+                    SetAthlete();
+                }
+            }
+        });
+    }
     function CheckJudges(doc) {
         if (RoutineID == doc.data().routine) {
             let RedoDots = false;

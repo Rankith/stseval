@@ -17,12 +17,14 @@ def start():
 
 def convert_backup_video(bv):
     vidfile=bv.video_file.path
+    conversionfile = os.path.splitext(vidfile)[0] + ".mp4"
+    conversionfilename = os.path.splitext(bv.video_file.name)[0] + ".mp4"
     if os.path.exists(vidfile):
-        os.system("ffmpeg -y -i {0} -c:v libx264 -profile:v main -vf format=yuv420p -c:a aac -movflags +faststart {1}".format(vidfile,vidfile+".mp4"))
-        bv.video_file.name = bv.video_file.name + ".mp4"
+        os.system("ffmpeg -y -i {0} -c:v libx264 -profile:v main -vf format=yuv420p -c:a aac -movflags +faststart {1}".format(vidfile,conversionfile))
+        bv.video_file.name = conversionfilename
         bv.converted = True
         bv.save()
-        #os.remove(vidfile)
+        os.remove(vidfile)
     else:
         bv.converted = True
         bv.save()

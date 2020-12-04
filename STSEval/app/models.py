@@ -75,6 +75,8 @@ class Routine(models.Model):
     video_saved = models.BooleanField(default=False)
     video_converted = models.BooleanField(default=False)
     d_judge = models.CharField(max_length=2,default='D1')
+    video_file= models.FileField(null=True)
+    video_from_backup = models.BooleanField(default=False)
     #stream = models.CharField(max_length=255)
     def routine_length(self):
         return self.athlete_done_time - self.start_time
@@ -98,10 +100,14 @@ class EJuryDeduction(models.Model):
         ]
     action = models.CharField(max_length=6,choices=ACTION_TYPE,default=ADD)
 
+def backup_video_path(instance, filename):
+    # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
+    return 'routine_videos/{0}/{1}/bv_{2}_{3}'.format(instance.session.id, instance.event.name, instance.athlete.name.replace(" ",""),filename)
+
 class BackupVideo(models.Model):
     session = models.ForeignKey(Session, on_delete=models.CASCADE,default=None,null=True)
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
     athlete = models.ForeignKey(Athlete, on_delete=models.SET_NULL,null=True)
-    video_file= models.FileField(upload_to='backup_videos/', null=True)
+    video_file= models.FileField(upload_to=backup_video_path, null=True)
     reviewed = models.BooleanField(default=False)
     converted = models.BooleanField(default=False)

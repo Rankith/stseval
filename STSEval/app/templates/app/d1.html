@@ -25,13 +25,13 @@
 
             </div>-->
             {% if loadroutine == '' %}
-            <video id="video-playback"  style="max-width:854px;max-height:720px;display:none;width:100%;" webkit-playsinline>
+            <video id="video-playback"  style="max-width:854px;max-height:480px;display:none;width:100%;" webkit-playsinline>
 		        Your browser does not support the video tag.
 	        </video>
             {% else %}
-            <video id="video-playback"  style="max-width:854px;max-height:720px;display:none;width:100%;min-height:480px" controls webkit-playsinline>
-		        <source src="/media/routine_videos/{{loadroutine}}.webm" type='video/webm; codecs="vp8, vorbis"' />
-                <source src="/media/routine_videos/{{loadroutine}}.mp4" type='video/mp4;' />
+            <video id="video-playback"  style="max-width:854px;max-height:480px;display:none;width:100%;min-height:480px" controls webkit-playsinline>
+		        <source src="{{video_file}}.webm" type='video/webm; codecs="vp8, vorbis"' />
+                <source src="{{video_file}}.mp4" type='video/mp4;' />
                 Video not yet ready, try again in 15 seconds
 	        </video>
             {% endif %}
@@ -832,8 +832,7 @@
         else {
             if (CheckJudgesReady() || Syncing) {
                 RoutineStartJudging();
-                document.getElementById("video-playback").currentTime = 0;
-                document.getElementById("video-playback").play();
+                //video starts in routinestartjudging call
                 $("#btnExerciseDone").removeClass('ui-disabled');
                 $("#btnFallTimer").removeClass('ui-disabled');
                 $("#btnNuke").removeClass('ui-disabled');
@@ -1262,11 +1261,16 @@
             headers: { "X-CSRFToken": token },
             data: {
                 'athlete': CurrentAthlete,
-                'djudge':DType,
+                'djudge': DType,
+                'backup_video':BackupVideo
             },
             dataType: 'json',
             success: function (data) {
                 RoutineID = data['routine'];
+                if (BackupVideo != -1) {
+                    document.getElementById("video-playback").currentTime = 0;
+                    document.getElementById("video-playback").play();
+                }
                 SetJudgesParticipating();
             }
         });

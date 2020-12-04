@@ -1,0 +1,96 @@
+<html>
+
+<head>
+
+<style>
+.btn {
+    display: inline-block;
+    font-weight: 400;
+    color: #212529;
+    text-align: center;
+    vertical-align: middle;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-color: transparent;
+    border: 1px solid transparent;
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    border-radius: .25rem;
+    transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+}
+
+.mt-2, .my-2 {
+    margin-top: .5rem!important;
+}
+
+.btn {
+    padding: .175rem 1rem !important;
+    border-radius: 1rem;
+}
+
+.btn-main {
+    background-color: #2963b9ff;
+background-image: linear-gradient(to bottom, #2963b9ff, #0044aa);
+font-weight: bold;
+    color: #ffffff /*{c-bup-color}*/;
+    border: 0px;
+    border-color: #2963b9ff;
+}
+
+p {
+  font-family: arial;
+}
+</style>
+
+
+<script>
+function show(shown, hidden) {
+document.getElementById(shown).style.display='block';
+document.getElementById(hidden).style.display='none';
+return false;
+}
+</script>
+
+</head>
+
+
+
+<div align='center'>
+
+<div id="Page1">
+<p>Welcome to the competition setup! Begin by selecting a discipline in the first column.</p>
+<img src='https://stseval-static.sfo2.digitaloceanspaces.com/stseval-static/static/app/images/help/admin-pg1col1.svg' width='300px'><br>
+<button type="button" onclick="return show('Page2','Page1');" class="btn btn-main mt-2" style="width:120px">Continue</button>
+<p style='font-size:.8em;'>1/4</p>
+</div>
+
+
+<div id="Page2" style="display:none">
+<p>Next, select a competition or add one using the add button and following filling out the dialog.</p>
+<img src='https://stseval-static.sfo2.digitaloceanspaces.com/stseval-static/static/app/images/help/admin-pg1col2.svg' width='300px'><br>
+<button type="button" onclick="return show('Page3','Page2');" class="btn btn-main mt-2" style="width:120px">Continue</button>
+<p style='font-size:.8em;'>2/4</p>
+</div>
+
+<div id="Page3" style="display:none">
+<p>Repeat the previous step to select or add competition session(s).</p>
+<img src='https://stseval-static.sfo2.digitaloceanspaces.com/stseval-static/static/app/images/help/admin-pg1col3.svg' width='300px'><br>
+<button type="button" onclick="return show('Page4','Page3');" class="btn btn-main mt-2" style="width:120px">Continue</button>
+<p style='font-size:.8em;'>3/4</p>
+</div>
+
+<div id="Page4" style="display:none">
+<p>To set up the competition for the highlighted session, click "Session Setup" (4).</p><p>To go to that session's overview page, click "Session Overview" (5).</p>
+<img src='https://stseval-static.sfo2.digitaloceanspaces.com/stseval-static/static/app/images/help/admin-pg1fin.svg' width='300px'><br>
+<button type="button" onClick="javascript:window.close('','_parent','');" class="btn btn-main mt-2" style="width:120px">Get Started</button>
+<!--- Julian: I'm not sure what function use to close the "popup". Please replace this bit with what makes sense. --->
+<p style='font-size:.8em;'>4/4</p>
+</div>
+
+</div>
+
+</body>
+</html>

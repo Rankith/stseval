@@ -37,6 +37,7 @@ def login_admin(request,type='spectator'):
                 login(request, user,backend='django.contrib.auth.backends.ModelBackend')
                 request.session['type'] = request.session.get('type','') + ',' + type
                 request.session['email'] = email
+                request.session['backup_video_manage'] = True
                 #request.session['chat_name'] = user.first_name + " " + user.last_name
                 if type == "admin":
                     request.session['chat_name'] = "Meet Administrator"
@@ -118,6 +119,7 @@ def login_coach_do(request,session,team):
     request.session['email'] = team.head_coach_email
     request.session['type'] = request.session.get('type','') + ',' + 'coach'
     request.session['chat_name'] = 'Coach - ' + team.abbreviation
+    request.session['backup_video_manage'] = True
     request.session.set_expiry(0)#until they close browser
     return redirect('/coach/')          
 

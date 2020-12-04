@@ -107,6 +107,10 @@ def view_routine(request,routine_id,popup):
     judges = Judge.objects.filter(session_id=session_id,event__name=event)
     athletes = Athlete.objects.filter(team__session_id=session_id)
     session = routine.session
+    if routine.video_file.name == None: #just a check for old stuff
+        video_file='/media/routine_videos/' + str(routine.id)
+    else:
+        video_file=os.path.splitext(routine.video_file.url)[0]
     if popup == 1:
         layout = 'app/layout_empty.html'
     else:
@@ -128,6 +132,7 @@ def view_routine(request,routine_id,popup):
         'loadroutine':routine,
         'layout':layout,
         'editable':editable,
+        'video_file':video_file,
         'multi_d':False,
     }
     return render(request,'app/d1.html',context)
@@ -206,6 +211,8 @@ def routine_start_judging(request):
     #routine = Routine.objects.filter(session_id=request.session.get('session'),disc=request.session.get('disc'),event=request.session.get('event')).order_by('-id').first()
     routine.status = Routine.STARTED
     routine.athlete_id=request.POST.get('athlete')
+    if request.POST.get('backup_video') != '-1' and request.POST.get('backup_video') != -1:
+        routine.video_from_backup = True
 
     mili = int(time() * 1000)
     routine.start_time = mili
@@ -258,8 +265,8 @@ def routine_delete(request):
 
     routine.save()
 
-    if os.path.exists('/' + settings.MEDIA_ROOT + '/routine_videos/' + str(routine.id) + '.webm'):
-        os.remove('/' + settings.MEDIA_ROOT + '/routine_videos/' + str(routine.id) + '.webm')
+    if os.path.exists(settings.MEDIA_ROOT + '/routine_videos/' + str(routine.session.id) + '/' + routine.event + '/' + routine.athlete.name.replace(" ","") + "_" + str(routine.id) + '.webm'):
+        os.remove(settings.MEDIA_ROOT + '/routine_videos/' + str(routine.session.id) + '/' + routine.event + '/' + routine.athlete.name.replace(" ","") + "_" + str(routine.id) + '.webm')
 
     app.firebase.routine_set_status(str(routine.session.id),routine.event,routine)
 
@@ -274,6 +281,14 @@ def routine_finished(request):
     routine.e4_done = True
     mili = int(time() * 1000)
     routine.d1_done_time = mili
+    if routine.video_from_backup:
+        routine.video_saved = True
+        routine.video_converted = True
+        bv = BackupVideo.objects.filter(session=routine.session,athlete=routine.athlete,event__name=routine.event).first()
+        if bv != None:
+            routine.video_file.name = bv.video_file.name
+            bv.reviewed = True
+            bv.save()
     
     routine.save()
     app.firebase.routine_set_status(str(routine.session.id) ,routine.event,routine)
@@ -411,11 +426,11 @@ def evideo(request):
     disc = session.competition.disc.name
     ej = request.session.get('ej')
     athletes = Athlete.objects.filter(team__session=session)
-    if ej == '1':
+    if ej == 1:
         this_judge = judges.e1
-    elif ej == '2':
+    elif ej == 2:
         this_judge = judges.e2
-    elif ej == '3':
+    elif ej == 3:
         this_judge = judges.e3
     else:
         this_judge = judges.e4
@@ -960,6 +975,8 @@ def athlete_set_active(request,sl_id):
                 sl.order = this_rotation.first().order
         sl.save()
     else:
+        if sl.secondary_judging and sl.completed == False:
+            sl.secondary_judging = False
         sl.active = False
         sl.save()
     athlete_start_list_change_check_manager(sl.session.id,sl.event.name)
@@ -1017,14 +1034,16 @@ def athlete_mark_done_get_next(request,athlete_id):
         return JsonResponse({'id':'-1'})
 
 def save_video(request):
-    vidfile = settings.MEDIA_ROOT + '/routine_videos/' + request.POST.get('video-filename')
+    routine = Routine.objects.get(pk=request.POST.get('video-filename').replace(".webm",""))
+    
+    vidfile = settings.MEDIA_ROOT + '/routine_videos/' + str(routine.session.id) + '/' + routine.event + '/' + routine.athlete.name.replace(" ","") + "_" + request.POST.get('video-filename')
     output = open(vidfile, 'wb+')
     #output.write(request.FILES.get('video-blob').file.read())
     for chunk in request.FILES['video-blob'].chunks():
         output.write(chunk)
     output.close()
-    routine = Routine.objects.get(pk=request.POST.get('video-filename').replace(".webm",""))
     routine.video_saved = True
+    routine.video_file.name = 'routine_videos/' + str(routine.session.id) + '/' + routine.event + '/' + routine.athlete.name.replace(" ","") + "_" + request.POST.get('video-filename')
     routine.save()
     #os.system("ffmpeg -i {0} -c:v libx264 -profile:v main -vf format=yuv420p -c:a aac -movflags +faststart {1}".format(vidfile,vidfile.replace("webm","mp4")))
     #routine.video_converted = True
@@ -1180,14 +1199,20 @@ def backup_video_upload(request,session_id):
     else:
         #check for ownership
         s = Session.objects.filter(pk=session_id,competition__admin = request.user).first()
-        if s == None and request.user.is_staff:
+        if s == None and not request.user.is_staff:
             return HttpResponse(status=403)
         form = VideoUploadForm(session=session_id)
         return render(request, 'app/backup_video_upload.html', {'form': form,'session_id':session_id})
 
-@login_required(login_url='/account/login/admin/')
 def backup_video_manage(request,session_id):
     session = Session.objects.filter(pk=session_id).first()
+    if 'admin' in request.session['type']:
+        s = Session.objects.filter(pk=session_id,competition__admin = request.user).first()
+        if s == None and not request.user.is_staff:
+            return HttpResponse(status=403)
+    elif 'coach' in request.session['type']:
+        if request.session.get('session') != str(session_id):
+            return HttpResponse(status=403)
     return render(request, 'app/backup_video_manage.html', {'session':session})
 
 def backup_video_list(request,session_id):
@@ -1217,6 +1242,9 @@ def check_backup_video_exists(request):
         resp = {'status':'exists'}
 
     return JsonResponse(resp)
+
+def scott_test(request):
+    return render(request, 'app/scott_test.html')
 
 def wowza_broadcast(request):
     return render(request,'app/dev-view-publish.html')

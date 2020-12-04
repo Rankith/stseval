@@ -82,6 +82,7 @@ urlpatterns = [
     path('backup_video_delete/<int:backup_video_id>/', views.backup_video_delete, name='backup_video_delete'),
     path('backup_video_display/<int:backup_video_id>/', views.backup_video_display, name='backup_video_display'),
     path('check_backup_video_exists/', views.check_backup_video_exists, name='check_backup_video_exists'),
+    path('scott_test/', views.scott_test, name='scott_test'),
     path('spectate/<int:session_id>/<str:display_type>/<str:event_name>/', views.spectate, name='spectate'),
     path('spectate/<int:session_id>/<str:display_type>/', views.spectate, name='spectate'),
     path('streaming/', include('streaming.urls')),

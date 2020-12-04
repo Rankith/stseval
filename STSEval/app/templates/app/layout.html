@@ -53,6 +53,9 @@
                                         <li class="nav-item align-self-center"><a class="nav-link" href="/spectate/{{session.id}}/single/{{event_name}}">single display</a></li>
                                     {% endif %}
                                 {% endif %}
+                                {% if request.session.backup_video_manage and request.session.session %}
+                                    <li class="nav-item align-self-center"><a target="_blank" class="nav-link" href="/backup_video_manage/{{request.session.session}}/">backup videos</a></li>
+                                {% endif %}
                                 {% if scoreboard %}
                                     <li class="nav-item align-self-center"><a target="_blank" class="nav-link" href="/scoreboard/{{event_name}}">scoreboard</a></li>
                                 {% endif %}
