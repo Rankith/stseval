@@ -24,6 +24,7 @@
 <script type="text/javascript">
     var token = "{{ csrf_token }}";
     var SessionID = "{{session.id}}";
+    var TeamRestriction = {{team_restriction}};
 </script>
 <script type="text/javascript">
     var SelectedBV = -1;
@@ -68,7 +69,7 @@
     }
 
     function FillBVs() {
-        $("#divBackupVideoList").load("/backup_video_list/" + SessionID); 
+        $("#divBackupVideoList").load("/backup_video_list/" + SessionID + "/" + TeamRestriction); 
         EnableDisableButtons("BackupVideo", false);
         SelectedBV = -1;
         $("#divStillProcessing").hide();

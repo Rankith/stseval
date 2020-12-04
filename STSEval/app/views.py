@@ -1178,8 +1178,6 @@ def set_credit(request):
         credit = "CREDIT NOT AWARDED"
     app.firebase.set_credit(ath.team.session.id,request.POST.get('event'),ath.team.id,credit)
 
-
-@login_required(login_url='/account/login/admin/')
 def backup_video_upload(request,session_id):
     if request.method == 'POST':
         form = VideoUploadForm(request.POST,request.FILES,session=session_id)
@@ -1198,25 +1196,36 @@ def backup_video_upload(request,session_id):
             return render(request, 'app/backup_video_upload.html', {'form': form,'session_id':session_id})
     else:
         #check for ownership
-        s = Session.objects.filter(pk=session_id,competition__admin = request.user).first()
-        if s == None and not request.user.is_staff:
-            return HttpResponse(status=403)
-        form = VideoUploadForm(session=session_id)
-        return render(request, 'app/backup_video_upload.html', {'form': form,'session_id':session_id})
+        if 'admin' in request.session['type']:
+            s = Session.objects.filter(pk=session_id,competition__admin = request.user).first()
+            if s == None and not request.user.is_staff:
+                return HttpResponse(status=403)
+            form = VideoUploadForm(session=session_id)
+            return render(request, 'app/backup_video_upload.html', {'form': form,'session_id':session_id})
+        else:
+            if request.session.get('session') != session_id:
+                return HttpResponse(status=403)
+            form = VideoUploadForm(session=session_id,team=request.session.get('team'))
+            return render(request, 'app/backup_video_upload.html', {'form': form,'session_id':session_id})
 
 def backup_video_manage(request,session_id):
     session = Session.objects.filter(pk=session_id).first()
     if 'admin' in request.session['type']:
         s = Session.objects.filter(pk=session_id,competition__admin = request.user).first()
+        team_restriction=0
         if s == None and not request.user.is_staff:
             return HttpResponse(status=403)
     elif 'coach' in request.session['type']:
-        if request.session.get('session') != str(session_id):
+        if request.session.get('session') != session_id:
             return HttpResponse(status=403)
-    return render(request, 'app/backup_video_manage.html', {'session':session})
+        team_restriction=request.session['team']
+    return render(request, 'app/backup_video_manage.html', {'session':session,'team_restriction':team_restriction})
 
-def backup_video_list(request,session_id):
-    backup_videos = BackupVideo.objects.filter(session_id=session_id).order_by('event__display_order','athlete__team','athlete__name')
+def backup_video_list(request,session_id,team_restriction):
+    if team_restriction != 0:
+        backup_videos = BackupVideo.objects.filter(session_id=session_id,athlete__team_id = team_restriction).order_by('event__display_order','athlete__team','athlete__name')
+    else:
+        backup_videos = BackupVideo.objects.filter(session_id=session_id).order_by('event__display_order','athlete__team','athlete__name')
     return render(request, 'app/backup_video_list.html', {'backup_videos':backup_videos})
 
 def backup_video_delete(request,backup_video_id):
@@ -1224,7 +1233,10 @@ def backup_video_delete(request,backup_video_id):
     if bv.reviewed:
         return JsonResponse({'status':'reviewed'})
     else:
-        bv.video_file.delete()
+        try:
+            bv.video_file.delete()
+        except:
+            pass
         bv.delete()
         return JsonResponse({'status':'ok'})
 
@@ -1242,9 +1254,6 @@ def check_backup_video_exists(request):
         resp = {'status':'exists'}
 
     return JsonResponse(resp)
-
-def scott_test(request):
-    return render(request, 'app/scott_test.html')
 
 def wowza_broadcast(request):
     return render(request,'app/dev-view-publish.html')

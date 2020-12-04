@@ -166,6 +166,11 @@ function EventChanged(evIn)
 {
     window.location = window.location.href.replace("e={{event|upper}}", "e=" + evIn);
 }
+function help_nav(shown, hidden) {
+document.getElementById(shown).style.display='block';
+document.getElementById(hidden).style.display='none';
+return false;
+}
 </script>
 {% block scripts %}{% endblock %}
 
