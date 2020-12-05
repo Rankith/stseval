@@ -48,8 +48,11 @@
                 {% endfor %}
             </div>
             <br/>
-            <h3  class="pl-4">Start List</h3>
-            <div id="divStartList" style="max-height:600px;overflow:auto;display:inline-block">
+            <div class="d-flex">
+                <h3 class="pl-4">Start List</h3>
+                <div class="pl-4 align-self-center pb-2"><button id="btnForceReset" type="button" class="btn btn-main btn-small" onclick="ForceResetStart()" title="Only use this if there as some problem with the D1 or D2.">Reset Current Athlete</button></div>
+            </div>
+            <div id="divStartList" style="max-height:400px;overflow:auto;display:inline-block">
 
             </div>
         </div>
@@ -180,6 +183,29 @@
             else
                 $("#divJudgeDotE4").addClass("status-dot-red").removeClass("status-dot-green");
         }
+    }
+
+    function ForceResetStart() {
+        $("#modalMainDoc").addClass("modal-lg");
+        $("#modalMainTitle").html("Reset Current Athlete");
+        $("#modalBodyArea2").hide();
+        $("#modalBodyArea1").empty();
+        $("#modalBodyArea1").load("/reset_athlete_warn/")
+        $("#modalMain").modal('show');
+    }
+
+    function ForceReset() {
+        $.ajax({
+            url: "/reset_athlete/" + Session + "/" + ev + "/",
+            type: "POST",
+            headers: { "X-CSRFToken": token },
+            data: {
+            },
+            success: function (data) {
+                alert("Athlete Reset.  Judges should reload their screens.");
+              
+            }
+        });
     }
 
     

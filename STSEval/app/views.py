@@ -1001,6 +1001,21 @@ def athlete_start_list_update_order(request):
 
     return HttpResponse(status=200)
 
+@login_required(login_url='/account/login/admin/')
+def reset_athlete_warn(request):
+    return render(request,'app/reset_athlete_warn.html')
+
+@login_required(login_url='/account/login/admin/')
+def reset_athlete(request,session_id,event_name):
+    #kill any secondary judging
+    StartList.objects.filter(session_id=session_id,event__name=event_name,secondary_judging=True,completed=False).update(secondary_judging=False)
+    sl = athlete_get_next_do(event_name,session_id)
+    camera = Camera.objects.filter(teams=sl.athlete.team,events__name=event_name).first()
+    app.firebase.routine_reset_previous(sl.session,event_name)
+    app.firebase.routine_setup(sl.session,event_name,sl.athlete,camera.id,'D1')
+
+    return render(request,'app/reset_athlete_warn.html')
+
 @valid_login_type(match='coach')
 def coach(request,event_name='FX'):
     session_id = request.session.get('session')

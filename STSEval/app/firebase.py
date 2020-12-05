@@ -70,6 +70,14 @@ def routine_set_status(s,e,routine):
                 u'previous_routine_athlete_id': routine.athlete.id,
             },merge=True)
 
+def routine_reset_previous(s,e):
+    db = firestore.Client()
+
+    doc_ref = db.collection(u'sessions').document(str(s)).collection(u'event_managers').document(str(e))
+    doc_ref.set({
+            u'previous_routine_status': 'F',
+        },merge=True)
+
 def routine_set_ejudge_done(s,e,ejudge,done):
     db = firestore.Client()
 

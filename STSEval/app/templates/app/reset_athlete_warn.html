@@ -1,0 +1,11 @@
+{% block content %}
+<div><span style="color:#dc3545;font-weight:bold">WARNING:</span> This will reset the athlete(s) that are currently being judged on this event to the start of the judging process.<br/><br/>
+    If the athlete has already performed their routine but the judges have not finished judging, or they are in the middle of their routine, the routine will be lost and the backup video system will need to be used.<br/><br/>
+    You should only use this if the D1 or D2 judge is entirely unable to proceed.  All judges need to reload their screens after this is done.<br/><br/>
+    Do you want to proceed?</div>
+<div class="w-100" align="right">
+    <button type="button" class="btn btn-success"  data-toggle="modal" data-target="#modalMain" onclick="ForceReset()">Yes</button>
+    <button type="button" class="btn btn-red"  data-toggle="modal" data-target="#modalMain">No</button>
+</div>
+
+{% endblock %}

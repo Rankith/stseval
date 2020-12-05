@@ -150,6 +150,7 @@
     <Content Include="app\static\app\scripts\stream_listener_spectator.js" />
     <Content Include="app\static\app\sounds\message_notice.mp3" />
     <Content Include="app\static\app\sounds\message_notice.ogg" />
+    <Content Include="app\templates\app\reset_athlete_warn.html" />
     <Content Include="app\templates\app\backup_video_list.html" />
     <Content Include="app\templates\app\backup_video_display.html" />
     <Content Include="app\templates\app\d1_edit_score.html" />

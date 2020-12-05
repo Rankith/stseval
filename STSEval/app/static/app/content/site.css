@@ -26,6 +26,11 @@ body {
     border-radius:1rem;
 }
 
+.btn-small {
+    line-height:1 !important;
+    font-size:.9rem !important;
+}
+
 .btn-wide{
     width:128px;
 }
