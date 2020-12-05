@@ -107,6 +107,7 @@
     <Folder Include="account\templates\" />
     <Folder Include="account\templates\account\" />
     <Folder Include="app\static\app\sounds\" />
+    <Folder Include="app\templates\app\help\" />
     <Folder Include="app\templates\registration\" />
     <Folder Include="app\" />
     <Folder Include="app\migrations\" />
@@ -141,6 +142,7 @@
     <Content Include="account\templates\account\login.html" />
     <Content Include="account\templates\account\signup.html" />
     <Content Include="app\static\app\content\chat.css" />
+    <Content Include="app\static\app\scripts\help.js" />
     <Content Include="app\static\app\scripts\sortable.min.js" />
     <Content Include="app\static\app\scripts\check_browser.js" />
     <Content Include="app\static\app\scripts\start_list.js" />
@@ -154,6 +156,8 @@
     <Content Include="app\templates\app\event_select_with_aa.html" />
     <Content Include="app\templates\app\backup_video_manage.html" />
     <Content Include="app\templates\app\backup_video_upload.html" />
+    <Content Include="app\templates\app\help\competition_setup_2.html" />
+    <Content Include="app\templates\app\help\competition_setup_1.html" />
     <Content Include="app\templates\app\video_scoreboard.html" />
     <Content Include="app\templates\app\sponsor_display.html" />
     <Content Include="app\templates\app\athlete_start_list_swap.html" />

@@ -1067,12 +1067,13 @@ def overview(request,session_id,event_name='-1'):
     else:
         event = events.filter(name=event_name).first()
     athletes = Athlete.objects.filter(team__session=session)
-    judges = Judge.objects.filter(session=session,event=event)
+    judges = Judge.objects.filter(session=session,event=event).first()
     cameras = Camera.objects.filter(events=event,session=session)
-    if judges.first().d2_email != '':
-        has_d2 = True
-    else:
-        has_d2 = False
+    has_d2 = False
+    if judges != None:
+        if judges.d2_email != '':
+            has_d2 = True
+
     setup_firebase_managers(session,event.name)
     
     context = {
@@ -1082,7 +1083,7 @@ def overview(request,session_id,event_name='-1'):
         'session':session,
         'scoreboard':True,
         'athletes':athletes,
-        'judges':judges.first(),
+        'judges':judges,
         'cameras':cameras,
         'has_d2':has_d2,
     }
@@ -1258,6 +1259,9 @@ def check_backup_video_exists(request):
         resp = {'status':'exists'}
 
     return JsonResponse(resp)
+
+def help(request,help_screen):
+    return render(request, 'app/help/' + help_screen + '.html')
 
 def wowza_broadcast(request):
     return render(request,'app/dev-view-publish.html')

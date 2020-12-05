@@ -18,23 +18,25 @@
         <div class="col-xl-6 col-12 pl-4" align="left">
             <h3 class="pl-4">Officials</h3>
             <div id="divOfficials">
-                {% if judges.d1 != '' %}
-                    <div id="divD1"><span id="divJudgeDotD1" class="status-dot-small status-dot-red mr-1"></span> D1: {{judges.d1}}</div>
-                {% endif %}
-                {% if judges.d2 != '' and has_d2 %}
-                    <div id="divD2"><span id="divJudgeDotD2" class="status-dot-small status-dot-red mr-1"></span> D2: {{judges.d2}}</div>
-                {% endif %}
-                {% if judges.e1 != '' %}
-                    <div id="divE1"><span id="divJudgeDotE1" class="status-dot-small status-dot-red mr-1"></span> E1: {{judges.e1}}</div>
-                {% endif %}
-                {% if judges.e2 != '' %}
-                    <div id="divE2"><span id="divJudgeDotE2" class="status-dot-small status-dot-red mr-1"></span> E2: {{judges.e2}}</div>
-                {% endif %}
-                {% if judges.e3 != '' %}
-                    <div id="divE3"><span id="divJudgeDotE3" class="status-dot-small status-dot-red mr-1"></span> E3: {{judges.e3}}</div>
-                {% endif %}
-                {% if judges.e4 != '' %}
-                    <div id="divE4"><span id="divJudgeDotE4" class="status-dot-small status-dot-red mr-1"></span> E4: {{judges.e4}}</div>
+                {% if judges != None %}
+                    {% if judges.d1 != '' %}
+                        <div id="divD1"><span id="divJudgeDotD1" class="status-dot-small status-dot-red mr-1"></span> D1: {{judges.d1}}</div>
+                    {% endif %}
+                    {% if judges.d2 != '' and has_d2 %}
+                        <div id="divD2"><span id="divJudgeDotD2" class="status-dot-small status-dot-red mr-1"></span> D2: {{judges.d2}}</div>
+                    {% endif %}
+                    {% if judges.e1 != '' %}
+                        <div id="divE1"><span id="divJudgeDotE1" class="status-dot-small status-dot-red mr-1"></span> E1: {{judges.e1}}</div>
+                    {% endif %}
+                    {% if judges.e2 != '' %}
+                        <div id="divE2"><span id="divJudgeDotE2" class="status-dot-small status-dot-red mr-1"></span> E2: {{judges.e2}}</div>
+                    {% endif %}
+                    {% if judges.e3 != '' %}
+                        <div id="divE3"><span id="divJudgeDotE3" class="status-dot-small status-dot-red mr-1"></span> E3: {{judges.e3}}</div>
+                    {% endif %}
+                    {% if judges.e4 != '' %}
+                        <div id="divE4"><span id="divJudgeDotE4" class="status-dot-small status-dot-red mr-1"></span> E4: {{judges.e4}}</div>
+                    {% endif %}
                 {% endif %}
             </div>
             <div id="divCameras">

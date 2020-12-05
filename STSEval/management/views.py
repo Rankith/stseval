@@ -23,6 +23,7 @@ def setup_competition(request):
     context = {
         'title': 'Competition Setup (1/6)',
         'discs': Disc.objects.all(),
+        'help':'competition_setup_1',
     }
     return render(request,'management/setup_competition.html',context)
 
@@ -123,6 +124,7 @@ def setup_judges(request,id):
         'session_name': session.full_name,
         'events':events,
         'id':session.id,
+        'help':'competition_setup_2',
     }
     return render(request,'management/setup_judges.html',context)
 
@@ -299,14 +301,42 @@ def create_start_List_direct(session_id):
         rotation_list.append(chr(rotation_ord)) #add this rotation to list and increment to next rotation letter
         rotation_ord = rotation_ord + 1
         sub_ath = athletes.filter(rotation__in=rotation_list) #get the starting rotations for this event in reverse order
+        ath_scratch = []
         for ath in sub_ath:
+            if e in ath.events_competing.all():
+                order = order + 1
+                sl = StartList(session=session,event=e,athlete=ath,order=order)
+                sl.save()
+            else:#add to scratched list
+                ath_scratch.append(ath)
+
+        for ath in ath_scratch: #now add the scratched ones after in order
             order = order + 1
-            sl = StartList(session=session,event=e,athlete=ath,order=order)
+            sl = StartList(session=session,event=e,athlete=ath,order=order,active=False)
             sl.save()
+
+        ath_scratch = []
+        prev_rot = ''
         sub_ath = athletes.exclude(rotation__in=rotation_list)#now all the rest
         for ath in sub_ath:
+            if prev_rot != ath.rotation:
+                for sath in ath_scratch: #now add the scratched ones after in order
+                    order = order + 1
+                    sl = StartList(session=session,event=e,athlete=sath,order=order,active=False)
+                    sl.save()
+                ath_scratch = []
+
+            prev_rot = ath.rotation
+            if e in ath.events_competing.all():
+                order = order + 1
+                sl = StartList(session=session,event=e,athlete=ath,order=order)
+                sl.save()
+            else:#add to scratched list
+                ath_scratch.append(ath)
+
+        for ath in ath_scratch: #add final scratches
             order = order + 1
-            sl = StartList(session=session,event=e,athlete=ath,order=order)
+            sl = StartList(session=session,event=e,athlete=ath,order=order,active=False)
             sl.save()
 
 def athlete_update_order(request):
