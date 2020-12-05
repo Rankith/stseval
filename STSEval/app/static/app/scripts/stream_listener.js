@@ -1,5 +1,4 @@
 var Stream = '';
-var BackupVideo = -1;
 var StreamListener;
 var StreamConnected = false;
 

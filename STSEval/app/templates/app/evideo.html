@@ -145,6 +145,7 @@
     var EJudgesDone = new Array();
     var NumJudges = 0;
     var CurrentAthlete = -1;
+    var BackupVideo = -1;
 
     var db = firebase.firestore();
     db.collection("sessions").doc(Session).collection("event_managers").doc(ev)
