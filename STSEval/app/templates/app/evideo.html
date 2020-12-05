@@ -108,7 +108,7 @@
 <script src= "https://player.twitch.tv/js/embed/v1.js"></script>
 <script src="{% static 'app/scripts/dots_area.js' %}?v=1"></script>
 <script type="module" src="{% static 'app/scripts/wowza/play.js' %}?v=1"></script>
-<script src="{% static 'app/scripts/stream_listener.js' %}"></script>
+<script src="{% static 'app/scripts/stream_listener.js' %}?v=1.24"></script>
 <script type="text/javascript">
     var Disc = "{{disc}}";
     var ev = "{{event}}";
@@ -146,6 +146,7 @@
     var NumJudges = 0;
     var CurrentAthlete = -1;
     var BackupVideo = -1;
+    var Overview = false;
 
     var db = firebase.firestore();
     db.collection("sessions").doc(Session).collection("event_managers").doc(ev)

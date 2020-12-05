@@ -4,7 +4,7 @@ var StreamConnected = false;
 
 function CheckStream(doc) {
     console.log("Check Stream");
-    if (doc.data().video == -1) {
+    if (doc.data().video == -1 || Overview) {
         BackupVideo = -1;
         $("#video-playback").hide();
         $("#play-video-container").addClass("d-flex");
