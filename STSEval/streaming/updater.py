@@ -6,13 +6,21 @@ from app.models import Routine,BackupVideo
 import app.firebase
 from django.conf import settings
 import os
+import sys, socket
 
 def start():
-    scheduler = BackgroundScheduler()
-    scheduler.add_job(check_and_stop_streams, 'interval', seconds=20)
-    scheduler.add_job(check_convert_video, 'interval', seconds=20)
-    #scheduler.add_job(check_update_wowza_player, 'interval', seconds=5)
-    scheduler.start()
+    try: #stupid hack for not multiple schedulers running
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.bind(("127.0.0.1", 47200))
+    except socket.error:
+        print("!!!scheduler already started, DO NOTHING")
+    else:
+        scheduler = BackgroundScheduler()
+        scheduler.add_job(check_and_stop_streams, 'interval', seconds=20)
+        scheduler.add_job(check_convert_video, 'interval', seconds=20)
+        #scheduler.add_job(check_update_wowza_player, 'interval', seconds=5)
+        scheduler.start()
+        print("scheduler started")
 
 
 def convert_backup_video(bv):
