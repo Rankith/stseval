@@ -102,12 +102,12 @@ def d1(request):
 
 def view_routine(request,routine_id,popup):
     routine = Routine.objects.get(pk=routine_id)
-    event = routine.event
+    event = routine.event.name
     session_id = routine.session.id
-    judges = Judge.objects.filter(session_id=session_id,event__name=event)
+    judges = Judge.objects.filter(session_id=session_id,event=routine.event)
     athletes = Athlete.objects.filter(team__session_id=session_id)
     session = routine.session
-    if routine.video_file.name == None: #just a check for old stuff
+    if routine.video_file.name == None or routine.video_file.name == '': #just a check for old stuff
         video_file='/media/routine_videos/' + str(routine.id)
     else:
         video_file=os.path.splitext(routine.video_file.url)[0]
@@ -142,7 +142,7 @@ def d1_edit_score(request,routine_id):
     event = routine.event
     loadroutine = ''
     if 'd1' in request.session.get('type'):#d1 can edit if its their event
-        if request.session.get('event','').lower() == event.lower():
+        if request.session.get('event','').lower() == event.name.lower():
             loadroutine = routine
     elif 'admin' in request.session.get('type'):#admin can always edit
         loadroutine = routine
@@ -178,30 +178,32 @@ def routine_setup(request):
 def routine_swap_d(request):
     #update this routine and check if it should swap
     routine = Routine.objects.get(pk=request.POST.get('routine'))
-    sl = StartList.objects.filter(session=routine.session,event__name=routine.event,athlete=routine.athlete).first()
+    sl = StartList.objects.filter(session=routine.session,event=routine.event,athlete=routine.athlete).first()
     sl.secondary_judging=True
     sl.save()
 
-    sl = athlete_get_next_do(routine.event,routine.session.id)
+    sl = athlete_get_next_do(routine.event.name,routine.session.id)
     if sl != None:
         next_rotation = sl.athlete.rotation
     else:
         next_rotation = ''
-    judges = Judge.objects.filter(session=routine.session,event__name=routine.event).first()
+    judges = Judge.objects.filter(session=routine.session,event=routine.event).first()
     if judges.d2_email != '' and next_rotation == routine.athlete.rotation:
         #d2 was filled out and this wasnt last gymnast in rotation, swap d judges
         if routine.d_judge == 'D1':
             next_judge = 'D2'
         else:
             next_judge = 'D1'
-        camera = Camera.objects.filter(teams=sl.athlete.team,events__name=routine.event).first()
-        app.firebase.routine_setup(routine.session,routine.event,sl.athlete,camera.id,next_judge)
-        app.firebase.routine_set_status(routine.session.id,routine.event,routine)
+        camera = Camera.objects.filter(teams=sl.athlete.team,events=routine.event).first()
+        app.firebase.routine_setup(routine.session,routine.event.name,sl.athlete,camera.id,next_judge)
+        app.firebase.routine_set_status(routine.session.id,routine.event.name,routine)
 
     return HttpResponse(status=200)
 
 def routine_start_judging(request):
-    routine = Routine(session_id=request.session.get('session'),disc=request.session.get('disc'),event=request.session.get('event'),athlete_id=request.POST.get('athlete'),d_judge=request.POST.get('djudge','D1'))
+    session = Session.objects.get(pk=request.session.get('session'))
+    event = Event.objects.filter(name=request.session.get('event'),disc=session.competition.disc).first()
+    routine = Routine(session_id=request.session.get('session'),disc=request.session.get('disc'),event=event,athlete_id=request.POST.get('athlete'),d_judge=request.POST.get('djudge','D1'))
     judges = Judge.objects.filter(session_id=request.session.get('session'),event__name=request.session.get('event')).first()
     routine.e1_name = judges.e1
     routine.e2_name = judges.e2
@@ -224,7 +226,7 @@ def routine_start_judging(request):
     return JsonResponse(resp)
 
 def routine_athlete_done(request):
-    routine = Routine.objects.filter(session_id=request.session.get('session'),disc=request.session.get('disc'),event=request.session.get('event')).order_by('-id').first()
+    routine = Routine.objects.filter(session_id=request.session.get('session'),disc=request.session.get('disc'),event__name=request.session.get('event')).order_by('-id').first()
     routine.status = Routine.ATHLETE_DONE
 
     #try:
@@ -255,7 +257,7 @@ def routine_ejudge_done(request):
         routine.e4_done = True
 
     routine.save()
-    app.firebase.routine_set_ejudge_done(str(routine.session.id),routine.event,judge,True)
+    app.firebase.routine_set_ejudge_done(str(routine.session.id),routine.event.name,judge,True)
 
     return HttpResponse(status=200)
 
@@ -265,10 +267,10 @@ def routine_delete(request):
 
     routine.save()
 
-    if os.path.exists(settings.MEDIA_ROOT + '/routine_videos/' + str(routine.session.id) + '/' + routine.event + '/' + routine.athlete.name.replace(" ","") + "_" + str(routine.id) + '.webm'):
-        os.remove(settings.MEDIA_ROOT + '/routine_videos/' + str(routine.session.id) + '/' + routine.event + '/' + routine.athlete.name.replace(" ","") + "_" + str(routine.id) + '.webm')
+    if os.path.exists(settings.MEDIA_ROOT + '/routine_videos/' + str(routine.session.id) + '/' + routine.event.name + '/' + routine.athlete.name.replace(" ","") + "_" + str(routine.id) + '.webm'):
+        os.remove(settings.MEDIA_ROOT + '/routine_videos/' + str(routine.session.id) + '/' + routine.event.name + '/' + routine.athlete.name.replace(" ","") + "_" + str(routine.id) + '.webm')
 
-    app.firebase.routine_set_status(str(routine.session.id),routine.event,routine)
+    app.firebase.routine_set_status(str(routine.session.id),routine.event.name,routine)
 
     return HttpResponse(status=200)
 
@@ -284,14 +286,14 @@ def routine_finished(request):
     if routine.video_from_backup:
         routine.video_saved = True
         routine.video_converted = True
-        bv = BackupVideo.objects.filter(session=routine.session,athlete=routine.athlete,event__name=routine.event).first()
+        bv = BackupVideo.objects.filter(session=routine.session,athlete=routine.athlete,event=routine.event).first()
         if bv != None:
             routine.video_file.name = bv.video_file.name
             bv.reviewed = True
             bv.save()
     
     routine.save()
-    app.firebase.routine_set_status(str(routine.session.id) ,routine.event,routine)
+    app.firebase.routine_set_status(str(routine.session.id) ,routine.event.name,routine)
 
     return HttpResponse(status=200)
 
@@ -355,14 +357,14 @@ def routine_set_score(request):
     if routine.status == Routine.ATHLETE_DONE:
         routine.status = Routine.REVIEW_DONE
         routine.save()
-        app.firebase.routine_set_status(str(routine.session.id),routine.event,routine)
+        app.firebase.routine_set_status(str(routine.session.id),routine.event.name,routine)
     else:
         routine.save()
 
     return HttpResponse(status=200)
 
 def get_last_routine_status(request):
-    return JsonResponse(Routine.objects.values().filter(session_id=request.POST.get('session'),d_judge=request.POST.get('this_judge'),event=request.POST.get('event')).order_by('-id').first(),safe=False)
+    return JsonResponse(Routine.objects.values().filter(session_id=request.POST.get('session'),d_judge=request.POST.get('this_judge'),event__name=request.POST.get('event')).order_by('-id').first(),safe=False)
 
 def set_judges_participating(request):
     if request.POST.get('routine') != '-1':
@@ -373,7 +375,7 @@ def set_judges_participating(request):
         routine.e4_include = bool(distutils.util.strtobool(request.POST.get('e4')))
     
         routine.save()
-        app.firebase.routine_set_ejudge_include(str(routine.session.id) , routine.event,routine)
+        app.firebase.routine_set_ejudge_include(str(routine.session.id) , routine.event.name,routine)
     return HttpResponse(status=200)
 
 def set_judge_ready(request,session_id):
@@ -461,7 +463,7 @@ def deduct(request):
     if relative_time == -1:
         relative_time = mili - routine.start_time
 
-    if routine.athlete_done_time != None and routine.event != 'V' and routine.routine_length() < relative_time:
+    if routine.athlete_done_time != None and routine.event.name != 'V' and routine.routine_length() < relative_time:
         relative_time = routine.routine_length()-50
     
 
@@ -558,7 +560,7 @@ def build_dots(request):
                 posx = (dot_size/8)
                 posx = posx + ((dot_size + (dot_size/8))*artistry_amounts[j_offset])
                 artistry_amounts[j_offset] += 1
-            elif routine.event == "V":
+            elif routine.event.name == "V":
                 posx = int(str(d.time_stamp_relative)[0]) - 1 #get first digit and subtract one
                 posx = posx * ((width)/4)#multiply by 1/4 the total width
                 if posx == 0:
@@ -675,7 +677,7 @@ def accountability_report(request):
     return render(request,'app/accountability_report.html',context)
 
 def get_routines_by_SE(request):
-    routines = Routine.objects.values('athlete__name','athlete__team__name','athlete__level__name','id','score_e1','score_e2','score_e3','score_e4','score_e','score_d','score_final','score_neutral').filter(session_id=request.POST.get('Session'),event=request.POST.get('Ev'),status=Routine.FINISHED).order_by('id')
+    routines = Routine.objects.values('athlete__name','athlete__team__name','athlete__level__name','id','score_e1','score_e2','score_e3','score_e4','score_e','score_d','score_final','score_neutral').filter(session_id=request.POST.get('Session'),event__name=request.POST.get('Ev'),status=Routine.FINISHED).order_by('id')
 
     return JsonResponse(list(routines),safe=False)
 
@@ -768,7 +770,7 @@ def video_scoreboard(request):
 
 def calc_team_scores(session,event=''):
     if event != '':
-        routines = Routine.objects.filter(session_id=session,event=event,status=Routine.FINISHED).order_by('athlete__team','athlete__level','-score_final')
+        routines = Routine.objects.filter(session_id=session,event__name=event,status=Routine.FINISHED).order_by('athlete__team','athlete__level','-score_final')
     else:
         routines = Routine.objects.filter(session_id=session,status=Routine.FINISHED).order_by('athlete__team','athlete__level','-score_final')
     team = ""
@@ -783,7 +785,7 @@ def calc_team_scores(session,event=''):
             count = 0
             team = routine.athlete.team.name
             level = routine.athlete.level.name
-        if count < max and routine.athlete.events_count_for_team.filter(name=routine.event).exists(): #fix routines to have actual event link not a freaking char field
+        if count < max and routine.athlete.events_count_for_team.filter(name=routine.event.name).exists(): #fix routines to have actual event link not a freaking char field
             count += 1
             scores[-1]['score'] += routine.score_final
             scores[-1]['score'] = round(scores[-1]['score'],2)
@@ -921,8 +923,8 @@ def athlete_start_list_swap_do(request):
     sl_target.save()
     
     #find routine on this event and swap
-    rot_orig_swap_ids = list(Routine.objects.filter(athlete=sl_orig.athlete,event=sl_orig.event.name,session=sl_orig.session,status=Routine.FINISHED).values_list('id',flat=True))
-    rot_target_swap_ids = list(Routine.objects.filter(athlete=sl_target.athlete,event=sl_target.event.name,session=sl_target.session,status=Routine.FINISHED).values_list('id',flat=True))
+    rot_orig_swap_ids = list(Routine.objects.filter(athlete=sl_orig.athlete,event=sl_orig.event,session=sl_orig.session,status=Routine.FINISHED).values_list('id',flat=True))
+    rot_target_swap_ids = list(Routine.objects.filter(athlete=sl_target.athlete,event=sl_target.event,session=sl_target.session,status=Routine.FINISHED).values_list('id',flat=True))
     Routine.objects.filter(id__in=rot_orig_swap_ids).update(athlete=sl_target.athlete)
     Routine.objects.filter(id__in=rot_target_swap_ids).update(athlete=sl_orig.athlete)
 
@@ -953,7 +955,7 @@ def athlete_routine_remove(request):
     sl_orig.secondary_judging = False
     sl_orig.save()
 
-    Routine.objects.filter(athlete=sl_orig.athlete,event=sl_orig.event.name,session=sl_orig.session,status=Routine.FINISHED).delete()
+    Routine.objects.filter(athlete=sl_orig.athlete,event=sl_orig.event,session=sl_orig.session,status=Routine.FINISHED).delete()
 
     athlete_start_list_change_check_manager(sl_orig.session.id,sl_orig.event.name)
     app.firebase.update_start_list(sl_orig.session.id,sl_orig.event.name)
@@ -1036,14 +1038,14 @@ def athlete_mark_done_get_next(request,athlete_id):
 def save_video(request):
     routine = Routine.objects.get(pk=request.POST.get('video-filename').replace(".webm",""))
     
-    vidfile = settings.MEDIA_ROOT + '/routine_videos/' + str(routine.session.id) + '/' + routine.event + '/' + routine.athlete.name.replace(" ","") + "_" + request.POST.get('video-filename')
+    vidfile = settings.MEDIA_ROOT + '/routine_videos/' + str(routine.session.id) + '/' + routine.event.name + '/' + routine.athlete.name.replace(" ","") + "_" + request.POST.get('video-filename')
     output = open(vidfile, 'wb+')
     #output.write(request.FILES.get('video-blob').file.read())
     for chunk in request.FILES['video-blob'].chunks():
         output.write(chunk)
     output.close()
     routine.video_saved = True
-    routine.video_file.name = 'routine_videos/' + str(routine.session.id) + '/' + routine.event + '/' + routine.athlete.name.replace(" ","") + "_" + request.POST.get('video-filename')
+    routine.video_file.name = 'routine_videos/' + str(routine.session.id) + '/' + routine.event.name + '/' + routine.athlete.name.replace(" ","") + "_" + request.POST.get('video-filename')
     routine.save()
     #os.system("ffmpeg -i {0} -c:v libx264 -profile:v main -vf format=yuv420p -c:a aac -movflags +faststart {1}".format(vidfile,vidfile.replace("webm","mp4")))
     #routine.video_converted = True

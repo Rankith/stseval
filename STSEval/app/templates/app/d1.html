@@ -319,7 +319,9 @@
             //SetAthleteDisplay();
             console.log("snapshot");
             JudgeOnFirebase = doc.data().djudge;
-            if (doc.data().djudge == DType && (Status == status.DELETED || Status == status.FINISHED || Status == "" || Status == status.NEW)) {
+            if (JudgeOnFirebase == undefined)
+                JudgeOnFirebase = "D1";
+            if (JudgeOnFirebase == DType && (Status == status.DELETED || Status == status.FINISHED || Status == "" || Status == status.NEW)) {
                 console.log("same judge and status");
                 PrevRotation = doc.data().rotation;
                 CheckAthlete(doc);
@@ -430,7 +432,9 @@
             //cascade status so it does them in order.
             LoadFrom = "active";
             JudgeOnFirebase = doc_data.djudge;
-            if (doc_data.djudge == DType) {
+            if (JudgeOnFirebase == undefined)
+                JudgeOnFirebase = "D1";
+            if (JudgeOnFirebase == DType) {
                 //Status = doc_data.status;
                 PrevRotation = doc_data.rotation;
                 if (doc_data.status == status.NEW || doc_data.status == status.STARTED || doc_data.status == status.ATHLETE_DONE || doc_data.status == status.REVIEW_DONE) {
@@ -833,6 +837,7 @@
         else {
             if (CheckJudgesReady() || Syncing) {
                 RoutineStartJudging();
+                $("#btnStartJudging").addClass('ui-disabled');
                 //video starts in routinestartjudging call
                 $("#btnExerciseDone").removeClass('ui-disabled');
                 $("#btnFallTimer").removeClass('ui-disabled');

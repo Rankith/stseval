@@ -21,7 +21,7 @@ class StreamMarkers(models.Model):
 class Routine(models.Model):
     session = models.ForeignKey(Session, on_delete=models.CASCADE,default=None,null=True)
     disc = models.CharField(max_length=10)
-    event = models.CharField(max_length=10)
+    event = models.ForeignKey(Event, on_delete=models.SET_NULL,blank=True,null=True)
     athlete = models.ForeignKey(Athlete, on_delete=models.SET_NULL,null=True)
     NEW = 'N'
     STARTED = 'S'
