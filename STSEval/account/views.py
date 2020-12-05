@@ -37,10 +37,11 @@ def login_admin(request,type='spectator'):
                 login(request, user,backend='django.contrib.auth.backends.ModelBackend')
                 request.session['type'] = request.session.get('type','') + ',' + type
                 request.session['email'] = email
-                request.session['backup_video_manage'] = True
+                
                 #request.session['chat_name'] = user.first_name + " " + user.last_name
                 if type == "admin":
                     request.session['chat_name'] = "Meet Administrator"
+                    request.session['backup_video_manage'] = True
                     return redirect('/management/setup_competition/')
                 else:
                     return redirect('/select_session/')

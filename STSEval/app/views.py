@@ -1219,6 +1219,8 @@ def backup_video_manage(request,session_id):
         if request.session.get('session') != session_id:
             return HttpResponse(status=403)
         team_restriction=request.session['team']
+    else:
+        return HttpResponse(status=403)
     return render(request, 'app/backup_video_manage.html', {'session':session,'team_restriction':team_restriction})
 
 def backup_video_list(request,session_id,team_restriction):
