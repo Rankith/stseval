@@ -43,7 +43,8 @@
 		    <div id="divAthleteButtonsArea">
 		        <button href="#" id="btnAthAdd"   type="button" class="btn btn-main management-button"  data-toggle="modal" data-target="#modalMain" onclick="AddAthleteStart()">Add</button>
 		        <button href="#" id="btnAthEdit"  type="button" class="btn btn-main management-button ui-disabled" data-toggle="modal" data-target="#modalMain" onclick="EditAthleteStart()">Edit</button>
-		        <button href="#" id="btnAthDelete"   type="button" class="btn btn-red management-button ui-disabled" onclick="AthleteDelete()">Delete</button>
+		        <button href="#" id="btnAthDelete"   type="button" class="btn btn-red management-button ui-disabled" onclick="AthleteDelete()">Delete</button><br/>
+                <button href="#" id="btnAthImport"   type="button" class="btn btn-main management-button"  data-toggle="modal" data-target="#modalMain" onclick="ImportAthleteStart()">Import</button>
 	        </div>
 	    </div>
     </div>
@@ -225,6 +226,30 @@
         });
     }
 
+    function AttachImportForm() {
+        var frm = $('#form');
+        //$("#id_team").val(SelectedTeam);
+        $("#id_session").val(SessionID);
+        frm.submit(function () {
+            console.log("forming");
+            $.ajax({
+                type: frm.attr('method'),
+                url: frm.attr('action'),
+                data: new FormData(document.getElementById("form")),
+                contentType: false,
+                processData: false,
+                success: function (data) {
+                    alert(data);
+                    AthleteImportFinishParent();
+
+                },
+                error: function(data) {
+                }
+            });
+            return false;
+        });
+    }
+
     function TeamManageFinishParent() {
         $("#modalMain").modal('hide');
         $("#divTeamList").load("/management/team_list/" + SessionID, function () {
@@ -237,6 +262,27 @@
         
     }
 
+    function ImportAthleteStart() {
+        $("#modalMainDoc").addClass("modal-lg");
+        $("#modalMainTitle").html("IMPORT ATHLETES");
+        $(".modal-dialog")
+        $("#modalBodyArea2").hide();
+        $("#modalBodyArea1").empty();
+        $("#modalBodyArea1").load("/management/athlete_list_upload/?session=" + SessionID, function () {
+            AttachImportForm();
+        });
+
+        $("#modalBodyArea1").show();
+    }
+     function AthleteImportFinishParent() {
+        $("#modalMain").modal('hide');
+         $("#divAthleteList").load("/management/athlete_list/" + SessionID, function () {
+             Sortable.create(divAthleteList, { onEnd: SortEnd });
+             UpdateAthleteOrder();
+             SelectedAthlete = -1
+        });
+        
+    }
     function AddAthleteStart() {
         $("#modalMainDoc").addClass("modal-lg");
         $("#modalMainTitle").html("ADD ATHLETE");
@@ -274,6 +320,8 @@
         });
         
     }
+
+    
 
     function AthleteDelete() {
         if (SelectedAthlete != -1) {

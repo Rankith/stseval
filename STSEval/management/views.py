@@ -4,14 +4,15 @@ from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 import datetime
-from .forms import CompetitionForm,SessionForm,JudgeForm,TeamForm,AthleteForm,CameraForm,SponsorForm
-from .models import Competition,Session,Athlete,Judge,Team,Disc,Event,Camera,Sponsor,StartList
+from .forms import CompetitionForm,SessionForm,JudgeForm,TeamForm,AthleteForm,CameraForm,SponsorForm,AthleteListUploadForm
+from .models import Competition,Session,Athlete,Judge,Team,Disc,Event,Camera,Sponsor,StartList,AthleteLevel
 from django.core.mail import send_mail
 from django.contrib.auth.decorators import login_required,user_passes_test
 from django.db.models import Count
 from django.core.mail import get_connection, EmailMultiAlternatives
 import app.views
 from django.db.models import Q
+import django_excel as excel
 
 # Create your views here.
 @login_required(login_url='/account/login/admin/')
@@ -262,6 +263,45 @@ def athlete_delete(request,id):
     Athlete.objects.filter(id=id).delete()
     return HttpResponse(status=200)
 
+def athlete_list_upload(request):
+    if request.method == "POST":
+        form = AthleteListUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            session = Session.objects.get(pk=request.POST.get('session'))
+            athdict = request.FILES["file"].get_dict()
+            #athdict = athdict[list(athdict.keys())[0]]
+            res = import_athletes(session,athdict)
+            return HttpResponse(res)
+    else:
+        form = AthleteListUploadForm()
+    return render(request,"management/athlete_list_upload_form.html",
+        {
+            "form": form,
+        },
+    )
+
+def import_athletes(session,ath_dict):
+    teams = Team.objects.filter(session=session)
+    teams_found = []
+    for i in range(len(ath_dict['Name'])):
+        team = teams.filter(Q(name=ath_dict['Team'][i]) | Q(abbreviation=ath_dict['Team'][i])).first()
+        if team == None:
+            return "Could not find corresponding team " + ath_dict['Team'][i] + " for " + ath_dict['Name'][i] + ".  Make sure the Team column matches the name or abbreviation you entered for the team."
+        else:
+            level = AthleteLevel.objects.filter(Q(name=ath_dict['Level'][i]) | Q(abbreviation=ath_dict['Level'][i])).first()
+            if level == None:
+                return "Could not find corresponding level " + ath_dict['Level'][i] + " for " + ath_dict['Name'][i] + ".  Make sure the Level column matches the name of an athlete level."
+            if team.name not in teams_found:
+                teams_found.append(team.name)
+                Athlete.objects.filter(team=team).delete()
+            ath = Athlete(team=team,name=ath_dict['Name'][i],level=level,rotation=ath_dict['Rotation'][i].upper(),order=i+1)
+            ath.save()
+    return "Athletes Imported."
+
+
+
+
+
 def start_list_warn(request):
     return render(request,'management/start_list_warn.html')
 
@@ -269,7 +309,7 @@ def start_list_warn(request):
 def create_start_lists(request,session_id):
     if len(StartList.objects.filter(session_id=session_id,completed=True)) <= 0:
         create_start_List_direct(session_id)
-        message = "Start lists generated."
+        message = "Start lists generated.  Further changes can be made on the Session Overview screen."
     else:
         message = "Session in progress, make any changes on the Session Overview screen."
 

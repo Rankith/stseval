@@ -194,3 +194,7 @@ class SponsorForm(ModelForm):
         else:
             raise forms.ValidationError("Couldn't read uploaded image")
            
+
+class AthleteListUploadForm(forms.Form):
+    file = forms.FileField(widget=forms.FileInput(attrs={'accept':'.csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}))
+    session = forms.CharField(widget=forms.HiddenInput())

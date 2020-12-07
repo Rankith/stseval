@@ -1,0 +1,16 @@
+{% load staticfiles %}
+<form id="form" action="/management/athlete_list_upload/" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div>You can upload a excel document (.xlsx) or CSV file to populate the athlete list.  The required fields are:<br/>Team Level Name Rotation<br/><br/>
+    Team must match the name or abbreviation for a team you have entered.<br/>
+    Level must match one of the available athlete levels (you can view these by clicking "Add" in the athlete section).<br/><br/>
+    <a href="{% static 'app/example_athlete_import.xlsx' %}">Click here to download a sample excel sheet</a>
+    <br/><br/>
+    </div>
+        File<br/>
+        {{ form.file }}<br/>
+        {{form.session}}
+           <br/>
+        <input type="submit" href="#" id="btnImportFinish" class="btn btn-main" value="Import">
+        <button href="#" id="btnImportCancel" type="button" class="btn btn-red" data-dismiss="modal">Cancel</button>
+</form>

@@ -31,7 +31,7 @@
         <button id="btnActivate" type="button" class="btn-main btn-wide pt-4 pb-4" style="border-radius: 1rem;" onclick="Activate()">Activate</button>
     </div>
     {% endif %}
-     <button id="btnSessionOverview" type="button" class="btn-main btn-wide pt-4 pb-4" style="border-radius: 1rem;{% if not session_active %}display:none{% endif %}" onclick="Activate()">Session<br/>Overview</button>
+     <button id="btnSessionOverview" type="button" class="btn-main btn-wide pt-4 pb-4" style="border-radius: 1rem;{% if not session_active %}display:none{% endif %}" onclick="btnSessionOverviewClick()">Session<br/>Overview</button>
     <br/>
     <br/>
     <div>
@@ -77,6 +77,10 @@
         });
        
 
+    }
+
+    function btnSessionOverviewClick() {
+            window.location = "/overview/" + SessionID;
     }
 
     function GoBack() {
