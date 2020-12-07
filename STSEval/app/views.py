@@ -1250,7 +1250,8 @@ def backup_video_list(request,session_id,team_restriction):
 
 def backup_video_delete(request,backup_video_id):
     bv = BackupVideo.objects.filter(pk=backup_video_id).first()
-    if bv.reviewed:
+    routine = Routine.objects.filter(session=bv.session,video_file=bv.video_file).first()
+    if routine != None:
         return JsonResponse({'status':'reviewed'})
     else:
         try:

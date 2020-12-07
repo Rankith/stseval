@@ -12,3 +12,5 @@ boto3
 requests
 apscheduler
 pillow
+pyexcel-xlsx
+django-excel
