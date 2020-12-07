@@ -40,7 +40,10 @@ def competition_list_all(request):
     if request.GET.get('current','0') == '0':
         comps = Competition.objects.filter(disc=request.GET.get('disc'))
     else:
-        comps = Competition.objects.filter(disc=request.GET.get('disc'),date__gte=datetime.datetime.now() - datetime.timedelta(days=30),session__finished=False,session__active=True).distinct()
+        if request.user.is_staff:
+            comps = Competition.objects.filter(disc=request.GET.get('disc'),date__gte=datetime.datetime.now() - datetime.timedelta(days=30),session__finished=False,session__active=True).distinct()
+        else:
+            comps = Competition.objects.filter(disc=request.GET.get('disc'),date__gte=datetime.datetime.now() - datetime.timedelta(days=30),session__finished=False,session__active=True,session__test=False).distinct()
 
     context = {
         'comps':comps,
