@@ -5,7 +5,7 @@ from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 import datetime
 from .forms import CompetitionForm,SessionForm,JudgeForm,TeamForm,AthleteForm,CameraForm,SponsorForm,AthleteListUploadForm
-from .models import Competition,Session,Athlete,Judge,Team,Disc,Event,Camera,Sponsor,StartList,AthleteLevel
+from .models import Competition,Session,Athlete,Judge,Team,Disc,Event,Camera,Sponsor,StartList,AthleteLevel,RotationOrder
 from django.core.mail import send_mail
 from django.contrib.auth.decorators import login_required,user_passes_test
 from django.db.models import Count
@@ -24,7 +24,7 @@ def setup_competition(request):
     context = {
         'title': 'Competition Setup (1/6)',
         'discs': Disc.objects.all(),
-        'help':'competition_setup_1',
+        'help':'competition_setup_competition',
     }
     return render(request,'management/setup_competition.html',context)
 
@@ -131,7 +131,7 @@ def setup_judges(request,id):
         'session_name': session.full_name,
         'events':events,
         'id':session.id,
-        'help':'competition_setup_2',
+        'help':'competition_setup_judges',
     }
     return render(request,'management/setup_judges.html',context)
 
@@ -195,7 +195,7 @@ def setup_athletes(request,id):
         'session_name': session.full_name,
         'id':session.id,
         'rotation_note':rotation_note,
-        'help':'competition_setup_3',
+        'help':'competition_setup_athletes',
     }
     return render(request,'management/setup_athletes.html',context)
 
@@ -310,10 +310,6 @@ def import_athletes(session,ath_dict):
             
     return "Athletes Imported."
 
-
-
-
-
 def start_list_warn(request):
     return render(request,'management/start_list_warn.html')
 
@@ -402,6 +398,56 @@ def athlete_update_order(request):
 
     return HttpResponse(status=200)
 
+@login_required(login_url='/account/login/admin/')
+def setup_rotations(request,id):
+    session = Session.objects.get(pk=id)
+    events = Event.objects.filter(disc=session.competition.disc).order_by('display_order')
+    athletes = Athlete.objects.filter(team__session=session)
+    #check to see if any exist
+    rotation_check_generate_initial(session)
+    rot_ords = RotationOrder.objects.filter(session=session)
+    context = {
+        'title': 'Competition Setup (4/7)',
+        'session_name': session.full_name,
+        'id':session.id,
+        'help':'competition_setup_rotation',
+        'rot_ords':rot_ords,
+        'rotations': athletes.values_list('rotation',flat=True).distinct()
+    }
+    return render(request,'management/setup_rotations.html',context)
+
+def rotation_check_generate_initial(session):
+    events = Event.objects.filter(disc=session.competition.disc).order_by('display_order')
+    athletes = Athlete.objects.filter(team__session=session)
+    rotations = athletes.values_list('rotation',flat=True).distinct()
+    rot_ords = RotationOrder.objects.filter(session=session)
+    rotation_ord_base = ord('A')
+    for r in rotations:
+        if len(rot_ords.filter(rotation=r)) == 0:
+            this_rot_ord = ord(r) - rotation_ord_base #get the number to increment
+            order = 1
+            #now do the start and then remainder of the queryset
+            for e in events[this_rot_ord:]:
+                ro = RotationOrder(session=session,order=order,rotation=r,event=e)
+                ro.save()
+                order = order + 1
+            for e in events[:this_rot_ord]:
+                ro = RotationOrder(session=session,order=order,rotation=r,event=e)
+                ro.save()
+                order = order + 1
+
+def rotation_update_order(request):
+    session = Session.objects.get(pk=request.POST.get('session'))
+    rots = request.POST.get('rot_order').split(',')
+    rot_letter = request.POST.get('rot_letter')
+    events = Event.objects.filter(disc=session.competition.disc).order_by('display_order')
+    rotations = RotationOrder.objects.filter(session=session,rotation=rot_letter)
+
+    for index, val in enumerate(rotations,start=0):
+        val.event = events.get(pk=rots[index])
+        val.save()
+
+    return HttpResponse(status=200)
 
 @login_required(login_url='/account/login/admin/')
 def setup_cameras(request,id):
@@ -410,7 +456,7 @@ def setup_cameras(request,id):
         'title': 'Competition Setup (4/6)',
         'session_name': session.full_name,
         'id':session.id,
-        'help':'competition_setup_4',
+        'help':'competition_setup_cameras',
     }
     return render(request,'management/setup_cameras.html',context)
 
@@ -482,7 +528,7 @@ def setup_sponsors(request,id):
         'title': 'Competition Setup (5/6)',
         'session_name': session.full_name,
         'id':session.id,
-        'help':'competition_setup_5',
+        'help':'competition_setup_sponsors',
     }
     return render(request,'management/setup_sponsors.html',context)
 
@@ -545,7 +591,7 @@ def setup_finish(request,id):
         'missed_camera':missed_camera,
         'setup_complete':setup_complete,
         'session_active':session.active,
-        'help':'competition_setup_6',
+        'help':'competition_setup_finish',
     }
     return render(request,'management/setup_finish.html',context)
 

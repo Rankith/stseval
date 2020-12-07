@@ -1,0 +1,124 @@
+{% extends "app/layout.html" %}
+{% load staticfiles %}
+{% block content %}
+<div align="center" style="margin:10px;padding:0">
+    {{session_name}}<br/>
+    <div>
+        <div id="divRotationsHeader" style="padding-bottom:5px;font-size:22px;font-weight:bold;text-align:center">Rotations <span style="font-size:12px;font-weight:normal">(drag to order)</span></div>
+        <div class="d-flex justify-content-center">
+        {% for rot in rot_ords %}
+            {% ifchanged rot.rotation %}
+                {% if not forloop.first %}
+                    </div>
+                    </div>
+                {% endif %}
+                <div align="center" class="pr-4">
+                    {{ rot.rotation }}
+                    <div id="divRot{{rot.rotation}}" class="listbox sortable rot-list-{{rot.rotation}}" rotletter="{{rot.rotation}}" style="width:50px">
+            {% endifchanged %}
+                        <div style="cursor:pointer" id="divRot{{rot.rotation}}{{rot.event.name}}" rotevent="{{rot.event.id}}" title="{{rot.event.full_name}}">{{rot.event.name}}</div> 
+        {% endfor %}
+        </div></div></div>
+    </div>
+    
+    <br/>
+    <div id="divRotationNote"  style="font-size:.85rem">Once your rotations are set in the correct order, use the button below to create the start lists.</div><br/>
+    <button href="#" id="btnGenStartList" type="button" class="btn btn-main management-button" onclick="GenerateStartListClick()">Generate Start Lists</button>
+    <br/>
+    <div>
+        <button id="btnBack" type="button" class="btn-main pt-4 pb-4" style="border-radius: 1rem;" onclick="GoBack()">Return to<br/>Previous Page</button>
+        <button id="btnNext" type="button" class="btn-main pt-4 pb-4" style="border-radius: 1rem;" onclick="NextClick()">Save and<br/>Continue (3/6)</button>
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'app/scripts/sortable.min.js' %}?v=1.1"></script>
+<script type="text/javascript">
+    var token = "{{ csrf_token }}";
+    var SessionID = "{{id}}";
+    function SortEnd(evt) {
+        UpdateRotationOrder(evt.to);
+    }
+    {% for rot in rotations %}
+       Sortable.create(divRot{{rot}}, { onEnd: SortEnd });
+    {% endfor %}
+</script>
+<script type="text/javascript">
+    var Changed = false;
+
+   
+    function GoBack() {
+        window.location = "/management/setup_athletes/" + SessionID;
+    }
+
+    function NextClick() {
+        window.location = "/management/setup_cameras/" + SessionID;
+    }
+
+    function GenerateStartListClick() {
+        CheckStartList();
+    }
+
+    function GenerateStartList() {
+        $.ajax({
+            url: "/management/create_start_lists/" + SessionID,
+            dataType: 'json',
+            success: function (data) {
+                alert(data.message);
+                //$("#btnNext").addClass("ui-disabled");
+            }
+        });
+
+    }
+
+    function CheckStartList() {
+        $.ajax({
+            url: "/management/check_start_lists/" + SessionID,
+            dataType: 'json',
+            success: function (data) {
+                if (data.message == "ok")
+                    GenerateStartList();
+                else if (data.message == "live")
+                    alert("Session in progress, make any changes on the Session Overview screen.");
+                else
+                    ConfirmStartListGenerate();
+            }
+        });
+
+    }
+
+    function ConfirmStartListGenerate() {
+        $("#modalMainDoc").removeClass("modal-lg");
+        $("#modalMainTitle").html("Generate Start List");
+        $("#modalBodyArea2").hide();
+        $("#modalBodyArea1").empty();
+        $("#modalBodyArea1").load("/management/start_list_warn/")
+        $("#modalMain").modal('show');
+    }
+
+    function UpdateRotationOrder(rot) {
+        let rotletter = $(rot).attr("rotletter")
+        let RotList = "";
+        $(rot).children("div").each(function () {
+            RotList += "," + $(this).attr("rotevent");
+        });
+        RotList = RotList.substring(1);
+        $.ajax({
+            url: '/management/rotation_update_order/',
+            data: {
+                'session': SessionID,
+                'rot_order': RotList,
+                'rot_letter': rotletter
+            },
+            headers: { "X-CSRFToken": token },
+            type: 'POST',
+            success: function (data) {
+            }
+        });
+    }
+
+</script>
+{% endblock %}

@@ -150,3 +150,11 @@ class Sponsor(models.Model):
     image = models.ImageField(upload_to=sponsor_path)
     name = models.CharField(max_length=50)
     url = models.URLField(max_length=200,blank=True)
+
+class RotationOrder(models.Model):
+    session = models.ForeignKey(Session, on_delete=models.CASCADE)
+    rotation =  models.CharField(max_length=2,default='A')
+    order = models.IntegerField(default=1)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
+    class Meta:
+        ordering = ['rotation','order']

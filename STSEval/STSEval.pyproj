@@ -150,10 +150,10 @@
     <Content Include="app\static\app\scripts\stream_listener_spectator.js" />
     <Content Include="app\static\app\sounds\message_notice.mp3" />
     <Content Include="app\static\app\sounds\message_notice.ogg" />
-    <Content Include="app\templates\app\help\competition_setup_3.html" />
-    <Content Include="app\templates\app\help\competition_setup_4.html" />
-    <Content Include="app\templates\app\help\competition_setup_5.html" />
-    <Content Include="app\templates\app\help\competition_setup_6.html" />
+    <Content Include="app\templates\app\help\competition_setup_athletes.html" />
+    <Content Include="app\templates\app\help\competition_setup_cameras.html" />
+    <Content Include="app\templates\app\help\competition_setup_sponsors.html" />
+    <Content Include="app\templates\app\help\competition_setup_finish.html" />
     <Content Include="app\templates\app\reset_athlete_warn.html" />
     <Content Include="app\templates\app\backup_video_list.html" />
     <Content Include="app\templates\app\backup_video_display.html" />
@@ -161,8 +161,8 @@
     <Content Include="app\templates\app\event_select_with_aa.html" />
     <Content Include="app\templates\app\backup_video_manage.html" />
     <Content Include="app\templates\app\backup_video_upload.html" />
-    <Content Include="app\templates\app\help\competition_setup_2.html" />
-    <Content Include="app\templates\app\help\competition_setup_1.html" />
+    <Content Include="app\templates\app\help\competition_setup_judges.html" />
+    <Content Include="app\templates\app\help\competition_setup_competition.html" />
     <Content Include="app\templates\app\video_scoreboard.html" />
     <Content Include="app\templates\app\sponsor_display.html" />
     <Content Include="app\templates\app\athlete_start_list_swap.html" />
@@ -207,6 +207,7 @@
     <Content Include="chat\templates\chat\chat.html" />
     <Content Include="management\templates\management\athlete_list_upload_form.html" />
     <Content Include="management\templates\management\email_notice.html" />
+    <Content Include="management\templates\management\setup_rotations.html" />
     <Content Include="management\templates\management\start_list_warn.html" />
     <Content Include="streaming\templates\streaming\camera.html" />
     <Content Include="app\templates\app\d1 - Copy.html" />

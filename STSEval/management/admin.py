@@ -1,5 +1,5 @@
 from django.contrib import admin
-from management.models import Competition,Athlete,Judge,Session,Team,AthleteLevel,Disc,Event,Sponsor,StartList,Camera
+from management.models import Competition,Athlete,Judge,Session,Team,AthleteLevel,Disc,Event,Sponsor,StartList,Camera,RotationOrder
 
 # Register your models here.
 from import_export import resources
@@ -28,6 +28,11 @@ class JudgeAdmin(ImportExportModelAdmin):
     list_display=('session','event','d1_email','d2_email','e1_email','e2_email','e3_email','e4_email')
     list_filter=('session','event')
 
+class RotationOrderAdmin(ImportExportModelAdmin):
+    list_display=('id', 'session','rotation','event','order')
+    list_editable=('order',)
+    list_filter=('session','event','rotation')
+
 admin.site.register(AthleteLevel,AthleteLevelAdmin)
 admin.site.register(Event,EventAdmin)
 admin.site.register(Disc,DiscAdmin)
@@ -39,3 +44,4 @@ admin.site.register(Team)
 admin.site.register(Sponsor)
 admin.site.register(Camera)
 admin.site.register(StartList,StartListAdmin)
+admin.site.register(RotationOrder,RotationOrderAdmin)
