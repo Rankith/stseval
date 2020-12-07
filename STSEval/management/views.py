@@ -189,6 +189,7 @@ def setup_athletes(request,id):
         'session_name': session.full_name,
         'id':session.id,
         'rotation_note':rotation_note,
+        'help':'competition_setup_3',
     }
     return render(request,'management/setup_athletes.html',context)
 
@@ -398,6 +399,7 @@ def setup_cameras(request,id):
         'title': 'Competition Setup (4/6)',
         'session_name': session.full_name,
         'id':session.id,
+        'help':'competition_setup_4',
     }
     return render(request,'management/setup_cameras.html',context)
 
@@ -469,6 +471,7 @@ def setup_sponsors(request,id):
         'title': 'Competition Setup (5/6)',
         'session_name': session.full_name,
         'id':session.id,
+        'help':'competition_setup_5',
     }
     return render(request,'management/setup_sponsors.html',context)
 
@@ -531,6 +534,7 @@ def setup_finish(request,id):
         'missed_camera':missed_camera,
         'setup_complete':setup_complete,
         'session_active':session.active,
+        'help':'competition_setup_6',
     }
     return render(request,'management/setup_finish.html',context)
 
