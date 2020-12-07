@@ -29,7 +29,10 @@ def setup_competition(request):
     return render(request,'management/setup_competition.html',context)
 
 def competition_list(request):
-    comps = Competition.objects.filter(disc=request.GET.get('disc'),admin=request.user)
+    if request.user.is_staff:
+        comps = Competition.objects.filter(disc=request.GET.get('disc'))
+    else:
+        comps = Competition.objects.filter(disc=request.GET.get('disc'),admin=request.user)
 
     context = {
         'comps':comps,
