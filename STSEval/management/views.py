@@ -289,6 +289,7 @@ def athlete_list_upload(request):
 
 def import_athletes(session,ath_dict):
     teams = Team.objects.filter(session=session)
+    events = Event.objects.filter(disc=session.competition.disc)
     teams_found = []
     for i in range(len(ath_dict['Name'])):
         team = teams.filter(Q(name=ath_dict['Team'][i]) | Q(abbreviation=ath_dict['Team'][i])).first()
@@ -303,6 +304,10 @@ def import_athletes(session,ath_dict):
                 Athlete.objects.filter(team=team).delete()
             ath = Athlete(team=team,name=ath_dict['Name'][i],level=level,rotation=ath_dict['Rotation'][i].upper(),order=i+1)
             ath.save()
+            for e in events:
+                ath.events_competing.add(e)
+                ath.events_count_for_team.add(e)
+            
     return "Athletes Imported."
 
 

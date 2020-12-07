@@ -67,11 +67,14 @@
 
      function Activate() {
         $("#btnActivate").addClass("ui-disabled");
+        $("#modalLoadText").html("Activating...");
+        $("#modalLoad").modal('show');
         $.ajax({
             url: "/management/session_activate/" + SessionID,
             success: function () {
                 $("#divActivate").hide();
                 $("#btnSessionOverview").show();
+                $("#modalLoad").modal('hide');
                  alert("Session activated, please review start lists on the overview page.");
             }
         });
