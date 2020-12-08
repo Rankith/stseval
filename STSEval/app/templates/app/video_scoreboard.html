@@ -1,10 +1,10 @@
 {% load staticfiles %}
 <div>
     {% for score in scores %}
-     <div class="d-flex justify-content-between scoreboard-section pl-1 pr-1">
-        <div>{{score.team}}</div>
-        <div>{{score.score}}</div>
-        <div>{{score.dif}}</div>
+     <div class="row no-gutters scoreboard-section pl-1 pr-1">
+        <div class="col-4" align="left">{{score.team}}</div>
+        <div class="col-4" align="right">{{score.score}}</div>
+        <div class="col-4" align="right">{{score.dif}}</div>
     </div>
     {% endfor %}
 </div>

@@ -759,6 +759,8 @@ def video_scoreboard(request):
                     if t['team'] == team.abbreviation:
                         t['score'] = t['score'] + this_score['score']
                         break
+
+    team_scores = sorted(team_scores,key = lambda i: i['score'],reverse=True)
     high = 0
     for t in team_scores:
         if t['score'] > high:
