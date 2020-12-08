@@ -748,7 +748,7 @@ def video_scoreboard(request):
     teams = Team.objects.filter(session_id=request.GET.get('Session'))
     team_scores = []
     for team in teams:
-        team_scores.append({'team':team.abbreviation,'score':0.00})
+        team_scores.append({'team':team.abbreviation,'score':0.00,'dif':'--'})
    
     for event in events:
         scores = calc_team_scores(request.GET.get('Session'),event.name)
@@ -759,8 +759,13 @@ def video_scoreboard(request):
                     if t['team'] == team.abbreviation:
                         t['score'] = t['score'] + this_score['score']
                         break
-    
+    high = 0
     for t in team_scores:
+        if t['score'] > high:
+            high = t['score']
+            t['dif'] = '--'
+        else:
+            t['dif'] = t['score'] - high
         t['score'] = "{:.2f}".format(t['score'])
     #team_scores = sorted(team_scores,key = lambda i: i['score'],reverse=True)
     context = {
