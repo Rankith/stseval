@@ -173,7 +173,7 @@ def routine_setup(request):
 
         return HttpResponse(status=200)
     else:
-        return HttpResponse(status=404)
+        return HttpResponse("event done")
 
 def routine_swap_d(request):
     #update this routine and check if it should swap
@@ -950,12 +950,13 @@ def athlete_start_list_change_check_manager(session,event):
     if rot['status'] == 'N' or rot['status'] == 'F':
             #previous routine all done so check first
             sl = athlete_get_next_do(event,session)
-            camera = Camera.objects.filter(teams=sl.athlete.team,events__name=event).first()
-            if sl.athlete.id != rot['athlete_id'] or rot['status'] == 'F':
-                if rot['status'] == 'F':
-                    app.firebase.routine_setup(sl.session,event,sl.athlete,camera.id,'D1')
-                else:
-                    app.firebase.routine_update_athlete(session,event,sl.athlete,camera.id)
+            if sl != None:
+                camera = Camera.objects.filter(teams=sl.athlete.team,events__name=event).first()
+                if sl.athlete.id != rot['athlete_id'] or rot['status'] == 'F':
+                    if rot['status'] == 'F':
+                        app.firebase.routine_setup(sl.session,event,sl.athlete,camera.id,'D1')
+                    else:
+                        app.firebase.routine_update_athlete(session,event,sl.athlete,camera.id)
 
 
 

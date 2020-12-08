@@ -1307,8 +1307,15 @@
                 'athlete': CurrentAthlete,
                 'djudge':DType,
             },
-            dataType: 'json',
             success: function (data) {
+                console.log(data)
+                if (data == "event done") {
+                    alert("All Athletes Done");
+                    $("#btnStartJudging").addClass('ui-disabled');
+                    //$("#btnNuke").addClass('ui-disabled');
+                    Status = status.FINISHED;
+                    //window.location = "/scoreboard/" + ev;
+                }
                 /*RoutineID = data['routine'];
                 if (RoutineID == -1)
                     alert(data['error']);*/

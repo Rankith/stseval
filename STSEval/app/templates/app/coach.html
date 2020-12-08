@@ -110,24 +110,26 @@
     }
 
     function UpdateFalls(doc) {
-        console.log(doc.data());
-        if (doc.data().team == Team) {
-            if (doc.data().fall == true) {
-                clearInterval(FallTimerInterval);
-                FallTimerStart = doc.data().start.seconds;
-                FallTimerInterval = setInterval(UpdateFallTimer, 1000);
-                UpdateFallTimer();
-                $("#divFallCredit").html(doc.data().credit);
-                $("#divFallArea").show();
+        if (doc.data() != undefined) {
+            console.log(doc.data());
+            if (doc.data().team == Team) {
+                if (doc.data().fall == true) {
+                    clearInterval(FallTimerInterval);
+                    FallTimerStart = doc.data().start.seconds;
+                    FallTimerInterval = setInterval(UpdateFallTimer, 1000);
+                    UpdateFallTimer();
+                    $("#divFallCredit").html(doc.data().credit);
+                    $("#divFallArea").show();
+                }
+                else {
+                    clearInterval(FallTimerInterval);
+                    $("#divFallArea").hide();
+                }
             }
             else {
                 clearInterval(FallTimerInterval);
                 $("#divFallArea").hide();
             }
-        }
-        else {
-            clearInterval(FallTimerInterval);
-            $("#divFallArea").hide();
         }
     }
 

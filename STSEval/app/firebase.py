@@ -283,7 +283,13 @@ def check_event_manager_setup(s,e):
 
     doc_ref = db.collection(u'sessions').document(str(s)).collection(u'event_managers').document(str(e))
     doc = doc_ref.get()
-    return doc.exists
+    if doc.exists:
+        if 'athlete_id' in doc.to_dict():
+            return True
+        else:
+            return False
+    else:
+        return False
 
 def chat_get_create(s,p1,p2):
     db = firestore.Client()
