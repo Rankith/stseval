@@ -768,7 +768,10 @@ def video_scoreboard(request):
             t['dif'] = '--'
         else:
             t['dif'] = t['score'] - high
-            t['dif'] = "{:.2f}".format(t['dif'])
+            if t['dif'] >= 0:
+                t['dif'] = '--'
+            else:
+                t['dif'] = "{:.2f}".format(t['dif'])
         t['score'] = "{:.2f}".format(t['score'])
     #team_scores = sorted(team_scores,key = lambda i: i['score'],reverse=True)
     context = {
