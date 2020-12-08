@@ -1,0 +1,14 @@
+{% load staticfiles %}
+<form id="form_upload" action="/management/judge_list_upload/" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div>You can upload a excel document (.xlsx) or CSV file to populate the judges.<br/>This will overwrite your current judges.<br/>Passwords that are left blank will be auto generated<br/><br/>
+    <a href="{% static 'app/example_judge_import.xlsx' %}">Click here to download a sample excel sheet</a>
+    <br/><br/>
+    </div>
+        File<br/>
+        {{ form.file }}<br/>
+        {{form.session_upload}}
+           <br/>
+        <input type="submit" href="#" id="btnImportFinish" class="btn btn-main" value="Import">
+        <button href="#" id="btnImportCancel" type="button" class="btn btn-red" data-dismiss="modal">Cancel</button>
+</form>

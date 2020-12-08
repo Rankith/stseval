@@ -4,7 +4,7 @@ from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 import datetime
-from .forms import CompetitionForm,SessionForm,JudgeForm,TeamForm,AthleteForm,CameraForm,SponsorForm,AthleteListUploadForm
+from .forms import CompetitionForm,SessionForm,JudgeForm,TeamForm,AthleteForm,CameraForm,SponsorForm,AthleteListUploadForm,JudgeListUploadForm
 from .models import Competition,Session,Athlete,Judge,Team,Disc,Event,Camera,Sponsor,StartList,AthleteLevel,RotationOrder
 from django.core.mail import send_mail
 from django.contrib.auth.decorators import login_required,user_passes_test
@@ -14,6 +14,7 @@ import app.views
 from django.db.models import Q
 import django_excel as excel
 from django.db.models import Min
+import string, random
 
 # Create your views here.
 @login_required(login_url='/account/login/admin/')
@@ -185,6 +186,84 @@ def judges_check_missing_call(session_id):
             missed.append(event.name)
 
     return missed
+
+def judge_list_upload(request):
+    if request.method == "POST":
+        form = JudgeListUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            session = Session.objects.get(pk=request.POST.get('session_upload'))
+            judgedict = request.FILES["file"].get_dict()
+            #athdict = athdict[list(athdict.keys())[0]]
+            res = import_judges(session,judgedict)
+            return HttpResponse(res)
+    else:
+        form = JudgeListUploadForm()
+    return render(request,"management/judge_list_upload_form.html",
+        {
+            "form": form,
+        },
+    )
+
+def import_judges(session,judge_dict):
+    events = Event.objects.filter(disc=session.competition.disc)
+    for i in range(len(judge_dict['Role'])):
+        if judge_dict['Role'][i] == 'D1':#skip to d1s
+            #find event
+            event = events.filter(name=judge_dict['Event'][i]).first()
+            if event != None:
+                Judge.objects.filter(session=session,event=event).delete()#remove old judges for this event
+                new_judge = Judge(session=session,event=event)
+                if judge_dict['Email'][i] != '' and judge_dict['Email'][i] != ' ':
+                    new_judge.d1_email = judge_dict['Email'][i]
+                    new_judge.d1 = judge_dict['Name'][i]
+                    new_judge.d1_affil = judge_dict['Association'][i]
+                    if judge_dict['Password'][i] == '' or judge_dict['Password'][i] == ' ':
+                        new_judge.d1_password = ''.join(random.choices(string.ascii_uppercase + string.ascii_lowercase + string.digits, k=6))
+                    else:
+                        new_judge.d1_password = judge_dict['Password'][i]
+                if judge_dict['Email'][i+1] != '' and judge_dict['Email'][i+1] != ' ':
+                    new_judge.d2_email = judge_dict['Email'][i+1]
+                    new_judge.d2 = judge_dict['Name'][i+1]
+                    new_judge.d2_affil = judge_dict['Association'][i+1]
+                    if judge_dict['Password'][i+1] == '' or judge_dict['Password'][i+1] == ' ':
+                        new_judge.d2_password = ''.join(random.choices(string.ascii_uppercase + string.ascii_lowercase + string.digits, k=6))
+                    else:
+                        new_judge.d2_password = judge_dict['Password'][i+1]
+                if judge_dict['Email'][i+2] != '' and judge_dict['Email'][i+2] != ' ':
+                    new_judge.e1_email = judge_dict['Email'][i+2]
+                    new_judge.e1 = judge_dict['Name'][i+2]
+                    new_judge.e1_affil = judge_dict['Association'][i+2]
+                    if judge_dict['Password'][i+2] == '' or judge_dict['Password'][i+2] == ' ':
+                        new_judge.e1_password = ''.join(random.choices(string.ascii_uppercase + string.ascii_lowercase + string.digits, k=6))
+                    else:
+                        new_judge.e1_password = judge_dict['Password'][i+2]
+                if judge_dict['Email'][i+3] != '' and judge_dict['Email'][i+3] != ' ':
+                    new_judge.e2_email = judge_dict['Email'][i+3]
+                    new_judge.e2 = judge_dict['Name'][i+3]
+                    new_judge.e2_affil = judge_dict['Association'][i+3]
+                    if judge_dict['Password'][i+3] == '' or judge_dict['Password'][i+3] == ' ':
+                        new_judge.e2_password = ''.join(random.choices(string.ascii_uppercase + string.ascii_lowercase + string.digits, k=6))
+                    else:
+                        new_judge.e2_password = judge_dict['Password'][i+3]
+                if judge_dict['Email'][i+4] != '' and judge_dict['Email'][i+4] != ' ':
+                    new_judge.e2_email = judge_dict['Email'][i+4]
+                    new_judge.e2 = judge_dict['Name'][i+4]
+                    new_judge.e2_affil = judge_dict['Association'][i+4]
+                    if judge_dict['Password'][i+4] == '' or judge_dict['Password'][i+4] == ' ':
+                        new_judge.e2_password = ''.join(random.choices(string.ascii_uppercase + string.ascii_lowercase + string.digits, k=6))
+                    else:
+                        new_judge.e2_password = judge_dict['Password'][i+4]
+                if judge_dict['Email'][i+5] != '' and judge_dict['Email'][i+5] != ' ':
+                    new_judge.e4_email = judge_dict['Email'][i+5]
+                    new_judge.e4 = judge_dict['Name'][i+5]
+                    new_judge.e4_affil = judge_dict['Association'][i+5]
+                    if judge_dict['Password'][i+5] == '' or judge_dict['Password'][i+5] == ' ':
+                        new_judge.e4_password = ''.join(random.choices(string.ascii_uppercase + string.ascii_lowercase + string.digits, k=6))
+                    else:
+                        new_judge.e4_password = judge_dict['Password'][i+5]
+                new_judge.save()
+                i = i + 6      
+    return "Judges Imported."
 
 @login_required(login_url='/account/login/admin/')
 def setup_athletes(request,id):
