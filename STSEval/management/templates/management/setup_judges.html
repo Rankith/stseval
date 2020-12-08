@@ -7,7 +7,7 @@
     <div id="divJudges" style="max-width:800px;min-height:276px">
 
     </div>
-    <button href="#" id="btnImport" type="button" class="btn btn-main management-button-long" onclick="ImportJudgesStart()" data-toggle="modal" data-target="#modalMain">Import</button><br/>
+    
     <select id="ddlEvent" class="selectpicker" data-style="btn-main management-button-long" onchange="EventClick()">
         {% for event in events %}
             <option value="{{event.id}}">{{event.full_name}}</option>
@@ -16,6 +16,7 @@
     <button href="#" id="btnSave" type="button" class="btn btn-main management-button-long" onclick="Save()">Save</button>
     <br/>
     <div id="divMissing" style="color:red;font-size:.85rem">&nbsp;</div>
+    <button href="#" id="btnImport" type="button" class="btn btn-main management-button-long" onclick="ImportJudgesStart()" data-toggle="modal" data-target="#modalMain">Import</button><br/>
     <div>
         <button id="btnBack" type="button" class="btn-main pt-4 pb-4" style="border-radius: 1rem;" onclick="GoBack()">Return to<br/>Previous Page</button>
         <button id="btnNext" type="button" class="btn-main pt-4 pb-4" style="border-radius: 1rem;" onclick="NextClick()">Save and<br/>Continue (2/7)</button>
