@@ -1161,9 +1161,10 @@ def spectate(request,session_id,display_type,event_name='-1'):
         event_name2 = ''
     #setup_firebase_managers(session,event.name)
 
-    scoreboard_overlay = False
-    if session.competition.type == Competition.DUAL or session.competition.type == Competition.INTRASQUAD:
-        scoreboard_overlay = True
+    scoreboard_overlay = True
+    #scoreboard_overlay = False
+    #if session.competition.type == Competition.DUAL or session.competition.type == Competition.INTRASQUAD:
+        #scoreboard_overlay = True
 
     context = {
         'title': 'Spectator',
