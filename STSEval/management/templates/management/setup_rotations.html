@@ -20,14 +20,14 @@
         {% endfor %}
         </div></div></div>
     </div>
-    
+    <div id="divRotationError" style="color:red;font-size:.85rem;">{{rotation_error}}</div>
     <br/>
     <div id="divRotationNote"  style="font-size:.85rem">Once your rotations are set in the correct order, use the button below to create the start lists.</div><br/>
     <button href="#" id="btnGenStartList" type="button" class="btn btn-main management-button" onclick="GenerateStartListClick()">Generate Start Lists</button>
     <br/>
     <div>
         <button id="btnBack" type="button" class="btn-main pt-4 pb-4" style="border-radius: 1rem;" onclick="GoBack()">Return to<br/>Previous Page</button>
-        <button id="btnNext" type="button" class="btn-main pt-4 pb-4" style="border-radius: 1rem;" onclick="NextClick()">Save and<br/>Continue (3/6)</button>
+        <button id="btnNext" type="button" class="btn-main pt-4 pb-4" style="border-radius: 1rem;" onclick="NextClick()">Save and<br/>Continue (4/7)</button>
     </div>
 
 </div>
@@ -39,6 +39,7 @@
 <script type="text/javascript">
     var token = "{{ csrf_token }}";
     var SessionID = "{{id}}";
+    var OKToProceed = {{rotation_ok|lower}};
     function SortEnd(evt) {
         UpdateRotationOrder(evt.to);
     }
@@ -47,9 +48,7 @@
     {% endfor %}
 </script>
 <script type="text/javascript">
-    var Changed = false;
 
-   
     function GoBack() {
         window.location = "/management/setup_athletes/" + SessionID;
     }
@@ -116,6 +115,11 @@
             headers: { "X-CSRFToken": token },
             type: 'POST',
             success: function (data) {
+                if (data.includes("Multiple")) {
+                    $("#divRotationError").html(data);
+                }
+                else
+                    $("#divRotationError").html("&nbsp;");
             }
         });
     }

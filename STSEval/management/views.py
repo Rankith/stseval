@@ -13,6 +13,7 @@ from django.core.mail import get_connection, EmailMultiAlternatives
 import app.views
 from django.db.models import Q
 import django_excel as excel
+from django.db.models import Min
 
 # Create your views here.
 @login_required(login_url='/account/login/admin/')
@@ -22,7 +23,7 @@ def setup_competition(request):
      #   ath.events_competing.add(*[e for e in events])
       #  ath.events_count_for_team.add(*[e for e in events])
     context = {
-        'title': 'Competition Setup (1/6)',
+        'title': 'Competition Setup (1/7)',
         'discs': Disc.objects.all(),
         'help':'competition_setup_competition',
     }
@@ -127,7 +128,7 @@ def setup_judges(request,id):
     events = Event.objects.filter(disc=session.competition.disc)
    
     context = {
-        'title': 'Competition Setup (2/6)',
+        'title': 'Competition Setup (2/7)',
         'session_name': session.full_name,
         'events':events,
         'id':session.id,
@@ -191,7 +192,7 @@ def setup_athletes(request,id):
     events = Event.objects.filter(disc=session.competition.disc).order_by('display_order')
     rotation_note = "A = " + events[0].name + " B = " + events[1].name + " etc."
     context = {
-        'title': 'Competition Setup (3/6)',
+        'title': 'Competition Setup (3/7)',
         'session_name': session.full_name,
         'id':session.id,
         'rotation_note':rotation_note,
@@ -406,13 +407,22 @@ def setup_rotations(request,id):
     #check to see if any exist
     rotation_check_generate_initial(session)
     rot_ords = RotationOrder.objects.filter(session=session)
+    dupes = rotation_check_dupes(session)
+    if dupes != "OK":
+        rotation_error = dupes
+        rotation_ok = False
+    else:
+        rotation_error = ""
+        rotation_ok = True
     context = {
         'title': 'Competition Setup (4/7)',
         'session_name': session.full_name,
         'id':session.id,
         'help':'competition_setup_rotation',
         'rot_ords':rot_ords,
-        'rotations': athletes.values_list('rotation',flat=True).distinct()
+        'rotations': athletes.values_list('rotation',flat=True).distinct(),
+        'rotation_error':rotation_error,
+        'rotation_ok':rotation_ok,
     }
     return render(request,'management/setup_rotations.html',context)
 
@@ -447,13 +457,27 @@ def rotation_update_order(request):
         val.event = events.get(pk=rots[index])
         val.save()
 
-    return HttpResponse(status=200)
+    dupes = rotation_check_dupes(session)
+    if dupes != "OK":
+        return HttpResponse(dupes)
+    else:
+        return HttpResponse(status=200)
+
+def rotation_check_dupes(session):
+    dupes_maybe = RotationOrder.objects.filter(session=session).values('event','order').annotate(minid=Min('id')).order_by()
+    not_dupe = [obj['minid'] for obj in dupes_maybe]
+
+    dupe = RotationOrder.objects.filter(session=session).exclude(id__in=not_dupe).first()
+    if dupe != None:
+        return "Multiple rotations can't be on the same event in the same position.  You have 2 or more rotations on " + dupe.event.name + " for position " + str(dupe.order) + "."
+    else:
+        return "OK"
 
 @login_required(login_url='/account/login/admin/')
 def setup_cameras(request,id):
     session = Session.objects.get(pk=id)
     context = {
-        'title': 'Competition Setup (4/6)',
+        'title': 'Competition Setup (5/7)',
         'session_name': session.full_name,
         'id':session.id,
         'help':'competition_setup_cameras',
@@ -525,7 +549,7 @@ def cameras_check_missing_call(session_id):
 def setup_sponsors(request,id):
     session = Session.objects.get(pk=id)
     context = {
-        'title': 'Competition Setup (5/6)',
+        'title': 'Competition Setup (6/7)',
         'session_name': session.full_name,
         'id':session.id,
         'help':'competition_setup_sponsors',
@@ -583,7 +607,7 @@ def setup_finish(request,id):
     else:
         setup_complete = True
     context = {
-        'title': 'Competition Setup (6/6)',
+        'title': 'Competition Setup (7/7)',
         'session_name': session.full_name,
         'id':session.id,
         'missed_athlete':missed_athlete,

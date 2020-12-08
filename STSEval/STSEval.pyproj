@@ -150,6 +150,7 @@
     <Content Include="app\static\app\scripts\stream_listener_spectator.js" />
     <Content Include="app\static\app\sounds\message_notice.mp3" />
     <Content Include="app\static\app\sounds\message_notice.ogg" />
+    <Content Include="app\templates\app\help\competition_setup_rotations.html" />
     <Content Include="app\templates\app\help\competition_setup_athletes.html" />
     <Content Include="app\templates\app\help\competition_setup_cameras.html" />
     <Content Include="app\templates\app\help\competition_setup_sponsors.html" />
@@ -183,9 +184,9 @@
     <Content Include="app\static\app\images\hb-white.svg" />
     <Content Include="app\static\app\images\pb-white.svg" />
     <Content Include="app\static\app\images\ph-white.svg" />
-    <Content Include="app\static\app\images\r-white.svg" />
+    <Content Include="app\static\app\images\sr-white.svg" />
     <Content Include="app\static\app\images\stseval21.svg" />
-    <Content Include="app\static\app\images\v-white.svg" />
+    <Content Include="app\static\app\images\vt-white.svg" />
     <Content Include="app\static\app\scripts\dots_area.js" />
     <Content Include="app\static\app\scripts\firebase_rtc_consumer.js" />
     <Content Include="app\static\app\scripts\firebase_rtc_broadcaster.js" />

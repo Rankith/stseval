@@ -33,7 +33,7 @@
     <div id="divMissing" style="color:red;font-size:.85rem">&nbsp;</div>
     <div>
         <button id="btnBack" type="button" class="btn-main pt-4 pb-4" style="border-radius: 1rem;" onclick="GoBack()">Return to<br/>Previous Page</button>
-        <button id="btnNext" type="button" class="btn-main pt-4 pb-4" style="border-radius: 1rem;" onclick="NextClick()">Save and<br/>Continue (4/6)</button>
+        <button id="btnNext" type="button" class="btn-main pt-4 pb-4" style="border-radius: 1rem;" onclick="NextClick()">Save and<br/>Continue (5/7)</button>
     </div>
 		
 </div>
@@ -53,7 +53,7 @@
     $("#divCameraList").load("/management/camera_list/" + SessionID); 
    
     function GoBack() {
-        window.location = "/management/setup_athletes/" + SessionID;
+        window.location = "/management/setup_rotations/" + SessionID;
     }
 
     function NextClick() {
