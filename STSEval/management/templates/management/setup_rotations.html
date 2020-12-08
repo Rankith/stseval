@@ -5,7 +5,9 @@
     {{session_name}}<br/>
     <div>
         <div id="divRotationsHeader" style="padding-bottom:5px;font-size:22px;font-weight:bold;text-align:center">Rotations <span style="font-size:12px;font-weight:normal">(drag to order)</span></div>
+        <span>Note: This screen currently does nothing.</span>
         <div class="d-flex justify-content-center">
+        {% if rot_ords %}
         {% for rot in rot_ords %}
             {% ifchanged rot.rotation %}
                 {% if not forloop.first %}
@@ -19,6 +21,7 @@
                         <div style="cursor:pointer" id="divRot{{rot.rotation}}{{rot.event.name}}" rotevent="{{rot.event.id}}" title="{{rot.event.full_name}}">{{rot.event.name}}</div> 
         {% endfor %}
         </div></div></div>
+        {% endif %}
     </div>
     <div id="divRotationError" style="color:red;font-size:.85rem;">{{rotation_error}}</div>
     <br/>
