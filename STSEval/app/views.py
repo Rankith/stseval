@@ -1119,13 +1119,14 @@ def setup_firebase_managers(session,event_name=''):
     for event in events:
         if not app.firebase.check_event_manager_setup(session.id,event.name):
             sl = athlete_get_next_do(event.name,session.id)
-            athlete = sl.athlete
-            #check for camera
-            camera = Camera.objects.filter(teams=athlete.team,events__name=event.name).first()
-            try:
-                app.firebase.routine_setup(session,event.name,athlete,camera.id,'D1')
-            except:
-                pass
+            if sl != None:
+                athlete = sl.athlete
+                #check for camera
+                camera = Camera.objects.filter(teams=athlete.team,events__name=event.name).first()
+                try:
+                    app.firebase.routine_setup(session,event.name,athlete,camera.id,'D1')
+                except:
+                    pass
     
 
     return HttpResponse(status=200)

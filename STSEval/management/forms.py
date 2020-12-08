@@ -63,12 +63,12 @@ class JudgeForm(ModelForm):
                   'e4','e4_affil','e4_email','e4_password']
         widgets = {'session': forms.HiddenInput(),
                    'event': forms.HiddenInput(),
-                   'd1':forms.TextInput(attrs={'placeholder':'Judge Full Name'}),'d1_affil':forms.TextInput(attrs={'placeholder':'Country'}),'d1_email':forms.EmailInput(attrs={'placeholder':'example@email.com'}),'d1_password':forms.TextInput(attrs={'placeholder':'password'}),
-                   'd2':forms.TextInput(attrs={'placeholder':'Judge Full Name'}),'d2_affil':forms.TextInput(attrs={'placeholder':'Country'}),'d2_email':forms.EmailInput(attrs={'placeholder':'example@email.com'}),'d2_password':forms.TextInput(attrs={'placeholder':'password'}),
-                   'e1':forms.TextInput(attrs={'placeholder':'Judge Full Name'}),'e1_affil':forms.TextInput(attrs={'placeholder':'Country'}),'e1_email':forms.EmailInput(attrs={'placeholder':'example@email.com'}),'e1_password':forms.TextInput(attrs={'placeholder':'password'}),
-                   'e2':forms.TextInput(attrs={'placeholder':'Judge Full Name'}),'e2_affil':forms.TextInput(attrs={'placeholder':'Country'}),'e2_email':forms.EmailInput(attrs={'placeholder':'example@email.com'}),'e2_password':forms.TextInput(attrs={'placeholder':'password'}),
-                   'e3':forms.TextInput(attrs={'placeholder':'Judge Full Name'}),'e3_affil':forms.TextInput(attrs={'placeholder':'Country'}),'e3_email':forms.EmailInput(attrs={'placeholder':'example@email.com'}),'e3_password':forms.TextInput(attrs={'placeholder':'password'}),
-                   'e4':forms.TextInput(attrs={'placeholder':'Judge Full Name'}),'e4_affil':forms.TextInput(attrs={'placeholder':'Country'}),'e4_email':forms.EmailInput(attrs={'placeholder':'example@email.com'}),'e4_password':forms.TextInput(attrs={'placeholder':'password'})
+                   'd1':forms.TextInput(attrs={'placeholder':'Judge Full Name'}),'d1_affil':forms.TextInput(attrs={'placeholder':'Association'}),'d1_email':forms.EmailInput(attrs={'placeholder':'example@email.com'}),'d1_password':forms.TextInput(attrs={'placeholder':'password'}),
+                   'd2':forms.TextInput(attrs={'placeholder':'Judge Full Name'}),'d2_affil':forms.TextInput(attrs={'placeholder':'Association'}),'d2_email':forms.EmailInput(attrs={'placeholder':'example@email.com'}),'d2_password':forms.TextInput(attrs={'placeholder':'password'}),
+                   'e1':forms.TextInput(attrs={'placeholder':'Judge Full Name'}),'e1_affil':forms.TextInput(attrs={'placeholder':'Association'}),'e1_email':forms.EmailInput(attrs={'placeholder':'example@email.com'}),'e1_password':forms.TextInput(attrs={'placeholder':'password'}),
+                   'e2':forms.TextInput(attrs={'placeholder':'Judge Full Name'}),'e2_affil':forms.TextInput(attrs={'placeholder':'Association'}),'e2_email':forms.EmailInput(attrs={'placeholder':'example@email.com'}),'e2_password':forms.TextInput(attrs={'placeholder':'password'}),
+                   'e3':forms.TextInput(attrs={'placeholder':'Judge Full Name'}),'e3_affil':forms.TextInput(attrs={'placeholder':'Association'}),'e3_email':forms.EmailInput(attrs={'placeholder':'example@email.com'}),'e3_password':forms.TextInput(attrs={'placeholder':'password'}),
+                   'e4':forms.TextInput(attrs={'placeholder':'Judge Full Name'}),'e4_affil':forms.TextInput(attrs={'placeholder':'Association'}),'e4_email':forms.EmailInput(attrs={'placeholder':'example@email.com'}),'e4_password':forms.TextInput(attrs={'placeholder':'password'})
                    };
     def __init__(self, *args, **kwargs):
         super(JudgeForm, self).__init__(*args, **kwargs)
