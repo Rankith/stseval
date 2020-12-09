@@ -108,7 +108,7 @@ function BuildDots(CalcScoreAfter = false, PlaybackOnly = '0') {
 
 
 function NewDeduction(e) {
-    if (!DeductionsConfirmed && (Status == undefined || Status == "AD" || Status == "RD")) {
+    if (!DeductionsConfirmed && ((Status == undefined || Status == "AD" || Status == "RD") || (EditableDots && Status==""))) {
         DotChangingArtistry = false;
         var rect = e.target.getBoundingClientRect();
         var x = e.clientX - rect.left;
@@ -119,8 +119,17 @@ function NewDeduction(e) {
         $("#lblChangeDed").html("Add Deduction");
         ChangeDedAddMode = true;
 
-        $("#divChangeDed").css({ top: e.clientY + DotSize + 4 });
-        $("#divChangeDed").css({ left: e.clientX - ($("#divChangeDed").width() / 2) });
+        if (typeof LoadRot == "undefined") {
+           $("#divChangeDed").css({ top: e.clientY + DotSize + 4 });
+            $("#divChangeDed").css({ left: e.clientX - ($("#divChangeDed").width() / 2) });
+
+        }
+        else {
+            $("#divChangeDed").css({ top: e.clientY + DotSize + 4 -150});
+            $("#divChangeDed").css({ left: e.clientX - ($("#divChangeDed").width() / 2) });
+
+        }
+
 
         pos = x;
         pos -= Padding;
@@ -163,10 +172,69 @@ function NewDeduction(e) {
     }
 }
 
+function CheckForNearbyDots(dot, artistry = false) {
+    let thisdot = document.getElementById("imgDot" + dot);
+    let dotsthisline = document.querySelectorAll('.' + thisdot.className), i;
+    let thisrect = thisdot.getBoundingClientRect();
+    let overlaps = [];
+
+    for (i = 0; i < dotsthisline.length; ++i) {
+        let comprect = dotsthisline[i].getBoundingClientRect();
+        //console.log(dotsthisline[i]);
+        //console.log("comp-left: " + comprect.left + " | orig-left: " + thisrect.left + " | comp-right: " + comprect.right + " | orig-right: " + thisrect.right);
+        if (!(comprect.right - 1 < thisrect.left || comprect.left + 1 > thisrect.right))
+            overlaps.push(dotsthisline[i]);
+        else if (thisdot == dotsthisline[i])
+            overlaps.push(dotsthisline[i]);
+        
+    }
+    console.log(overlaps);
+    return overlaps;
+}
+
+function ClickEjury(dot, artistry = false) {
+     //check for overlaps if not artistry
+    if (!DeductionsConfirmed && EditableDots) {
+        if (!artistry) {
+            let overlaps = CheckForNearbyDots(dot, artistry);
+            console.log(overlaps);
+            if (overlaps.length >= 2) { //2 since it always overlaps itself
+                ShowDotSelect(overlaps, dot)
+            }
+            else
+                ChangeEjury(dot, artistry);
+        }
+        else
+            ChangeEjury(dot, artistry);
+    }
+}
+
+function ShowDotSelect(overlaps, dot) {
+    if (typeof LoadRot == "undefined") {
+        $("#divChangeDedSelect").css({ top: $("#imgDot" + dot).offset().top + DotSize + 4 });
+        $("#divChangeDedSelect").css({ left: $("#imgDot" + dot).offset().left + (DotSize / 2) - $("#divChangeDedSelect").width() / 2 });
+    }
+    else {
+        $("#divChangeDedSelect").css({ top: $("#imgDot" + dot).offset().top + DotSize + 4 - 150 });
+        $("#divChangeDedSelect").css({ left: $("#imgDot" + dot).offset().left + (DotSize / 2) - $("#divChangeDedSelect").width() / 2 });
+    }
+    $("#divSelectDots").empty();
+    console.log(overlaps);
+    overlaps.forEach(function (overlap) {
+        console.log(overlap);
+        let thisdot = overlap.id.replace("imgDot", "");
+        $("#divSelectDots").append("<img id='SelectDot" + thisdot + "' src='" + overlap.src + "' width='32' height='32' onclick='ChangeEjury(" + thisdot + ")' class='pr-2'>");
+    });
+    $("#DotsChangeBlackout").show();
+    $("#divChangeDedSelect").show();
+}
+
 function ChangeEjury(dot, artistry = false) {
+    $("#divChangeDedSelect").hide();
     if (!DeductionsConfirmed  && EditableDots) {
         ChangeDedAddMode = false;
-
+        //check for overlaps
+        
         if (artistry) {
             $("#divChangeDed").css({ top: $("#imgDotA" + dot).offset().top + DotSize + 4 });
             $("#divChangeDed").css({ left: $("#imgDotA" + dot).offset().left + (DotSize / 2) - $("#divChangeDed").width() / 2 });
@@ -178,7 +246,6 @@ function ChangeEjury(dot, artistry = false) {
             }
             else {
                 $("#divChangeDed").css({ top: $("#imgDot" + dot).offset().top + DotSize + 4 - 150 });
-                
                 $("#divChangeDed").css({ left: $("#imgDot" + dot).offset().left + (DotSize / 2) - $("#divChangeDed").width() / 2 });
             }
         }
@@ -203,6 +270,7 @@ function ChangeEjury(dot, artistry = false) {
 function ChangeEjuryDone() {
     $("#DotsChangeBlackout").hide();
     $("#divChangeDed").hide();
+    $("#divChangeDedSelect").hide();
     DotChanging = -1;
 }
 

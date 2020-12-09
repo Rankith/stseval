@@ -299,7 +299,7 @@ def routine_finished(request):
     app.firebase.routine_set_status(str(routine.session.id) ,routine.event.name,routine)
     ath = routine.athlete
     update_message = ath.name + " (" + ath.team.abbreviation + ") recieved a score of " +  "{:.1f}".format(routine.score_final) + " on " + routine.event.name + "."
-    app.firebase.update_spectator_feed(str(request.session.get('session')),request.session.get('event'),'routine_start',update_message,request.POST.get('athlete'))
+    app.firebase.update_spectator_feed(str(routine.session.id),routine.event.name,'routine_finished',update_message,request.POST.get('athlete'))
 
     return HttpResponse(status=200)
 
@@ -608,6 +608,7 @@ def build_dots(request):
                 "artistry_type":d.artistry_type,
                 "opacity":opacity,
                 "jumppos":jumppos,
+                "judge":d.judge,
                 }
             if d.artistry_type == '':
                 deduction_list.append(ded)
