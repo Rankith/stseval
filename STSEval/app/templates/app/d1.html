@@ -300,6 +300,10 @@
     }
     SetupPage();
     if (LoadRot == '') {
+        if (window.adapter.browserDetails.browser != 'chrome') {
+             alert("You must use Google Chrome to D Judge");
+            window.location = "/";
+        }
         //SetupStream();
         var docRef = db.collection("sessions").doc(Session).collection("event_managers").doc(ev);
         docRef.get().then(function (doc) {
