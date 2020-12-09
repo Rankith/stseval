@@ -221,6 +221,9 @@ def routine_start_judging(request):
 
     routine.save()
     app.firebase.routine_set_status(str(request.session.get('session')),request.session.get('event'),routine)
+    ath = Athlete.objects.get(pk=request.POST.get('athlete'))
+    update_message = ath.name + " (" + ath.team.abbreviation + ") is starting their routine on " + event.name + "."
+    app.firebase.update_spectator_feed(str(request.session.get('session')),request.session.get('event'),'routine_start',update_message,request.POST.get('athlete'))
 
     resp = {'routine':routine.id}
     return JsonResponse(resp)
@@ -294,6 +297,9 @@ def routine_finished(request):
     
     routine.save()
     app.firebase.routine_set_status(str(routine.session.id) ,routine.event.name,routine)
+    ath = routine.athlete
+    update_message = ath.name + " (" + ath.team.abbreviation + ") recieved a score of " +  "{:.1f}".format(routine.score_final) + " on " + routine.event.name + "."
+    app.firebase.update_spectator_feed(str(request.session.get('session')),request.session.get('event'),'routine_start',update_message,request.POST.get('athlete'))
 
     return HttpResponse(status=200)
 
@@ -746,6 +752,7 @@ def video_scoreboard(request):
     session = Session.objects.get(pk=request.GET.get('Session'))
     events = Event.objects.filter(disc=session.competition.disc)
     teams = Team.objects.filter(session_id=request.GET.get('Session'))
+    ath = Athlete.objects.get(pk=request.GET.get('Ath'))
     team_scores = []
     for team in teams:
         team_scores.append({'team':team.abbreviation,'score':0.00,'dif':'--'})
@@ -773,9 +780,21 @@ def video_scoreboard(request):
             else:
                 t['dif'] = "{:.2f}".format(t['dif'])
         t['score'] = "{:.2f}".format(t['score'])
+
+    #check which teams to show
+    team_scores_filtered = []
+    team_scores_filtered.append(team_scores[0]) #always show first
+    if team_scores[0]['team'] == ath.team.abbreviation:
+        #highest is team up so just do them and second place
+        team_scores_filtered.append(team_scores[1])
+    else:
+        for t in team_scores:
+            if t['team'] == ath.team.abbreviation:
+                team_scores_filtered.append(t)
+                break
     #team_scores = sorted(team_scores,key = lambda i: i['score'],reverse=True)
     context = {
-        'scores': team_scores
+        'scores': team_scores_filtered
         }
     return render(request,'app/video_scoreboard.html',context)
 

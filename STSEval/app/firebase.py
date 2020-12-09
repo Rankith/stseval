@@ -370,3 +370,14 @@ def set_credit(s,e,team,credit):
         u'team':team,
         u'credit':credit,
     },merge=True)
+
+def update_spectator_feed(s,e,type,message,athlete=-1):
+    db = firestore.Client()
+
+    doc_ref = db.collection(u'sessions').document(str(s)).collection(u'competition_stream').add({
+        u'event':e,
+        u'type':type,
+        u'message':message,
+        u'athlete':athlete,
+        u'timestamp':datetime.utcnow(),
+    })

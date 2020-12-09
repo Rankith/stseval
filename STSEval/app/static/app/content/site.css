@@ -488,3 +488,9 @@ input[type="checkbox"].input-validation-error {
 .coach-fall-timer {
     font-size:1.3rem;
 }
+
+.updates-area {
+    background-color: #373747;
+    color: #ffffff /*{c-bup-color}*/;
+    font-size:.8rem;
+}

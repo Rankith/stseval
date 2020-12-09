@@ -7,12 +7,14 @@
     {% if display_type == 'single' %}
         {% include "app/event_select.html" %} 
     {% endif %}
+    <div id="divMainWrapper" class="position-relative">
+        <div id="divUpdates" style="position:absolute;right:0px;top:0px;height:100%;width:100px" align="left" class="updates-area"></div>
     <div id="divHeader"><h4>{{session.full_name}}</h4></div>
    <div class="row no-gutters">
        {% if display_type == 'single' %}
             <div class="col-12" align="center">
                 <div id="play-video-container1" class="live-container d-flex align-items-center justify-content-center position-relative">
-                    <div id="divScoreboard" style="width:160px;position:absolute;top:5px;left:5px;z-index:104">
+                    <div id="divScoreboard1" style="width:160px;position:absolute;top:5px;left:5px;z-index:104">
 
                     </div>
                     
@@ -23,8 +25,8 @@
             </div>
         {% else %}
             <div class="col-12 col-xl-6 pr-4" align="right">
-                <div id="play-video-container1" class="live-container d-flex align-items-center justify-content-center flex-column">
-                     <div id="divScoreboard" style="width:160px;position:absolute;top:5px;left:5px;z-index:104">
+                <div id="play-video-container1" class="live-container d-flex align-items-center justify-content-center flex-column position-relative">
+                     <div id="divScoreboard1" style="width:160px;position:absolute;top:5px;left:5px;z-index:104">
 
                     </div>
                     <div id="player-waiting1" style="height:480px;display:flex" class="align-items-center"><h1>Waiting for Camera</h1></div>
@@ -36,11 +38,12 @@
                             </div>
                         {% endfor %} 
                     </div>
+                    <div id="divAthlete1" align="center"></div>
                 </div>
-                <div id="divAthlete1" align="center"></div>
+                
             </div>
             <div class="col-12 col-xl-6" align="left">
-                <div id="play-video-container2" class="live-container d-flex align-items-center justify-content-center flex-column">
+                <div id="play-video-container2" class="live-container d-flex align-items-center justify-content-center flex-column position-relative">
                      <div id="divScoreboard2" style="width:160px;position:absolute;top:5px;left:5px;z-index:104">
 
                     </div>
@@ -53,8 +56,9 @@
                             </div>
                         {% endfor %} 
                     </div>
+                     <div id="divAthlete2" align="center"></div>
                 </div>
-                <div id="divAthlete2" align="center"></div>
+               
             </div>
        {% endif %}
        <!--<div class="col-xl-6 col-12" align="left"> </div>-->
@@ -64,7 +68,7 @@
        <div class="col-12 pt-4">
            {% include "app/sponsor_display.html" %}
        </div>
-        
+        </div>
        
    </div>
  </div>
@@ -108,10 +112,23 @@
     SetEventListeners(1);
     if (ev[2] != undefined)
         SetEventListeners(2);
-
+    db.collection("sessions").doc(Session).collection("competition_stream") .onSnapshot(function (querySnapshot) {
+            UpdateCompetitionStream(querySnapshot);
+        });
     //if (Hls.isSupported())
         //alert("HLS Supported");
    // alert("Can Play = " + document.getElementById("player-video1").canPlayType('application/vnd.apple.mpegurl'));
+
+    function UpdateCompetitionStream(querySnapshot) {
+        console.log("query snap");
+        console.log(querySnapshot);
+        querySnapshot.docChanges().forEach(function (change) {
+            console.log(change);
+            if (change.type === "added") {
+                $("#divUpdates").append("<div>" + change.doc.data().message + "</div>");
+            }
+        });
+    }
 
     function SetEventListeners(which) {
         if (refs[which] != undefined)
@@ -129,10 +146,15 @@
             if (CurrentAthlete[which] != doc.data().athlete_id) {
                 CurrentAthlete[which] = doc.data().athlete_id;
                 if (ScoreboardOverlay)
-                    LoadScoreboard();
+                    LoadScoreboard(which);
                 $("#divAthlete" + which).html(AthleteNames[doc.data().athlete_id]);
-                CheckStream(doc,which);
+                CheckStream(doc, which);
             }
+            else if (doc.data().status == 'F') {
+                if (ScoreboardOverlay)
+                    LoadScoreboard(which);
+            }
+
         }
         else {
             $("#player-video" + which).hide();
@@ -151,11 +173,11 @@
         SetEventListeners(which)
     }
 
-    function LoadScoreboard() {
-        $("#divScoreboard").load("/video_scoreboard/?Session=" + Session, function()
+    function LoadScoreboard(which) {
+        $("#divScoreboard" + which).load("/video_scoreboard/?Session=" + Session + "&Ath=" + CurrentAthlete[which], function()
         {
-            if (dual)
-                $("#divScoreboard2").html($("#divScoreboard").html());
+            //if (dual)
+                //$("#divScoreboard2").html($("#divScoreboard").html());
         });
     }
 
@@ -201,6 +223,7 @@
         });
 
     }
+
 
 </script>
 {% endblock %}
