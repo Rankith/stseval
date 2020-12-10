@@ -222,7 +222,7 @@ def routine_start_judging(request):
     routine.save()
     app.firebase.routine_set_status(str(request.session.get('session')),request.session.get('event'),routine)
     ath = Athlete.objects.get(pk=request.POST.get('athlete'))
-    update_message = ath.name + " (" + ath.team.abbreviation + ") is starting their routine on " + event.name + "."
+    update_message =  "(" + ath.team.abbreviation + ") " + ath.name + " is starting their routine on " + event.name + "."
     app.firebase.update_spectator_feed(str(request.session.get('session')),request.session.get('event'),'routine_start',update_message,request.POST.get('athlete'))
 
     resp = {'routine':routine.id}
@@ -298,7 +298,7 @@ def routine_finished(request):
     routine.save()
     app.firebase.routine_set_status(str(routine.session.id) ,routine.event.name,routine)
     ath = routine.athlete
-    update_message = ath.name + " (" + ath.team.abbreviation + ") recieved a score of " +  "{:.1f}".format(routine.score_final) + " on " + routine.event.name + "."
+    update_message = "(" + ath.team.abbreviation + ") " + ath.name + " scored " +  "{:.1f}".format(routine.score_final) + " on " + routine.event.name + "."
     app.firebase.update_spectator_feed(str(routine.session.id),routine.event.name,'routine_finished',update_message,request.POST.get('athlete'))
 
     return HttpResponse(status=200)
@@ -407,11 +407,11 @@ def ejudge(request):
     disc = session.competition.disc.name
     ej = request.session.get('ej')
 
-    if ej == '1':
+    if ej == 1:
         this_judge = judges.e1
-    elif ej == '2':
+    elif ej == 2:
         this_judge = judges.e2
-    elif ej == '3':
+    elif ej == 3:
         this_judge = judges.e3
     else:
         this_judge = judges.e4

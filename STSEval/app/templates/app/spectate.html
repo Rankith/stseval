@@ -8,7 +8,7 @@
         {% include "app/event_select.html" %} 
     {% endif %}
     <div id="divMainWrapper" class="position-relative">
-        <div id="divUpdates" style="position:absolute;right:0px;top:0px;height:100%;width:100px;display:none" align="left" class="updates-area"></div>
+        {% include "app/update_area.html" %} 
     <div id="divHeader"><h4>{{session.full_name}}</h4></div>
    <div class="row no-gutters">
        {% if display_type == 'single' %}

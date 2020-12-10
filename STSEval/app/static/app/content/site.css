@@ -37,8 +37,8 @@ body {
 
 /* Set padding to keep content from hitting the edges */
 .body-content {
-    padding-left: 15px;
-    padding-right: 15px;
+    padding-left: 0px;
+    padding-right: 0px;
 }
 
 .btn-main {
@@ -492,5 +492,10 @@ input[type="checkbox"].input-validation-error {
 .updates-area {
     background-color: #373747;
     color: #ffffff /*{c-bup-color}*/;
-    font-size:.8rem;
+    font-size: .8rem;
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    height: 100%;
+    width: 200px
 }
