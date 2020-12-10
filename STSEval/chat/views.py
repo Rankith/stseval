@@ -21,6 +21,8 @@ def get_eligable_chats(request):
     if type[0:1] == 'e':
         judges = Judge.objects.filter(session_id=session_id,event__name=event).first()
         chats.append(event + " D1 - " + judges.d1)
+        if judges.d2 != "" and judges.d2 != " ":
+            chats.append(event + " E2 - " + judges.d2)
         chats.append(event + " Panel")
         chats.append("Meet Administrator")
     elif type[0:1] == 'd':
@@ -44,11 +46,13 @@ def get_eligable_chats(request):
             #if judge.d1 != "" and judge.d1 != " ":
                 #chats.append(judge.event.name + " D1 - " + judge.d1)
         chats.append("Meet Administrator")
-    elif type == 'admin':
+    elif 'admin' in request.session.get('type',','):
         judges = Judge.objects.filter(session_id=session_id).order_by('event__display_order')
         for judge in judges:
             if judge.d1 != "" and judge.d1 != " ":
                 chats.append(judge.event.name + " D1 - " + judge.d1)
+            if judge.d2 != "" and judge.d2 != " ":
+                chats.append(judge.event.name + " D2 - " + judge.d2)
             if judge.e1 != "" and judge.e1 != " ":
                 chats.append(judge.event.name + " E1 - " + judge.e1)
             if judge.e2 != "" and judge.e2 != " ":

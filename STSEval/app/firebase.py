@@ -305,6 +305,8 @@ def chat_get_create(s,p1,p2):
             participants = []
             if judge.d1 != "" and judge.d1 != " ":
                 participants.append(judge.event.name + " D1 - " + judge.d1)
+            if judge.d2 != "" and judge.d2 != " ":
+                participants.append(judge.event.name + " D2 - " + judge.d2)
             if judge.e1 != "" and judge.e1 != " ":
                 participants.append(judge.event.name + " E1 - " + judge.e1)
             if judge.e2 != "" and judge.e2 != " ":
