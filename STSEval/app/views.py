@@ -96,8 +96,6 @@ def d1(request):
         'judge_type':judge_type,
         'this_judge':this_judge,
         'multi_d':multi_d,
-        'base_dir': settings.BASE_DIR,
-        'media_dir': settings.MEDIA_ROOT,
 
     }
     return render(request,'app/d1.html',context)
