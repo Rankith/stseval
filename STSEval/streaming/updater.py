@@ -42,7 +42,7 @@ def check_convert_video():
         convert_backup_video(bv)
     routines = Routine.objects.filter(video_converted=False,video_saved=True,status=Routine.FINISHED)#.exclude(status=Routine.DELETED)
     for routine in routines:
-        vidfile=settings.MEDIA_ROOT + '/routine_videos/' + str(routine.id) + ".webm"
+        vidfile=routine.video_file.path
         if os.path.exists(vidfile):
             os.system("ffmpeg -y -i {0} -c:v libx264 -profile:v main -vf format=yuv420p -c:a aac -movflags +faststart {1}".format(vidfile,vidfile.replace("webm","mp4")))
             routine.video_converted = True
