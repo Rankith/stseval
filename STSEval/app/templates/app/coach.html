@@ -10,7 +10,7 @@
             <div class="col-9 col-md-4 col-lg-3 coach-fall-background pt-1 pb-2">
                 <div>FALL</div>
                 <div id="divFallTimer" class="coach-fall-timer">&nbsp;</div>
-                <div id="divFallCredit" class="coach-fall-credit">&nbsp;</div>
+                <div id="divFallCredit" class="">&nbsp;</div>
             </div>
         </div>
     </div>
@@ -119,6 +119,14 @@
                     FallTimerInterval = setInterval(UpdateFallTimer, 1000);
                     UpdateFallTimer();
                     $("#divFallCredit").html(doc.data().credit);
+                    if (doc.data().credit != "CREDIT NOT AWARDED") {
+                        $("#divFallCredit").addClass("coach-fall-credit");
+                        $("#divFallCredit").removeClass("coach-fall-no-credit");
+                    }
+                    else {
+                         $("#divFallCredit").removeClass("coach-fall-credit");
+                        $("#divFallCredit").addClass("coach-fall-no-credit");
+                    }
                     $("#divFallArea").show();
                 }
                 else {

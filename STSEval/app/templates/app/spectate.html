@@ -7,71 +7,75 @@
     {% if display_type == 'single' %}
         {% include "app/event_select.html" %} 
     {% endif %}
-    <div id="divMainWrapper" class="position-relative">
-        {% include "app/update_area.html" %} 
-    <div id="divHeader"><h4>{{session.full_name}}</h4></div>
-   <div class="row no-gutters">
-       {% if display_type == 'single' %}
-            <div class="col-12" align="center">
-                <div id="play-video-container1" class="live-container d-flex align-items-center justify-content-center position-relative">
-                    <div id="divScoreboard1" style="width:160px;position:absolute;top:5px;left:5px;z-index:104">
+   
+    <div class="d-flex">
+        <div class="flex-grow-1">
+             <div id="divHeader"><h4>{{session.full_name}}</h4></div>
+        
+            <div class="row no-gutters">
 
-                    </div>
+               {% if display_type == 'single' %}
+                    <div class="col-12" align="center">
+                        <div id="play-video-container1" class="live-container d-flex align-items-center justify-content-center position-relative">
+                            <div id="divScoreboard1" style="width:160px;position:absolute;top:5px;left:5px;z-index:104">
+
+                            </div>
                     
-                    <div id="player-waiting1" style="height:480px;display:flex" class="align-items-center"><h1>Waiting for Camera</h1></div>
-                    <video id="player-video1" class="live-video" style="display:none" controls autoplay muted></video>
-                </div>
-                <div id="divAthlete1" align="center"></div>
-            </div>
-        {% else %}
-            <div class="col-12 col-xl-6 pr-4" align="right">
-                <div id="play-video-container1" class="live-container d-flex align-items-center justify-content-center flex-column position-relative">
-                     <div id="divScoreboard1" style="width:160px;position:absolute;top:5px;left:5px;z-index:104">
+                            <div id="player-waiting1" style="height:480px;display:flex" class="align-items-center"><h1>Waiting for Camera</h1></div>
+                            <video id="player-video1" class="live-video" style="display:none" controls autoplay muted></video>
+                        </div>
+                        <div id="divAthlete1" align="center"></div>
+                    </div>
+                {% else %}
+                    <div class="col-12 col-xl-6 pr-1" align="right">
+                        <div id="play-video-container1" class="live-container d-flex align-items-center justify-content-center flex-column position-relative">
+                             <div id="divScoreboard1" style="width:160px;position:absolute;top:5px;left:5px;z-index:104">
 
-                    </div>
-                    <div id="player-waiting1" style="height:480px;display:flex" class="align-items-center"><h1>Waiting for Camera</h1></div>
-                    <video id="player-video1" class="live-video" style="display:none" controls autoplay muted></video>
-                    <div class="d-flex w-100">
-                        {% for ev in events %}
-                            <div class="flex-grow-1">
-                                <button id="btn{{ev.name}}1" type="button" class="btn event-display-1 btn-event{% if ev.name|lower == event_name|lower %}-selected{% endif %} mb-2" onclick="SwapEventDual(1,'{{ev.name|upper}}')"><img src="{% static 'app/images/' %}{{ev.name|lower}}-white.svg" height="30px"/></button>
                             </div>
-                        {% endfor %} 
-                    </div>
-                    <div id="divAthlete1" align="center"></div>
-                </div>
+                            <div id="player-waiting1" style="height:480px;display:flex" class="align-items-center"><h1>Waiting for Camera</h1></div>
+                            <video id="player-video1" class="live-video" style="display:none" controls autoplay muted></video>
+                            <div class="d-flex w-100">
+                                {% for ev in events %}
+                                    <div class="flex-grow-1">
+                                        <button id="btn{{ev.name}}1" type="button" class="btn event-display-1 btn-event{% if ev.name|lower == event_name|lower %}-selected{% endif %} mb-2" onclick="SwapEventDual(1,'{{ev.name|upper}}')"><img src="{% static 'app/images/' %}{{ev.name|lower}}-white.svg" height="30px"/></button>
+                                    </div>
+                                {% endfor %} 
+                            </div>
+                            <div id="divAthlete1" align="center"></div>
+                        </div>
                 
-            </div>
-            <div class="col-12 col-xl-6" align="left">
-                <div id="play-video-container2" class="live-container d-flex align-items-center justify-content-center flex-column position-relative">
-                     <div id="divScoreboard2" style="width:160px;position:absolute;top:5px;left:5px;z-index:104">
+                    </div>
+                    <div class="col-12 col-xl-6 pl-1" align="left">
+                        <div id="play-video-container2" class="live-container d-flex align-items-center justify-content-center flex-column position-relative">
+                             <div id="divScoreboard2" style="width:160px;position:absolute;top:5px;left:5px;z-index:104">
 
-                    </div>
-                    <div id="player-waiting2" style="height:480px;display:flex" class="align-items-center"><h1>Waiting for Camera</h1></div>
-                    <video id="player-video2" class="live-video" style="display:none" controls autoplay muted></video>
-                    <div class="d-flex w-100">
-                        {% for ev in events %}
-                            <div class="flex-grow-1">
-                                <button id="btn{{ev.name}}2" type="button" class="btn event-display-2 btn-event{% if ev.name|lower == event_name2|lower %}-selected{% endif %} mb-2" onclick="SwapEventDual(2,'{{ev.name|upper}}')"><img src="{% static 'app/images/' %}{{ev.name|lower}}-white.svg" height="30px"/></button>
                             </div>
-                        {% endfor %} 
-                    </div>
-                     <div id="divAthlete2" align="center"></div>
-                </div>
+                            <div id="player-waiting2" style="height:480px;display:flex" class="align-items-center"><h1>Waiting for Camera</h1></div>
+                            <video id="player-video2" class="live-video" style="display:none" controls autoplay muted></video>
+                            <div class="d-flex w-100">
+                                {% for ev in events %}
+                                    <div class="flex-grow-1">
+                                        <button id="btn{{ev.name}}2" type="button" class="btn event-display-2 btn-event{% if ev.name|lower == event_name2|lower %}-selected{% endif %} mb-2" onclick="SwapEventDual(2,'{{ev.name|upper}}')"><img src="{% static 'app/images/' %}{{ev.name|lower}}-white.svg" height="30px"/></button>
+                                    </div>
+                                {% endfor %} 
+                            </div>
+                             <div id="divAthlete2" align="center"></div>
+                        </div>
                
+                    </div>
+               {% endif %}
+               <!--<div class="col-xl-6 col-12" align="left"> </div>-->
+               <br/>
+               <br/>
+               <br/>
+               <div class="col-12 pt-4">
+                   {% include "app/sponsor_display.html" %}
+               </div>
             </div>
-       {% endif %}
-       <!--<div class="col-xl-6 col-12" align="left"> </div>-->
-       <br/>
-       <br/>
-       <br/>
-       <div class="col-12 pt-4">
-           {% include "app/sponsor_display.html" %}
-       </div>
         </div>
-       
+        <div style="width:200px" class="ml-2">{% include "app/update_area.html" %} </div>
+    </div>
    </div>
- </div>
 {% endblock %}
 
 {% block scripts %}
@@ -112,7 +116,7 @@
     SetEventListeners(1);
     if (ev[2] != undefined)
         SetEventListeners(2);
-    db.collection("sessions").doc(Session).collection("competition_stream") .onSnapshot(function (querySnapshot) {
+    db.collection("sessions").doc(Session).collection("competition_stream").orderBy("timestamp").onSnapshot(function (querySnapshot) {
             UpdateCompetitionStream(querySnapshot);
         });
     //if (Hls.isSupported())
@@ -125,7 +129,11 @@
         querySnapshot.docChanges().forEach(function (change) {
             console.log(change);
             if (change.type === "added") {
-                $("#divUpdates").append("<div>" + change.doc.data().message + "</div>");
+                docdata = change.doc.data();
+                if (docdata.type == 'routine_start')
+                    $("#divUpdates").prepend("<div class='update-message update-routine-start' onclick='FeedSwapEvent(\"" + docdata.event + "\")'>" + docdata.message + "</div>");
+                else
+                    $("#divUpdates").prepend("<div class='update-message'>" + docdata.message + "</div>");
             }
         });
     }
@@ -222,6 +230,17 @@
             ]
         });
 
+    }
+
+    function FeedSwapEvent(evIn) {
+        if (!dual) {
+            if (ev[1] != evIn)
+                SwapEvent(evIn);
+        }
+        else {
+            if (ev[1] != evIn && ev[2] != evIn)
+                SwapEventDual(1, evIn);
+        }
     }
 
 
