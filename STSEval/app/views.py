@@ -1087,7 +1087,7 @@ def athlete_mark_done_get_next(request,athlete_id):
 def save_video(request):
     routine = Routine.objects.get(pk=request.POST.get('video-filename').replace(".webm",""))
     
-    vidfile = settings.MEDIA_ROOT + '/routine_videos/' + request.POST.get('video-filename')#+ str(routine.session.id) + '/' + routine.event.name + '/' + routine.athlete.name.replace(" ","") + "_" + request.POST.get('video-filename')
+    vidfile = settings.MEDIA_ROOT + '/routine_videos/' + str(routine.session.id) + '/' + routine.event.name + '/' + routine.athlete.name.replace(" ","") + "_" + request.POST.get('video-filename')
     output = open(vidfile, 'wb+')
     #output.write(request.FILES.get('video-blob').file.read())
     for chunk in request.FILES['video-blob'].chunks():
