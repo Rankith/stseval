@@ -373,13 +373,19 @@ def set_credit(s,e,team,credit):
         u'credit':credit,
     },merge=True)
 
-def update_spectator_feed(s,e,type,message,athlete=-1):
+def update_spectator_feed(s,e,type,athlete=-1,score=-1):
     db = firestore.Client()
-
+    ath = Athlete.objects.filter(pk=athlete).first()
+    if ath != None:
+        ath_display =  "(" + ath.team.abbreviation + ") " + ath.name
+    else:
+        ath_display = ""
+   
     doc_ref = db.collection(u'sessions').document(str(s)).collection(u'competition_stream').add({
         u'event':e,
         u'type':type,
-        u'message':message,
         u'athlete':athlete,
+        u'athlete_display':ath_display,
+        u'score':score,
         u'timestamp':datetime.utcnow(),
     })

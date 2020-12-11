@@ -221,9 +221,7 @@ def routine_start_judging(request):
 
     routine.save()
     app.firebase.routine_set_status(str(request.session.get('session')),request.session.get('event'),routine)
-    ath = Athlete.objects.get(pk=request.POST.get('athlete'))
-    update_message =  "(" + ath.team.abbreviation + ") " + ath.name + " starting exercise " + event.name
-    app.firebase.update_spectator_feed(str(request.session.get('session')),request.session.get('event'),'routine_start',update_message,request.POST.get('athlete'))
+    app.firebase.update_spectator_feed(str(request.session.get('session')),request.session.get('event'),'routine_start',request.POST.get('athlete'))
 
     resp = {'routine':routine.id}
     return JsonResponse(resp)
@@ -297,9 +295,7 @@ def routine_finished(request):
     
     routine.save()
     app.firebase.routine_set_status(str(routine.session.id) ,routine.event.name,routine)
-    ath = routine.athlete
-    update_message = "(" + ath.team.abbreviation + ") " + ath.name + " " +  "{:.1f}".format(routine.score_final) + " " + routine.event.name
-    app.firebase.update_spectator_feed(str(routine.session.id),routine.event.name,'routine_finished',update_message,request.POST.get('athlete'))
+    app.firebase.update_spectator_feed(str(routine.session.id),routine.event.name,'routine_finished',routine.athlete.id,"{:.1f}".format(routine.score_final))
 
     return HttpResponse(status=200)
 

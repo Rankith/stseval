@@ -509,7 +509,14 @@ input[type="checkbox"].input-validation-error {
 }
 
 .update-message {
-    margin-bottom:.25rem;
+    padding-bottom: .1rem;
+    padding-top: .1rem;
+    border-bottom:1px solid;
+}
+
+.update-message-header {
+    font-size:.75rem;
+    font-weight:bold;
 }
 
 .update-routine-start {
@@ -520,7 +527,8 @@ input[type="checkbox"].input-validation-error {
     height: 100%;
     max-height: 720px;
     overflow: auto;
-    font-size: .65rem;
+    font-size: .7rem;
+    transition: all 2s;
 }
 
 .update-holder::-webkit-scrollbar {
