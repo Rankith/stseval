@@ -266,11 +266,11 @@
             console.log(active);
             //normal middle of pack
             if ($(active).prev().length >= 1 && $(active).next().length >= 1) 
-                $(active).prev()[0].scrollIntoView(true);
+                $("#divStartList" + which)[0].scrollTop = $(active).prev()[0].offsetTop;//$(active).prev()[0].scrollIntoView(true);
             else if ($(active).prev().length == 0) //no previous
-                $(active)[0].scrollIntoView(true);
+                 $("#divStartList" + which)[0].scrollTop = $(active)[0].offsetTop;
             else
-                $(active)[0].scrollIntoView();
+               $("#divStartList" + which)[0].scrollTop = $(active)[0].offsetTop;
             SetStartListDot(doc,which);
             //if (dual)
                 //$("#divScoreboard2").html($("#divScoreboard").html());
