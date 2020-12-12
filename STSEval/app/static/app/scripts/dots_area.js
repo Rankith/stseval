@@ -19,7 +19,7 @@ var VPhase = 1;
 var VDedPhases = new Array();
 
 function SetDotsArea() {
-    if ((Disc != "WAG" || ev == "UB") && ev != "V")
+    if ((Disc != "WAG" || ev == "UB") && ev != "VT")
         $("#divDotsAreaGlobal").hide();
 }
 
@@ -34,7 +34,7 @@ function Deduct(deduction, ej_in = -1, spot_in = -1, artistry_type = '') {
         VibrateDeduction(deduction);
         $("#divTotalDeductions").html(TotalDeductions.toFixed(1));
     }
-    if (ev == "V")//dumb vault things
+    if (ev == "VT")//dumb vault things
     {
         this_spot = VPhase * 10;//store these as phase*10 + number.  so 10 11 20 21 22 30 etc
         this_spot = this_spot + VDedPhases[VPhase];
@@ -154,7 +154,7 @@ function NewDeduction(e) {
         else
             ChangeDedAddJudge = ej;
 
-        if (ev == "V") {
+        if (ev == "VT") {
             if (x < $("#divVP1").position().left)
                 VPhase = 1;
             else if (x < $("#divVP2").position().left)
