@@ -16,15 +16,16 @@
 
                {% if display_type == 'single' %}
                     <div class="col-12" align="center">
-                        <div id="play-video-container1" class="live-container d-flex align-items-center justify-content-center position-relative">
+                        <div id="play-video-container1" class="live-container d-flex align-items-center justify-content-center flex-column position-relative">
                             <div id="divScoreboard1" style="width:160px;position:absolute;top:5px;left:5px;z-index:104">
 
                             </div>
                     
                             <div id="player-waiting1" style="height:480px;display:flex" class="align-items-center"><h1>Waiting for Camera</h1></div>
                             <video id="player-video1" class="live-video" style="display:none" controls autoplay muted></video>
+                            <div id="divStartList1" align="center" class="spectate_start_list_container"></div>
                         </div>
-                        <div id="divStartList1" align="center" class="spectate_start_list_container"></div>
+                        
                     </div>
                 {% else %}
                     <div class="col-12 col-xl-6 pr-1" align="right">
