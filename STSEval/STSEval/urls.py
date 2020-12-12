@@ -62,6 +62,7 @@ urlpatterns = [
     path('athlete_mark_done_get_next/<int:athlete_id>', views.athlete_mark_done_get_next, name='athlete_mark_done_get_next'),
     path('athlete_start_list/<str:event_name>/<int:team_id>', views.athlete_start_list, name='athlete_start_list'),
     path('athlete_start_list_admin/<str:event_name>/', views.athlete_start_list_admin, name='athlete_start_list_admin'),
+    path('athlete_start_list_spectate/<str:event_name>', views.athlete_start_list_spectate, name='athlete_start_list_spectate'),
     path('athlete_set_active/<int:sl_id>', views.athlete_set_active, name='athlete_set_active'),
     path('athlete_start_list_swap/<int:sl_id>', views.athlete_start_list_swap, name='athlete_start_list_swap'),
     path('athlete_start_list_swap_do/', views.athlete_start_list_swap_do, name='athlete_start_list_swap_do'),

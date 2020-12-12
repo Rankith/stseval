@@ -24,7 +24,7 @@
                             <div id="player-waiting1" style="height:480px;display:flex" class="align-items-center"><h1>Waiting for Camera</h1></div>
                             <video id="player-video1" class="live-video" style="display:none" controls autoplay muted></video>
                         </div>
-                        <div id="divAthlete1" align="center"></div>
+                        <div id="divStartList1" align="center" class="spectate_start_list_container"></div>
                     </div>
                 {% else %}
                     <div class="col-12 col-xl-6 pr-1" align="right">
@@ -41,7 +41,7 @@
                                     </div>
                                 {% endfor %} 
                             </div>
-                            <div id="divAthlete1" align="center"></div>
+                            <div id="divStartList1" align="center" class="spectate_start_list_container"></div>
                         </div>
                 
                     </div>
@@ -59,7 +59,7 @@
                                     </div>
                                 {% endfor %} 
                             </div>
-                             <div id="divAthlete2" align="center"></div>
+                            <div id="divStartList2" align="center" class="spectate_start_list_container"></div>
                         </div>
                
                     </div>
@@ -111,6 +111,7 @@
     var CurrentAthlete = new Array();
     CurrentAthlete[1] = -1;
     CurrentAthlete[2] = -1;
+    var test;
     var refs = new Array();
     var db = firebase.firestore();
     SetEventListeners(1);
@@ -162,14 +163,17 @@
                 CurrentAthlete[which] = doc.data().athlete_id;
                 if (ScoreboardOverlay)
                     LoadScoreboard(which);
-                $("#divAthlete" + which).html(AthleteNames[doc.data().athlete_id]);
+               // $("#divAthlete" + which).html(AthleteNames[doc.data().athlete_id]);
                 CheckStream(doc, which);
+                LoadStartList(doc, which);
             }
-            else if (doc.data().status == 'F') {
-                if (ScoreboardOverlay)
-                    LoadScoreboard(which);
+            else {
+                SetStartListDot(doc, which);
+                if (doc.data().status == 'F') {
+                    if (ScoreboardOverlay)
+                        LoadScoreboard(which);
+                }
             }
-
         }
         else {
             $("#player-video" + which).hide();
@@ -248,6 +252,48 @@
             if (ev[1] != evIn && ev[2] != evIn)
                 SwapEventDual(1, evIn);
         }
+    }
+
+    function LoadStartList(doc,which) {
+       
+        $("#divStartList" + which).load("/athlete_start_list_spectate/" + ev[which], function()
+        {
+            let active = $($("#divStartList" + which).children(0).children(0).children(0)[1]).val();
+            console.log(active);
+            let trs = $("#divStartList" + which).children(0).children(0).children(0)[0];
+            console.log(trs);
+            active = $(trs).find($("#" + active));
+            console.log(active);
+            //normal middle of pack
+            if ($(active).prev().length >= 1 && $(active).next().length >= 1) 
+                $(active).prev()[0].scrollIntoView(true);
+            else if ($(active).prev().length == 0) //no previous
+                $(active)[0].scrollIntoView(true);
+            else
+                $(active)[0].scrollIntoView();
+            SetStartListDot(doc,which);
+            //if (dual)
+                //$("#divScoreboard2").html($("#divScoreboard").html());
+        });
+
+    }
+
+    function SetStartListDot(doc,which) {
+        let trs = $("#divStartList" + which).children(0).children(0).children(0)[0];
+        //$(trs).find(".athlete-dot").hide();
+        //find the active one for this which
+        let active = $(trs).find("#divAthleteDots" + doc.data().athlete_id);
+        //console.log("Set start list dot: #divAthleteDots" + doc.data().athlete_id + " | " + doc.data().status);
+        if (doc.data().status == "AD" || doc.data().status == "F" || doc.data().status == "RD") {
+            $(active).removeClass("status-dot-yellow").removeClass("status-dot-green").addClass("status-dot-red");
+        }
+        else if (doc.data().status == "N") {
+            $(active).addClass("status-dot-yellow").removeClass("status-dot-green").removeClass("status-dot-red");
+        }
+        else if (doc.data().status == "S") {
+            $(active).removeClass("status-dot-yellow").addClass("status-dot-green").removeClass("status-dot-red");
+        }
+        $(active).show();
     }
 
 

@@ -975,6 +975,48 @@ def athlete_start_list_change_check_manager(session,event):
                         app.firebase.routine_update_athlete(session,event,sl.athlete,camera.id)
 
 
+def athlete_start_list_spectate(request,event_name):
+    session_id = request.session.get('session')
+    this_rot = StartList.objects.filter(session_id=session_id,event__name=event_name,completed=False).first()
+    if this_rot != None:
+        this_rot = this_rot.athlete.rotation
+    else:
+        this_rot = 'Z'
+    start_list = StartList.objects.filter(session_id=session_id,event__name=event_name,athlete__rotation=this_rot).order_by('-completed','-secondary_judging','order')
+    total_this_rot = len(start_list.filter(active=True))
+    first_not_completed = start_list.filter(completed=False,active=True,secondary_judging=False).first()
+    #get first to make ordinal :( :( :(
+    counter = 0
+    for sl in start_list.filter(active=True):
+        counter = counter + 1
+        if sl == first_not_completed:
+            ordinal = make_ordinal(counter)
+            break
+    if first_not_completed != None:
+        first_not_completed = first_not_completed.id
+    else:
+        first_not_completed = -1
+    context = {
+        'start_list':start_list,
+        'first_not_completed':first_not_completed,
+        'ordinal_total':str(ordinal) + ' of ' + str(total_this_rot),
+    }
+    return render(request,'app/athlete_start_list_spectate.html',context)
+
+def make_ordinal(n):
+    '''
+    Convert an integer into its ordinal representation::
+
+        make_ordinal(0)   => '0th'
+        make_ordinal(3)   => '3rd'
+        make_ordinal(122) => '122nd'
+        make_ordinal(213) => '213th'
+    '''
+    n = int(n)
+    suffix = ['th', 'st', 'nd', 'rd', 'th'][min(n % 10, 4)]
+    if 11 <= (n % 100) <= 13:
+        suffix = 'th'
+    return str(n) + suffix
 
 def athlete_routine_remove(request):
     sl_orig = StartList.objects.get(pk=request.POST.get('sl_orig'))
