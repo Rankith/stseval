@@ -126,10 +126,8 @@
    // alert("Can Play = " + document.getElementById("player-video1").canPlayType('application/vnd.apple.mpegurl'));
 
     function UpdateCompetitionStream(querySnapshot) {
-        console.log("query snap");
-        console.log(querySnapshot);
         querySnapshot.docChanges().forEach(function (change) {
-            console.log(change);
+            console.log(change.doc.data());
             if (change.type === "added") {
                 docdata = change.doc.data();
                 if (docdata.type == 'routine_start') {
