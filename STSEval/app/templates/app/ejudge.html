@@ -208,7 +208,7 @@
         TimeLeft = parseInt((TimeAllowed + 1) - (Date.now() - data['athlete_done_time']) / 1000);
         $("#btnConfirm").show();
         TimerCheck();
-        if (ev != "V") {
+        if (ev != "VT") {
             if (ArtistryAvail) {
                 if (ArtistryMode == "Normal")
                     ArtistryToggle("Art");
@@ -339,7 +339,7 @@
     function SetupPage() {
         $("#divFullScreen").addClass("d-flex flex-column").css("height", "100vh");
         $("#divScreenContainer").addClass("d-flex flex-column h-100");
-        if (ev == "V") {
+        if (ev == "VT") {
             $("#divDeduct").css("height", "80%");
             $("#divPhases").css("display", "flex");
             TimeAllowed = 45;
@@ -416,7 +416,7 @@
         $("#divPDots4").empty();
         $("#divTotalDeductions").html(0);
 
-        if (ev == "V" || (Disc == "WAG" && ev != "UB")) {
+        if (ev == "VT" || (Disc == "WAG" && ev != "UB")) {
 
             $("#divArtistryButtons").show();
             $("#btnArt").show();
@@ -424,7 +424,7 @@
 
 
         }
-        if (ev == "V")
+        if (ev == "VT")
             Phase(1);
     }
 

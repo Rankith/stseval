@@ -980,7 +980,7 @@
                 
                 $("#btnAccountability").removeClass("ui-disabled");
                 setTimeout(RoutineLoadBuildDots,1000)
-                if (ev != "V")
+                if (ev != "VT")
                     RedLineInterval = setInterval(UpdateRedLine, 250);
                
             }
@@ -1111,7 +1111,7 @@
             else if (countedE > 5)*/
                 DeductFrom = 10;
 
-            if (ev == "V")
+            if (ev == "VT")
                 DeductFrom = 10;
             StartValueScore = +parseFloat(Score).toFixed(1) + +parseFloat(groups).toFixed(1);
             var TotalDeductions = CalcDeductions(DeductFrom);
@@ -1137,7 +1137,7 @@
             else if (countedE >= 7)
                 DeductFrom = 10;
 
-            if (ev == "V")
+            if (ev == "VT")
                 DeductFrom = 10;
             StartValueScore = +parseFloat(Score).toFixed(1) + +parseFloat(groups).toFixed(1);
             var TotalDeductions = CalcDeductions(DeductFrom);
@@ -1603,7 +1603,7 @@
             }
             $("#tdGroups").show();
         }
-        if (ev == "V") {
+        if (ev == "VT") {
             $("#txtGroups").val('0');
             $("#txtGroups").hide();
             $("#tdGroups").hide();

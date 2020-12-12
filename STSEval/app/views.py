@@ -465,7 +465,7 @@ def deduct(request):
     if relative_time == -1:
         relative_time = mili - routine.start_time
 
-    if routine.athlete_done_time != None and routine.event.name != 'V' and routine.routine_length() < relative_time:
+    if routine.athlete_done_time != None and routine.event.name != 'VT' and routine.routine_length() < relative_time:
         relative_time = routine.routine_length()-50
     
 
@@ -567,7 +567,7 @@ def build_dots(request):
                 posx = (dot_size/8)
                 posx = posx + ((dot_size + (dot_size/8))*artistry_amounts[j_offset])
                 artistry_amounts[j_offset] += 1
-            elif routine.event.name == "V":
+            elif routine.event.name == "VT":
                 posx = int(str(d.time_stamp_relative)[0]) - 1 #get first digit and subtract one
                 posx = posx * ((width)/4)#multiply by 1/4 the total width
                 if posx == 0:
