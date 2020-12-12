@@ -127,17 +127,16 @@
 
     function UpdateCompetitionStream(querySnapshot) {
         querySnapshot.docChanges().forEach(function (change) {
-            console.log(change.doc.data());
+            //console.log(change.doc.data());
             if (change.type === "added") {
                 docdata = change.doc.data();
                 if (docdata.type == 'routine_start') {
                     let message = "<span class='update-message-header'>" + docdata.athlete_display + "</span><br/>" + "Starting Exercise " + docdata.event;
                     $("#divUpdates").prepend("<div id='divUpdate" + docdata.id + "' class='update-message update-routine-start' align='center' onclick='FeedSwapEvent(\"" + docdata.event + "\")' style='display:none'>" + message + "</div>");
-                    
                 }
                 else {
                     let message = "<span class='update-message-header'>" +docdata.athlete_display + "</span><br/>" + "Scored " + docdata.score + " on " + docdata.event;
-                    $("#divUpdates").prepend("<div id='divUpdate" + docdata.id + " class='update-message' align='center' style='display:none'>" + message + "</div>");
+                    $("#divUpdates").prepend("<div id='divUpdate" + docdata.id + "' class='update-message' align='center' style='display:none'>" + message + "</div>");
                 }
                 $("#divUpdate" + docdata.id).show('slow');
             }
