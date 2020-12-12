@@ -389,3 +389,12 @@ def update_spectator_feed(s,e,type,athlete=-1,score=-1):
         u'score':score,
         u'timestamp':datetime.utcnow(),
     })
+
+def update_e_ping(s,e,judge,deduct):
+    db = firestore.Client()
+
+    doc_ref = db.collection(u'sessions').document(str(s)).collection(u'event_managers').document(str(e) + "_e_" + str(judge))
+    doc_ref.set({
+        u'deduct':deduct,
+        u'timestamp':datetime.utcnow(),
+    })

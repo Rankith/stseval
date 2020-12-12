@@ -126,6 +126,7 @@
     var GymnastTeams = new Array();
      var GymnastLabels = new Array();
      var GymnastScoringType = new Array();
+    var DotsUrl = "{% static 'app/images/dots' %}";
     {% for athlete in athletes %}
         GymnastLevels[{{athlete.id}}] = "{{athlete.level}}";
         GymnastTeams[{{athlete.id}}] = "{{athlete.team}}";
@@ -153,9 +154,32 @@
         .onSnapshot(function (doc) {
             SetBasedOnStatus(doc);
         });
+     db.collection("sessions").doc(Session).collection("event_managers").doc(ev + "_e_" + ThisJudge)
+         .onSnapshot(function (doc) {
+             if (Status == "S") {
+                 console.log(doc.data().timestamp);
+                 if (doc.data().deduct != "-1")
+                    CreateDotNotice(doc.data().deduct, doc.data().timestamp.nanoseconds);
+                 //only if currently judging
+                 
+             }
+        });
     SetupChatListener();
 
     SetDotsArea();
+
+    function CreateDotNotice(deduction, timestamp) {
+        let thisname = "divTry" + timestamp;
+        $("#divDotsArea").append("<div id='" + thisname + "' style='position:absolute;left:50%;bottom:0px'><img width='24' height='24' src='" + DotsUrl + "/e-" + deduction + ".svg'></div>");
+        $("#" + thisname).animate({
+              opacity: '0.5',
+              top: '0px',
+              margin: '0px'
+            }, 1000, function(){ 
+              $(this).remove();
+            });
+    }
+
 
     function SetBasedOnStatus(doc) {
         if (doc.data() != undefined) {

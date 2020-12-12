@@ -471,6 +471,11 @@ def deduct(request):
 
     ded = EJuryDeduction(routine=routine,judge=judge,deduction=deduction,action=action,editor=editor,time_stamp=mili,time_stamp_relative=relative_time,artistry_type=artistry_type)
     ded.save()
+    try:
+        app.firebase.update_e_ping(routine.session.id,routine.event.name,judge,deduction)
+    except:
+        pass
+    
     return HttpResponse(status=200) 
 
 def deduction_change(request):
