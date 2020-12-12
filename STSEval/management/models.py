@@ -49,6 +49,7 @@ class Session(models.Model):
     test =  models.BooleanField(default=False)
     finished = models.BooleanField(default=False)
     active = models.BooleanField(default=False)
+    top_counting_for_score = models.IntegerField(default=5)
     def full_name(self):
        return self.competition.name + " - " + self.competition.get_type_display() + " - " + self.name
 

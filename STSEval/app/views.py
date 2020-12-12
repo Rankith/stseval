@@ -808,7 +808,7 @@ def calc_team_scores(session,event=''):
     team = ""
     lvl = ""
     count = 0
-    max = 5
+    max = Session.objects.get(pk=session).top_counting_for_score
     scores = []
     for routine in routines:
         if team != routine.athlete.team.name or level != routine.athlete.level.name:
