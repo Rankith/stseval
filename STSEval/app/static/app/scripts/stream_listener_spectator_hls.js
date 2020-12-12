@@ -81,6 +81,26 @@ function StartStream(which) {
             HLSPlayer[which].attachMedia(VideoPlayer[which]);
             HLSPlayer[which].on(Hls.Events.MANIFEST_PARSED, function () {
                 VideoPlayer[which].play();
+                console.log("Manifest Parsed");
+            });
+            HLSPlayer[which].on(Hls.Events.ERROR, function (event, data) {
+                if (data.fatal) {
+                    switch (data.type) {
+                        case Hls.ErrorTypes.NETWORK_ERROR:
+                            // try to recover network error
+                            console.log("fatal network error encountered, try to recover");
+                            HLSPlayer[which].startLoad();
+                            break;
+                        case Hls.ErrorTypes.MEDIA_ERROR:
+                            console.log("fatal media error encountered, try to recover");
+                            HLSPlayer[which].recoverMediaError();
+                            break;
+                        default:
+                            // cannot recover
+                            HLSPlayer[which].destroy();
+                            break;
+                    }
+                }
             });
             HLSPlayer[which].loadSource(hls_playback_url[which]);
         }
@@ -89,9 +109,12 @@ function StartStream(which) {
             VideoPlayer[which].addEventListener('loadedmetadata', function () {
                 VideoPlayer[which].play();
             });
+            VideoPlayer[which].addEventListener('canplaythrough', function () {
+                VideoPlayer[which].play();
+            });
         }
         //$(".vjs-tech").show();
-        /*HLSPlayer[which].on('error', function () {
+        HLSPlayer[which].on('error', function () {
             console.log("error " + which);
             if (HLSPlayer[which].error().code == 4) {
                 ReCheck[which] = setTimeout(function () {
@@ -101,12 +124,8 @@ function StartStream(which) {
                 $("#player-video" + which).hide();
                 $("#player-waiting" + which).css("display", "flex");
             }
-            /*else if (VidJSPlayer.error().code == 2) {
-                ReCheck = setInterval(StartStream, 2000);
-                $("#player-video").hide();
-                $("#player-waiting").css("display", "flex");
-            }
-        });*/
+            
+        });
         /*VidJSPlayer[which].tech().on('retryplaylist', () => {
             console.log('retryplaylist');
         });

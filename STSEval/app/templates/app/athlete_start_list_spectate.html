@@ -1,16 +1,16 @@
 <div class="row no-gutters" align="center">
         <table cellspacing="0" border=0 cellpadding="0" align="center">
             <tbody>
-            {% if start_list.count > 0 %}
-                {% for sl in start_list %}
+            {% if start_list.count == 0 or ordinal == '0' %}
+               <tr><td>Event Complete</td></tr>
+            {% else %}
+                 {% for sl in start_list %}
                     <tr class="{% if sl.completed or sl.secondary_judging %}start-list-completed{% endif %}" athid="{{sl.id}}" id="trStartList{{sl.id}}">
                         <td class="pr-2"><span id="divAthleteDots{{sl.athlete.id}}" class="status-dot-small mr-1 athlete-dot mt-1" style="display:none"></span></td>
 			            <td id="divSL{{sl.id}}" class="pr-1 {% if not sl.active %}start-list-scratched{% endif %}" align="center">{{sl.athlete.team.abbreviation}} - {{sl.athlete.name}}</td>
                         <td class="pl-2 pr-4">{% if sl.id == first_not_completed %}{{ordinal_total}}{% endif %}</td>
                     </tr>
                 {% endfor %} 
-            {% else %}
-                <tr><td>Event Complete</td></tr>
             {% endif %}
         </tbody>
             <input type="hidden" id="hdnFirstNotCompleted" value="trStartList{{first_not_completed}}"/>

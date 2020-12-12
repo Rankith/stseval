@@ -1001,6 +1001,7 @@ def athlete_start_list_spectate(request,event_name):
         'start_list':start_list,
         'first_not_completed':first_not_completed,
         'ordinal_total':str(ordinal) + ' of ' + str(total_this_rot),
+        'ordinal':str(ordinal),
     }
     return render(request,'app/athlete_start_list_spectate.html',context)
 
