@@ -1,11 +1,11 @@
 {% load staticfiles %}
-{% if routine.event == 'VT' %}
+
+{% if routine.event.name == "VT" %}
     <div id="divVP1" style="border-right:1px solid;position:absolute;left:25%;height:100%;width:1px"></div><div id="divVP2" style="border-right:1px solid;position:absolute;left:50%;height:100%;width:1px"></div><div id="divVP3" style="border-right:1px solid;position:absolute;left:75%;height:100%;width:1px"></div>
 {% endif %}
 {% for deduction in deductions %}
-    <img id='imgDot{{deduction.id}}' src='{% static 'app/images/dots/' %}{{deduction.image}}' width='{{dot_size}}' height='{{dot_size}}' class="dotjudge{{deduction.judge}}" style='position:absolute;top:{{deduction.posy}}px;{{deduction.posx}}{% if routine.event != 'VT' %}%{% else %}px{% endif %};opacity:{{deduction.opacity}}' {% if playback_only == '1' %} onclick='PlayerJump({{deduction.jumppos}});event.stopPropagation();'{% else %} onclick='{% if deduction.opacity == 1 %}ClickEjury({{deduction.id}});{% endif %}event.stopPropagation();'{% endif %}>
+    <img id='imgDot{{deduction.id}}' src='{% static 'app/images/dots/' %}{{deduction.image}}' width='{{dot_size}}' height='{{dot_size}}' class="dotjudge{{deduction.judge}}" style='position:absolute;top:{{deduction.posy}}px;{{deduction.posx}}{% if routine.event.name != 'VT' %}%{% else %}px{% endif %};opacity:{{deduction.opacity}}' {% if playback_only == '1' %} onclick='PlayerJump({{deduction.jumppos}});event.stopPropagation();'{% else %} onclick='{% if deduction.opacity == 1 %}ClickEjury({{deduction.id}});{% endif %}event.stopPropagation();'{% endif %}>
 {% endfor %}
-
 {% if artistry_deductions|length > 0 %}
     <div id="divArtistryDeductions" style="display:none">
         {% for deduction in artistry_deductions %}
