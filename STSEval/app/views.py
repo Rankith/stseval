@@ -987,6 +987,7 @@ def athlete_start_list_spectate(request,event_name):
     first_not_completed = start_list.filter(completed=False,active=True,secondary_judging=False).first()
     #get first to make ordinal :( :( :(
     counter = 0
+    ordinal = 0
     for sl in start_list.filter(active=True):
         counter = counter + 1
         if sl == first_not_completed:
