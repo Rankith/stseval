@@ -115,6 +115,7 @@
     var test;
     var refs = new Array();
     var db = firebase.firestore();
+    firebase.firestore.setLogLevel('debug');
     SetEventListeners(1);
     if (ev[2] != undefined)
         SetEventListeners(2);
