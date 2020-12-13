@@ -100,17 +100,25 @@
     firebase.firestore.setLogLevel('debug');
     var BackupVideo = -1;
     var Overview = true;
+    var CurrentSL = -1
     var docRef = db.collection("sessions").doc(Session).collection("event_managers").doc(ev);
     docRef.onSnapshot(function (doc) {
         console.log("Event Manager Snapshot CurAth: " + CurrentAthlete + " | NewAth: " + doc.data().athlete_id);
         if (CurrentAthlete != doc.data().athlete_id) {
             CurrentAthlete = doc.data().athlete_id;
+            CurrentSL = doc.data().start_list_change;
             $("#divAthlete").html(AthleteNames[doc.data().athlete_id]);
             CheckStream(doc);
             CheckJudges(doc);
             LoadStartList(doc);
             HighlightCamera();
-            
+            SetStartListDot(doc);
+
+        }
+        else if (CurrentSL != doc.data().start_list_change) {
+            LoadStartList(doc);
+            SetStartListDot(doc);
+            CurrentSL = doc.data().start_list_change;
         }
         else {
             SetStartListDot(doc);

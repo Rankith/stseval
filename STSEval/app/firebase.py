@@ -393,8 +393,27 @@ def update_spectator_feed(s,e,type,athlete=-1,score=-1):
 def update_e_ping(s,e,judge,deduct):
     db = firestore.Client()
 
-    doc_ref = db.collection(u'sessions').document(str(s)).collection(u'event_managers').document(str(e) + "_e_" + str(judge))
-    doc_ref.set({
+    doc_ref = db.collection(u'sessions').document(str(s)).collection(u'event_managers').document(str(e)).collection("e" + str(judge) + "deductions").add({
         u'deduct':deduct,
-        u'timestamp':datetime.utcnow(),
     })
+
+def clear_e_ping(s,e):
+    db = firestore.Client()
+    delete_collection(db.collection(u'sessions').document(str(s)).collection(u'event_managers').document(str(e)).collection("e1deductions"),50)
+    delete_collection(db.collection(u'sessions').document(str(s)).collection(u'event_managers').document(str(e)).collection("e2deductions"),50)
+    delete_collection(db.collection(u'sessions').document(str(s)).collection(u'event_managers').document(str(e)).collection("e3deductions"),50)
+    delete_collection(db.collection(u'sessions').document(str(s)).collection(u'event_managers').document(str(e)).collection("e4deductions"),50)
+
+
+def delete_collection(coll_ref, batch_size):
+    docs = coll_ref.limit(batch_size).stream()
+    deleted = 0
+
+    for doc in docs:
+        #print(f'Deleting doc {doc.id} => {doc.to_dict()}')
+        doc.reference.delete()
+        deleted = deleted + 1
+
+    if deleted >= batch_size:
+        return delete_collection(coll_ref, batch_size)
+

@@ -154,22 +154,24 @@
         .onSnapshot(function (doc) {
             SetBasedOnStatus(doc);
         });
-     db.collection("sessions").doc(Session).collection("event_managers").doc(ev + "_e_" + ThisJudge)
-         .onSnapshot(function (doc) {
-             if (Status == "S") {
-                 console.log(doc.data().timestamp);
-                 if (doc.data().deduct != "-1")
-                    CreateDotNotice(doc.data().deduct, doc.data().timestamp.nanoseconds);
-                 //only if currently judging
-                 
+     db.collection("sessions").doc(Session).collection("event_managers").doc(ev).collection("e" + ThisJudge + "deductions")
+         .onSnapshot(function (querySnapshot) {
+             if (Status == "S") { //only if currently judging
+                 querySnapshot.docChanges().forEach(function (change) {
+                     if (change.type === "added") {
+                         docdata = change.doc.data();
+                         if (docdata.deduct != "-1")
+                             CreateDotNotice(docdata.deduct, change.doc.id);
+                     }
+                 });
              }
         });
     SetupChatListener();
 
     SetDotsArea();
 
-    function CreateDotNotice(deduction, timestamp) {
-        let thisname = "divTry" + timestamp;
+    function CreateDotNotice(deduction, id) {
+        let thisname = "divTry" + id;
         $("#divDotsArea").append("<div id='" + thisname + "' style='position:absolute;left:50%;bottom:0px'><img width='24' height='24' src='" + DotsUrl + "/e-" + deduction + ".svg'></div>");
         $("#" + thisname).animate({
               opacity: '0.5',

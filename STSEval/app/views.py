@@ -242,6 +242,7 @@ def routine_athlete_done(request):
 
     routine.save()
     app.firebase.routine_set_status(str(request.session.get('session')) ,request.session.get('event'),routine)
+    app.firebase.clear_e_ping(str(request.session.get('session')) ,request.session.get('event'))
 
     return JsonResponse(Routine.objects.values().get(pk=routine.id),safe=False)
 
@@ -272,6 +273,8 @@ def routine_delete(request):
         os.remove(settings.MEDIA_ROOT + '/routine_videos/' + str(routine.session.id) + '/' + routine.event.name + '/' + routine.athlete.name.replace(" ","") + "_" + str(routine.id) + '.webm')
 
     app.firebase.routine_set_status(str(routine.session.id),routine.event.name,routine)
+    app.firebase.clear_e_ping(str(routine.session.id),routine.event.name)
+    
 
     return HttpResponse(status=200)
 
