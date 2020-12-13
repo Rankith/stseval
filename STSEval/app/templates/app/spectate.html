@@ -118,7 +118,7 @@
     SetEventListeners(1);
     if (ev[2] != undefined)
         SetEventListeners(2);
-    db.collection("sessions").doc(Session).collection("competition_stream").orderBy("timestamp").onSnapshot(function (querySnapshot) {
+    db.collection("sessions").doc(Session).collection("competition_stream").orderBy("timestamp").limit(10).onSnapshot(function (querySnapshot) {
             UpdateCompetitionStream(querySnapshot);
         });
     //if (Hls.isSupported())
