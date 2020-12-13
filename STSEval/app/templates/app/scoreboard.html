@@ -35,6 +35,7 @@
     var Status = "";
     var Videos = new Array();
     var dbF = firebase.firestore();
+    firebase.firestore.setLogLevel('debug');
     if (ev == "AA") {
         //just check every x seconds
         GetRoutineAAData();

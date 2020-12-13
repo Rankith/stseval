@@ -97,17 +97,20 @@
 <script type="text/javascript">
     var CurrentAthlete = -1;
     var db = firebase.firestore();
+    firebase.firestore.setLogLevel('debug');
     var BackupVideo = -1;
     var Overview = true;
     var docRef = db.collection("sessions").doc(Session).collection("event_managers").doc(ev);
     docRef.onSnapshot(function (doc) {
         console.log("Event Manager Snapshot CurAth: " + CurrentAthlete + " | NewAth: " + doc.data().athlete_id);
         if (CurrentAthlete != doc.data().athlete_id) {
+            CurrentAthlete = doc.data().athlete_id;
             $("#divAthlete").html(AthleteNames[doc.data().athlete_id]);
             CheckStream(doc);
             CheckJudges(doc);
             LoadStartList(doc);
             HighlightCamera();
+            
         }
         else {
             SetStartListDot(doc);

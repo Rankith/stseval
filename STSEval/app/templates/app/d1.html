@@ -282,6 +282,7 @@
     var BackupVideo = -1;
     var Overview = false;
     var db = firebase.firestore();
+    firebase.firestore.setLogLevel('debug');
     for (var i = 1; i <= 4; i++) {
         EJudgesReady[i] = false;
     }
