@@ -31,22 +31,31 @@ function HandleStreamChanges(doc,which) {
     if (doc.data() != undefined) {
         console.log(doc.data());
         if (doc.data().hls_playback_url != undefined && doc.data().hls_playback_url != "" && doc.data().connected == true) {
-            StreamConnected[which] = true;
-            hls_playback_url[which] = doc.data().hls_playback_url;
-            //clearTimeout(ReCheck[which]);
-            //clearInterval(ReadyStateCheck[which]);
-            if (HLSPlayer[which] != undefined) {
-                HLSPlayer[which].destroy();
-                //HLSPlayer[which].loadSource("");
-                HLSPlayer[which] = undefined;
+            if (doc.data().event == ev[which]) {
+                StreamConnected[which] = true;
+                hls_playback_url[which] = doc.data().hls_playback_url;
+                //clearTimeout(ReCheck[which]);
+                //clearInterval(ReadyStateCheck[which]);
+                if (HLSPlayer[which] != undefined) {
+                    HLSPlayer[which].destroy();
+                    //HLSPlayer[which].loadSource("");
+                    HLSPlayer[which] = undefined;
+                }
+                StartStream(which);
             }
-            StartStream(which);
+            else {
+                StreamConnected[which] = false;
+                $("#player-waiting" + which).show();
+                $("#player-video" + which).hide();
+                $("#player-waiting" + which).html("<h1>No Video Stream At This Time</h1>");
+            }
         }
         else if (doc.data().connected == false) {
             StreamConnected[which] = false;
             console.log("dispose " + which);
             $("#player-waiting" + which).show();
             $("#player-video" + which).hide();
+            $("#player-waiting" + which).html("<h1>Waiting for Camera</h1>");
             //clearTimeout(ReCheck[which]);
             //clearInterval(ReadyStateCheck[which]);
             if (HLSPlayer[which] != undefined) {

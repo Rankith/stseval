@@ -5,7 +5,6 @@
     {{session_name}}<br/>
     <div>
         <div id="divRotationsHeader" style="padding-bottom:5px;font-size:22px;font-weight:bold;text-align:center">Rotations <span style="font-size:12px;font-weight:normal">(drag to order)</span></div>
-        <span>Note: This screen currently does nothing.</span>
         <div class="d-flex justify-content-center">
         {% if rot_ords %}
         {% for rot in rot_ords %}
@@ -49,6 +48,11 @@
     {% for rot in rotations %}
        Sortable.create(divRot{{rot}}, { onEnd: SortEnd });
     {% endfor %}
+    {% if rotation_error == "" %}
+    var RotationError = false;
+    {% else %}
+     var RotationError = true;
+    {% endif %}
 </script>
 <script type="text/javascript">
 
@@ -61,7 +65,10 @@
     }
 
     function GenerateStartListClick() {
-        CheckStartList();
+        if (!RotationError)
+            CheckStartList();
+        else
+            alert($("#divRotationError").html());
     }
 
     function GenerateStartList() {
@@ -120,9 +127,12 @@
             success: function (data) {
                 if (data.includes("Multiple")) {
                     $("#divRotationError").html(data);
+                    RotationError = true;
                 }
-                else
+                else {
                     $("#divRotationError").html("&nbsp;");
+                    RotationError = false;
+                }
             }
         });
     }

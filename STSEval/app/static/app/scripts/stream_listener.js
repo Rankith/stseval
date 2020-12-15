@@ -54,16 +54,28 @@ function HandleStreamChanges(doc) {
     if (doc.data() != undefined) {
         console.log(doc.data());
         if (doc.data().connected == true) {
-            $("#playSdpURL").val(doc.data().sdp_url);
-            $("#playApplicationName").val(doc.data().application_name);
-            $("#playStreamName").val(doc.data().stream_name);
-            StreamConnected = true;
-            setTimeout(StartStream, 1000);
+            if (doc.data().event == ev) {
+                $("#playSdpURL").val(doc.data().sdp_url);
+                $("#playApplicationName").val(doc.data().application_name);
+                $("#playStreamName").val(doc.data().stream_name);
+                StreamConnected = true;
+                setTimeout(StartStream, 1000);
+            }
+            else if (Status != "S") {
+                StreamConnected = false;
+                $("#player-video").hide();
+                $("#player-waiting").css("display", "flex");
+                if (Overview)
+                    $("#player-waiting").html("<h1>No Stream for This Event</h1>");
+                else
+                    $("#player-waiting").html("<h1>Waiting for Previous Rotation</h1>");
+            }
         }
         else {
             StreamConnected = false;
             $("#player-video").hide();
-            $("#player-waiting").css("display","flex");
+            $("#player-waiting").css("display", "flex");
+            $("#player-waiting").html("<h1>Waiting for Camera</h1>");
         }
     }
 }

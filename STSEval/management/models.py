@@ -139,6 +139,7 @@ class Camera(models.Model):
     location = models.CharField(max_length=50)
     events = models.ManyToManyField(Event)
     teams = models.ManyToManyField(Team)
+    current_event = models.ForeignKey(Event, related_name='cam_current_event', on_delete=models.SET_NULL,null=True,default=None)
     def __str__(self):
         return self.location + "-" + self.name
 

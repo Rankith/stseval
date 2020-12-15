@@ -426,14 +426,7 @@
             doc_data = doc.data();
             //console.log("Set Based On Status " + doc_data.djudge);
             //CheckStream(doc);
-            /*Stream = doc_data.stream;
-            if (Stream != "") {
-                //var db = firebase.firestore();
-                console.log("Setup Setting Stream Listener To " + Stream);
-                StreamListener = db.collection("streams").doc(Stream).onSnapshot(function (doc) {
-                    HandleStreamChanges(doc);
-                });
-            }*/
+
 
             //cascade status so it does them in order.
             LoadFrom = "active";

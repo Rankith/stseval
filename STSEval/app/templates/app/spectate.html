@@ -150,6 +150,7 @@
             refs[which]();//release event listener
         console.log("Setting Event Listener " + which + " To " + ev[which]);
         CurrentAthlete[which] = -1;
+        Stream[which] = -1;
         refs[which] = db.collection("sessions").doc(Session).collection("event_managers").doc(ev[which]).onSnapshot(function (doc) {
             HandleEventChanges(doc,which);
         });

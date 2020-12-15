@@ -8,7 +8,7 @@ from django.template import RequestContext
 from datetime import datetime
 from django.contrib.auth import authenticate, login
 from app.models import Twitch,Routine,EJuryDeduction,BackupVideo
-from management.models import Competition,Judge,Athlete,Session,Camera,StartList,Team,Event,Disc,Sponsor
+from management.models import Competition,Judge,Athlete,Session,Camera,StartList,Team,Event,Disc,Sponsor,RotationOrder
 from app.twitch import TwitchAPI
 import app.firebase
 from time import time
@@ -23,6 +23,7 @@ from django.db.models import F, Sum
 from apscheduler.schedulers.background import BackgroundScheduler
 from .forms import VideoUploadForm
 from django.core.files import File
+from time import perf_counter 
 
 def valid_login_type(match=None):
     def decorator(func):
@@ -170,9 +171,11 @@ def routine_setup(request):
         else:
             djudge = request.POST.get('djudge','D1')
         app.firebase.routine_setup(session,request.session.get('event'),athlete,camera.id,djudge)
-
+        check_update_camera_event(camera.session.id,camera)
         return HttpResponse(status=200)
     else:
+        app.firebase.routine_all_done(session,request.session.get('event'))
+        check_update_camera_event(session.id)
         return HttpResponse("event done")
 
 def routine_swap_d(request):
@@ -197,6 +200,7 @@ def routine_swap_d(request):
         camera = Camera.objects.filter(teams=sl.athlete.team,events=routine.event).first()
         app.firebase.routine_setup(routine.session,routine.event.name,sl.athlete,camera.id,next_judge)
         app.firebase.routine_set_status(routine.session.id,routine.event.name,routine)
+        #check_update_camera_event(camera.session.id,camera)
 
     return HttpResponse(status=200)
 
@@ -299,6 +303,8 @@ def routine_finished(request):
     routine.save()
     app.firebase.routine_set_status(str(routine.session.id) ,routine.event.name,routine)
     app.firebase.update_spectator_feed(str(routine.session.id),routine.event.name,'routine_finished',routine.athlete.id,"{:.1f}".format(routine.score_final))
+    #camera = Camera.objects.filter(teams=routine.athlete.team,events__name=routine.event.name).first()
+    #check_update_camera_event(routine.session.id,camera)
 
     return HttpResponse(status=200)
 
@@ -757,7 +763,6 @@ def video_scoreboard(request):
     session = Session.objects.get(pk=request.GET.get('Session'))
     events = Event.objects.filter(disc=session.competition.disc)
     teams = Team.objects.filter(session_id=request.GET.get('Session'))
-    ath = Athlete.objects.get(pk=request.GET.get('Ath'))
     team_scores = []
     for team in teams:
         team_scores.append({'team':team.abbreviation,'score':0.00,'dif':'--'})
@@ -789,14 +794,18 @@ def video_scoreboard(request):
     #check which teams to show
     team_scores_filtered = []
     team_scores_filtered.append(team_scores[0]) #always show first
-    if team_scores[0]['team'] == ath.team.abbreviation:
-        #highest is team up so just do them and second place
-        team_scores_filtered.append(team_scores[1])
+    if request.GET.get('Ath') != '-1' and request.GET.get('Ath') != '0':
+        ath = Athlete.objects.get(pk=request.GET.get('Ath'))
+        if team_scores[0]['team'] == ath.team.abbreviation:
+            #highest is team up so just do them and second place
+            team_scores_filtered.append(team_scores[1])
+        else:
+            for t in team_scores:
+                if t['team'] == ath.team.abbreviation:
+                    team_scores_filtered.append(t)
+                    break
     else:
-        for t in team_scores:
-            if t['team'] == ath.team.abbreviation:
-                team_scores_filtered.append(t)
-                break
+        team_scores_filtered.append(team_scores[1]) #just do first second as no team sent
     #team_scores = sorted(team_scores,key = lambda i: i['score'],reverse=True)
     context = {
         'scores': team_scores_filtered
@@ -840,6 +849,8 @@ def athlete_mark_done_do(event,session_id,athlete_id):
     sl = StartList.objects.filter(session_id=session_id,event__name=event,athlete_id=athlete_id).first()
     sl.completed=True
     sl.save()
+    camera = Camera.objects.filter(teams=sl.athlete.team,events__name=event).first()
+    check_update_camera_event(camera.session.id)
 
 def athlete_get_next(request):
     event = request.session.get('event')
@@ -858,13 +869,20 @@ def athlete_get_next(request):
         return JsonResponse({'id':'-1'})
 
 def athlete_get_info(request,athlete_id):
-    athlete = Athlete.objects.get(pk=athlete_id)
+    if athlete_id != 0:
+        athlete = Athlete.objects.get(pk=athlete_id)
 
-    return JsonResponse({'id':athlete.id,
-                            'label':str(athlete),
-                            'level':athlete.level.name,
-                            'team':str(athlete.team)
-                            })
+        return JsonResponse({'id':athlete.id,
+                                'label':str(athlete),
+                                'level':athlete.level.name,
+                                'team':str(athlete.team)
+                                })
+    else:
+        return JsonResponse({'id':0,
+                                'label':'',
+                                'level':'',
+                                'team':''
+                                })
 
 def athlete_get_next_do(event,session_id):
     sl = StartList.objects.filter(session_id=session_id,event__name=event,active=True,completed=False,secondary_judging=False).order_by('order','athlete__rotation')
@@ -879,17 +897,17 @@ def athlete_get_next_do(event,session_id):
     return sl
 
 def athlete_get_event_on(athlete,session_id):
-    rotation_basis = ord('A')
-    rotation_adjust = ord(athlete.rotation) - rotation_basis #get the offset for order by
+    #t1 = perf_counter()
     next_event = 'done'
-    sl = StartList.objects.filter(athlete=athlete,session_id=session_id).order_by('event__display_order')
-    for i in range(sl.count()):
-        j = i + rotation_adjust
-        if j >= sl.count():
-            j = j - sl.count()
-        if sl[j].active and not sl[j].completed:
-            next_event = sl[j].event.name
+    rotation_order = RotationOrder.objects.filter(session_id=session_id,rotation=athlete.rotation).order_by('order')
+    sls = StartList.objects.filter(athlete=athlete,session_id=session_id)
+    for ord in rotation_order:
+        sl = sls.get(event=ord.event)
+        if sl.active and not sl.completed:
+            next_event = sl.event.name
             break
+
+    #print(perf_counter())
     return next_event
 
 def athlete_start_list(request,event_name,team_id):
@@ -970,7 +988,29 @@ def athlete_start_list_swap_do(request):
     return HttpResponse(status=200)
 
 def athlete_start_list_change_check_manager(session,event):
+
+    #changing this to read from the local db as a firestore query is slooooooow
+    #rot = Routine.objects.filter(session_id=session,event__name=event).order_by('-id').first()
+    #if rot == None:
+    #    get_next = True
+    #    ath_id=-1
+    #    status='N'
+    #elif rot.status == Routine.NEW or rot.status == Routine.FINISHED or rot.status == Routine.DELETED:
+    #    get_next = True
+    #    ath_id = rot.athlete.id
+    #    status = rot.status
+    #if get_next:
+    #    #previous routine all done so check first
+    #    sl = athlete_get_next_do(event,session)
+    #    if sl != None:
+    #        camera = Camera.objects.filter(teams=sl.athlete.team,events__name=event).first()
+    #        if sl.athlete.id !=ath_id or status == 'F':
+    #            if status == 'F':
+    #                app.firebase.routine_setup(sl.session,event,sl.athlete,camera.id,'D1')
+    #            else:
+    #                app.firebase.routine_update_athlete(session,event,sl.athlete,camera.id)
     rot = app.firebase.routine_get(session,event)
+
     if rot['status'] == 'N' or rot['status'] == 'F':
             #previous routine all done so check first
             sl = athlete_get_next_do(event,session)
@@ -981,7 +1021,39 @@ def athlete_start_list_change_check_manager(session,event):
                         app.firebase.routine_setup(sl.session,event,sl.athlete,camera.id,'D1')
                     else:
                         app.firebase.routine_update_athlete(session,event,sl.athlete,camera.id)
+            check_update_camera_event(session)
 
+
+def check_update_camera_event(session_id,camera = None):
+    cameras = Camera.objects.filter(session_id=session_id)
+    if camera != None:
+        cameras = cameras.filter(id=camera.id)
+    for cam in cameras:
+        event_on = camera_get_event_on(cam)
+        if cam.current_event != event_on:
+            if event_on != None:
+                cam.current_event = event_on
+                cam.save()
+                app.firebase.stream_set_event(cam.session.id,event_on.name,cam.id)
+        
+
+def camera_get_event_on(camera):
+    #t1 = perf_counter()
+    rotation = camera.teams.first().athlete_set.first().rotation
+    next_event = None
+    rotation_order = RotationOrder.objects.filter(session=camera.session,rotation=rotation).order_by('order')
+    sls = StartList.objects.filter(athlete__rotation=rotation,session=camera.session,active=True,completed=False)#all un finished athletes on this rotation with no backup video
+    for ord in rotation_order:
+        sl = sls.filter(event=ord.event)
+        for s in sl: #check to see if its just a backup video in which case dont move camera back
+            if s.athlete.backupvideo_set.all().filter(event__name=ord.event.name).count() == 0:
+                next_event = s.event
+                break
+        if next_event != None:
+            break
+
+    #print(perf_counter())
+    return next_event
 
 def athlete_start_list_spectate(request,event_name):
     session_id = request.session.get('session')
@@ -1093,6 +1165,7 @@ def reset_athlete(request,session_id,event_name):
     camera = Camera.objects.filter(teams=sl.athlete.team,events__name=event_name).first()
     app.firebase.routine_reset_previous(sl.session,event_name)
     app.firebase.routine_setup(sl.session,event_name,sl.athlete,camera.id,'D1')
+    check_update_camera_event(camera.session.id,camera)
 
     return render(request,'app/reset_athlete_warn.html')
 
@@ -1198,6 +1271,7 @@ def setup_firebase_managers(session,event_name=''):
                 camera = Camera.objects.filter(teams=athlete.team,events__name=event.name).first()
                 try:
                     app.firebase.routine_setup(session,event.name,athlete,camera.id,'D1')
+                    check_update_camera_event(camera.session.id,camera)
                 except:
                     pass
     

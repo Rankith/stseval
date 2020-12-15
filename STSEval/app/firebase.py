@@ -86,6 +86,13 @@ def routine_set_ejudge_done(s,e,ejudge,done):
         u'e' + str(ejudge) + 'done': done
     },merge=True)
 
+def routine_all_done(session,e):
+    db = firestore.Client()
+    doc_ref = db.collection(u'sessions').document(str(session.id)).collection(u'event_managers').document(str(e))
+    doc_ref.set({
+        u'athlete_id': 0
+    },merge=True)
+
 def routine_setup(session,e,athlete,camera,judge):
     db = firestore.Client()
 
@@ -232,6 +239,14 @@ def routine_set_stream(s,e,stream):
     doc_ref.set({
         u'id': e,
         u'stream':stream,
+    },merge=True)
+
+def stream_set_event(s,e,camera_id):
+    db = firestore.Client()
+
+    doc_ref = db.collection(u'sessions').document(str(s)).collection(u'streams').document(str(camera_id))
+    doc_ref.set({
+        u'event':e,
     },merge=True)
 
 def set_stream(s,stream):
