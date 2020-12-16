@@ -7,7 +7,7 @@ from django.http import HttpRequest,JsonResponse,HttpResponse
 from django.template import RequestContext
 from datetime import datetime
 from django.contrib.auth import authenticate, login
-from app.models import Twitch,Routine,EJuryDeduction,BackupVideo
+from app.models import Twitch,Routine,EJuryDeduction,BackupVideo,DJuryIndicator
 from management.models import Competition,Judge,Athlete,Session,Camera,StartList,Team,Event,Disc,Sponsor,RotationOrder
 from app.twitch import TwitchAPI
 import app.firebase
@@ -466,6 +466,8 @@ def evideo(request):
     }
     return render(request,'app/evideo.html',context)
 
+
+
 def deduct(request):
     routine = request.POST.get('routine')
     judge = request.POST.get('judge')
@@ -527,7 +529,7 @@ def build_dots(request):
     dot_size = int(request.POST.get('dot_size',12))
     y_offset = int(request.POST.get('y_offset',22))
     playback_only = request.POST.get('playback_only','0')
-    initial_offset = int(request.POST.get('initial_offset',15))
+    initial_offset = int(request.POST.get('initial_offset',25))
     if width == 0:
         width = 854
     delay=0
@@ -539,9 +541,11 @@ def build_dots(request):
     prev_time = 0
     if judge != '':
         deductions = EJuryDeduction.objects.filter(routine_id=routine,judge=judge).order_by('judge','time_stamp_relative','-id')
+        indicators = []
         all_judges = False
     else:
         deductions = EJuryDeduction.objects.filter(routine_id=routine).order_by('judge','time_stamp_relative','-id')
+        indicators = DJuryIndicator.objects.filter(routine_id=routine,type=DJuryIndicator.CREDIT).order_by('time_stamp_relative','-id')
         all_judges = True
 
     routine = Routine.objects.get(pk=routine)
@@ -632,6 +636,29 @@ def build_dots(request):
                 artistry_list.append(ded)
 
     judge_totals[prev_judge] = total/10
+
+    #now djury junk
+    indicator_list = []
+    
+    for i in indicators:
+        posx = ((i.time_stamp_relative + delay)/1000) /(routine_length/1000)
+        jumppos=i.time_stamp_relative/1000
+        posx = posx*100
+        if i.value == True:
+            image = 'd-c.svg'
+        else:
+            image = 'd-n.svg'
+        ind = {
+            "posx":'left:' + str(posx),
+            "posy":0,
+            "image":image,
+            "jumppos":jumppos,
+            "opacity":1,
+            "id":i.id,
+            }
+        indicator_list.append(ind)
+
+    
     context = {
         'deductions': deduction_list,
         'routine':routine,
@@ -640,7 +667,8 @@ def build_dots(request):
         'judge_totals':judge_totals,
         'vault_phases':vault_phases,
         'artistry_deductions':artistry_list,
-        'playback_only':playback_only
+        'playback_only':playback_only,
+        'indicators': indicator_list,
     }
     return render(request,'app/dots_area.html',context)
 
@@ -1343,22 +1371,37 @@ def spectator_video(request):
 
 def set_fall(request):
     ath = Athlete.objects.filter(pk=request.POST.get('athlete')).first()
+    routine = Routine.objects.get(pk=request.POST.get('routine'))
+    mili = int(time() * 1000)
+    relative_time = mili - routine.start_time
     if ath != None:
         if request.POST.get('fall') == "true":
             fall = True
+            djury_indicator = DJuryIndicator(routine=routine,time_stamp_relative=relative_time,type=DJuryIndicator.FALL,value=fall)
+            djury_indicator.save()
         else:
             fall = False
+       
         app.firebase.set_fall(ath.team.session.id,request.POST.get('event'),ath.team.id,fall)
 
     return HttpResponse(status=200)
 
 def set_credit(request):
     ath = Athlete.objects.get(pk=request.POST.get('athlete'))
+    routine = Routine.objects.get(pk=request.POST.get('routine'))
+    mili = int(time() * 1000)
+    relative_time = mili - routine.start_time
     if request.POST.get('credit') == "true":
         credit = "CREDIT AWARDED"
+        val = True
     else:
         credit = "CREDIT NOT AWARDED"
+        val = False
+    djury_indicator = DJuryIndicator(routine=routine,time_stamp_relative=relative_time,type=DJuryIndicator.CREDIT,value=val)
+    djury_indicator.save()
     app.firebase.set_credit(ath.team.session.id,request.POST.get('event'),ath.team.id,credit)
+
+    return HttpResponse(status=200)
 
 def backup_video_upload(request,session_id):
     if request.method == 'POST':

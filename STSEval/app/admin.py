@@ -1,5 +1,5 @@
 from django.contrib import admin
-from app.models import Routine,EJuryDeduction,BackupVideo
+from app.models import Routine,EJuryDeduction,BackupVideo,DJuryIndicator
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin
 
@@ -17,6 +17,12 @@ class BackupVideoAdmin(ImportExportModelAdmin):
     list_editable=('reviewed',)
     list_filter = ('session','event')
 
+class DJuryIndicatorAdmin(ImportExportModelAdmin):
+    list_display=('id', 'routine','type','value','time_stamp_relative')
+    list_editable=('routine','type','value','time_stamp_relative')
+    list_filter = ('routine__session__competition','routine__event','type')
+
 admin.site.register(Routine,RoutineAdmin)
 admin.site.register(EJuryDeduction,EJuryDeductionAdmin)
 admin.site.register(BackupVideo,BackupVideoAdmin)
+admin.site.register(DJuryIndicator,DJuryIndicatorAdmin)

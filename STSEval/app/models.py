@@ -100,6 +100,18 @@ class EJuryDeduction(models.Model):
         ]
     action = models.CharField(max_length=6,choices=ACTION_TYPE,default=ADD)
 
+class DJuryIndicator(models.Model):
+    routine = models.ForeignKey(Routine, on_delete=models.CASCADE)
+    value = models.BooleanField(default=False)
+    time_stamp_relative = models.IntegerField(default=0)
+    FALL = 'Fall'
+    CREDIT = 'Credit'
+    TYPE = [
+        (FALL,'Fall'),
+        (CREDIT,'Credit'),
+        ]
+    type = models.CharField(max_length=6,choices=TYPE,default=FALL)
+
 def backup_video_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
     return 'routine_videos/{0}/{1}/bv_{2}_{3}'.format(instance.session.id, instance.event.name, instance.athlete.name.replace(" ",""),filename)
