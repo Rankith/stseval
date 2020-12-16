@@ -151,6 +151,10 @@
     <Content Include="app\static\app\sounds\message_notice.mp3" />
     <Content Include="app\static\app\sounds\message_notice.ogg" />
     <Content Include="app\templates\app\athlete_start_list_spectate.html" />
+    <Content Include="app\templates\app\help\ejudge_vault.html" />
+    <Content Include="app\templates\app\help\coach.html" />
+    <Content Include="app\templates\app\help\ejudge.html" />
+    <Content Include="app\templates\app\help\djudge.html" />
     <Content Include="app\templates\app\update_area.html" />
     <Content Include="app\templates\app\help\competition_setup_rotations.html" />
     <Content Include="app\templates\app\help\competition_setup_athletes.html" />

@@ -97,6 +97,7 @@ def d1(request):
         'judge_type':judge_type,
         'this_judge':this_judge,
         'multi_d':multi_d,
+        'help':'djudge',
 
     }
     return render(request,'app/d1.html',context)
@@ -447,6 +448,10 @@ def evideo(request):
         this_judge = judges.e3
     else:
         this_judge = judges.e4
+    if event=="VT":
+        help = 'ejudge_vault'
+    else:
+        help = 'ejudge'
     context = {
         'title': 'STS EJury - ' + event + ' ' + session.competition.name + ' - ' + this_judge,
         'judges':judges,
@@ -457,6 +462,7 @@ def evideo(request):
         'this_judge':this_judge,
         'athletes':athletes,
         'scoreboard':True,
+        'help':help,
     }
     return render(request,'app/evideo.html',context)
 
@@ -1183,6 +1189,7 @@ def coach(request,event_name='FX'):
         'session':session,
         'team':team,
         'scoreboard':True,
+        'help':'coach',
     }
     return render(request,'app/coach.html',context)
 
