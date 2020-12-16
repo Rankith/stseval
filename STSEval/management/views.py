@@ -384,9 +384,9 @@ def import_athletes(session,ath_dict):
                 Athlete.objects.filter(team=team).delete()
             ath = Athlete(team=team,name=ath_dict['Name'][i],level=level,rotation=ath_dict['Rotation'][i].upper(),order=i+1)
             ath.save()
-            #for e in events:
-                #ath.events_competing.add(e)
-                #ath.events_count_for_team.add(e)
+            for e in events:
+                ath.events_competing.add(e)
+                ath.events_count_for_team.add(e)
             
     return "Athletes Imported."
 
