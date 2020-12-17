@@ -68,6 +68,7 @@ urlpatterns = [
     path('athlete_start_list_swap_do/', views.athlete_start_list_swap_do, name='athlete_start_list_swap_do'),
     path('athlete_start_list_update_order/', views.athlete_start_list_update_order, name='athlete_start_list_update_order'),
     path('athlete_routine_remove/', views.athlete_routine_remove, name='athlete_routine_remove'),
+    path('set_floor_timer/', views.set_floor_timer, name='set_floor_timer'),
     path('set_fall/', views.set_fall, name='set_fall'),
     path('set_credit/', views.set_credit, name='set_credit'),
     path('coach/<str:event_name>', views.coach, name='coach'),

@@ -118,10 +118,12 @@
 	                <button id="btnRestartD" type="button" class="btn btn-main mb-2" onclick="RestartD()" style="display:none">Judge D</button>
 	                <button id="btnRestartE" type="button" class="btn btn-main mb-2" onclick="RestartE()" style="display:none">Judge E</button>
 	                <button id="btnRestartBoth" type="button" class="btn btn-main mb-2" onclick="RestartBoth()" style="display:none">Both</button>
+                    <button id="btnFloorTimer" type="button" class="btn btn-main mb-4 ui-disabled" onclick="FloorTimerClick()" style="width:200px;display:none">Timer</button><br/>
 	                <button id="btnExerciseDone" type="button" class="btn btn-main mb-2" onclick="ExerciseDoneClick()" style="width:200px">Exercise Done</button><br/>
                     <div id="divReleaseEJudges" {% if not multi_d %}style="display:none"{% endif %}>
                         <button id="btnReleaseEJudges" type="button" class="btn btn-main-selected  mb-2 ui-disabled" onclick="ReleaseEJudges()" style="width:200px">Release EJudges</button>
                     </div>
+                    
                     <button id="btnFallTimer" type="button" class="btn btn-red mb-2 mt-3 ui-disabled" onclick="FallTimerClick()" style="width:200px">Fall Timer</button>
                     <div id="divCreditButtons" style="width:200px;display:none;">
                         <div class="d-flex">
@@ -277,6 +279,9 @@
     var Falling = false;
     var FallTimerStart;
     var FallTimerInterval;
+    var FloorTiming = false;
+    var FloorTimerStart;
+    var FloorTimerInterval;
     var JudgeOnFirebase;
     var PrevRotation = "";
     var BackupVideo = -1;
@@ -753,6 +758,9 @@
         //if ((ev == "FX" || ev == "HB") && ScoringType != "JO4567")
          //   $("#tdBonus").html("Connections and Bonus: ");
 
+        if (ev == "FX")
+            $("#btnFloorTimer").show();
+
         ReadyUp();
         SetDotsArea();
         //$("#divDotsArea").width(VidWidth - VideoLossRight);
@@ -777,6 +785,8 @@
         $("#btnExerciseDone").addClass('ui-disabled');
         $("#btnFallTimer").addClass('ui-disabled');
         $("#btnNuke").addClass('ui-disabled');
+        $("#btnFloorTimer").addClass('ui-disabled');
+        $("#btnFloorTimer").html("Timer");
         //$("#btnJudgesReady").removeClass('ui-disabled');
         //$("#txtVideoURL").removeClass('ui-disabled');
         $("#divDotsArea").empty();
@@ -785,6 +795,8 @@
         $("#btnSetDScore").addClass('ui-disabled');
         $("#btnReleaseEJudges").addClass('ui-disabled');
         $("#btnFinish").addClass("ui-disabled");
+        FloorTiming = false;
+        FloorTimerDone();
         $("#btnAccountability").addClass("ui-disabled");
         document.getElementById('lblDScore').innerHTML = "";
         document.getElementById('divEScore').innerHTML = "";
@@ -822,6 +834,7 @@
                     //$("#btnJudgesReady").addClass('ui-disabled');
                     //$("#txtVideoURL").addClass('ui-disabled');
                     //$("#ddlAthlete").addClass('ui-disabled');
+                    $("#btnFloorTimer").removeClass('ui-disabled');
                     $("#btnExerciseDone").removeClass('ui-disabled');
                     $("#btnFallTimer").removeClass('ui-disabled');
                     $("#btnNuke").removeClass('ui-disabled');
@@ -838,6 +851,7 @@
                 RoutineStartJudging();
                 $("#btnStartJudging").addClass('ui-disabled');
                 //video starts in routinestartjudging call
+                $("#btnFloorTimer").removeClass('ui-disabled');
                 $("#btnExerciseDone").removeClass('ui-disabled');
                 $("#btnFallTimer").removeClass('ui-disabled');
                 $("#btnNuke").removeClass('ui-disabled');
@@ -912,6 +926,8 @@
         Status = status.ATHLETE_DONE;
         $("#btnStartJudging").addClass('ui-disabled');
         $("#btnExerciseDone").addClass('ui-disabled');
+        if (FloorTiming)
+            FloorTimerDone();
         ClearFall();
         $("#btnFallTimer").addClass('ui-disabled');
     }
@@ -1749,6 +1765,64 @@
 
     function VideoStepEnd() {
         clearTimeout(FrameStepTimer);
+    }
+
+    function FloorTimerClick() {
+        if (FloorTiming)
+            FloorTimerDone();
+        else
+            FlorTimerStart();
+    }
+
+    function FloorTimerDone() {
+        if (FloorTiming) {
+            //if it was timing, put the time on the right of button
+            let cur = (Math.round(Date.now() / 1000) - FloorTimerStart);
+            $("#btnFloorTimer").html("Timer (" + cur + " sec)");
+        }
+        else
+            $("#btnFloorTimer").html("Timer");
+        FloorTiming = false;
+        $("#btnFloorTimer").addClass("btn-main").removeClass("btn-main-selected").removeClass("btn-red");
+        $("#btnFloorTimer").addClass("ui-disabled");
+        clearInterval(FloorTimerInterval);
+        SetFloorTimer(false);
+    }
+
+    function FlorTimerStart() {
+        FloorTiming = true;
+        $("#btnFloorTimer").removeClass("btn-main").removeClass("btn-red").addClass("btn-main-selected");
+        $("#btnFloorTimer").html("Stop Timer (0 sec)");
+        clearInterval(FloorTimerInterval);
+        SetFloorTimer(true);
+    }
+
+    function UpdateFloorTimer() {
+        let cur = (Math.round(Date.now() / 1000) - FloorTimerStart)
+        $("#btnFloorTimer").html("Stop Timer (" + (cur) + " sec)");
+        if (cur > 70)
+             $("#btnFloorTimer").removeClass("btn-main-selected").addClass("btn-red");
+    }
+
+    function SetFloorTimer(started) {
+        $.ajax({
+            url: "/set_floor_timer/",
+            type: "POST",
+            headers: { "X-CSRFToken": token },
+            data: {
+                'athlete': CurrentAthlete,
+                'started': started,
+                'event': ev,
+                'routine':RoutineID,
+            },
+            success: function (data) {
+                if (started) {
+                    FloorTimerStart = Math.round(Date.now() / 1000);
+                    clearInterval(FloorTimerInterval);
+                    FloorTimerInterval = setInterval(UpdateFloorTimer, 1000);
+                }
+            }
+        });
     }
 
     function FallTimerClick() {

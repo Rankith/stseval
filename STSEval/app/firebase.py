@@ -368,6 +368,17 @@ def chat_send_message(s,sender,to,message,sender_name=''):
         u'timestamp':datetime.utcnow(),
     })
 
+def set_floor_timer(s,e,team,started):
+    db = firestore.Client()
+
+    doc_ref = db.collection(u'sessions').document(str(s)).collection(u'event_managers').document(str(e) + "_timer")
+    doc_ref.set({
+        u'started':started,
+        u'team':team,
+        u'start':datetime.utcnow(),
+    })
+
+
 def set_fall(s,e,team,fall):
     db = firestore.Client()
 

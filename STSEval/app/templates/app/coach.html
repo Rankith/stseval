@@ -14,6 +14,14 @@
             </div>
         </div>
     </div>
+    <div id="divTimerArea" class="coach-fall-container" align="center" style="display:none">
+        <div class="row no-gutters justify-content-center">
+            <div class="col-9 col-md-4 col-lg-3 coach-fall-background pt-1 pb-2">
+                <div>TIMER</div>
+                <div id="divFloorTimer" class="coach-fall-timer">&nbsp;</div>
+            </div>
+        </div>
+    </div>
     {% include "app/event_select.html" %}  
     <div class="">
         <div id="divStatus" style="margin:auto;text-align:center;" class="timer-red"></div>
@@ -42,6 +50,8 @@
     var StartListChange = -1;
     var FallTimerStart;
     var FallTimerInterval;
+    var FloorTimerStart;
+    var FloorTimerInterval;
 
     var db = firebase.firestore();
     db.collection("sessions").doc(Session).collection("event_managers").doc(ev)
@@ -53,6 +63,12 @@
         .onSnapshot(function (doc) {
             UpdateFalls(doc);
         });
+    if (ev == "FX") {
+        db.collection("sessions").doc(Session).collection("event_managers").doc("FX_timer")
+        .onSnapshot(function (doc) {
+            UpdateTimer(doc);
+        });
+    }
 
     
     function UpdateStatus(doc) {
@@ -143,6 +159,33 @@
 
     function UpdateFallTimer() {
         $("#divFallTimer").html((Math.round(Date.now() / 1000) - FallTimerStart) + " seconds");
+    }
+
+    function UpdateTimer(doc) {
+        if (doc.data() != undefined) {
+            if (doc.data().team == Team) {
+                if (doc.data().started == true) {
+                    clearInterval(FloorTimerInterval);
+                    FloorTimerStart = doc.data().start.seconds;
+                    FloorTimerInterval = setInterval(UpdateFloorTimer, 1000);
+                    UpdateFloorTimer();
+                   
+                    $("#divTimerArea").show();
+                }
+                else {
+                    clearInterval(FloorTimerInterval);
+                    $("#divTimerArea").hide();
+                }
+            }
+            else {
+                clearInterval(FloorTimerInterval);
+                $("#divTimerArea").hide();
+            }
+        }
+    }
+
+    function UpdateFloorTimer() {
+        $("#divFloorTimer").html((Math.round(Date.now() / 1000) - FloorTimerStart) + " seconds");
     }
 
 </script>

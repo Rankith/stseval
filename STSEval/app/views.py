@@ -1369,16 +1369,29 @@ def spectator_video(request):
     }
     return render(request,'app/spectator_video.html',context)
 
+def set_floor_timer(request):
+    ath = Athlete.objects.filter(pk=request.POST.get('athlete')).first()
+    if ath != None:
+        if request.POST.get('started') == "true":
+            started = True
+        else:
+            started = False
+       
+        app.firebase.set_floor_timer(ath.team.session.id,request.POST.get('event'),ath.team.id,started)
+
+    return HttpResponse(status=200)
+
 def set_fall(request):
     ath = Athlete.objects.filter(pk=request.POST.get('athlete')).first()
-    routine = Routine.objects.get(pk=request.POST.get('routine'))
+    routine = Routine.objects.filter(pk=request.POST.get('routine')).first()
     mili = int(time() * 1000)
     relative_time = mili - routine.start_time
     if ath != None:
         if request.POST.get('fall') == "true":
             fall = True
-            djury_indicator = DJuryIndicator(routine=routine,time_stamp_relative=relative_time,type=DJuryIndicator.FALL,value=fall)
-            djury_indicator.save()
+            if routine != None:
+                djury_indicator = DJuryIndicator(routine=routine,time_stamp_relative=relative_time,type=DJuryIndicator.FALL,value=fall)
+                djury_indicator.save()
         else:
             fall = False
        
