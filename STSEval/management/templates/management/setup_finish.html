@@ -21,7 +21,11 @@
 
     {% endif %}
      <br/>
-        Send competition information to judges, coaches, and camera operators
+    {% if not email_sent %}
+        Send competition information to judges, coaches, and camera operators.
+    {% else %}
+        You have already sent the email notice.  If you have made changes to judges, coaches or camera operator account you can send the notices again.
+    {% endif %}
         <br/>
         <button id="btnSendEmails" type="button" class="btn-main btn-wide pt-4 pb-4" style="border-radius: 1rem;" onclick="Send()">Send</button>
         <br/><br/>

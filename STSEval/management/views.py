@@ -671,6 +671,7 @@ def setup_finish(request,id):
         'missed_camera':missed_camera,
         'setup_complete':setup_complete,
         'session_active':session.active,
+        'email_sent':session.email_sent,
         'help':'competition_setup_finish',
     }
     return render(request,'management/setup_finish.html',context)
@@ -709,6 +710,8 @@ def send_session_emails(request,session_id):
             messages.append(build_coach_notice(session,team))
 
     send_mass_html_mail(messages)
+    session.email_sent = True
+    session.save()
     
     return HttpResponse(status=200)
 

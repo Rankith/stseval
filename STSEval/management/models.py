@@ -50,6 +50,7 @@ class Session(models.Model):
     finished = models.BooleanField(default=False)
     active = models.BooleanField(default=False)
     top_counting_for_score = models.IntegerField(default=5)
+    email_sent = models.BooleanField(default=False)
     def full_name(self):
        return self.competition.name + " - " + self.competition.get_type_display() + " - " + self.name
 
