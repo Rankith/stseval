@@ -118,7 +118,8 @@
 	                <button id="btnRestartD" type="button" class="btn btn-main mb-2" onclick="RestartD()" style="display:none">Judge D</button>
 	                <button id="btnRestartE" type="button" class="btn btn-main mb-2" onclick="RestartE()" style="display:none">Judge E</button>
 	                <button id="btnRestartBoth" type="button" class="btn btn-main mb-2" onclick="RestartBoth()" style="display:none">Both</button>
-                    <button id="btnFloorTimer" type="button" class="btn btn-main mb-4 ui-disabled" onclick="FloorTimerClick()" style="width:200px;display:none">Timer</button><br/>
+                    <button id="btnFloorTimer" type="button" class="btn btn-main mb-4 ui-disabled" onclick="FloorTimerClick()" style="width:200px;display:none">Timer</button>
+                    {% if event == 'FX' %} <br/>{% endif %}
 	                <button id="btnExerciseDone" type="button" class="btn btn-main mb-2" onclick="ExerciseDoneClick()" style="width:200px">Exercise Done</button><br/>
                     <div id="divReleaseEJudges" {% if not multi_d %}style="display:none"{% endif %}>
                         <button id="btnReleaseEJudges" type="button" class="btn btn-main-selected  mb-2 ui-disabled" onclick="ReleaseEJudges()" style="width:200px">Release EJudges</button>
