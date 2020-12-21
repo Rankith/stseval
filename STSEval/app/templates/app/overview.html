@@ -97,7 +97,7 @@
 <script type="text/javascript">
     var CurrentAthlete = -1;
     var db = firebase.firestore();
-    firebase.firestore.setLogLevel('debug');
+    //firebase.firestore.setLogLevel('debug');
     var Status = "";
     var BackupVideo = -1;
     var Overview = true;
@@ -119,10 +119,12 @@
         else if (CurrentSL != doc.data().start_list_change) {
             LoadStartList(doc);
             SetStartListDot(doc);
+           
             CurrentSL = doc.data().start_list_change;
         }
         else {
             SetStartListDot(doc);
+             CheckJudges(doc);
         }
     });
 
