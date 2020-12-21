@@ -857,7 +857,7 @@ def calc_team_scores(session,event=''):
     max = Session.objects.get(pk=session).top_counting_for_score
     scores = []
     for routine in routines:
-        if team != routine.athlete.team.name or level != routine.athlete.level.name:
+        if team != routine.athlete.team.name:
             #setup new dict entry and set count to 0
             scores.append({'team': routine.athlete.team.name,'abbv':routine.athlete.team.abbreviation,'lvl':routine.athlete.level.name,'score':0})
             count = 0

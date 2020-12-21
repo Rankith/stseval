@@ -1,12 +1,14 @@
-<div align="center">
+<div align="center">You have selected: 
     <span style="font-size:1.1rem;font-weight:bold">{{sl_to_swap.athlete.team.abbreviation}} - {{sl_to_swap.athlete.name}}</span><br />
-    If this exercise was credited to the wrong athlete, correct it here clicking the correct name. 
+    If this execise is credited to the wrong athlete, you can change it by selecting the correct athlete below.<br/>
+    <span style="color:#dc3545;font-weight:bold">WARNING</span>: This will swap two athletes in both the start list AND the scoreboard.  Only use this if the incorrect athlete was judged.
     <div id="divStartSwapList" style="max-height:600px;overflow:auto">
         {% for sl in start_list %}
             <button id="btnStartListSwap{{sl.id}}" type="button" class="btn btn-main mb-2" onclick="StartListSwapClick({{sl.id}})" style="width:300px">{{sl.athlete.team.abbreviation}} - {{sl.athlete.level.name}} - {{sl.athlete.name}} - {{sl.athlete.rotation}}</button><br/>
         {% endfor %}
     </div>
-    If this exercise was not a recognized routine, click here to delete:<br/>
+    If this exercise was not a recognized routine, click here to delete.<br/>
+    <span style="color:#dc3545;font-weight:bold">WARNING</span>: This will completely remove the routine and is not recoverable.  Only do this if the judges accidently started a routine and posted a score.<br/>
     <button id="btnStartListRoutineDelete" type="button" class="btn btn-main mb-2" onclick="StartListRoutineDelete({{sl.id}})">Remove Routine</button><br/>
     <input type="hidden" id="hdnSLtoSwap" value="{{sl_to_swap.id}}"/>
 </div>
