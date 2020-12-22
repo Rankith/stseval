@@ -108,7 +108,7 @@
         $(".chat-history").hide();
         ChatNotices[$("#ChatSelect").val()] = 0;
         SetChatNotices();
-        $("#divChat" + $("#ChatSelect").val()).show();
+        $("#divChat" + $("#ChatSelect").val().replace('+','')).show();
         ScrollChatDown();
     }
 
