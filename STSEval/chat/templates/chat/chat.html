@@ -164,7 +164,7 @@
                         
                         message.docChanges().forEach(function (m) {
                             if (m.type === "added") {
-                                AddChatMessage(change.doc.id.replace(chatter,'').replaceAll(' ','').replaceAll('-',''),  m.doc.data());
+                                AddChatMessage(change.doc.id.replace(chatter,'').replaceAll(' ','').replaceAll('-','').replaceAll('+',''),  m.doc.data());
                                 //console.log("message: " + m.doc.data().message);
                             }
                         });
