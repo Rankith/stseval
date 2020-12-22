@@ -108,7 +108,7 @@
         $(".chat-history").hide();
         ChatNotices[$("#ChatSelect").val()] = 0;
         SetChatNotices();
-        $("#divChat" + $("#ChatSelect").val()).show();
+        $("#divChat" + $("#ChatSelect").val().replace("+","\\+")).show();
         ScrollChatDown();
     }
 
@@ -120,9 +120,9 @@
             let header = data.sender;
             if (header == chatter)
                 header = "Me";
-            $("#divChat" + id).append("<div class='chat-message-name' data-sender='" + data.sender + "'><div class='flex-grow-1'>" + header + ":</div><div>" + data.timestamp.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + "</div></div>");
+            $("#divChat" + id.replace("+","\\+")).append("<div class='chat-message-name' data-sender='" + data.sender + "'><div class='flex-grow-1'>" + header + ":</div><div>" + data.timestamp.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + "</div></div>");
         }
-        $("#divChat" + id).append("<div class='chat-message'>" + data.message + "</div>");
+        $("#divChat" + id.replace("+","\\+")).append("<div class='chat-message'>" + data.message + "</div>");
         //check that its not coming from self, that we arent building initial list and that we arent ON that chat
         if (data.sender != chatter && !ChatInitialRead && ($("#ChatSelect").val() != id || ChatVisible == false)) {
             PlayNotificationSound();
@@ -137,7 +137,7 @@
     }
 
     function CheckCreateChat(id) {
-        if ($("#divChat" + id).length <= 0) {
+        if ($("#divChat" + id.replace("+","\\+")).length <= 0) {
             let disp = " style='display:none'";
             if ($("#ChatSelect").val() == id)
                 disp = "";
@@ -164,7 +164,7 @@
                         
                         message.docChanges().forEach(function (m) {
                             if (m.type === "added") {
-                                AddChatMessage(change.doc.id.replace(chatter,'').replaceAll(' ','').replaceAll('-','').replaceAll('+','\\+'),  m.doc.data());
+                                AddChatMessage(change.doc.id.replace(chatter,'').replaceAll(' ','').replaceAll('-',''),  m.doc.data());
                                 //console.log("message: " + m.doc.data().message);
                             }
                         });
