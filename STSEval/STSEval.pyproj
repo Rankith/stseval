@@ -155,6 +155,7 @@
     <Content Include="app\templates\app\help\coach.html" />
     <Content Include="app\templates\app\help\ejudge.html" />
     <Content Include="app\templates\app\help\djudge.html" />
+    <Content Include="app\templates\app\scoreboard_export.html" />
     <Content Include="app\templates\app\update_area.html" />
     <Content Include="app\templates\app\help\competition_setup_rotations.html" />
     <Content Include="app\templates\app\help\competition_setup_athletes.html" />

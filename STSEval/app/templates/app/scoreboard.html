@@ -115,7 +115,13 @@
         });
     }
 
-    function ExportScores() {
+    function ExportScoresClick(session) {
+        $("#modalMainTitle").html("Export Scores");
+        $("#modalBodyArea2").hide();
+        $("#modalBodyArea1").empty();
+        $("#modalBodyArea1").load("/scoreboard_export/" + session, function () {
+            $('.selectpicker').selectpicker();
+        });
 
     }
 

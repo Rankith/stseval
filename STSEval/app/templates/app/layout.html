@@ -62,7 +62,9 @@
                                 {% if scoreboard %}
                                     <li class="nav-item align-self-center"><a target="_blank" class="nav-link" href="/scoreboard/{{event_name}}">scoreboard</a></li>
                                 {% endif %}
-                                    
+                                {% if exports %}
+                                     <li class="nav-item align-self-center"><a class="nav-link" href="" data-toggle="modal" data-target="#modalMain" onclick="ExportScoresClick('{{session.id}}')">export scores</a></li>
+                                {% endif %}
                                 <li class="nav-item align-self-center"><a class="nav-link" href="javascript:document.getElementById('logoutForm').submit()">logout</a></li>
                             </ul>
                         </form>

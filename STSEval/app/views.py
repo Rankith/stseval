@@ -24,6 +24,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from .forms import VideoUploadForm
 from django.core.files import File
 from time import perf_counter 
+import csv
 
 def valid_login_type(match=None):
     def decorator(func):
@@ -737,6 +738,40 @@ def get_routines_aa(request):
         
     return JsonResponse(list(routines),safe=False)
 
+def scoreboard_export(request,session_id):
+    session = Session.objects.get(pk=request.session.get('session'))
+    teams = Team.objects.filter(session=session)
+    events = Event.objects.filter(disc=session.competition.disc)
+    return render(request, 'app/scoreboard_export.html', {'events':events,'teams':teams})
+
+def scoreboard_export_get(request,session_id):
+    session = Session.objects.get(pk=request.session.get('session'))
+    event_id = request.GET.get('event','-1')
+    team_id = request.GET.get('team','-1')
+    values_list = ['athlete__level__name','athlete__team__name','athlete__name','score_d','score_neutral','score_e','score_e1','score_e2','score_e3','score_e4','score_final']
+    if event_id != '-1':
+        if team_id != '-1':
+            routines = Routine.objects.filter(session=session,event_id=event_id,athlete__team_id=team_id,status=Routine.FINISHED).order_by('id')
+        else:
+            routines = Routine.objects.filter(session=session,event_id=event_id,status=Routine.FINISHED).order_by('id')
+    else:
+        if team_id != '-1':
+            routines = Routine.objects.filter(session=session,athlete__team_id=team_id,status=Routine.FINISHED).order_by('event__order','id')
+        else:
+            routines = Routine.objects.filter(session=session,status=Routine.FINISHED).order_by('event__order','id')
+    output = []
+    response = HttpResponse (content_type='text/csv')
+    writer = csv.writer(response)
+    #Header
+    writer.writerow(['Event','Level', 'Team', 'Name', 'D-Score/Start Value','Neutral Deductions','E-Score/Deductions','E-1','E-2','E-3','E-4','Final Score'])
+    for r in routines:
+        output.append([r.event.name,r.athlete.level.name,r.athlete.team.name,r.athlete.name,r.score_d,r.score_neutral,r.score_e,r.score_e1,r.score_e2,r.score_e3,r.score_e4,r.score_final])
+    #CSV Data
+    writer.writerows(output)
+    return response
+
+
+
 @valid_login_type(match='session')
 def scoreboard(request,event_name='-1'):
     session = Session.objects.get(pk=request.session.get('session'))
@@ -751,6 +786,7 @@ def scoreboard(request,event_name='-1'):
         'session':session,
         'events':events,
         'event_name':event_name,
+        'exports':True,
     }
     return render(request,'app/scoreboard.html',context)
 

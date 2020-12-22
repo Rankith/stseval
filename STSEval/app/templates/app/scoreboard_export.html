@@ -1,0 +1,42 @@
+<div>  <span style="font-size:1.1rem;font-weight:bold">Export Scores</span><br />
+    Export competition scores to CSV.<br/>
+    Event: <select id="ddlEvent" class="selectpicker mb-2" data-style="btn-main">
+        <option value="-1">All</option>
+        {% for e in events %}
+        <option value="{{e.id}}">{{e.name}}</option>
+        {% endfor %}
+    </select>
+    <br/>
+    Team: <select id="ddlTeam" class="selectpicker mb-2" data-style="btn-main">
+        <option value="-1">All</option>
+        {% for t in teams %}
+        <option value="{{t.id}}">{{t.name}}</option>
+        {% endfor %}
+    </select>
+    <br/>
+     <button type="button" class="btn btn-success" onclick="Export()">Export</button>
+    </div>
+
+<script type="text/javascript">
+    function Export() {
+        $.ajax({
+            url: "/scoreboard_export_get/" + Session,
+            type: "GET",
+            data: {
+                'event': $("#ddlEvent").val(),
+                'team': $("#ddlTeam").val(),
+            },
+            success: function (data) {
+                const a = document.createElement("a");
+                document.body.appendChild(a);
+                a.style = "display: none";
+                const blob = new Blob([data], { type: "octet/stream" }),
+                    url = window.URL.createObjectURL(blob);
+                a.href = url;
+                a.download = "scores.csv";
+                a.click();
+                window.URL.revokeObjectURL(url);
+            }
+        });
+    }
+</script>
