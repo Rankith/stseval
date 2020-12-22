@@ -748,6 +748,7 @@ def scoreboard_export_get(request,session_id):
     session = Session.objects.get(pk=request.session.get('session'))
     event_id = request.GET.get('event','-1')
     team_id = request.GET.get('team','-1')
+    has_e = []
     values_list = ['athlete__level__name','athlete__team__name','athlete__name','score_d','score_neutral','score_e','score_e1','score_e2','score_e3','score_e4','score_final']
     if event_id != '-1':
         if team_id != '-1':
@@ -759,13 +760,48 @@ def scoreboard_export_get(request,session_id):
             routines = Routine.objects.filter(session=session,athlete__team_id=team_id,status=Routine.FINISHED).order_by('event__order','id')
         else:
             routines = Routine.objects.filter(session=session,status=Routine.FINISHED).order_by('event__order','id')
+    
+    headers = ['Event','Level', 'Team', 'Name', 'D-Score/Start Value','Neutral Deductions','E-Score/Deductions']  
+    #find which es to include
+    if len(routines.filter(score_e1__gt=0)) >= 1:
+        has_e1 = True
+        headers.append('E-1')
+    else:
+        has_e1 = False
+    if len(routines.filter(score_e2__gt=0)) >= 1:
+        has_e2 = True
+        headers.append('E-2')
+    else:
+        has_e2 = False
+    if len(routines.filter(score_e3__gt=0)) >= 1:
+        has_e3 = True
+        headers.append('E-3')
+    else:
+        has_e3 = False
+    if len(routines.filter(score_e4__gt=0)) >= 1:
+        has_e4 = True
+        headers.append('E-4')
+    else:
+        has_e4 = False
+         
+    headers.append('Final Score')
     output = []
     response = HttpResponse (content_type='text/csv')
     writer = csv.writer(response)
     #Header
-    writer.writerow(['Event','Level', 'Team', 'Name', 'D-Score/Start Value','Neutral Deductions','E-Score/Deductions','E-1','E-2','E-3','E-4','Final Score'])
+    writer.writerow(headers)
     for r in routines:
-        output.append([r.event.name,r.athlete.level.name,r.athlete.team.name,r.athlete.name,r.score_d,r.score_neutral,r.score_e,r.score_e1,r.score_e2,r.score_e3,r.score_e4,r.score_final])
+        out = [r.event.name,r.athlete.level.name,r.athlete.team.name,r.athlete.name,r.score_d,r.score_neutral,r.score_e]
+        if has_e1:
+            out.append(r.score_e1)
+        if has_e2:
+            out.append(r.score_e2)
+        if has_e3:
+            out.append(r.score_e3)
+        if has_e4:
+            out.append(r.score_e4)
+        out.append(r.score_final)
+        output.append(out)
     #CSV Data
     writer.writerows(output)
     return response
