@@ -52,6 +52,7 @@
     var FallTimerInterval;
     var FloorTimerStart;
     var FloorTimerInterval;
+    var CurrentStatus = "";
 
     var db = firebase.firestore();
     db.collection("sessions").doc(Session).collection("event_managers").doc(ev)

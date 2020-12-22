@@ -73,7 +73,7 @@
 <script type="module" src="{% static 'app/scripts/wowza/play.js' %}?v=1"></script>
 <script src="{% static 'app/scripts/stream_listener.js' %}?v=1.25"></script>
 <script src="{% static 'app/scripts/sortable.min.js' %}?v=1.1"></script>
-<script src="{% static 'app/scripts/start_list.js' %}?v=1.1"></script>
+<script src="{% static 'app/scripts/start_list.js' %}?v=1.2"></script>
 
 <script type="text/javascript">
 
@@ -102,6 +102,7 @@
     var BackupVideo = -1;
     var Overview = true;
     var CurrentSL = -1
+    var CurrentStatus = "";
     var docRef = db.collection("sessions").doc(Session).collection("event_managers").doc(ev);
     docRef.onSnapshot(function (doc) {
         console.log("Event Manager Snapshot CurAth: " + CurrentAthlete + " | NewAth: " + doc.data().athlete_id);

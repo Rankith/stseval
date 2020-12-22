@@ -35,6 +35,7 @@ function SetStartListDot(doc) {
     $(".athlete-dot").hide();
     console.log("Set start list dot: #divAthleteDots" + doc.data().athlete_id + " | " + doc.data().status);
     if (doc.data().status == "AD" || doc.data().status == "F" || doc.data().status == "RD") {
+        
         $("#divAthleteDots" + doc.data().athlete_id).removeClass("status-dot-yellow").removeClass("status-dot-green").addClass("status-dot-red");
     }
     else if (doc.data().status == "N") {
@@ -43,6 +44,7 @@ function SetStartListDot(doc) {
     else if (doc.data().status == "S") {
         $("#divAthleteDots" + doc.data().athlete_id).removeClass("status-dot-yellow").addClass("status-dot-green").removeClass("status-dot-red");
     }
+    CurrentStatus = doc.data().status;
     $("#divAthleteDots" + doc.data().athlete_id).show();
 }
 
@@ -70,14 +72,19 @@ function UpdateStartlistOrder() {
 
 function ShowRoutineOptions(sl) {
 
-    //$("#modalMainDoc").addClass("modal-lg");
-    $("#modalSecondTitle").html("Manage Athlete Routine");
-    $("#modalSecondArea1").empty();
-    $("#modalSecondArea1").load("/athlete_start_list_swap/" + sl, function () {
+    if (CurrentStatus != "S") {
+        //$("#modalMainDoc").addClass("modal-lg");
+        $("#modalSecondTitle").html("Manage Athlete Routine");
+        $("#modalSecondArea1").empty();
+        $("#modalSecondArea1").load("/athlete_start_list_swap/" + sl, function () {
 
-    });
+        });
 
-    $("#modalSecondArea1").show();
+        $("#modalSecondArea1").show();
+    }
+    else {
+        $("#modalSecondArea1").html("You cannot change this while an athlete is actively going.");
+    }
 }
 
 function StartListSwapClick(sl) {
