@@ -256,6 +256,14 @@
         });
     }
 
+    function btnFinishClick() {
+        $("#modalMainTitle").html("Mark Session Complete");
+        $("#modalBodyArea2").hide();
+        $("#modalBodyArea1").empty();
+        $("#modalBodyArea1").load("/session_complete_warn/")
+        $("#modalMain").modal('show');
+    }
+
     function SessionFinish() {
          $.ajax({
             url: "/session_mark_complete/" + Session + "/",
