@@ -84,6 +84,7 @@
 
     var ev = "{{event_name}}";
     var Session = "{{session.id}}";
+    var SessionFinished = {{session.finished|lower}};
     var SessionName = "{{session}}";
     var token = "{{ csrf_token }}";
     var HasD2 = {{has_d2|lower}};
@@ -121,7 +122,7 @@
             HighlightCamera();
             SetStartListDot(doc);
             //check if it might be over
-            if (CurrentAthlete == 0)
+            if (CurrentAthlete == 0 && !SessionFinished)
                 CheckIfAllDone();
 
         }
@@ -262,7 +263,8 @@
             headers: { "X-CSRFToken": token },
             data: {
             },
-            success: function (data) {
+             success: function (data) {
+                 SessionFinished = true;
                 $("#btnFinish").addClass("ui-disabled");
               
             }
