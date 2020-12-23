@@ -1569,6 +1569,24 @@ def check_backup_video_exists(request):
 
     return JsonResponse(resp)
 
+def check_all_athletes_done(request,session_id):
+    session = Session.objects.get(pk=session_id)
+    sl = StartList.objects.filter(session=session,completed=False,active=True)
+    if len(sl) == 0:
+        return HttpResponse("Done")
+    else:
+        return HttpResponse(len(sl))
+
+def session_mark_complete(request,session_id):
+    session = Session.objects.get(pk=session_id)
+    session.finished = True
+    session.save()
+
+    return HttpResponse(200)
+
+def session_complete_warn(request):
+    return render(request,'app/session_complete_warn.html')
+
 def help(request,help_screen):
     return render(request, 'app/help/' + help_screen + '.html')
 

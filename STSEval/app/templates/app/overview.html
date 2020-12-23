@@ -3,6 +3,10 @@
 {% block content %}
 {% load staticfiles %}
 {% include "chat/chat.html" %}
+<div id="divViews" style="position:absolute;left:5px;bottom:0px">
+    <i class="fa fa-eye"></i>
+    <span id="divViewsLabel">0</span>
+</div>
 <div  align="center">
     {% include "app/event_select.html" %}  
     <div id="divHeader"><h4>{{session.full_name}}</h4></div>
@@ -47,10 +51,7 @@
                     </div>
                 {% endfor %}
             </div>
-            <div id="divViews">
-                <i class="fa fa-eye"></i>
-                <span id="divViewsLabel">0</span>
-            </div>
+            <br/>
             <div class="d-flex">
                 <h3 class="pl-4">Start List</h3>
                 <div class="pl-4 align-self-center pb-2"><button id="btnForceReset" type="button" class="btn btn-main btn-small" onclick="ForceResetStart()" title="Only use this if there as some problem with the D1 or D2.">Reset Current Athlete</button></div>
@@ -68,6 +69,7 @@
     </form>
     <button id="play-toggle" type="button" class="btn btn-main mb-2" style="display:none">Wozwa Hack</button>
 </div>
+    <button href="#" id="btnFinish" type="button" class="btn-main btn-wide ui-disabled pt-4 pb-4" style="border-radius: 1rem;" onclick="btnFinishClick()">Session<br>Complete</button>
  </div>
 {% endblock %}
 
@@ -118,6 +120,9 @@
             LoadStartList(doc);
             HighlightCamera();
             SetStartListDot(doc);
+            //check if it might be over
+            if (CurrentAthlete == 0)
+                CheckIfAllDone();
 
         }
         else if (CurrentSL != doc.data().start_list_change) {
@@ -229,6 +234,36 @@
             },
             success: function (data) {
                 alert("Athlete Reset.  Judges on " + ev + " should reload their screens.");
+              
+            }
+        });
+    }
+
+    function CheckIfAllDone() {
+        $.ajax({
+            url: "/check_all_athletes_done/" + Session + "/",
+            type: "POST",
+            headers: { "X-CSRFToken": token },
+            data: {
+            },
+            success: function (data) {
+                console.log(data);
+                if (data == "done")
+                    $("#btnFinish").removeClass("ui-disabled");
+              
+            }
+        });
+    }
+
+    function SessionFinish() {
+         $.ajax({
+            url: "/session_mark_complete/" + Session + "/",
+            type: "POST",
+            headers: { "X-CSRFToken": token },
+            data: {
+            },
+            success: function (data) {
+                $("#btnFinish").addClass("ui-disabled");
               
             }
         });
