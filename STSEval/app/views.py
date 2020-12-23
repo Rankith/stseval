@@ -1362,6 +1362,7 @@ def overview(request,session_id,event_name='-1'):
         'judges':judges,
         'cameras':cameras,
         'has_d2':has_d2,
+        'help':'admin_overview',
     }
     return render(request,'app/overview.html',context)
 

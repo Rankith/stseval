@@ -134,6 +134,7 @@
                     clearInterval(FallTimerInterval);
                     FallTimerStart = doc.data().start.seconds;
                     FallTimerInterval = setInterval(UpdateFallTimer, 1000);
+                    $("#divFallTimer").removeClass("errorlist");
                     UpdateFallTimer();
                     $("#divFallCredit").html(doc.data().credit);
                     if (doc.data().credit != "CREDIT NOT AWARDED") {
@@ -159,7 +160,10 @@
     }
 
     function UpdateFallTimer() {
-        $("#divFallTimer").html((Math.round(Date.now() / 1000) - FallTimerStart) + " seconds");
+        let ftime = Math.round(Date.now() / 1000) - FallTimerStart;
+        $("#divFallTimer").html(ftime + " seconds");
+        if (ftime > 30)
+            $("#divFallTimer").addClass("errorlist");
     }
 
     function UpdateTimer(doc) {
