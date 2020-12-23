@@ -3,7 +3,7 @@
 {% block content %}
 {% load staticfiles %}
 {% include "chat/chat.html" %}
-<div id="divViews" style="position:absolute;left:5px;bottom:0px">
+<div id="divViews" style="position:fixed;left:5px;bottom:3px">
     <i class="fa fa-eye"></i>
     <span id="divViewsLabel">0</span>
 </div>
@@ -248,7 +248,7 @@
             },
             success: function (data) {
                 console.log(data);
-                if (data == "done")
+                if (data == "Done")
                     $("#btnFinish").removeClass("ui-disabled");
               
             }
