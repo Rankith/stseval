@@ -1,18 +1,21 @@
 {% extends "app/layout.html" %}
 
+{% load staticfiles %}
 {% block content %}
 <div align="center" style="margin:10px;padding:0">
     {{session_name}}<br/>
     JUDGES
-    <div id="divJudges" style="max-width:800px;min-height:276px">
+    <div id="divJudges" style="max-width:800px">
 
     </div>
-    
-    <select id="ddlEvent" class="selectpicker" data-style="btn-main management-button-long" onchange="EventClick()">
-        {% for event in events %}
-            <option value="{{event.id}}">{{event.full_name}}</option>
-        {% endfor %}
-    </select><br/>
+    <div class="d-flex" style="padding-left:0px!important;padding-right:0px!important;max-width:800px">
+        {% for ev in events %}
+            <div class="flex-grow-1">
+                <button id="btn{{ev.name}}" type="button" class="btn btn-event" onclick="EventClick({{ev.id}},'{{ev.name|upper}}')"><img src="{% static 'app/images/' %}{{ev.name|lower}}-white.svg" height="45px"/></button>
+            </div>
+        {% endfor %} 
+    </div>
+    <br/>
     <button href="#" id="btnSave" type="button" class="btn btn-main management-button-long" onclick="Save()">Save</button>
     <br/>
     <div id="divMissing" style="color:red;font-size:.85rem">&nbsp;</div>
@@ -35,7 +38,7 @@
     var SelectedEvent = -1;
     var Changed = false;
     var gonext = false;
-    EventClick();
+    $(".btn-event").first().click();
 
     function CheckChange(ThingIn)
     {
@@ -53,11 +56,13 @@
     }
 
 
-    function EventClick() {
+    function EventClick(evid,evIn) {
         //console.log("Click");
         //if ($("#ddlEventJudge").val() != SelectedEvent)        {
         if (CheckChange("switch events")) {
-            SelectedEvent = $("#ddlEvent").val();
+            $(".btn-event").removeClass("btn-event-selected");
+            $("#btn" + evIn).addClass("btn-event-selected");
+            SelectedEvent = evid;
             gonext = false;
             $.ajax({
                 url: "/management/judge_form/?event=" + SelectedEvent + "&session=" + SessionID,
@@ -69,7 +74,7 @@
             });
         }
         else {
-            $("#ddlEvent").val(SelectedEvent)
+            //$("#ddlEvent").val(SelectedEvent)
         }
         //}
     }  
