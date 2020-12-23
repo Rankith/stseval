@@ -47,7 +47,10 @@
                     </div>
                 {% endfor %}
             </div>
-            <br/>
+            <div id="divViews">
+                <i class="fa fa-eye"></i>
+                <span id="divViewsLabel">0</span>
+            </div>
             <div class="d-flex">
                 <h3 class="pl-4">Start List</h3>
                 <div class="pl-4 align-self-center pb-2"><button id="btnForceReset" type="button" class="btn btn-main btn-small" onclick="ForceResetStart()" title="Only use this if there as some problem with the D1 or D2.">Reset Current Athlete</button></div>
@@ -136,6 +139,10 @@
             });
         });
     SetupChatListener();
+    var ViewsRef = firebase.database().ref('/session_views/' + Session)
+    ViewsRef.on('value', function(snapshot) {
+        SetViews(snapshot.numChildren());
+    });
     function SetCameraDots(doc) {
         console.log(doc.id + " | " + doc.data().connected + " | " + doc.data().status);
         if (doc.data().connected == true) {
@@ -152,6 +159,10 @@
                 $("#camdot" + doc.id).prop("title", "NOT STARTED");
             }
         }
+    }
+
+    function SetViews(numIn) {
+        $("#divViewsLabel").html(numIn);
     }
 
     function SwapEvent(evIn) {

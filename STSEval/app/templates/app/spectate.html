@@ -114,8 +114,65 @@
     CurrentAthlete[2] = -1;
     var test;
     var refs = new Array();
+    var uid;
+   // var userStatusDatabaseRef;
+    var sessionViewsRef;
+
+    firebase.auth().signInAnonymously()
+        .then(() => {
+            // Fetch the current user's ID from Firebase Authentication.
+            uid = firebase.auth().currentUser.uid;
+
+            // Create a reference to this user's specific status node.
+            // This is where we will store data about being online/offline.
+            //userStatusDatabaseRef = firebase.database().ref('/status/' + uid);
+
+            sessionViewsRef = firebase.database().ref('/session_views/' + Session + '/' + uid);
+
+             firebase.database().ref('.info/connected').on('value', function(snapshot) {
+                // If we're not currently connected, don't do anything.
+                if (snapshot.val() == false) {
+                    return;
+                };
+
+                 sessionViewsRef.onDisconnect().remove().then(function () {
+                     sessionViewsRef.set(true);
+                 });
+
+                 /*sessionViewsRef.onDisconnect(function () {
+                     sessionViewsRef.child(uid).reomve();
+                     
+                 }).then(function () {
+                     sessionViewsRef.child(uid).set(true);
+                 });*/
+
+                // If we are currently connected, then use the 'onDisconnect()' 
+                // method to add a set which will only trigger once this 
+                // client has disconnected by closing the app, 
+                // losing internet, or any other means.
+                /*userStatusDatabaseRef.onDisconnect().set(isOfflineForDatabase).then(function() {
+                    // The promise returned from .onDisconnect().set() will
+                    // resolve as soon as the server acknowledges the onDisconnect() 
+                    // request, NOT once we've actually disconnected:
+                    // https://firebase.google.com/docs/reference/js/firebase.database.OnDisconnect
+
+                    // We can now safely set ourselves as 'online' knowing that the
+                    // server will mark us as offline once we lose connection.
+                    userStatusDatabaseRef.set(isOnlineForDatabase);
+                });*/
+            });
+
+    // Signed in..
+    console.log("firebase signed in");
+    })
+    .catch((error) => {
+    var errorCode = error.code;
+    var errorMessage = error.message;
+    console.log(errorMessage);
+    });
+
+
     var db = firebase.firestore();
-    firebase.firestore.setLogLevel('debug');
     SetEventListeners(1);
     if (ev[2] != undefined)
         SetEventListeners(2);
