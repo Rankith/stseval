@@ -899,8 +899,8 @@ def session_activate(request,session_id):
     return HttpResponse(status=200)
 
 @login_required(login_url='/account/login/admin/')
-def spectator_management(request,id):
-    session = Session.objects.get(pk=id)
+def spectator_management(request,session_id):
+    session = Session.objects.get(pk=session_id)
    
     context = {
         'title': 'Spectator Management',
@@ -908,8 +908,13 @@ def spectator_management(request,id):
     }
     return render(request,'management/spectator_management.html',context)
 
-
-
+@login_required(login_url='/account/login/admin/')
+def set_access_code(request,session_id):
+    session = Session.objects.get(pk=session_id)
+    session.access_code = request.POST.get('access_code')
+    session.save()
+    
+    return HttpResponse(200)
 
 def judges_get(request):
     comp = request.GET.get('comp')
