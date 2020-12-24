@@ -45,6 +45,7 @@ urlpatterns = [
     path('sponsor_list/<int:session_id>', views.sponsor_list, name='sponsor_list'),
     path('sponsor_delete/<int:id>', views.sponsor_delete, name='sponsor_delete'),
     path('send_session_emails/<int:session_id>', views.send_session_emails, name='send_session_emails'),
+    path('staff_bypass_payment/<int:session_id>', views.staff_bypass_payment, name='staff_bypass_payment'),
     path('session_activate/<int:session_id>', views.session_activate, name='session_activate'),
     path('email_test/', views.email_test, name='email_test'),
     path('start_list_warn/', views.start_list_warn, name='start_list_warn'),

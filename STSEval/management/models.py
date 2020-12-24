@@ -45,10 +45,23 @@ class Session(models.Model):
     competition = models.ForeignKey(Competition, on_delete=models.CASCADE,default=None,null=True)
     name = models.CharField(max_length=75)
     time = models.TimeField()
+    NCAA = 'NCAA'
+    FIG = 'FIG'
+    USAG = 'USAG'
+    JO = 'JO'
+    SESSION_LEVEL = [
+        (NCAA,'NCAA'),
+        (FIG,'FIG'),
+        (USAG,'USAG'),
+        (JO,'JO'),
+        ]
+    level = models.CharField(max_length=6,choices=SESSION_LEVEL,default=NCAA)
     spectator_fee = models.DecimalField(max_digits=6, decimal_places=2)
     test =  models.BooleanField(default=False)
     finished = models.BooleanField(default=False)
     active = models.BooleanField(default=False)
+    paid = models.BooleanField(default=False)
+    payment_id = models.CharField(max_length=100,blank=True,default='')
     top_counting_for_score = models.IntegerField(default=5)
     email_sent = models.BooleanField(default=False)
     def full_name(self):

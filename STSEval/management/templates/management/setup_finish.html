@@ -36,10 +36,29 @@
             <button id="btnActivate" type="button" class="btn-main btn-wide pt-4 pb-4 ui-disabled" style="border-radius: 1rem;" onclick="Activate()">Activate</button>
         </div>
         {% else %}
-            <div id="divActivate">
-                Activate the competition when ready.<br/>
-                <button id="btnActivate" type="button" class="btn-main btn-wide pt-4 pb-4" style="border-radius: 1rem;" onclick="Activate()">Activate</button>
-            </div>
+            {% if session_paid %}
+                <div id="divActivate">
+                    Activate the competition when ready.<br/>
+                    <button id="btnActivate" type="button" class="btn-main btn-wide pt-4 pb-4" style="border-radius: 1rem;" onclick="Activate()">Activate</button>
+                </div>
+            {% else %}
+                <div>
+                    You have {{num_panels}} judging panels, this session will cost ${{session_cost}}.<br/>
+                    <div class="payment-container">
+                        <div id="card-element">
+                          <!-- Elements will create input elements here -->
+                        </div>
+                        <button id="btnPayNow" class="payment-button" onclick="PayClick()">Pay Now</button>
+                    </div>
+                    <!-- We'll put the error messages in this element -->
+                    <div id="card-errors" role="alert" class="errorlist"></div>
+
+                    {% if request.user.is_staff %}
+                          <br/>
+                         <button id="btnBypass" type="button" class="btn btn-main mt-2" onclick="BypassPayment()">Staff Bypass Payment</button>
+                    {% endif %}
+                </div>
+            {% endif %}
         {% endif %}
     {% endif %}
      <button id="btnSessionOverview" type="button" class="btn-main btn-wide pt-4 pb-4" style="border-radius: 1rem;{% if not session_active %}display:none{% endif %}" onclick="btnSessionOverviewClick()">Session<br/>Overview</button>
@@ -55,10 +74,71 @@
 {% endblock %}
 
 {% block scripts %}
+<script src="https://js.stripe.com/v3/"></script>
 <script type="text/javascript">
     var token = "{{ csrf_token }}";
+    var stripe = Stripe('{{stripe_pk}}');
+    var intent_secret = '{{intent_secret}}';
     var SessionID = "{{id}}";
 </script>
+{% if not session_paid %}
+<script type="text/javascript">
+    var elements = stripe.elements();
+     var style = {
+
+
+    };
+     var card = elements.create("card", { style: style });
+    card.mount("#card-element");
+    card.on('change', function (event) {
+        var displayError = document.getElementById('card-errors');
+        if (event.error) {
+            displayError.textContent = event.error.message;
+        } else {
+            displayError.textContent = '';
+        }
+    });
+
+    function PayClick() {
+        //var cardholderName = document.querySelector("#name").value;
+        var data = {
+            card: card,
+            billing_details: {}
+        };
+        //if (cardholderName) {
+        //    data["billing_details"]["name"] = cardholderName;
+       // }
+       // $("#modalLoadText").html("Processing...");
+        //$("#modalLoad").modal('show');
+        $("#btnPayNow").addClass('ui-disabled');
+        console.log("sending");
+        stripe.confirmCardPayment(intent_secret, {
+            payment_method:data,
+            setup_future_usage: 'on_session'
+        }).then(function (result) {
+            console.log(result);
+             $("#btnPayNow").removeClass('ui-disabled');
+            //$("#modalLoad").modal('hide');
+            if (result.error) {
+                // Show error to your customer
+                $("#card-errors").html(result.error.message);
+            } else {
+                if (result.paymentIntent.status === 'succeeded') {
+                    alert('Payment Accepted');
+                    window.location.reload();
+                    // Show a success message to your customer
+                    // There's a risk of the customer closing the window before callback execution
+                    // Set up a webhook or plugin to listen for the payment_intent.succeeded event
+                    // to save the card to a Customer
+
+                    // The PaymentMethod ID can be found on result.paymentIntent.payment_method
+                }
+            }
+             $("#modalLoad").modal('hide');
+        });
+    }
+</script>
+{% endif  %}
 <script type="text/javascript">
     var Changed = false;
     var gonext = false;
@@ -73,6 +153,16 @@
             }
         });
         alert("Email Notifications Sending");
+
+    }
+
+    function BypassPayment() {
+        $.ajax({
+            url: "/management/staff_bypass_payment/" + SessionID,
+            success: function () {
+                window.location.reload();
+            }
+        });
 
     }
 

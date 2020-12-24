@@ -39,11 +39,12 @@ class CompetitionForm(ModelForm):
 class SessionForm(ModelForm):
     class Meta:
         model = Session
-        fields = ['competition','name','time','spectator_fee']
+        fields = ['competition','name','time','spectator_fee','level']
         widgets = {'competition': forms.HiddenInput(),
                    'name':forms.TextInput(attrs={'class':'management-input'}),
                    'spectator_fee':forms.TextInput(attrs={'class':'management-input','placeholder':'3.00 min.'}),
-                   'time':TimeInput(attrs={'class':'management-input'})}
+                   'time':TimeInput(attrs={'class':'management-input'}),
+                   'level':forms.Select(attrs={'class':'selectpicker management-input','data-style':'btn-main'})}
 
     def clean(self):
         data = self.cleaned_data

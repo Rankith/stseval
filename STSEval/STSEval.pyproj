@@ -81,6 +81,13 @@
     <Compile Include="management\urls.py" />
     <Compile Include="management\views.py" />
     <Compile Include="management\__init__.py" />
+    <Compile Include="payments\admin.py" />
+    <Compile Include="payments\apps.py" />
+    <Compile Include="payments\migrations\__init__.py" />
+    <Compile Include="payments\models.py" />
+    <Compile Include="payments\tests.py" />
+    <Compile Include="payments\views.py" />
+    <Compile Include="payments\__init__.py" />
     <Compile Include="streaming\admin.py" />
     <Compile Include="streaming\apps.py" />
     <Compile Include="streaming\exceptions.py" />
@@ -130,6 +137,10 @@
     <Folder Include="management\migrations\" />
     <Folder Include="management\templates\" />
     <Folder Include="management\templates\management\" />
+    <Folder Include="payments\" />
+    <Folder Include="payments\migrations\" />
+    <Folder Include="payments\templates\" />
+    <Folder Include="payments\templates\payments\" />
     <Folder Include="streaming\" />
     <Folder Include="streaming\migrations\" />
     <Folder Include="streaming\templates\" />
@@ -220,6 +231,7 @@
     <Content Include="management\templates\management\email_notice.html" />
     <Content Include="management\templates\management\setup_rotations.html" />
     <Content Include="management\templates\management\start_list_warn.html" />
+    <Content Include="payments\templates\payments\index.html" />
     <Content Include="streaming\templates\streaming\camera.html" />
     <Content Include="app\templates\app\d1 - Copy.html" />
     <Content Include="app\templates\app\dev-view-play.html" />

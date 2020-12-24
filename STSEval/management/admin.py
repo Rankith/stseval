@@ -33,13 +33,18 @@ class RotationOrderAdmin(ImportExportModelAdmin):
     list_editable=('order',)
     list_filter=('session','event','rotation')
 
+class SessionAdmin(ImportExportModelAdmin):
+    list_display=('id','name','active','paid','finished')
+    list_editable=('active','paid','finished')
+    list_filter=('competition__disc','active','finished')
+
 admin.site.register(AthleteLevel,AthleteLevelAdmin)
 admin.site.register(Event,EventAdmin)
 admin.site.register(Disc,DiscAdmin)
 admin.site.register(Competition)
 admin.site.register(Judge,JudgeAdmin)
 admin.site.register(Athlete)
-admin.site.register(Session)
+admin.site.register(Session,SessionAdmin)
 admin.site.register(Team)
 admin.site.register(Sponsor)
 admin.site.register(Camera)

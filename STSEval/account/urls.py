@@ -24,6 +24,7 @@ urlpatterns = [
     path('login_camera/', views.login_camera, name='login_camera'),
     path('login_coach/', views.login_coach, name='login_coach'),
     path('login_multiple/<str:type>/<str:sub_type>/<int:id>', views.login_multiple, name='login_multiple'),
+    path('stripe_webhook/', views.stripe_webhook, name='stripe_webhook'),
 
 
 ]

@@ -5,6 +5,9 @@ from django.contrib.auth import authenticate, login
 from management.models import Judge,Camera,Session,Competition,Team
 import datetime
 from django.db.models import Q
+import stripe
+from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
 
 def signup(request,type='spectator'):
     if request.method == 'POST':
@@ -14,6 +17,7 @@ def signup(request,type='spectator'):
             email = form.cleaned_data.get('email')
             password = form.cleaned_data.get('password1')
             user = authenticate(request, email=email, password=password)
+            check_create_stripe_user(user)
             login(request, user)
             request.session['type'] = type
             #now create the stripe customer
@@ -25,6 +29,13 @@ def signup(request,type='spectator'):
         form = SignUpForm()
     return render(request, 'account/signup.html', {'form': form})
 
+def check_create_stripe_user(user):
+    stripe.api_key = settings.STRIPE_API_KEY
+    if user.stripe_customer == '':
+        customer = stripe.Customer.create(email=user.email)
+        user.stripe_customer = customer.id
+        user.save()
+
 def login_admin(request,type='spectator'):
     err = ''
     if request.method == 'POST':
@@ -34,6 +45,7 @@ def login_admin(request,type='spectator'):
             raw_password = login_form.cleaned_data.get('password')
             user = authenticate(request, email=email, password=raw_password)
             if user is not None:
+                check_create_stripe_user(user)
                 login(request, user,backend='django.contrib.auth.backends.ModelBackend')
                 request.session['type'] = request.session.get('type','') + ',' + type
                 request.session['email'] = email
@@ -312,3 +324,39 @@ def login_coach(request):
         'type':'Coach',
     }
     return render(request, 'account/login_simple.html', context)
+
+@csrf_exempt
+def stripe_webhook(request):
+    stripe.api_key = settings.STRIPE_API_KEY
+    endpoint_secret = settings.STRIPE_WEBHOOK_SECRET
+    payload = request.body
+    sig_header = request.META['HTTP_STRIPE_SIGNATURE']
+    event = None
+
+    try:
+        event = stripe.Webhook.construct_event(
+        payload, sig_header, endpoint_secret
+        )
+    except ValueError as e:
+        # Invalid payload
+        return HttpResponse(status=400)
+    except stripe.error.SignatureVerificationError as e:
+        # Invalid signature
+        return HttpResponse(status=400)
+
+    # Handle the checkout.session.completed event
+    if event['type'] == 'charge.succeeded':
+        #charge payment for session activation
+        response = event['data']['object']
+        if response["metadata"]["type"] == 'session_activation_payment':
+            session = Session.objects.get(pk=response["metadata"]["session_id"])
+            session.paid=True
+            session.save()
+
+        #now update customers default payment method to wahtever was just used
+        try:
+            stripe.Customer.modify(response["customer"],invoice_settings={'default_payment_method':response["payment_method"]})
+        except:
+            chargefail = True
+
+    return HttpResponse(status=200)

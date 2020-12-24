@@ -207,6 +207,7 @@
     function AttachSessionForm() {
         var frm = $('#form');
         $("#id_competition").val(SelectedComp);
+        $('.selectpicker').selectpicker();
         frm.submit(function () {
             console.log("forming");
             $.ajax({

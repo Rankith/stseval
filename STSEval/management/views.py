@@ -15,6 +15,8 @@ from django.db.models import Q
 import django_excel as excel
 from django.db.models import Min
 import string, random
+import stripe
+from django.conf import settings
 
 # Create your views here.
 @login_required(login_url='/account/login/admin/')
@@ -646,6 +648,33 @@ def sponsor_delete(request,id):
     Sponsor.objects.filter(id=id).delete()
     return HttpResponse(status=200)
 
+def calculate_judge_panels(session):
+    judges = Judge.objects.filter(session=session)
+    panels = []
+    for j in judges:
+        panel = str(j.d1_email) + str(j.d2_email) + str(j.e1_email) + str(j.e2_email) + str(j.e3_email) + str(j.e4_email)
+        if panel not in panels:
+            panels.append(panel)
+
+    return len(panels)
+
+def calculate_session_cost(session):
+    panels = calculate_judge_panels(session)
+    if session.level == Session.JO:
+        cost = panels*175
+    else:
+        cost = panels*250
+
+    return cost
+
+def staff_bypass_payment(request,session_id):
+    if request.user.is_staff:
+        session = Session.objects.get(pk=session_id)
+        session.paid = True
+        session.save()
+
+    return HttpResponse(200)
+
 @login_required(login_url='/account/login/admin/')
 def setup_finish(request,id):
     session = Session.objects.get(pk=id)
@@ -662,6 +691,26 @@ def setup_finish(request,id):
         setup_complete = False
     else:
         setup_complete = True
+
+    num_panels = calculate_judge_panels(session)
+    session_cost = calculate_session_cost(session)
+
+    if not session.paid and not session.active:
+        stripe.api_key = settings.STRIPE_API_KEY
+        intent = stripe.PaymentIntent.create(
+            amount=session_cost*100,#this is because stripe payments are in cents
+            currency='usd',
+            customer=request.user.stripe_customer,
+            description=str(session.full_name()) + " Activation",
+            metadata={
+                'type': 'session_activation_payment',
+                'session_id': session.id,
+                },
+            )
+        intent_secret = intent.client_secret
+    else:
+        intent_secret = None
+   
     context = {
         'title': 'Competition Setup (7/7)',
         'session_name': session.full_name,
@@ -672,6 +721,11 @@ def setup_finish(request,id):
         'setup_complete':setup_complete,
         'session_active':session.active,
         'email_sent':session.email_sent,
+        'num_panels':num_panels,
+        'session_cost':session_cost,
+        'session_paid':session.paid,
+        'intent_secret':intent_secret,
+        'stripe_pk':settings.STRIPE_PUBLIC_KEY,
         'help':'competition_setup_finish',
     }
     return render(request,'management/setup_finish.html',context)
