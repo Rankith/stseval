@@ -1,0 +1,84 @@
+{% extends "app/layout.html" %}
+
+{% block content %}
+<div align="center" style="margin:10px;padding:0">
+    {{session.full_name}}<br/>
+    <br/>
+    <h2>Session Access Codes</h2>
+    These are unique codes that spectators can redeem, giving them full access to a session.  Purchase codes for this session at cost ($3.00 per code). Spectators can enter this code to bypass paying for the session.
+
+		
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://js.stripe.com/v3/"></script>
+<script type="text/javascript">
+    var token = "{{ csrf_token }}";
+    var SessionID = "{{session.id}}";
+</script>
+<script type="text/javascript">
+    var Changed = false;
+    var gonext = false;
+
+
+    function Send() {
+        $("#btnSendEmails").addClass("ui-disabled");
+        $.ajax({
+            url: "/management/send_session_emails/" + SessionID,
+            success: function () {
+                
+            }
+        });
+        alert("Email Notifications Sending");
+
+    }
+
+    function BypassPayment() {
+        $.ajax({
+            url: "/management/staff_bypass_payment/" + SessionID,
+            success: function () {
+                window.location.reload();
+            }
+        });
+
+    }
+
+     function Activate() {
+        $("#btnActivate").addClass("ui-disabled");
+        $("#modalLoadText").html("Activating...");
+        $("#modalLoad").modal('show');
+        $.ajax({
+            url: "/management/session_activate/" + SessionID,
+            success: function () {
+                $("#divActivate").hide();
+                $("#btnSessionOverview").show();
+                $("#modalLoad").modal('hide');
+                 alert("Session activated, please review start lists on the overview page.");
+            }
+        });
+       
+
+    }
+
+    function btnSessionOverviewClick() {
+            window.location = "/overview/" + SessionID;
+    }
+
+    function GoBack() {
+
+        window.location = "/management/setup_sponsors/" + SessionID;
+
+    }
+
+    function FirstClick() {
+        window.location = "/management/setup_competition/";
+    }
+
+
+
+
+   
+</script>
+{% endblock %}

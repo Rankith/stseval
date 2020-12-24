@@ -15,8 +15,9 @@ from django.db.models import Q
 import django_excel as excel
 from django.db.models import Min
 import string, random
-import stripe
 from django.conf import settings
+from account import stripe_handler
+from account.models import Purchase
 
 # Create your views here.
 @login_required(login_url='/account/login/admin/')
@@ -135,6 +136,7 @@ def setup_judges(request,id):
         'session_name': session.full_name,
         'events':events,
         'id':session.id,
+        'session_paid':session.paid,
         'help':'competition_setup_judges',
     }
     return render(request,'management/setup_judges.html',context)
@@ -146,7 +148,7 @@ def judge_form(request):
         if id != '-1':
             form = JudgeForm(request.POST,instance=Judge.objects.get(pk=id))
         else:
-            #double check to overrid
+            #double check to override
             judge = Judge.objects.filter(session_id=request.POST.get('session'),event=request.POST.get('event'))
             if len(judge) > 0:
                 form = JudgeForm(request.POST,instance=Judge.objects.get(pk=id))
@@ -661,9 +663,9 @@ def calculate_judge_panels(session):
 def calculate_session_cost(session):
     panels = calculate_judge_panels(session)
     if session.level == Session.JO:
-        cost = panels*175
+        cost = 175
     else:
-        cost = panels*250
+        cost = 250
 
     return cost
 
@@ -694,20 +696,10 @@ def setup_finish(request,id):
 
     num_panels = calculate_judge_panels(session)
     session_cost = calculate_session_cost(session)
+    session_cost_total = session_cost * num_panels
 
     if not session.paid and not session.active:
-        stripe.api_key = settings.STRIPE_API_KEY
-        intent = stripe.PaymentIntent.create(
-            amount=session_cost*100,#this is because stripe payments are in cents
-            currency='usd',
-            customer=request.user.stripe_customer,
-            description=str(session.full_name()) + " Activation",
-            metadata={
-                'type': 'session_activation_payment',
-                'session_id': session.id,
-                },
-            )
-        intent_secret = intent.client_secret
+        intent_secret = stripe_handler.create_intent(request.user,session,Purchase.PANEL,session_cost,num_panels)
     else:
         intent_secret = None
    
@@ -722,7 +714,7 @@ def setup_finish(request,id):
         'session_active':session.active,
         'email_sent':session.email_sent,
         'num_panels':num_panels,
-        'session_cost':session_cost,
+        'session_cost':session_cost_total,
         'session_paid':session.paid,
         'intent_secret':intent_secret,
         'stripe_pk':settings.STRIPE_PUBLIC_KEY,
@@ -906,6 +898,19 @@ def session_activate(request,session_id):
 
     return HttpResponse(status=200)
 
+@login_required(login_url='/account/login/admin/')
+def spectator_management(request,id):
+    session = Session.objects.get(pk=id)
+   
+    context = {
+        'title': 'Spectator Management',
+        'session': session,
+    }
+    return render(request,'management/spectator_management.html',context)
+
+
+
+
 def judges_get(request):
     comp = request.GET.get('comp')
     disc = request.GET.get('disc')
@@ -927,7 +932,6 @@ def judges_update(request):
     )
     resp = {'updated':True}
     return JsonResponse(resp)
-
 
 
 def athlete_create_update(request):

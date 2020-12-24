@@ -16,6 +16,9 @@
         {% endfor %} 
     </div>
     <br/>
+    {% if session_paid %}
+        NOTE: You have paid for this session, judge emails are no longer editable.<br/>
+    {% endif %}
     <button href="#" id="btnSave" type="button" class="btn btn-main management-button-long" onclick="Save()">Save</button>
     <br/>
     <div id="divMissing" style="color:red;font-size:.85rem">&nbsp;</div>
@@ -33,6 +36,7 @@
 <script type="text/javascript">
     var token = "{{ csrf_token }}";
     var SessionID = "{{id}}";
+    var sp = {{session_paid|lower}};
 </script>
 <script type="text/javascript">
     var SelectedEvent = -1;
@@ -141,6 +145,14 @@
         var frm = $('#form');
         $("#id_session").val(SessionID);
         $("#id_event").val(SelectedEvent);
+        if (sp) {
+            $("#id_d1_email").attr("readonly", true);
+            $("#id_d2_email").attr("readonly", true);
+            $("#id_e1_email").attr("readonly", true);
+            $("#id_e2_email").attr("readonly", true);
+            $("#id_e3_email").attr("readonly", true);
+            $("#id_e4_email").attr("readonly", true);
+        }
         frm.submit(function () {
             console.log("forming");
             $.ajax({

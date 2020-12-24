@@ -9,6 +9,7 @@ import stripe
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
+from account.models import Purchase
 
 def signup(request,type='spectator'):
     if request.method == 'POST':
@@ -349,10 +350,18 @@ def stripe_webhook(request):
     if event['type'] == 'charge.succeeded':
         #charge payment for session activation
         response = event['data']['object']
-        if response["metadata"]["type"] == 'session_activation_payment':
-            session = Session.objects.get(pk=response["metadata"]["session_id"])
+        session = Session.objects.get(pk=response["metadata"]["session_id"])
+        if response["metadata"]["type"] == Purchase.PANEL:
             session.paid=True
             session.save()
+        
+
+        purchase = Purchase(user_id=response["metadata"]["user"],session=session,type=response["metadata"]["type"],
+                            amount=response["metadata"]["individual_amount"],quantity=response["metadata"]["quantity"],
+                            stripe_payment=response['id'])
+        purchase.save()
+
+        #create the purchase
 
         #now update customers default payment method to wahtever was just used
         try:

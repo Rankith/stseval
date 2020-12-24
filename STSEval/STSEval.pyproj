@@ -34,6 +34,7 @@
   <ItemGroup>
     <Compile Include="account\admin.py" />
     <Compile Include="account\apps.py" />
+    <Compile Include="account\stripe_handler.py" />
     <Compile Include="account\forms.py" />
     <Compile Include="account\migrations\__init__.py" />
     <Compile Include="account\models.py" />
@@ -229,6 +230,7 @@
     <Content Include="management\templates\management\judge_list_upload_form.html" />
     <Content Include="management\templates\management\athlete_list_upload_form.html" />
     <Content Include="management\templates\management\email_notice.html" />
+    <Content Include="management\templates\management\spectator_management.html" />
     <Content Include="management\templates\management\setup_rotations.html" />
     <Content Include="management\templates\management\start_list_warn.html" />
     <Content Include="payments\templates\payments\index.html" />

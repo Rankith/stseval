@@ -62,10 +62,16 @@ class Session(models.Model):
     active = models.BooleanField(default=False)
     paid = models.BooleanField(default=False)
     payment_id = models.CharField(max_length=100,blank=True,default='')
+    payment_intent = models.CharField(max_length=100,blank=True,default='')
     top_counting_for_score = models.IntegerField(default=5)
     email_sent = models.BooleanField(default=False)
+    access_code = models.CharField(max_length=20,blank=True,default='')
+    access_code_total = models.IntegerField(default=5)
+    access_code_used = models.IntegerField(default=0)
     def full_name(self):
        return self.competition.name + " - " + self.competition.get_type_display() + " - " + self.name
+    def __str__(self):
+       return self.competition.name + " - " + self.name
 
 class Team(models.Model):
     session = models.ForeignKey(Session, on_delete=models.CASCADE)

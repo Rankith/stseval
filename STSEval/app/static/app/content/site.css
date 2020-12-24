@@ -618,3 +618,7 @@ input[type="checkbox"].input-validation-error {
         opacity: 0.5;
         cursor: default;
     }
+
+.muted-text{
+    color:#8e8e8e;
+}

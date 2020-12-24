@@ -1,8 +1,7 @@
-"""Declare models for YOUR_APP app."""
-
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
+
 
 
 class UserManager(BaseUserManager):
@@ -50,3 +49,23 @@ class User(AbstractUser):
     REQUIRED_FIELDS = []
 
     objects = UserManager()
+
+class Purchase(models.Model):
+    user = models.ForeignKey(User, on_delete=models.SET_NULL,blank=True,null=True)
+    PANEL = 'PANEL'
+    SPECTATOR = 'SPECTATE'
+    ACCESS_CODE = 'ACCESS_CODE'
+    SCOREBOARD = 'SCOREBOARD'
+    PURCHASE_TYPE = [
+        (PANEL,'Panel'),
+        (SPECTATOR,'Spectate'),
+        (ACCESS_CODE,'Access Code'),
+        (SCOREBOARD,'Scoreboard'),
+        ]
+    type = models.CharField(max_length=2,choices=PURCHASE_TYPE,default=PANEL)
+    session = models.ForeignKey('management.Session', on_delete=models.SET_NULL,default=None,null=True)
+    amount = models.DecimalField(max_digits=6, decimal_places=2,default=0)
+    quantity = models.IntegerField(default=1)
+    stripe_payment = models.CharField(blank=True,default='',max_length=255)
+    def total(self):
+       return self.amount * self.quantity
