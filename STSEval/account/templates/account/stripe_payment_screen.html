@@ -1,6 +1,14 @@
 <div align="center"> 
-   You are purchasing {{qty}} additional access code uses at $3.00 each. 
+   {{message}}
+
     <div class="payment-container">
+         {% if methods|length > 0 %}
+             <select id="paymentMethod" class="selectpicker" data-style="btn-main">
+                 {% for method in methods %}
+                    <option value="{{method.id}}"><b>{{method.card.brand}}</b> <span class="muted-text">ending in</span> {{method.card.last4}}</option>
+                 {% endfor %}
+            </select>
+        {% endif %}
         <div id="card-element">
             <!-- Elements will create input elements here -->
         </div>
@@ -13,10 +21,12 @@
 <script type="text/javascript">
 var stripe = Stripe('{{stripe_pk}}');
     var intent_secret = '{{intent_secret}}';
+    var success_message = '{{success_message}}';
 </script>
 <script type="text/javascript">
     var elements = stripe.elements();
     var card = elements.create("card");
+    $('.selectpicker').selectpicker();
     card.mount("#card-element");
     card.on('change', function (event) {
         var displayError = document.getElementById('card-errors');
@@ -44,7 +54,7 @@ var stripe = Stripe('{{stripe_pk}}');
                 $("#card-errors").html(result.error.message);
             } else {
                 if (result.paymentIntent.status === 'succeeded') {
-                    alert('Additional Access Code uses purchased');
+                    alert(success_message);
                     window.location.reload();
                 }
             }

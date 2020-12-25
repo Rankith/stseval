@@ -227,7 +227,7 @@
     <Content Include="app\templates\app\camera_old.html" />
     <Content Include="app\templates\app\select_session.html" />
     <Content Include="chat\templates\chat\chat.html" />
-    <Content Include="management\templates\management\purchase_access_codes.html" />
+    <Content Include="account\templates\account\stripe_payment_screen.html" />
     <Content Include="management\templates\management\judge_list_upload_form.html" />
     <Content Include="management\templates\management\athlete_list_upload_form.html" />
     <Content Include="management\templates\management\email_notice.html" />

@@ -5,6 +5,12 @@ from datetime import datetime
 from django.conf import settings
 from .models import User
 
+def get_customer_cards(user):
+    stripe.api_key = settings.STRIPE_API_KEY
+    methods = stripe.PaymentMethod.list(customer=user.stripe_customer,type="card")
+
+    return methods.data
+
 def create_intent(user,session,type,amount,quantity):
     stripe.api_key = settings.STRIPE_API_KEY
     total = amount*quantity*100#this is because stripe payments are in cents

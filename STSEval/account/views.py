@@ -10,6 +10,7 @@ from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 from account.models import Purchase
+from account import stripe_handler
 
 def signup(request,type='spectator'):
     if request.method == 'POST':
@@ -326,6 +327,26 @@ def login_coach(request):
         'type':'Coach',
     }
     return render(request, 'account/login_simple.html', context)
+
+def stripe_payment_screen(request,session_id,type,qty):
+    session = Session.objects.get(pk=session_id)
+    if type == Purchase.ACCESS_CODE:
+        message = "You are purchasing " + str(qty) + " additonal access code uses for $3.00 each."
+        cost = 3
+        success_message = "Additional Access Code uses purchased"
+    total = cost * qty
+    intent_secret = stripe_handler.create_intent(request.user,session,type,cost,qty)
+    methods = stripe_handler.get_customer_cards(request.user)
+    context = {
+        'session': session,
+        'intent_secret':intent_secret,
+        'stripe_pk':settings.STRIPE_PUBLIC_KEY,
+        'total':total,
+        'success_message':success_message,
+        'message':message,
+        'methods':methods,
+    }
+    return render(request,'account/stripe_payment_screen.html',context)
 
 @csrf_exempt
 def stripe_webhook(request):

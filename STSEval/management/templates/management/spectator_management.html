@@ -53,7 +53,7 @@
             $("#modalMainTitle").html("Purchase Access Codes");
             $("#modalBodyArea2").hide();
             $("#modalBodyArea1").empty();
-            $("#modalBodyArea1").load("/management/purchase_access_codes/" + SessionID + "/" + $("#txtNumAdditional").val(), function () {
+            $("#modalBodyArea1").load("/account/stripe_payment_screen/" + SessionID + "/ACCESS_CODE/" + $("#txtNumAdditional").val(), function () {
             });
             $("#modalMain").modal('show');
             $("#modalBodyArea1").show();
