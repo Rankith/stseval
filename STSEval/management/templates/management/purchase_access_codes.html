@@ -1,0 +1,54 @@
+<div align="center"> 
+   You are purchasing {{qty}} additional access code uses at $3.00 each. 
+    <div class="payment-container">
+        <div id="card-element">
+            <!-- Elements will create input elements here -->
+        </div>
+        <button id="btnPayNow" class="payment-button" onclick="PayClick()">${{total}} Pay Now</button>
+    </div>
+    <!-- We'll put the error messages in this element -->
+    <div id="card-errors" role="alert" class="errorlist"></div>
+</div>
+
+<script type="text/javascript">
+var stripe = Stripe('{{stripe_pk}}');
+    var intent_secret = '{{intent_secret}}';
+</script>
+<script type="text/javascript">
+    var elements = stripe.elements();
+    var card = elements.create("card");
+    card.mount("#card-element");
+    card.on('change', function (event) {
+        var displayError = document.getElementById('card-errors');
+        if (event.error) {
+            displayError.textContent = event.error.message;
+        } else {
+            displayError.textContent = '';
+        }
+    });
+    function PayClick() {
+        //var cardholderName = document.querySelector("#name").value;
+        var data = {
+            card: card,
+            billing_details: {}
+        };
+        $("#btnPayNow").addClass('ui-disabled');
+        stripe.confirmCardPayment(intent_secret, {
+            payment_method: data,
+            setup_future_usage: 'on_session'
+        }).then(function (result) {
+            $("#btnPayNow").removeClass('ui-disabled');
+            //$("#modalLoad").modal('hide');
+            if (result.error) {
+                // Show error to your customer
+                $("#card-errors").html(result.error.message);
+            } else {
+                if (result.paymentIntent.status === 'succeeded') {
+                    alert('Additional Access Code uses purchased');
+                    window.location.reload();
+                }
+            }
+            $("#modalLoad").modal('hide');
+        });
+    }
+</script>

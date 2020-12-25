@@ -916,6 +916,20 @@ def set_access_code(request,session_id):
     
     return HttpResponse(200)
 
+@login_required(login_url='/account/login/admin/')
+def purchase_access_codes(request,session_id,qty):
+    session = Session.objects.get(pk=session_id)
+    total = 3 * qty
+    intent_secret = stripe_handler.create_intent(request.user,session,Purchase.ACCESS_CODE,3,qty)
+    context = {
+        'session': session,
+        'intent_secret':intent_secret,
+        'stripe_pk':settings.STRIPE_PUBLIC_KEY,
+        'qty':qty,
+        'total':total,
+    }
+    return render(request,'management/purchase_access_codes.html',context)
+
 def judges_get(request):
     comp = request.GET.get('comp')
     disc = request.GET.get('disc')

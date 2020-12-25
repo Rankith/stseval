@@ -227,6 +227,7 @@
     <Content Include="app\templates\app\camera_old.html" />
     <Content Include="app\templates\app\select_session.html" />
     <Content Include="chat\templates\chat\chat.html" />
+    <Content Include="management\templates\management\purchase_access_codes.html" />
     <Content Include="management\templates\management\judge_list_upload_form.html" />
     <Content Include="management\templates\management\athlete_list_upload_form.html" />
     <Content Include="management\templates\management\email_notice.html" />
@@ -235,7 +236,6 @@
     <Content Include="management\templates\management\start_list_warn.html" />
     <Content Include="payments\templates\payments\index.html" />
     <Content Include="streaming\templates\streaming\camera.html" />
-    <Content Include="app\templates\app\d1 - Copy.html" />
     <Content Include="app\templates\app\dev-view-play.html" />
     <Content Include="app\templates\app\dev-view-publish.html" />
     <Content Include="app\templates\app\spectate.html" />

@@ -53,6 +53,7 @@ urlpatterns = [
     path('judge_list_upload/', views.judge_list_upload, name='judge_list_upload'),
     path('spectator_management/<int:session_id>', views.spectator_management, name='spectator_management'),
     path('set_access_code/<int:session_id>', views.set_access_code, name='set_access_code'),
+    path('purchase_access_codes/<int:session_id>/<int:qty>', views.purchase_access_codes, name='purchase_access_codes'),
     #path('competition_manage/', views.competition_manage, name='competition_manage'),
     #path('competition_create_update/', views.competition_create_update, name='competition_create_update'),
     #path('session_manage/', views.session_manage, name='session_manage'),

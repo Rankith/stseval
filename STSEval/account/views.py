@@ -354,7 +354,9 @@ def stripe_webhook(request):
         if response["metadata"]["type"] == Purchase.PANEL:
             session.paid=True
             session.save()
-        
+        if response["metadata"]["type"] == Purchase.ACCESS_CODE:
+            session.access_code_total = session.access_code_total + int(response["metadata"]["quantity"])
+            session.save()
 
         purchase = Purchase(user_id=response["metadata"]["user"],session=session,type=response["metadata"]["type"],
                             amount=response["metadata"]["individual_amount"],quantity=response["metadata"]["quantity"],

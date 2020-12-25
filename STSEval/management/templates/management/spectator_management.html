@@ -14,7 +14,7 @@
             <div class="row no-gutters">
                 <div class="pr-4" align="center">
                     Access Code<br/>
-                    <input type="text" name="access_code" placeholder="Access Code" maxlength="20" id="access_code" value="{{session.access_code}}"><br/>
+                    <input type="text" name="access_code" placeholder="Access Code" maxlength="20" id="access_code" value="{{session.access_code}}" style="width:100px"><br/>
                     <button href="#" id="btnSave" type="button" class="btn btn-main management-button mt-2" onclick="Save()">Update</button>
                 </div>
                 <div class="pl-4 pr-4" align="center">
@@ -25,8 +25,10 @@
                     Quantity<br/>
                     {{session.access_code_total}}
                 </div>
-                <div class="pl-4">
-                    <button href="#" id="btnSave" type="button" class="btn btn-main management-button-long mt-2" onclick="PurchaseMoreClick()">Purchase More</button>
+                <div class="pl-4" align="center">
+                    Add More<br/>
+                     <input type="text" id="txtNumAdditional" placeholder="Qty" onkeypress="return isNumberKey(event)" style="width:40px"><br/>
+                    <button href="#" id="btnPurchase" type="button" class="btn btn-main management-button mt-2" onclick="PurchaseMoreClick()">Purchase</button>
                 </div>
             </div>
         </div>
@@ -46,6 +48,25 @@
     var Changed = false;
     var gonext = false;
 
+    function PurchaseMoreClick() {
+        if ($("#txtNumAdditional").val() != '') {
+            $("#modalMainTitle").html("Purchase Access Codes");
+            $("#modalBodyArea2").hide();
+            $("#modalBodyArea1").empty();
+            $("#modalBodyArea1").load("/management/purchase_access_codes/" + SessionID + "/" + $("#txtNumAdditional").val(), function () {
+            });
+            $("#modalMain").modal('show');
+            $("#modalBodyArea1").show();
+        }
+    }
+    function isNumberKey(evt) {
+        var charCode = (evt.which) ? evt.which : evt.keyCode;
+        if ( charCode > 31
+            && (charCode < 48 || charCode > 57))
+            return false;
+        return true;
+    }
+
     function Save() {
         if ($("#access_code").val() != '' && $("#access_code").val() != ' ') {
             $.ajax({
@@ -60,25 +81,6 @@
                 }
             });
         }
-    }
-
-   
-
-     function Activate() {
-        $("#btnActivate").addClass("ui-disabled");
-        $("#modalLoadText").html("Activating...");
-        $("#modalLoad").modal('show');
-        $.ajax({
-            url: "/management/session_activate/" + SessionID,
-            success: function () {
-                $("#divActivate").hide();
-                $("#btnSessionOverview").show();
-                $("#modalLoad").modal('hide');
-                 alert("Session activated, please review start lists on the overview page.");
-            }
-        });
-       
-
     }
    
 </script>
