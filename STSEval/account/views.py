@@ -11,6 +11,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 from account.models import Purchase
 from account import stripe_handler
+from django.contrib.auth.decorators import login_required,user_passes_test
 
 def signup(request,type='spectator'):
     if request.method == 'POST':
@@ -328,26 +329,15 @@ def login_coach(request):
     }
     return render(request, 'account/login_simple.html', context)
 
+@login_required(login_url='/account/login/admin/')
 def payments(request):
-    session = Session.objects.get(pk=session_id)
-    if type == Purchase.ACCESS_CODE:
-        message = "You are purchasing " + str(qty) + " additonal access code uses for $3.00 each."
-        cost = 3
-        success_message = "Additional Access Code uses purchased"
-    total = cost * qty
-    intent_secret = stripe_handler.create_intent(request.user,session,type,cost,qty)
-    methods = stripe_handler.get_customer_cards(request.user)
+    connect_status = stripe_handler.check_account_status(request.user)
     context = {
-        'session': session,
-        'intent_secret':intent_secret,
-        'stripe_pk':settings.STRIPE_PUBLIC_KEY,
-        'total':total,
-        'success_message':success_message,
-        'message':message,
-        'methods':methods,
+        'connect_status':connect_status,
     }
-    return render(request,'account/stripe_payment_screen.html',context)
+    return render(request,'account/payments.html',context)
 
+@login_required(login_url='/account/login/admin/')
 def stripe_payment_screen(request,session_id,type,qty):
     session = Session.objects.get(pk=session_id)
     if type == Purchase.ACCESS_CODE:
@@ -367,6 +357,23 @@ def stripe_payment_screen(request,session_id,type,qty):
         'methods':methods,
     }
     return render(request,'account/stripe_payment_screen.html',context)
+
+@login_required(login_url='/account/login/admin/')
+def stripe_connect_account(request):
+    user = request.user
+    if user.stripe_connect_account == '':
+        user.stripe_connect_account = stripe_handler.create_connect_account()
+        user.save()
+    #send them off to stripe
+    url = stripe_handler.get_account_link(user)
+    return redirect(url)
+
+@login_required(login_url='/account/login/admin/')
+def stripe_goto_dashboard(request):
+    user = request.user
+    url = stripe_handler.get_dashboard_link(user)
+    return redirect(url)
+
 
 @csrf_exempt
 def stripe_webhook(request):

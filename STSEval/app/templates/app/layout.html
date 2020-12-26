@@ -49,6 +49,9 @@
                                 {% if help %}
                                     <li class="nav-item align-self-center"><a class="nav-link" href="" data-toggle="modal" data-target="#modalMain" onclick="HelpClick('{{help}}')">help</a></li>
                                 {% endif %}
+                                {% if 'admin' in request.session.type %}
+                                    <li class="nav-item align-self-center"><a class="nav-link" href="/account/payments/">payments</a></li>
+                                {% endif %}
                                 {% if display_type %}
                                     {% if display_type == 'single' %}
                                         <li class="nav-item align-self-center"><a class="nav-link" href="/spectate/{{session.id}}/dual/{{event_name}}">dual display</a></li>

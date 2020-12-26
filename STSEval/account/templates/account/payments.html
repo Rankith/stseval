@@ -1,0 +1,37 @@
+{% extends "app/layout.html" %}
+
+{% block content %}
+<div align="center" style="padding:0">
+    {{session.full_name}}<br/>
+    <br/>
+    <div class="row no-gutters">
+        <div class="col-3 pr-4" align="right">
+             <h2>Payments Account</h2>
+        </div>
+        <div class="col-8 pt-2 pl-2" align="left">
+             We use Stripe to process payouts.<br/>
+            {% if connect_status == 'complete' %}
+                Manage your account on the stripe dashboard<br/>
+                <a href="/account/stripe_goto_dashboard/"><button id="btnGotoDashboard" type="button" class="btn btn-main btn-long mt-2">Visit Dashboard</button></a>
+            {% else %}
+               
+                {% if connect_status == 'details' %}
+                    You must finish filling out account details before you can recieve payouts.<br/>
+                    <a href="/account/stripe_connect_account/"><button id="btnSetupAccount" type="button" class="btn btn-main btn-long mt-2">Finish Account Setup</button></a>
+                {% elif connect_status == 'payouts' %}
+                    Payouts are not yet enabled, please finish filling out your account details.<br/>
+                    <a href="/account/stripe_connect_account/"><button id="btnSetupAccount" type="button" class="btn btn-main btn-long mt-2">Finish Account Setup</button></a>
+                {% else %}
+                      You must setup your account to recieve payouts.<br/>
+                    <a href="/account/stripe_connect_account/"><button id="btnSetupAccount" type="button" class="btn btn-main btn-long mt-2">Setup Account</button></a>
+                {% endif %}
+           
+                
+            {% endif %}
+        </div>
+    </div>
+   
+</div>
+
+{% endblock %}
+

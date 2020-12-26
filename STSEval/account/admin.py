@@ -11,10 +11,10 @@ class UserAdmin(DjangoUserAdmin):
     """Define admin model for custom User model with no email field."""
 
     fieldsets = (
-        (None, {'fields': ('email', 'password','stripe_customer')}),
+        (None, {'fields': ('email', 'password','stripe_customer','stripe_connect_account')}),
         (_('Personal info'), {'fields': ('first_name', 'last_name')}),
         (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser',
-                                       'groups', 'user_permissions')}),
+                                       'groups', 'user_permissions','sessions_available')}),
         (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
     )
     add_fieldsets = (
@@ -23,7 +23,7 @@ class UserAdmin(DjangoUserAdmin):
             'fields': ('email', 'password1', 'password2'),
         }),
     )
-    list_display = ('email', 'first_name', 'last_name', 'date_joined','last_login','is_staff','stripe_customer')
+    list_display = ('email', 'first_name', 'last_name', 'date_joined','last_login','is_staff','stripe_customer','stripe_connect_account')
     search_fields = ('email', 'first_name', 'last_name')
     ordering = ('email',)
 

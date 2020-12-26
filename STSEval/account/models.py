@@ -44,6 +44,8 @@ class User(AbstractUser):
     username = None
     email = models.EmailField(_('email address'), unique=True)
     stripe_customer = models.CharField(blank=True,default='',max_length=255)
+    stripe_connect_account = models.CharField(blank=True,default='',max_length=255)
+    sessions_available = models.ManyToManyField('management.Session',blank=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
