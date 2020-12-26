@@ -26,6 +26,7 @@ urlpatterns = [
     path('login_multiple/<str:type>/<str:sub_type>/<int:id>', views.login_multiple, name='login_multiple'),
     path('stripe_webhook/', views.stripe_webhook, name='stripe_webhook'),
     path('stripe_payment_screen/<int:session_id>/<str:type>/<int:qty>', views.stripe_payment_screen, name='stripe_payment_screen'),
+    path('payments/', views.payments, name='payments'),
 
 
 ]
