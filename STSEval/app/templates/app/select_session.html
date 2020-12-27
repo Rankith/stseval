@@ -56,6 +56,7 @@
         $('.session-list').removeClass("ctxSelected");
         $("#divSession" + sesIn).addClass("ctxSelected");
         SelectedSession = sesIn;
+        CheckSessionAccess(SelectedSession)
         $("#btnView").removeClass("ui-disabled");
 
     }
@@ -89,6 +90,18 @@
         $("#divSessions").removeClass("ui-disabled");
         FillSession();
         $("#btnView").addClass("ui-disabled");
+
+    }
+
+    function CheckSessionAccess(ses) {
+
+        $.ajax({
+            url: "/account/check_session_access/" + ses + "/",
+            success: function (data) {
+                if (data == "Yes")
+                console.log(data);
+            }
+        });
 
     }
 

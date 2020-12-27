@@ -329,6 +329,24 @@ def login_coach(request):
     }
     return render(request, 'account/login_simple.html', context)
 
+def check_session_access_direct(user,session_id):
+    session = Session.objects.get(pk=session_id)
+    if user.sessions_available.filter(id=session_id).exists():
+        return "Yes"
+    else:
+        #now check for emails
+        if session.competition.admin == user:
+            return "Yes"
+        elif len(Team.objects.filter(session=session,head_coach_email=user.email)) > 0:
+            return "Yes"
+        elif len(Judge.objects.filter(Q(session=session) & (Q(d1_email=user.email) | Q(d2_email=user.email) | Q(e1_email=user.email) | Q(e2_email=user.email) | Q(e3_email=user.email) | Q(e4_email=user.email)))) > 0:
+            return "Yes"
+        return "No"
+
+@login_required(login_url='/account/login/admin/')
+def check_session_access(request,session_id):
+   return HttpResponse(check_session_access_direct(request.user,session_id))
+
 @login_required(login_url='/account/login/admin/')
 def payments(request):
     connect_status = stripe_handler.check_account_status(request.user)

@@ -69,9 +69,9 @@ class Session(models.Model):
     access_code_total = models.IntegerField(default=5)
     access_code_used = models.IntegerField(default=0)
     def full_name(self):
-       return self.competition.name + " - " + self.competition.get_type_display() + " - " + self.name
+        return self.competition.name + " - " + self.competition.get_type_display() + " - " + self.name
     def __str__(self):
-       return self.competition.name + " - " + self.name
+        return self.competition.name + " - " + self.name
 
 class Team(models.Model):
     session = models.ForeignKey(Session, on_delete=models.CASCADE)

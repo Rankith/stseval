@@ -29,6 +29,7 @@ urlpatterns = [
     path('payments/', views.payments, name='payments'),
     path('stripe_connect_account/', views.stripe_connect_account, name='stripe_connect_account'),
     path('stripe_goto_dashboard/', views.stripe_goto_dashboard, name='stripe_goto_dashboard'),
+    path('check_session_access/<int:session_id>/', views.check_session_access, name='check_session_access'),
 
 
 ]
