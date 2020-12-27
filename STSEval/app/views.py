@@ -25,6 +25,7 @@ from .forms import VideoUploadForm
 from django.core.files import File
 from time import perf_counter 
 import csv
+import account.views
 
 def valid_login_type(match=None):
     def decorator(func):
@@ -1398,6 +1399,9 @@ def select_session(request):
 def spectate(request,session_id,display_type,event_name='-1'):
     request.session['session'] = session_id
     session = Session.objects.get(pk=request.session.get('session'))
+    #check for access
+    if account.views.check_session_access_direct(request.user,session_id) == "No":
+        return redirect('/select_session')
     events = Event.objects.filter(disc=session.competition.disc)
     if event_name == '-1':
         event = events.first()

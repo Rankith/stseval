@@ -25,6 +25,7 @@ var stripe = Stripe('{{stripe_pk}}');
     var intent_secret = '{{intent_secret}}';
     var success_message = '{{success_message}}';
     var user_email = '{{request.user.email}}';
+    var redirect = '{{redirect}}';
 </script>
 <script type="text/javascript">
     var elements = stripe.elements();
@@ -74,7 +75,10 @@ var stripe = Stripe('{{stripe_pk}}');
             } else {
                 if (result.paymentIntent.status === 'succeeded') {
                     alert(success_message);
-                    window.location.reload();
+                    if (redirect == '')
+                        window.location.reload();
+                    else
+                        window.location.href = redirect;
                 }
             }
             $("#modalLoad").modal('hide');

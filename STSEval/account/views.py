@@ -331,15 +331,20 @@ def login_coach(request):
 
 def check_session_access_direct(user,session_id):
     session = Session.objects.get(pk=session_id)
+    if user.is_staff or user.is_superuser:
+        return "Yes"
     if user.sessions_available.filter(id=session_id).exists():
         return "Yes"
     else:
         #now check for emails
         if session.competition.admin == user:
+            user.sessions_available.add(session)
             return "Yes"
         elif len(Team.objects.filter(session=session,head_coach_email=user.email)) > 0:
+            user.sessions_available.add(session)
             return "Yes"
         elif len(Judge.objects.filter(Q(session=session) & (Q(d1_email=user.email) | Q(d2_email=user.email) | Q(e1_email=user.email) | Q(e2_email=user.email) | Q(e3_email=user.email) | Q(e4_email=user.email)))) > 0:
+            user.sessions_available.add(session)
             return "Yes"
         return "No"
 
@@ -359,9 +364,15 @@ def payments(request):
 def stripe_payment_screen(request,session_id,type,qty):
     session = Session.objects.get(pk=session_id)
     if type == Purchase.ACCESS_CODE:
-        message = "You are purchasing " + str(qty) + " additonal access code uses for $3.00 each."
-        cost = 3
+        message = "You are purchasing " + str(qty) + " additonal access code uses for $" + str(settings.ACCESS_CODE_COST) + ".00 each."
+        cost = settings.ACCESS_CODE_COST
         success_message = "Additional Access Code uses purchased"
+        redirect=''
+    elif type == Purchase.SPECTATOR:
+        message = "You are purchasing access to " + session.full_name() + " for $" + str(session.spectator_fee)
+        cost = session.spectator_fee
+        success_message = "Access to " + session.full_name() + " purchased, you may now view the competition session."
+        redirect="/spectate/" + str(session_id) + "/single/"
     total = cost * qty
     intent_secret = stripe_handler.create_intent(request.user,session,type,cost,qty)
     methods = stripe_handler.get_customer_cards(request.user)
@@ -373,6 +384,7 @@ def stripe_payment_screen(request,session_id,type,qty):
         'success_message':success_message,
         'message':message,
         'methods':methods,
+        'redirect':redirect,
     }
     return render(request,'account/stripe_payment_screen.html',context)
 
@@ -420,9 +432,12 @@ def stripe_webhook(request):
         if response["metadata"]["type"] == Purchase.PANEL:
             session.paid=True
             session.save()
-        if response["metadata"]["type"] == Purchase.ACCESS_CODE:
+        elif response["metadata"]["type"] == Purchase.ACCESS_CODE:
             session.access_code_total = session.access_code_total + int(response["metadata"]["quantity"])
             session.save()
+        elif response["metadata"]["type"] == Purchase.SPECTATOR:
+            user = User.objects.get(pk=response["metadata"]["user"])
+            user.sessions_available.add(session)
 
         purchase = Purchase(user_id=response["metadata"]["user"],session=session,type=response["metadata"]["type"],
                             amount=response["metadata"]["individual_amount"],quantity=response["metadata"]["quantity"],

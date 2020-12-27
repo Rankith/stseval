@@ -663,9 +663,9 @@ def calculate_judge_panels(session):
 def calculate_session_cost(session):
     panels = calculate_judge_panels(session)
     if session.level == Session.JO:
-        cost = 175
+        cost = settings.PANEL_COST_JO
     else:
-        cost = 250
+        cost = settings.PANEL_COST
 
     return cost
 
@@ -915,6 +915,27 @@ def set_access_code(request,session_id):
     session.save()
     
     return HttpResponse(200)
+
+@login_required(login_url='/account/login/spectator/')
+def enter_access_code(request,session_id):
+    session = Session.objects.get(pk=session_id)
+    context = {
+        'session': session,
+    }
+    return render(request,'management/enter_access_code.html',context)
+
+@login_required(login_url='/account/login/spectator/')
+def try_access_code(request,session_id):
+    session = Session.objects.get(pk=session_id)
+    access_code = request.POST.get('access_code')
+    if access_code == session.access_code:
+        request.user.sessions_available.add(session)
+        session.access_code_used = session.access_code_used + 1
+        session.save()
+        return HttpResponse("Success")
+    else:
+        return HttpResponse("Fail")
+
 
 def judges_get(request):
     comp = request.GET.get('comp')

@@ -1,0 +1,36 @@
+
+<div align="center">
+    If you have an access code for {{session.full_name}} enter it below:<br/>
+    <input type="text" id="txtAccessCode" placeholder="Access Code"><br/>
+    <button href="#" id="btnEnterAccessCode" type="button" class="btn btn-main mt-2" onclick="EnterAccessCodeClick()">Get Access</button>
+   
+</div>
+
+<script type="text/javascript">
+    var token = "{{ csrf_token }}";
+    var SessionID = "{{session.id}}";
+</script>
+<script type="text/javascript">
+    function EnterAccessCodeClick() {
+        if ($("#txtAccessCode").val() != '') {
+            $.ajax({
+                url: "/management/try_access_code/" + SessionID,
+                type: "POST",
+                headers: { "X-CSRFToken": token },
+                data: {
+                    'access_code': $("#txtAccessCode").val(),
+                },
+                success: function (data) {
+                    if (data == "Success") {
+                        alert("Spectator access granted");
+                        window.location.href = "/spectate/" + SessionID + "/single";
+                    }
+                    else
+                        alert("Incorrect access code");
+                }
+            });
+        }
+    }
+   
+</script>
+

@@ -27,7 +27,12 @@
     <br/>
     <br/>
     <div>
-        <button href="#" id="btnView" type="button" class="btn-main btn-wide ui-disabled pt-4 pb-4" style="border-radius: 1rem;" onclick="btnViewClick()">View</button><br/><br/>
+        <button href="#" id="btnView" type="button" class="btn-main btn-wide ui-disabled pt-4 pb-4" style="border-radius: 1rem;" onclick="btnViewClick()">View</button>
+        <div id="divGetAccess" style="display:none">
+            <button href="#" id="btnPurchase" type="button" class="btn-main btn-wide pt-4 pb-4" style="border-radius: 1rem;" onclick="btnPurchaseAccessClick()">Get Access</button><br/>
+            <span style="font-size:.8rem">Have an Access Code? <a href="#" onclick="EnterAccessCode()">Enter it here</a></span>
+        </div>
+        <br/><br/>
     </div>
 		
 </div>
@@ -38,13 +43,37 @@
 <script type="text/javascript">
     var token = "{{ csrf_token }}";
 </script>
+<script src="https://js.stripe.com/v3/"></script>
 <script type="text/javascript">
     var SelectedComp = -1;
     var SelectedDisc = -1;
     var SelectedSession = -1;
     var SelectedEvent = -1;
     var Changed = false;
-   
+
+    function btnPurchaseAccessClick() {
+        if (SelectedSession != -1) {
+            $("#modalMainTitle").html("Get Spectator Access");
+            $("#modalBodyArea2").hide();
+            $("#modalBodyArea1").empty();
+            $("#modalBodyArea1").load("/account/stripe_payment_screen/" + SelectedSession + "/SPECTATE/1", function () {
+            });
+            $("#modalMain").modal('show');
+            $("#modalBodyArea1").show();
+        }
+    }
+
+    function EnterAccessCode() {
+        if (SelectedSession != -1) {
+            $("#modalMainTitle").html("Get Spectator Access");
+            $("#modalBodyArea2").hide();
+            $("#modalBodyArea1").empty();
+            $("#modalBodyArea1").load("/management/enter_access_code/" + SelectedSession + "", function () {
+            });
+            $("#modalMain").modal('show');
+            $("#modalBodyArea1").show();
+        }
+    }
 
     function btnViewClick() {
         if (SelectedSession != -1) {
@@ -57,7 +86,7 @@
         $("#divSession" + sesIn).addClass("ctxSelected");
         SelectedSession = sesIn;
         CheckSessionAccess(SelectedSession)
-        $("#btnView").removeClass("ui-disabled");
+       
 
     }
 
@@ -71,7 +100,8 @@
         $("#divSessionList").empty();
         $("#divSessions").addClass("ui-disabled");
         $("#btnView").addClass("ui-disabled");
-
+        $("#divGetAccess").hide();
+        $("#btnView").show();
     }
 
 
@@ -89,17 +119,26 @@
         SelectedComp = CompIn;
         $("#divSessions").removeClass("ui-disabled");
         FillSession();
+        $("#divGetAccess").hide();
+        $("#btnView").show();
         $("#btnView").addClass("ui-disabled");
 
     }
 
     function CheckSessionAccess(ses) {
-
         $.ajax({
             url: "/account/check_session_access/" + ses + "/",
             success: function (data) {
-                if (data == "Yes")
-                console.log(data);
+                console.log(data)
+                if (data == "Yes") {
+                    $("#divGetAccess").hide();
+                    $("#btnView").removeClass("ui-disabled");
+                    $("#btnView").show();
+                }
+                else {
+                    $("#btnView").hide();
+                    $("#divGetAccess").show();
+                }
             }
         });
 
