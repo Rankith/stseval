@@ -250,13 +250,13 @@ def import_judges(session,judge_dict):
                     else:
                         new_judge.e2_password = judge_dict['Password'][i+3]
                 if judge_dict['Email'][i+4] != '' and judge_dict['Email'][i+4] != ' ':
-                    new_judge.e2_email = judge_dict['Email'][i+4]
-                    new_judge.e2 = judge_dict['Name'][i+4]
-                    new_judge.e2_affil = judge_dict['Association'][i+4]
+                    new_judge.e3_email = judge_dict['Email'][i+4]
+                    new_judge.e3 = judge_dict['Name'][i+4]
+                    new_judge.e3_affil = judge_dict['Association'][i+4]
                     if judge_dict['Password'][i+4] == '' or judge_dict['Password'][i+4] == ' ':
-                        new_judge.e2_password = ''.join(random.choices(string.ascii_uppercase + string.ascii_lowercase + string.digits, k=6))
+                        new_judge.e3_password = ''.join(random.choices(string.ascii_uppercase + string.ascii_lowercase + string.digits, k=6))
                     else:
-                        new_judge.e2_password = judge_dict['Password'][i+4]
+                        new_judge.e3_password = judge_dict['Password'][i+4]
                 if judge_dict['Email'][i+5] != '' and judge_dict['Email'][i+5] != ' ':
                     new_judge.e4_email = judge_dict['Email'][i+5]
                     new_judge.e4 = judge_dict['Name'][i+5]

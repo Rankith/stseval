@@ -37,6 +37,7 @@
     var token = "{{ csrf_token }}";
     var SessionID = "{{id}}";
     var sp = {{session_paid|lower}};
+    var firstev = '{{events.first.name}}';
 </script>
 <script type="text/javascript">
     var SelectedEvent = -1;
@@ -231,7 +232,7 @@
     }
      function JudgeImportFinishParent() {
         $("#modalMain").modal('hide');
-         EventClick();
+         EventClick(1,firstev);
         
     }
     function AttachImportForm() {
