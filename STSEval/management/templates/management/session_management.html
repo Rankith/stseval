@@ -1,0 +1,43 @@
+{% extends "app/layout.html" %}
+
+{% block content %}
+<div align="center" style="margin:10px;padding:0">
+    <h3>{{session.full_name}}</h3><br/>
+    <div class="row no-gutters">
+        <div class="col-3 pr-4" align="right">
+             <h2>Overview</h2>
+        </div>
+        <div class="col-8 pt-2 pl-2" align="left">
+            <span class="muted-text">Manage a currently active session here.  You can also re-arrange start lists and view the session live.</span><br/>
+            <a href="/overview/{{session.id}}"><button href="#"  type="button" class="btn btn-main mt-2">Session Overview</button></a>
+        </div>
+
+        <div class="col-3 pr-4 mt-4" align="right">
+             <h2>Setup</h2>
+        </div>
+        <div class="col-8 pt-2 pl-2 mt-4" align="left">
+            <span class="muted-text">Manage Judges, Coaches, Athletes, Cameras and Sponsors here.</span><br/>
+            <a href="/management/setup_judges/{{session.id}}"><button href="#"  type="button" class="btn btn-main mt-2">Session Setup</button></a>
+        </div>
+
+        <div class="col-3 pr-4 mt-4" align="right">
+             <h2>Access Code</h2>
+        </div>
+        <div class="col-8 pt-2 pl-2 mt-4" align="left">
+            <span class="muted-text">Manage your spectator access code here.</span><br/>
+            <a href="/management/spectator_management/{{session.id}}"><button href="#"  type="button" class="btn btn-main mt-2">Access Code</button></a>
+        </div>
+
+        <div class="col-3 pr-4 mt-4" align="right">
+             <h2>Backup Videos</h2>
+        </div>
+        <div class="col-8 pt-2 pl-2 mt-4" align="left">
+            <span class="muted-text">Manage and upload backup videos here.  You can upload videos for specific gymnasts and events for judges to view instead of the stream.</span><br/>
+            <a href="/backup_video_manage/{{session.id}}/"><button href="#"  type="button" class="btn btn-main mt-2">Backup Videos</button></a>
+        </div>
+    </div>
+   
+</div>
+
+{% endblock %}
+

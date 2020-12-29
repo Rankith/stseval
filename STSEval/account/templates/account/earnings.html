@@ -17,13 +17,13 @@
                
                 {% if connect_status == 'details' %}
                     You must finish filling out account details before you can recieve payouts.<br/>
-                    <a href="/account/stripe_connect_account/"><button id="btnSetupAccount" type="button" class="btn btn-main btn-long mt-2">Finish Account Setup</button></a>
+                    <a href="/account/stripe_connect_account/0"><button id="btnSetupAccount" type="button" class="btn btn-main btn-long mt-2">Finish Account Setup</button></a>
                 {% elif connect_status == 'payouts' %}
                     Payouts are not yet enabled, please finish filling out your account details.<br/>
-                    <a href="/account/stripe_connect_account/"><button id="btnSetupAccount" type="button" class="btn btn-main btn-long mt-2">Finish Account Setup</button></a>
+                    <a href="/account/stripe_connect_account/0"><button id="btnSetupAccount" type="button" class="btn btn-main btn-long mt-2">Finish Account Setup</button></a>
                 {% else %}
                       You must setup your account to recieve payouts.<br/>
-                    <a href="/account/stripe_connect_account/"><button id="btnSetupAccount" type="button" class="btn btn-main btn-long mt-2">Setup Account</button></a>
+                    <a href="/account/stripe_connect_account/0"><button id="btnSetupAccount" type="button" class="btn btn-main btn-long mt-2">Setup Account</button></a>
                 {% endif %}
            
                 

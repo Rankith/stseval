@@ -25,12 +25,16 @@ def create_connect_account():
 
     return account.id
 
-def get_account_link(user):
+def get_account_link(user,session_id):
     stripe.api_key = settings.STRIPE_API_KEY
+    if session_id != 0:
+        return_url = 'http://localhost:64820/management/setup_finish/' + str(session_id)
+    else:
+        return_url = 'http://localhost:64820/account/payments/'
     account_links = stripe.AccountLink.create(
       account=user.stripe_connect_account,
       refresh_url='http://localhost:64820/account/stripe_connect_account/',
-      return_url='http://localhost:64820/account/payments/',
+      return_url=return_url,
       type='account_onboarding',
     )
 

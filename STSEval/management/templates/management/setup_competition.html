@@ -36,9 +36,8 @@
     <br/>
     <div>
         <a href="/media/project-stslivegym-setup.mp4" target="_blank">See Sample Competition Setup Here</a><br/>
-        <button href="#" id="btnNext" type="button" class="btn-main btn-wide ui-disabled pt-4 pb-4" style="border-radius: 1rem;" onclick="btnNextClick()">Session<br/>Setup</button><br/>
-        <span style="font-size:.8rem;color:red;display:none" id="spanNotActive">Session must be activated to goto overview</span><br/>
-        <button href="#" id="btnAdministrate" type="button" class="btn-main btn-wide ui-disabled pt-4 pb-4" style="border-radius: 1rem;" onclick="btnAdministrateClick()">Session Overview</button>
+        <button href="#" id="btnNext" type="button" class="btn-main btn-wide ui-disabled pt-4 pb-4" style="border-radius: 1rem;" onclick="btnNextClick()">Session<br/>Setup</button>
+        <button href="#" id="btnAdministrate" type="button" class="btn-main btn-wide ui-disabled pt-4 pb-4" style="border-radius: 1rem;display:none" onclick="btnAdministrateClick()">Session Management</button>
     </div>
 		
 </div>
@@ -65,7 +64,7 @@
 
     function btnAdministrateClick() {
         if (SelectedSession != -1) {
-            window.location = "/overview/" + SelectedSession;
+            window.location = "/management/session_management/" + SelectedSession;
         }
     }
 
@@ -74,14 +73,16 @@
         $("#divSession" + sesIn).addClass("ctxSelected");
         SelectedSession = sesIn;
         if (activeIn) {
+            $("#btnNext").hide();
+            $("#btnAdministrate").show();
             $("#btnAdministrate").removeClass("ui-disabled");
-            $("#spanNotActive").hide();
         }
         else {
-            $("#spanNotActive").show();
-            $("#btnAdministrate").addClass("ui-disabled");
+            $("#btnNext").show();
+            $("#btnAdministrate").hide();
+            $("#btnNext").removeClass("ui-disabled");
         }
-        $("#btnNext").removeClass("ui-disabled");
+        
         EnableDisableButtons("Session", true);
 
     }

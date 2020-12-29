@@ -695,13 +695,16 @@ def setup_finish(request,id):
         setup_complete = True
 
     num_panels = calculate_judge_panels(session)
+    if num_panels < 1:
+        num_panels = 1
     session_cost = calculate_session_cost(session)
     session_cost_total = session_cost * num_panels
 
-    if not session.paid and not session.active:
+    connect_status = stripe_handler.check_account_status(request.user)
+    intent_secret = None
+
+    if not session.paid and not session.active and connect_status=="complete":
         intent_secret = stripe_handler.create_intent(request.user,session,Purchase.PANEL,session_cost,num_panels)
-    else:
-        intent_secret = None
    
     context = {
         'title': 'Competition Setup (7/7)',
@@ -718,6 +721,7 @@ def setup_finish(request,id):
         'session_paid':session.paid,
         'intent_secret':intent_secret,
         'stripe_pk':settings.STRIPE_PUBLIC_KEY,
+        'connect_status':connect_status,
         'help':'competition_setup_finish',
     }
     return render(request,'management/setup_finish.html',context)
@@ -907,6 +911,16 @@ def spectator_management(request,session_id):
         'session': session,
     }
     return render(request,'management/spectator_management.html',context)
+
+@login_required(login_url='/account/login/admin/')
+def session_management(request,session_id):
+    session = Session.objects.get(pk=session_id)
+   
+    context = {
+        'title': 'Session Management',
+        'session': session,
+    }
+    return render(request,'management/session_management.html',context)
 
 @login_required(login_url='/account/login/admin/')
 def set_access_code(request,session_id):

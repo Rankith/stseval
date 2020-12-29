@@ -622,3 +622,7 @@ input[type="checkbox"].input-validation-error {
 .muted-text{
     color:#8e8e8e;
 }
+
+.payment-selected {
+    background-color: #294b80;
+}

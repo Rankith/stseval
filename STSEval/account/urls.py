@@ -26,8 +26,8 @@ urlpatterns = [
     path('login_multiple/<str:type>/<str:sub_type>/<int:id>', views.login_multiple, name='login_multiple'),
     path('stripe_webhook/', views.stripe_webhook, name='stripe_webhook'),
     path('stripe_payment_screen/<int:session_id>/<str:type>/<int:qty>', views.stripe_payment_screen, name='stripe_payment_screen'),
-    path('payments/', views.payments, name='payments'),
-    path('stripe_connect_account/', views.stripe_connect_account, name='stripe_connect_account'),
+    path('earnings/', views.earnings, name='earnings'),
+    path('stripe_connect_account/<int:session_id>', views.stripe_connect_account, name='stripe_connect_account'),
     path('stripe_goto_dashboard/', views.stripe_goto_dashboard, name='stripe_goto_dashboard'),
     path('check_session_access/<int:session_id>/', views.check_session_access, name='check_session_access'),
 

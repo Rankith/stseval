@@ -2,15 +2,28 @@
    {{message}}
 
     <div class="payment-container">
-
-        Payment Method: 
-             <select id="paymentMethod" class="selectpicker" onchange="PaymentMethodChange()" >
-                 {% for method in methods %}
-                    <option value="{{method.id}}" data-icon="fa fa-cc-{{method.card.brand}}"> ending in {{method.card.last4}}</option>
-                 {% endfor %}
-                 <option value="new">New Card</option>
-            </select>
-        <br/><br/>
+        <table cellpadding="2" cellspacing="0">
+            <tr>
+                <td>Your credit and debit cards</td>
+                <td class="pl-3">Expires</td>
+            </tr>
+            {% for method in methods %}
+            <tr>
+                <td valign="top">
+                    <label style="margin-bottom:0!important"><input type="radio" name="paymentMethod" value="{{method.id}}" onclick="PaymentMethodChange()" {% if forloop.first %} checked {% endif %}>&nbsp;<i class=" fa fa-cc-{{method.card.brand}}"></i> <span class="muted-text">ending in</span> {{method.card.last4}}</label>
+                </td>
+                <td valign="top" class="pl-3">
+                    {{method.card.exp_month}}/{{method.card.exp_year}}
+                </td>
+            </tr>
+            {% endfor %}
+            <tr>
+                <td colspan="2">
+                    <label style="margin-bottom:0!important"><input type="radio" name="paymentMethod" value="new"  onclick="PaymentMethodChange()" {% if methods|length == 0 %} checked {% endif %}> New Card</label>
+                </td>
+            </tr>
+        </table>
+        <br/>
         <div id="card-element">
             <!-- Elements will create input elements here -->
         </div>
@@ -27,10 +40,10 @@ var stripe = Stripe('{{stripe_pk}}');
     var user_email = '{{request.user.email}}';
     var redirect = '{{redirect}}';
 </script>
+
 <script type="text/javascript">
     var elements = stripe.elements();
     var card = elements.create("card");
-    $('.selectpicker').selectpicker();
     card.mount("#card-element");
     card.on('change', function (event) {
         var displayError = document.getElementById('card-errors');
@@ -42,24 +55,28 @@ var stripe = Stripe('{{stripe_pk}}');
     });
     PaymentMethodChange();
     function PaymentMethodChange() {
-        if ($("#paymentMethod").val() == "new") {
+        if ($("input[name='paymentMethod']:checked").val() == "new") {
             $("#card-element").show();
         }
         else
             $("#card-element").hide();
+        $("tr").removeClass("payment-selected");
+        $("input[name='paymentMethod']:checked").parent().parent().parent().addClass("payment-selected");
+
+
     }
 
     function PayClick() {
         var data;
         //var cardholderName = document.querySelector("#name").value;
-        if ($("#paymentMethod").val() == "new") {
+        if ($("input[name='paymentMethod']:checked").val() == "new") {
             data = {
                 card: card,
                 billing_details: {}
             };
         }
         else {
-            data = $("#paymentMethod").val();
+            data = $("input[name='paymentMethod']:checked").val();
         }
         $("#btnPayNow").addClass('ui-disabled');
         stripe.confirmCardPayment(intent_secret, {

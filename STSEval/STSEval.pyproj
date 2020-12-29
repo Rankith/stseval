@@ -153,7 +153,7 @@
     <Content Include="account\templates\account\login_simple.html" />
     <Content Include="account\templates\account\login.html" />
     <Content Include="account\templates\account\signup.html" />
-    <Content Include="account\templates\account\payments.html" />
+    <Content Include="account\templates\account\earnings.html" />
     <Content Include="app\static\app\content\chat.css" />
     <Content Include="app\static\app\scripts\help.js" />
     <Content Include="app\static\app\scripts\sortable.min.js" />
@@ -233,6 +233,7 @@
     <Content Include="management\templates\management\athlete_list_upload_form.html" />
     <Content Include="management\templates\management\email_notice.html" />
     <Content Include="management\templates\management\enter_access_code.html" />
+    <Content Include="management\templates\management\session_management.html" />
     <Content Include="management\templates\management\spectator_management.html" />
     <Content Include="management\templates\management\setup_rotations.html" />
     <Content Include="management\templates\management\start_list_warn.html" />

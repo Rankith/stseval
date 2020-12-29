@@ -353,12 +353,12 @@ def check_session_access(request,session_id):
    return HttpResponse(check_session_access_direct(request.user,session_id))
 
 @login_required(login_url='/account/login/admin/')
-def payments(request):
+def earnings(request):
     connect_status = stripe_handler.check_account_status(request.user)
     context = {
         'connect_status':connect_status,
     }
-    return render(request,'account/payments.html',context)
+    return render(request,'account/earnings.html',context)
 
 @login_required(login_url='/account/login/admin/')
 def stripe_payment_screen(request,session_id,type,qty):
@@ -389,13 +389,13 @@ def stripe_payment_screen(request,session_id,type,qty):
     return render(request,'account/stripe_payment_screen.html',context)
 
 @login_required(login_url='/account/login/admin/')
-def stripe_connect_account(request):
+def stripe_connect_account(request,session_id):
     user = request.user
     if user.stripe_connect_account == '':
         user.stripe_connect_account = stripe_handler.create_connect_account()
         user.save()
     #send them off to stripe
-    url = stripe_handler.get_account_link(user)
+    url = stripe_handler.get_account_link(user,session_id)
     return redirect(url)
 
 @login_required(login_url='/account/login/admin/')

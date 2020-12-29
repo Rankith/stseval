@@ -2,8 +2,7 @@
 
 {% block content %}
 <div align="center" style="margin:10px;padding:0">
-    {{session_name}}<br/>
-    <br/>
+    <h3>{{session_name}}</h3><br/>
     {% if setup_complete %}
         <div class="timer-green">COMPETITION SETUP COMPLETE</div>
 
@@ -21,50 +20,63 @@
 
     {% endif %}
      <br/>
-    {% if not session_paid %}
-        <div>
-            You have {{num_panels}} judging panels, this session will cost ${{session_cost}}.<br/>
-            Once paid you will not be able to edit judge emails, make sure they are correct.<br/>
-            <div class="payment-container">
-                <div id="card-element">
-                    <!-- Elements will create input elements here -->
-                </div>
-                <button id="btnPayNow" class="payment-button" onclick="PayClick()">${{session_cost}} Pay Now</button>
-            </div>
-            <!-- We'll put the error messages in this element -->
-            <div id="card-errors" role="alert" class="errorlist"></div>
-
-            {% if request.user.is_staff %}
-                <br/>
-                <button id="btnBypass" type="button" class="btn btn-main mt-2" onclick="BypassPayment()">Staff Bypass Payment</button>
-            {% endif %}
-        </div>
-    {% else %}
-         {% if not email_sent %}
-            Send competition information to judges, coaches, and camera operators.
-        {% else %}
-            You have already sent the email notice.  If you have made changes to judges, coaches or camera operator account you can send the notices again.
-        {% endif %}
-        <br/>
-        <button id="btnSendEmails" type="button" class="btn-main btn-wide pt-4 pb-4" style="border-radius: 1rem;" onclick="Send()">Send</button>
-        <br/><br/>
-        {% if not session_active %}
-            {% if missed_athlete or missed_camera %}
-            <div id="divActivate">
-                Setup incomplete, finish setup to allow activation.<br/>
-                <button id="btnActivate" type="button" class="btn-main btn-wide pt-4 pb-4 ui-disabled" style="border-radius: 1rem;" onclick="Activate()">Activate</button>
-            </div>
-            {% else %}
-                    <div id="divActivate">
-                        Activate the competition when ready.<br/>
-                        <button id="btnActivate" type="button" class="btn-main btn-wide pt-4 pb-4" style="border-radius: 1rem;" onclick="Activate()">Activate</button>
+    {% if connect_status == 'complete' %}
+        {% if not session_paid %}
+            <div>
+                You have {{num_panels}} judging panels, this session will cost ${{session_cost}}.<br/>
+                Once paid you will not be able to edit judge emails, make sure they are correct.<br/>
+                <div class="payment-container">
+                    <div id="card-element">
+                        <!-- Elements will create input elements here -->
                     </div>
-            
+                    <button id="btnPayNow" class="payment-button" onclick="PayClick()">${{session_cost}} Pay Now</button>
+                </div>
+                <!-- We'll put the error messages in this element -->
+                <div id="card-errors" role="alert" class="errorlist"></div>
+
+                {% if request.user.is_staff %}
+                    <br/>
+                    <button id="btnBypass" type="button" class="btn btn-main mt-2" onclick="BypassPayment()">Staff Bypass Payment</button>
+                {% endif %}
+            </div>
+        {% else %}
+             {% if not email_sent %}
+                Send competition information to judges, coaches, and camera operators.
+            {% else %}
+                You have already sent the email notice.  If you have made changes to judges, coaches or camera operator account you can send the notices again.
             {% endif %}
+            <br/>
+            <button id="btnSendEmails" type="button" class="btn-main btn-wide pt-4 pb-4" style="border-radius: 1rem;" onclick="Send()">Send</button>
+            <br/><br/>
+            {% if not session_active %}
+                {% if missed_athlete or missed_camera %}
+                <div id="divActivate">
+                    Setup incomplete, finish setup to allow activation.<br/>
+                    <button id="btnActivate" type="button" class="btn-main btn-wide pt-4 pb-4 ui-disabled" style="border-radius: 1rem;" onclick="Activate()">Activate</button>
+                </div>
+                {% else %}
+                        <div id="divActivate">
+                            Activate the competition when ready.<br/>
+                            <button id="btnActivate" type="button" class="btn-main btn-wide pt-4 pb-4" style="border-radius: 1rem;" onclick="Activate()">Activate</button>
+                        </div>
+            
+                {% endif %}
+            {% endif %}
+        {% endif %}
+    {% else %}
+        {% if connect_status == 'details' %}
+            This is your first competition with STSLiveGym, you need to complete your account setup to recieve payouts.<br/>
+            <a href="/account/stripe_connect_account/{{id}}"><button id="btnSetupAccount" type="button" class="btn btn-main btn-long mt-2">Finish Account Setup</button></a>
+        {% elif connect_status == 'payouts' %}
+            This is your first competition with STSLiveGym, you need to complete your account setup to recieve payouts.<br/>
+            <a href="/account/stripe_connect_account/{{id}}"><button id="btnSetupAccount" type="button" class="btn btn-main btn-long mt-2">Finish Account Setup</button></a>
+        {% else %}
+            This is your first competition with STSLiveGym, you need to setup your account to recieve payouts.<br/>
+            <a href="/account/stripe_connect_account/{{id}}"><button id="btnSetupAccount" type="button" class="btn btn-main btn-long mt-2">Setup Account</button></a>
         {% endif %}
     {% endif %}
    
-     <button id="btnSessionOverview" type="button" class="btn-main btn-wide pt-4 pb-4" style="border-radius: 1rem;{% if not session_active %}display:none{% endif %}" onclick="btnSessionOverviewClick()">Session<br/>Overview</button>
+     <button id="btnSessionManagement" type="button" class="btn-main btn-wide pt-4 pb-4" style="border-radius: 1rem;{% if not session_active %}display:none{% endif %}" onclick="btnSessionManagementClick()">Session<br/>Management</button>
     <br/>
     <br/>
     <div>
@@ -177,7 +189,7 @@
             url: "/management/session_activate/" + SessionID,
             success: function () {
                 $("#divActivate").hide();
-                $("#btnSessionOverview").show();
+                $("#btnSessionManagement").show();
                 $("#modalLoad").modal('hide');
                  alert("Session activated, please review start lists on the overview page.");
             }
@@ -186,8 +198,8 @@
 
     }
 
-    function btnSessionOverviewClick() {
-            window.location = "/overview/" + SessionID;
+    function btnSessionManagementClick() {
+            window.location = "/management/session_management/" + SessionID;
     }
 
     function GoBack() {

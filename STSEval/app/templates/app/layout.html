@@ -49,8 +49,21 @@
                                 {% if help %}
                                     <li class="nav-item align-self-center"><a class="nav-link" href="" data-toggle="modal" data-target="#modalMain" onclick="HelpClick('{{help}}')">help</a></li>
                                 {% endif %}
-                                {% if 'admin' in request.session.type %}
-                                    <li class="nav-item align-self-center"><a class="nav-link" href="/account/payments/">payments</a></li>
+                               
+                                {% if 'admin' in request.session.type and request.session.session %}
+                                    <li class="nav-item dropdown">
+                                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            session management
+                                        </a>
+                                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                            <a class="dropdown-item" href="/overview/{{request.session.session}}">overview</a>
+                                            <a class="dropdown-item" href="/management/setup_judges/{{request.session.session}}">setup</a>
+                                            <a class="dropdown-item" href="/management/spectator_management/{{request.session.session}}">access code</a>
+                                            <a class="dropdown-item" href="/backup_video_manage/{{request.session.session}}/">backup videos</a>
+                                        </div>
+                                    </li>
+                                {% elif request.session.backup_video_manage and request.session.session %}
+                                    <li class="nav-item align-self-center"><a target="_blank" class="nav-link" href="/backup_video_manage/{{request.session.session}}/">backup videos</a></li>
                                 {% endif %}
                                 {% if display_type %}
                                     {% if display_type == 'single' %}
@@ -59,14 +72,15 @@
                                         <li class="nav-item align-self-center"><a class="nav-link" href="/spectate/{{session.id}}/single/{{event_name}}">single display</a></li>
                                     {% endif %}
                                 {% endif %}
-                                {% if request.session.backup_video_manage and request.session.session %}
-                                    <li class="nav-item align-self-center"><a target="_blank" class="nav-link" href="/backup_video_manage/{{request.session.session}}/">backup videos</a></li>
-                                {% endif %}
+                                
                                 {% if scoreboard %}
                                     <li class="nav-item align-self-center"><a target="_blank" class="nav-link" href="/scoreboard/{{event_name}}">scoreboard</a></li>
                                 {% endif %}
                                 {% if exports %}
                                      <li class="nav-item align-self-center"><a class="nav-link" href="" data-toggle="modal" data-target="#modalMain" onclick="ExportScoresClick('{{session.id}}')">export scores</a></li>
+                                {% endif %}
+                                {% if 'admin' in request.session.type %}
+                                        <li class="nav-item align-self-center"><a class="nav-link" href="/account/earnings/">earnings</a></li>
                                 {% endif %}
                                 <li class="nav-item align-self-center"><a class="nav-link" href="javascript:document.getElementById('logoutForm').submit()">logout</a></li>
                             </ul>
