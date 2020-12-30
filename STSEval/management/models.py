@@ -61,6 +61,7 @@ class Session(models.Model):
     finished = models.BooleanField(default=False)
     active = models.BooleanField(default=False)
     paid = models.BooleanField(default=False)
+    free = models.BooleanField(default=False)
     payment_id = models.CharField(max_length=100,blank=True,default='')
     payment_intent = models.CharField(max_length=100,blank=True,default='')
     top_counting_for_score = models.IntegerField(default=5)

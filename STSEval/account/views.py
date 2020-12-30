@@ -331,7 +331,7 @@ def login_coach(request):
 
 def check_session_access_direct(user,session_id):
     session = Session.objects.get(pk=session_id)
-    if user.is_staff or user.is_superuser:
+    if user.is_staff or user.is_superuser or session.free:
         return "Yes"
     if user.sessions_available.filter(id=session_id).exists():
         return "Yes"
@@ -376,10 +376,18 @@ def stripe_payment_screen(request,session_id,type,qty):
         success_message = "Additional Access Code uses purchased"
         redirect=''
     elif type == Purchase.SPECTATOR:
-        message = "You are purchasing access to " + session.full_name() + " for $" + str(session.spectator_fee)
-        cost = session.spectator_fee
-        success_message = "Access to " + session.full_name() + " purchased, you may now view the competition session."
-        redirect="/spectate/" + str(session_id) + "/single/"
+        if session.finished:
+            type = Purchase.SCOREBOARD
+            message = "You are purchasing access to scoreboard and videos for " + session.full_name() + " for $" + str(settings.SCOREBOARD_COST) + ".00"
+            cost = settings.SCOREBOARD_COST
+            success_message = "Access to " + session.full_name() + " purchased, you may now view the scoreboard and videos."
+            redirect="/scoreboard/?ses=" + str(session_id)
+        else: #session not done so normal spectator
+            message = "You are purchasing access to " + session.full_name() + " for $" + str(session.spectator_fee)
+            cost = session.spectator_fee
+            success_message = "Access to " + session.full_name() + " purchased, you may now view the competition."
+            redirect="/spectate/" + str(session_id) + "/single/"
+
     total = cost * qty
     intent_secret = stripe_handler.create_intent(request.user,session,type,cost,qty)
     methods = stripe_handler.get_customer_cards(request.user)
@@ -443,6 +451,9 @@ def stripe_webhook(request):
             session.access_code_total = session.access_code_total + int(response["metadata"]["quantity"])
             session.save()
         elif response["metadata"]["type"] == Purchase.SPECTATOR:
+            user = User.objects.get(pk=response["metadata"]["user"])
+            user.sessions_available.add(session)
+        elif response["metadata"]["type"] == Purchase.SCOREBOARD:
             user = User.objects.get(pk=response["metadata"]["user"])
             user.sessions_available.add(session)
 

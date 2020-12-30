@@ -808,9 +808,12 @@ def scoreboard_export_get(request,session_id):
     return response
 
 
-
-@valid_login_type(match='session')
 def scoreboard(request,event_name='-1'):
+    session_in = request.GET.get('ses','')
+    if session_in != '':
+        if account.views.check_session_access_direct(request.user,session_in) == "No":
+            return redirect('/select_session')
+        request.session['session'] = session_in
     session = Session.objects.get(pk=request.session.get('session'))
     judges = Judge.objects.filter(session=session,event__name=event_name).first()
     #athletes = Athlete.objects.filter(session=session)

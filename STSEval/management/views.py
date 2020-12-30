@@ -58,6 +58,22 @@ def competition_list_all(request):
     }
     return render(request, 'management/competition_list.html', context)
 
+def competition_list_spectator(request):
+    filter = request.GET.get('filter','active')
+    if filter == "active":
+        sessions = Session.objects.filter(active=True,finished=False,competition__date=datetime.datetime.today())
+    elif filter == "completed":
+        sessions = Session.objects.filter(active=True,finished=True)
+    elif filter == "future":
+        sessions = Session.objects.filter(active=True,finished=False,competition__date__gt=datetime.datetime.today())
+    elif filter == "purchased":
+        sessions = request.user.sessions_available.all()
+    sessions = sessions.order_by('competition__date','time')
+    context = {
+        'sessions':sessions,
+    }
+    return render(request, 'management/competition_list_spectator.html', context)
+
 @login_required(login_url='/account/login/admin/')
 def competition_form(request):
     if request.method == 'POST':

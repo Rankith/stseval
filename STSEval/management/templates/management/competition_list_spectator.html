@@ -1,0 +1,14 @@
+{% block content %}
+<table style="width:100%" cellpadding="0" cellspacing="0">
+    {% for s in sessions %}
+    <tr id="trSession{{s.id}}" onclick="SessionClick({{s.id}});" class="session-list">
+        <td>&nbsp;{{s.competition.disc.name}}</td>
+        <td>{{s.competition.date|date:'Y.m.d'}}</td>
+        <td>{{s.competition.name}}</td>
+        <td>{{s.competition.get_type_display}}</td>
+        <td>{{s.name}}</td>
+        <td>{{s.time}} <span style="font-size:0.6rem">(EST)</span></td>
+    </tr>        
+    {% endfor %}
+</table>
+{% endblock %}

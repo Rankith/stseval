@@ -2,26 +2,16 @@
 
 {% block content %}
 <div align="center" style="margin:10px;padding:0">
+    <select id="selFilter" class="selectpicker" data-style="btn-main" onchange="FilterChange()" >
+        <option value="completed">Completed</option>
+        <option value="active" selected>Active Today</option>
+        <option value="future">Future</option>
+        <option value="purchased">Purchased</option>
+    </select>
     <div>
-        <div id="divDisc" style="vertical-align: top;padding:3px;display:inline-block;margin-right:30px;">
-		    <div id="divDiscHeader" style="padding-bottom:5px;font-size:22px;font-weight:bold;text-align:center">Discipline</div>
-		    <div id="divDiscList" class="listbox  setup-box" style="">
-                {% for disc in discs %}
-                    <div id="divDisc{{disc.id}}" name="divDisc{{disc.id}}" class="disc-list{% if disc.active is False %} ui-disabled {% endif %}" style="padding-bottom:5px" onclick="DiscClick({{disc.id}});">{{disc.name}}</div>
-                {% endfor %}
-		        
-		    </div>
-	    </div>
-
-	    <div id="divCompetitions" style="display:inline-block;vertical-align: top;padding:3px;display:inline-block;margin-right:30px;" class="ui-disabled">
+	    <div id="divCompetitions" style="display:inline-block;vertical-align: top;padding:3px;display:inline-block" >
 	        <div id="divCompHeader" style="padding-bottom:5px;font-size:22px;font-weight:bold;text-align:center">Competition</div>
-	        <div id="divCompList"class="listbox  setup-box"  style="width:400px;"></div><br/>
-	    </div>
-
-        <div id="divSessions" style="vertical-align: top;padding:3px;display:inline-block;margin-right:30px;" class="ui-disabled">
-		    <div id="divSessionHeader" style="padding-bottom:5px;font-size:22px;font-weight:bold;text-align:center">Session</div>
-		    <div id="divSessionList" class="listbox  setup-box" style="width:280px;"></div><br/>
-		   
+	        <div id="divCompList"class="listbox  setup-box"  style="width:800px;"></div><br/>
 	    </div>
     </div>
     <br/>
@@ -45,11 +35,25 @@
 </script>
 <script src="https://js.stripe.com/v3/"></script>
 <script type="text/javascript">
-    var SelectedComp = -1;
-    var SelectedDisc = -1;
     var SelectedSession = -1;
-    var SelectedEvent = -1;
-    var Changed = false;
+    FilterChange();
+    $('.selectpicker').selectpicker();
+
+    function FilterChange() {
+        SelectedSession = -1;
+        $("#divCompList").load("/management/competition_list_spectator/?filter=" + $("#selFilter").val());
+        $("#btnView").addClass("ui-disabled");
+        $("#divGetAccess").hide();
+        $("#btnView").show();
+    }
+
+   function SessionClick(sesIn) {
+        $('.session-list').removeClass("ctxSelected");
+        $("#trSession" + sesIn).addClass("ctxSelected");
+        SelectedSession = sesIn;
+        CheckSessionAccess(SelectedSession)
+    }
+   
 
     function btnPurchaseAccessClick() {
         if (SelectedSession != -1) {
@@ -77,39 +81,11 @@
 
     function btnViewClick() {
         if (SelectedSession != -1) {
-            window.location = "/spectate/" + SelectedSession + "/single/";
+            if ($("#selFilter").val()=="completed")
+                window.location = "/scoreboard/?ses=" + SelectedSession;
+            else
+                window.location = "/spectate/" + SelectedSession + "/single/";
         }
-    }
-
-    function SessionClick(sesIn) {
-        $('.session-list').removeClass("ctxSelected");
-        $("#divSession" + sesIn).addClass("ctxSelected");
-        SelectedSession = sesIn;
-        CheckSessionAccess(SelectedSession)
-       
-
-    }
-
-    function DiscClick(discIn) {
-        $('.disc-list').removeClass("ctxSelected");
-        $("#divDisc" + discIn).addClass("ctxSelected");
-        SelectedDisc = discIn;
-        SelectedComp = -1;
-        $("#divCompetitions").removeClass("ui-disabled");
-        $("#divCompList").load("/management/competition_list_all/?disc=" + SelectedDisc + "&current=1");
-        $("#divSessionList").empty();
-        $("#divSessions").addClass("ui-disabled");
-        $("#btnView").addClass("ui-disabled");
-        $("#divGetAccess").hide();
-        $("#btnView").show();
-    }
-
-
-    function DisableAll() {
-        //$("#divDisc").addClass("ui-disabled");
-        $("#divCompetitions").addClass("ui-disabled");
-        $("#divSessions").addClass("ui-disabled");
-        $("#btnView").addClass("ui-disabled");
     }
 
     function CompClick(CompIn) {
@@ -142,11 +118,6 @@
             }
         });
 
-    }
-
-   
-    function FillSession() {
-        $("#divSessionList").load("/management/session_list/?comp="+ SelectedComp);
     }
 
 </script>
