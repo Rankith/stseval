@@ -34,7 +34,10 @@ def signup(request,type='spectator'):
     return render(request, 'account/signup.html', {'form': form})
 
 def check_create_stripe_user(user):
-    stripe.api_key = settings.STRIPE_API_KEY
+    if settings.STRIPE_TEST_MODE:
+        stripe.api_key = settings.STRIPE_API_KEY_TEST
+    else:
+        stripe.api_key = settings.STRIPE_API_KEY
     if user.stripe_customer == '':
         customer = stripe.Customer.create(email=user.email)
         user.stripe_customer = customer.id
@@ -391,10 +394,14 @@ def stripe_payment_screen(request,session_id,type,qty):
     total = cost * qty
     intent_secret = stripe_handler.create_intent(request.user,session,type,cost,qty)
     methods = stripe_handler.get_customer_cards(request.user)
+    if settings.STRIPE_TEST_MODE:
+        pk = settings.STRIPE_PUBLIC_KEY_TEST
+    else:
+        pk = settings.STRIPE_PUBLIC_KEY
     context = {
         'session': session,
         'intent_secret':intent_secret,
-        'stripe_pk':settings.STRIPE_PUBLIC_KEY,
+        'stripe_pk':pk,
         'total':total,
         'success_message':success_message,
         'message':message,
@@ -422,8 +429,13 @@ def stripe_goto_dashboard(request):
 
 @csrf_exempt
 def stripe_webhook(request):
-    stripe.api_key = settings.STRIPE_API_KEY
-    endpoint_secret = settings.STRIPE_WEBHOOK_SECRET
+    if settings.STRIPE_TEST_MODE:
+        stripe.api_key = settings.STRIPE_API_KEY_TEST
+        endpoint_secret = settings.STRIPE_WEBHOOK_SECRET_TEST
+    else:
+        stripe.api_key = settings.STRIPE_API_KEY
+        endpoint_secret = settings.STRIPE_WEBHOOK_SECRET
+    
     payload = request.body
     sig_header = request.META['HTTP_STRIPE_SIGNATURE']
     event = None

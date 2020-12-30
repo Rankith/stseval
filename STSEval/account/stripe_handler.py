@@ -7,7 +7,10 @@ from .models import User
 import decimal
 
 def get_customer_cards(user):
-    stripe.api_key = settings.STRIPE_API_KEY
+    if settings.STRIPE_TEST_MODE:
+        stripe.api_key = settings.STRIPE_API_KEY_TEST
+    else:
+        stripe.api_key = settings.STRIPE_API_KEY
     methods = stripe.PaymentMethod.list(customer=user.stripe_customer,type="card")
 
     return methods.data
@@ -26,7 +29,10 @@ def create_connect_account():
     return account.id
 
 def get_account_link(user,session_id):
-    stripe.api_key = settings.STRIPE_API_KEY
+    if settings.STRIPE_TEST_MODE:
+        stripe.api_key = settings.STRIPE_API_KEY_TEST
+    else:
+        stripe.api_key = settings.STRIPE_API_KEY
     if session_id != 0:
         return_url = 'http://localhost:64820/management/setup_finish/' + str(session_id)
     else:
@@ -41,13 +47,19 @@ def get_account_link(user,session_id):
     return account_links.url
 
 def get_dashboard_link(user):
-    stripe.api_key = settings.STRIPE_API_KEY
+    if settings.STRIPE_TEST_MODE:
+        stripe.api_key = settings.STRIPE_API_KEY_TEST
+    else:
+        stripe.api_key = settings.STRIPE_API_KEY
     login_link = stripe.Account.create_login_link(user.stripe_connect_account)
 
     return login_link.url
 
 def check_account_status(user):
-    stripe.api_key = settings.STRIPE_API_KEY
+    if settings.STRIPE_TEST_MODE:
+        stripe.api_key = settings.STRIPE_API_KEY_TEST
+    else:
+        stripe.api_key = settings.STRIPE_API_KEY
     if user.stripe_connect_account != '':
         account = stripe.Account.retrieve(user.stripe_connect_account)
         if not account.details_submitted:
@@ -61,7 +73,10 @@ def check_account_status(user):
         return "none"
 
 def get_connect_account(user):
-    stripe.api_key = settings.STRIPE_API_KEY
+    if settings.STRIPE_TEST_MODE:
+        stripe.api_key = settings.STRIPE_API_KEY_TEST
+    else:
+        stripe.api_key = settings.STRIPE_API_KEY
     if user.stripe_connect_account != '':
         account = stripe.Account.retrieve(user.stripe_connect_account)
         return account
@@ -69,7 +84,10 @@ def get_connect_account(user):
     return None
 
 def create_intent(user,session,type,amount,quantity):
-    stripe.api_key = settings.STRIPE_API_KEY
+    if settings.STRIPE_TEST_MODE:
+        stripe.api_key = settings.STRIPE_API_KEY_TEST
+    else:
+        stripe.api_key = settings.STRIPE_API_KEY
     total = int(amount*quantity*100)#this is because stripe payments are in cents
     if type == Purchase.PANEL:
         description = str(session.full_name()) + " Activation"

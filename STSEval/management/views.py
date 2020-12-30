@@ -722,6 +722,11 @@ def setup_finish(request,id):
     if not session.paid and not session.active and connect_status=="complete":
         intent_secret = stripe_handler.create_intent(request.user,session,Purchase.PANEL,session_cost,num_panels)
    
+    if settings.STRIPE_TEST_MODE:
+        pk = settings.STRIPE_PUBLIC_KEY_TEST
+    else:
+        pk = settings.STRIPE_PUBLIC_KEY
+
     context = {
         'title': 'Competition Setup (7/7)',
         'session_name': session.full_name,
@@ -736,7 +741,7 @@ def setup_finish(request,id):
         'session_cost':session_cost_total,
         'session_paid':session.paid,
         'intent_secret':intent_secret,
-        'stripe_pk':settings.STRIPE_PUBLIC_KEY,
+        'stripe_pk':pk,
         'connect_status':connect_status,
         'help':'competition_setup_finish',
     }

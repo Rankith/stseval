@@ -84,7 +84,6 @@
     <Compile Include="management\__init__.py" />
     <Compile Include="payments\admin.py" />
     <Compile Include="payments\apps.py" />
-    <Compile Include="payments\migrations\__init__.py" />
     <Compile Include="payments\models.py" />
     <Compile Include="payments\tests.py" />
     <Compile Include="payments\views.py" />

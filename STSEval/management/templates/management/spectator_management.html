@@ -14,7 +14,7 @@
                 <div class="pr-4" align="center">
                     Access Code<br/>
                     <input type="text" name="access_code" placeholder="Access Code" maxlength="20" id="access_code" value="{{session.access_code}}" style="width:100px"><br/>
-                    <button href="#" id="btnSave" type="button" class="btn btn-main management-button mt-2" onclick="Save()">Update</button>
+                    <a href="#" id="btnSave"  onclick="Save()">Update</a>
                 </div>
                 <div class="pl-4 pr-4" align="center">
                     Quantity<br/>
@@ -27,7 +27,7 @@
                 <div class="pl-4" align="center">
                     Add More<br/>
                      <input type="text" id="txtNumAdditional" placeholder="Qty" onkeypress="return isNumberKey(event)" style="width:40px" value="1"><br/>
-                    <button href="#" id="btnPurchase" type="button" class="btn btn-main management-button mt-2" onclick="PurchaseMoreClick()">Purchase</button>
+                    <a href="#" id="btnPurchase" onclick="PurchaseMoreClick()">Purchase</a>
                 </div>
             </div>
         </div>
