@@ -60,6 +60,14 @@ def check_account_status(user):
     else:
         return "none"
 
+def get_connect_account(user):
+    stripe.api_key = settings.STRIPE_API_KEY
+    if user.stripe_connect_account != '':
+        account = stripe.Account.retrieve(user.stripe_connect_account)
+        return account
+
+    return None
+
 def create_intent(user,session,type,amount,quantity):
     stripe.api_key = settings.STRIPE_API_KEY
     total = int(amount*quantity*100)#this is because stripe payments are in cents

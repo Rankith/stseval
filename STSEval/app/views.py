@@ -1354,7 +1354,7 @@ def overview(request,session_id,event_name='-1'):
     setup_firebase_managers(session,event.name)
     
     context = {
-        'title': 'Administrator',
+        'title': 'Administrator Overview',
         'event_name':event.name,
         'events':events,
         'session':session,

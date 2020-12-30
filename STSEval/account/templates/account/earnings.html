@@ -11,7 +11,16 @@
         <div class="col-8 pt-2 pl-2" align="left">
              We use Stripe to process payouts.<br/>
             {% if connect_status == 'complete' %}
-                Manage your account on the stripe dashboard<br/>
+                {% if account.requirements.past_due|length > 0 %}
+                    <span class="errorlist">Your account is currently restricted due to missing verification information.<br/>Visit the dashboard to fill out the needed information.</span>
+                {% elif account.requirements.currently_due|length > 0 %}
+                    <span class="errorlist">Your account requires more information and will become restricted if not filled out.<br/>Visit the dashboard to fill out the needed information.</span>
+                {% elif account.requirements.eventually_due|length > 0 %}
+                    Your account will eventually require more information in the future.  You can fill it out now by visiting the dashboard.
+                {% else %}
+                     Manage your account on the stripe dashboard.
+                {% endif %}
+                <br/>
                 <a href="/account/stripe_goto_dashboard/"><button id="btnGotoDashboard" type="button" class="btn btn-main btn-long mt-2">Visit Dashboard</button></a>
             {% else %}
                

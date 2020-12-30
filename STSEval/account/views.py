@@ -355,8 +355,15 @@ def check_session_access(request,session_id):
 @login_required(login_url='/account/login/admin/')
 def earnings(request):
     connect_status = stripe_handler.check_account_status(request.user)
+    account = None
+    if connect_status == "complete":
+        #now check for things they may need soon
+        account = stripe_handler.get_connect_account(request.user)
+
     context = {
+        'title':'Earnings',
         'connect_status':connect_status,
+        'account':account,
     }
     return render(request,'account/earnings.html',context)
 

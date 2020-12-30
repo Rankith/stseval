@@ -17,7 +17,7 @@ from django.db.models import Min
 import string, random
 from django.conf import settings
 from account import stripe_handler
-from account.models import Purchase
+from account.models import Purchase,User
 
 # Create your views here.
 @login_required(login_url='/account/login/admin/')
@@ -905,11 +905,13 @@ def session_activate(request,session_id):
 @login_required(login_url='/account/login/admin/')
 def spectator_management(request,session_id):
     session = Session.objects.get(pk=session_id)
+    spectators = Purchase.objects.filter(Q(session=session) & (Q(type=Purchase.SPECTATOR) | Q(type=Purchase.SPECTATOR_VIA_CODE)))
     
     context = {
         'title': 'Spectator Management',
         'session': session,
         'codes_available': session.access_code_total - session.access_code_used,
+        'spectators':spectators,
     }
     return render(request,'management/spectator_management.html',context)
 
@@ -948,6 +950,9 @@ def try_access_code(request,session_id):
         request.user.sessions_available.add(session)
         session.access_code_used = session.access_code_used + 1
         session.save()
+        purchase = Purchase(user_id=request.user.id,session=session,type=Purchase.SPECTATOR_VIA_CODE,
+                    amount=0,quantity=1)
+        purchase.save()
         return HttpResponse("Success")
     else:
         return HttpResponse("Fail")

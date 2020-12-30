@@ -4,10 +4,10 @@
 <div align="center" style="margin:10px;padding:0">
     <h3>{{session.full_name}}</h3><br/>
     <div class="row no-gutters">
-        <div class="col-3 pr-4" align="right">
+        <div class="col-3 pr-4 pb-2" align="right">
              <h2>Session Access Code</h2>
         </div>
-        <div class="col-8 pt-2 pl-2" align="left">
+        <div class="col-8 pt-2 pl-2 pb-2" align="left">
             <span class="muted-text">This is a unique code that spectators can redeem, giving them full access to a session.<br/>Purchase uses for this session at cost ($3.00 per user).  Spectators can enter this code to bypass paying for the session.</span><br/>
             <br/>
             <div class="row no-gutters">
@@ -30,6 +30,32 @@
                     <button href="#" id="btnPurchase" type="button" class="btn btn-main management-button mt-2" onclick="PurchaseMoreClick()">Purchase</button>
                 </div>
             </div>
+        </div>
+        <div class="col-3 pr-4" align="right">
+             <h2>Spectators</h2>
+        </div>
+        <div class="col-8 pt-2 pl-2" align="left">
+            {% if spectators|length > 0 %}
+                {{spectators|length}} spectators<br/><br/>
+                <div id="divSpectatorList" style="height:500px;overflow-y:auto">
+                    <table cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td align="center" class="pr-4"><h5>Name (Last, First)</h5></td>
+                            <td align="center" class="pr-4"><h5>Email</h5></td>
+                            <td align="center"><h5>Type</h5></td>
+                        </tr>
+                        {% for spec in spectators %}
+                            <tr>
+                                <td align="center" class="pr-4">{{spec.user.last_name}}, {{spec.user.first_name}}</td>
+                                <td align="center"  class="pr-4">{{spec.user.email}}</td>
+                                <td align="center">{% if spec.type == 'SPECTATOR' %}Purchase{% else %}Access Code{% endif %}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            {% else %}
+                None
+            {% endif %}
         </div>
     </div>
    

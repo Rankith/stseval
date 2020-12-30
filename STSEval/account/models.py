@@ -55,16 +55,18 @@ class User(AbstractUser):
 class Purchase(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL,blank=True,null=True)
     PANEL = 'PANEL'
-    SPECTATOR = 'SPECTATE'
+    SPECTATOR = 'SPECTATOR'
     ACCESS_CODE = 'ACCESS_CODE'
     SCOREBOARD = 'SCOREBOARD'
+    SPECTATOR_VIA_CODE = 'SPECTATOR_VIA_CODE'
     PURCHASE_TYPE = [
         (PANEL,'Panel'),
-        (SPECTATOR,'Spectate'),
+        (SPECTATOR,'Spectator'),
         (ACCESS_CODE,'Access Code'),
         (SCOREBOARD,'Scoreboard'),
+        (SPECTATOR_VIA_CODE,'Spectator Via Code'),
         ]
-    type = models.CharField(max_length=2,choices=PURCHASE_TYPE,default=PANEL)
+    type = models.CharField(max_length=20,choices=PURCHASE_TYPE,default=PANEL)
     session = models.ForeignKey('management.Session', on_delete=models.SET_NULL,default=None,null=True)
     amount = models.DecimalField(max_digits=6, decimal_places=2,default=0)
     quantity = models.IntegerField(default=1)
