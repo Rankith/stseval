@@ -39,6 +39,7 @@ body {
 .body-content {
     padding-left: 0px;
     padding-right: 0px;
+    padding-bottom:1.5rem;
 }
 
 .btn-main {
