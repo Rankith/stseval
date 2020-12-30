@@ -905,17 +905,19 @@ def session_activate(request,session_id):
 @login_required(login_url='/account/login/admin/')
 def spectator_management(request,session_id):
     session = Session.objects.get(pk=session_id)
-   
+    
     context = {
         'title': 'Spectator Management',
         'session': session,
+        'codes_available': session.access_code_total - session.access_code_used,
     }
     return render(request,'management/spectator_management.html',context)
 
 @login_required(login_url='/account/login/admin/')
 def session_management(request,session_id):
     session = Session.objects.get(pk=session_id)
-   
+    request.session['session'] = session_id
+
     context = {
         'title': 'Session Management',
         'session': session,
