@@ -34,18 +34,29 @@ def create_connect_account():
 def get_account_link(user,session_id):
     if settings.STRIPE_TEST_MODE:
         stripe.api_key = settings.STRIPE_API_KEY_TEST
+        if session_id != 0:
+            return_url = 'https://stslivegym.com/management/setup_finish/' + str(session_id)
+        else:
+            return_url = 'https://stslivegym.com/account/payments/'
+        account_links = stripe.AccountLink.create(
+          account=user.stripe_connect_account,
+          refresh_url='https://stslivegym.com/account/stripe_connect_account/',
+          return_url=return_url,
+          type='account_onboarding',
+        )
     else:
         stripe.api_key = settings.STRIPE_API_KEY
-    if session_id != 0:
-        return_url = 'http://localhost:64820/management/setup_finish/' + str(session_id)
-    else:
-        return_url = 'http://localhost:64820/account/payments/'
-    account_links = stripe.AccountLink.create(
-      account=user.stripe_connect_account,
-      refresh_url='http://localhost:64820/account/stripe_connect_account/',
-      return_url=return_url,
-      type='account_onboarding',
-    )
+        if session_id != 0:
+            return_url = 'https://stslivegym.com/management/setup_finish/' + str(session_id)
+        else:
+            return_url = 'https://stslivegym.com/account/payments/'
+        account_links = stripe.AccountLink.create(
+          account=user.stripe_connect_account,
+          refresh_url='https://stslivegym.com/account/stripe_connect_account/',
+          return_url=return_url,
+          type='account_onboarding',
+        )
+   
 
     return account_links.url
 
