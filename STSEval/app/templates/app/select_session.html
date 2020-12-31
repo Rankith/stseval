@@ -35,12 +35,19 @@
 <script src="https://js.stripe.com/v3/"></script>
 <script type="text/javascript">
     var SelectedSession = -1;
+    var First = true;
     FilterChange();
     $('.selectpicker').selectpicker();
 
     function FilterChange() {
         SelectedSession = -1;
-        $("#divCompList").load("/management/competition_list_spectator/?filter=" + $("#selFilter").val());
+        $("#divCompList").load("/management/competition_list_spectator/?filter=" + $("#selFilter").val(), function () {
+            if (First) {
+                First = false;
+                if ($("#divCompList").children(0).children().length == 0)
+                    $("#selFilter").val("completed").change();
+            }
+        });
         $("#btnView").addClass("ui-disabled");
         $("#divGetAccess").hide();
         $("#btnView").show();
