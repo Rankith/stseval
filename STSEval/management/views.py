@@ -61,12 +61,11 @@ def competition_list_all(request):
 def competition_list_spectator(request):
     filter = request.GET.get('filter','upcoming')
     if filter == "completed":
-        sessions = Session.objects.filter(active=True,finished=True)
+        sessions = Session.objects.filter(active=True,finished=True).order_by('-competition__date','-time')
     elif filter == "upcoming":
-        sessions = Session.objects.filter(active=True,finished=False,competition__date__gte=datetime.datetime.today())
+        sessions = Session.objects.filter(active=True,finished=False,competition__date__gte=datetime.datetime.today()).order_by('competition__date','time')
     elif filter == "purchased":
-        sessions = request.user.sessions_available.all()
-    sessions = sessions.order_by('competition__date','time')
+        sessions = request.user.sessions_available.all().order_by('competition__date','time')
     context = {
         'sessions':sessions,
     }
