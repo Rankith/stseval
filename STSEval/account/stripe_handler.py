@@ -16,7 +16,10 @@ def get_customer_cards(user):
     return methods.data
 
 def create_connect_account():
-    stripe.api_key = settings.STRIPE_API_KEY
+    if settings.STRIPE_TEST_MODE:
+        stripe.api_key = settings.STRIPE_API_KEY_TEST
+    else:
+        stripe.api_key = settings.STRIPE_API_KEY
     account = stripe.Account.create(
               type='express',
               capabilities={
