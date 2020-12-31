@@ -24,6 +24,7 @@ urlpatterns = [
     path('session_form/', views.session_form, name='session_form'),
     path('session_list/', views.session_list, name='session_list'),
     path('competition_list_spectator/', views.competition_list_spectator, name='competition_list_spectator'),
+    path('get_competition_list_spectator/', views.get_competition_list_spectator, name='get_competition_list_spectator'),
     path('session_delete/', views.session_delete, name='session_delete'),
     path('session_list_admin/', views.session_list_admin, name='session_list_admin'),
     path('judge_form/', views.judge_form, name='judge_form'),

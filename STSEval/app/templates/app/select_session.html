@@ -2,15 +2,18 @@
 
 {% block content %}
 <div align="center" style="margin:10px;padding:0">
-    <select id="selFilter" class="selectpicker" data-style="btn-main" onchange="FilterChange()" >
+    
+    <div>
+	    <div id="divCompetitions" style="vertical-align: top;padding:3px" >
+	        <div id="divCompHeader" style="padding-bottom:5px;font-size:22px;font-weight:bold;text-align:center">Select Competition</div>
+            <select id="selFilter" class="selectpicker" data-style="btn-main" onchange="FilterChange()" >
         <option value="completed">Completed</option>
         <option value="upcoming" selected>Upcoming</option>
         <option value="purchased">Purchased</option>
     </select>
-    <div>
-	    <div id="divCompetitions" style="display:inline-block;vertical-align: top;padding:3px;display:inline-block" >
-	        <div id="divCompHeader" style="padding-bottom:5px;font-size:22px;font-weight:bold;text-align:center">Competition</div>
-	        <div id="divCompList"class="listbox  setup-box"  style="width:800px;"></div><br/>
+	        
+                <div id="jsGrid" style="max-width:800px;width:75%;height:500px" class="mt-2" ></div>
+           
 	    </div>
     </div>
     <br/>
@@ -33,21 +36,25 @@
     var token = "{{ csrf_token }}";
 </script>
 <script src="https://js.stripe.com/v3/"></script>
+<link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid.min.css" />
+<link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid-theme.min.css" />
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid.min.js"></script>
 <script type="text/javascript">
     var SelectedSession = -1;
     var First = true;
-    FilterChange();
+    GetCompetitionData();
     $('.selectpicker').selectpicker();
 
     function FilterChange() {
         SelectedSession = -1;
-        $("#divCompList").load("/management/competition_list_spectator/?filter=" + $("#selFilter").val(), function () {
+        /*$("#divCompList").load("/management/competition_list_spectator/?filter=" + $("#selFilter").val(), function () {
             if (First) {
                 First = false;
                 if ($("#divCompList").children(0).children().length == 0)
                     $("#selFilter").val("completed").change();
             }
-        });
+        });*/
+        GetCompetitionData();
         $("#btnView").addClass("ui-disabled");
         $("#divGetAccess").hide();
         $("#btnView").show();
@@ -94,19 +101,6 @@
         }
     }
 
-    function CompClick(CompIn) {
-        
-        $('.comp-list').removeClass("ctxSelected");
-        $("#divComp" + CompIn).addClass("ctxSelected");
-        SelectedComp = CompIn;
-        $("#divSessions").removeClass("ui-disabled");
-        FillSession();
-        $("#divGetAccess").hide();
-        $("#btnView").show();
-        $("#btnView").addClass("ui-disabled");
-
-    }
-
     function CheckSessionAccess(ses) {
         $.ajax({
             url: "/account/check_session_access/" + ses + "/",
@@ -125,6 +119,98 @@
         });
 
     }
+
+    function UpdateCompetitions(data) {
+        console.log(data);
+        
+         //$('#divShorthandResults').empty();
+        for (var i = 0; i < data.length; i++) {
+        }
+
+        $("#jsGrid").jsGrid({
+            width: "100%",
+            height: "500px",
+            inserting: false,
+            editing: false,
+            sorting: true,
+            paging: false,
+
+            data: data,
+
+            rowClick: RowClick,
+
+            fields: [
+                { name: "disc", title: "Disc", type: "text", width:30 },
+                { name: "datetime", title: "Date & Time", type: "text" },
+                { name: "name", title: "Competition", type: "text" },
+                { name: "type", title: "Type", type: "text" },
+            ]
+        });
+
+        if (First) {
+            First = false;
+            if (data.length == 0)
+                $("#selFilter").val("completed").change();
+        }
+
+
+    }
+
+    function FormatWith0(num) {
+         if (Number.isInteger(num)) { 
+            return num + ".0"
+        } else {
+            return num.toString(); 
+        }
+    }
+
+    function GetCompetitionData() {
+        $.ajax({
+            url: "/management/get_competition_list_spectator/?filter=" + $("#selFilter").val(),
+            dataType: 'json',
+            headers: { "X-CSRFToken": token },
+            success: function (data) {
+                UpdateCompetitions(data)
+            }
+        });
+    }
+
+    function RowClick(args) {
+        //console.log("Row Click");
+        console.log(args);
+        var d = args.item;
+        index = args.itemIndex;
+        SelectedSession = d["id"];
+
+        let selectedVal = args.item;
+
+             let $row = this.rowByItem(args.item);
+
+             if ($row.hasClass("highlight") === false) {
+                 //Deseleciona todas as linhas
+                 for (let i = 0; i < this.data.length; i++) {
+                     this.rowByIndex(i).removeClass("highlight");
+                 }
+                 $row.toggleClass("highlight");
+
+             } else {
+                 selectedVal = null;
+                 $row.toggleClass("highlight");
+
+        }
+        CheckSessionAccess(SelectedSession)
+        //console.log(args.event);
+       // ShowDetails(d["id"], d["Team"] + " - " + d["Level"] + " - " + d["Gymnast"], args.event);
+
+    }
+
+    $(document).ready(function(){
+jsGrid.Grid.prototype.rowByIndex = function(arg) {
+         //this._content.find("tr")[arg] returns a DOM element instead of a jQuery object
+         //Pass the DOM element to the find method to get a jQuery object representing it
+         return this._content.find(this._content.find("tr")[arg]);
+     };
+});
 
 </script>
 {% endblock %}

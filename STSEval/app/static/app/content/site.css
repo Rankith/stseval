@@ -627,3 +627,7 @@ input[type="checkbox"].input-validation-error {
 .payment-selected {
     background-color: #294b80;
 }
+
+tr.highlight td.jsgrid-cell {
+    background-color: #535c8a !important;
+}

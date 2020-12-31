@@ -58,7 +58,7 @@ def competition_list_all(request):
     }
     return render(request, 'management/competition_list.html', context)
 
-def competition_list_spectator(request):
+def competition_list_spectator(request):#old no use
     filter = request.GET.get('filter','upcoming')
     if filter == "completed":
         sessions = Session.objects.filter(active=True,finished=True).order_by('-competition__date','-time')
@@ -70,6 +70,28 @@ def competition_list_spectator(request):
         'sessions':sessions,
     }
     return render(request, 'management/competition_list_spectator.html', context)
+
+def get_competition_list_spectator(request):
+    filter = request.GET.get('filter','upcoming')
+    if filter == "completed":
+        sessions = Session.objects.filter(active=True,finished=True).order_by('-competition__date','-time')
+    elif filter == "upcoming":
+        sessions = Session.objects.filter(active=True,finished=False,competition__date__gte=datetime.datetime.today()).order_by('competition__date','time')
+    elif filter == "purchased":
+        sessions = request.user.sessions_available.all().order_by('competition__date','time')
+    
+    data_back = []
+    for s in sessions:
+        ts = {'disc':s.competition.disc.name,
+            'datetime':str(s.competition.date) + " " + s.time.strftime("%H:%M%p") + str(" (EST)"),
+            'comp_name':s.competition.name,
+            'name':s.competition.name + " - " + s.name,
+            'type':s.competition.get_type_display(),
+            'id':s.id,
+            }
+        data_back.append(ts)
+
+    return JsonResponse(data_back,safe=False)
 
 @login_required(login_url='/account/login/admin/')
 def competition_form(request):
