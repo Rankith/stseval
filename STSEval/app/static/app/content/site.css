@@ -23,7 +23,7 @@ body {
 
 .btn {
     padding: .175rem 1rem !important;
-    border-radius:1rem;
+    border-radius:.5rem;
 }
 
 .btn-small {
