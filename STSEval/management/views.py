@@ -83,7 +83,7 @@ def get_competition_list_spectator(request):
     data_back = []
     for s in sessions:
         ts = {'disc':s.competition.disc.name,
-            'datetime':str(s.competition.date) + " " + s.time.strftime("%H:%M%p") + str(" (EST)"),
+            'datetime':str(s.competition.date) + " " + s.time.strftime("%I:%M%p") + str(" (EST)"),
             'comp_name':s.competition.name,
             'name':s.competition.name + " - " + s.name,
             'type':s.competition.get_type_display(),
