@@ -471,7 +471,7 @@ def stripe_webhook(request):
 
         purchase = Purchase(user_id=response["metadata"]["user"],session=session,type=response["metadata"]["type"],
                             amount=response["metadata"]["individual_amount"],quantity=response["metadata"]["quantity"],
-                            stripe_payment=response['id'])
+                            our_fee=response["metadata"]["our_fee"],stripe_payment=response['id'])
         purchase.save()
 
         #create the purchase

@@ -69,6 +69,7 @@ class Purchase(models.Model):
     type = models.CharField(max_length=20,choices=PURCHASE_TYPE,default=PANEL)
     session = models.ForeignKey('management.Session', on_delete=models.SET_NULL,default=None,null=True)
     amount = models.DecimalField(max_digits=6, decimal_places=2,default=0)
+    our_fee = models.DecimalField(max_digits=6, decimal_places=2,default=0)
     quantity = models.IntegerField(default=1)
     stripe_payment = models.CharField(blank=True,default='',max_length=255)
     def total(self):

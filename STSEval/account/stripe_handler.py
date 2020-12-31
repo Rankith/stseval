@@ -117,6 +117,7 @@ def create_intent(user,session,type,amount,quantity):
                     'individual_amount': amount,
                     'quantity': quantity,
                     'user':user.id,
+                    'our_fee':0,
                     },
                 )
             session.payment_intent = intent.id
@@ -134,6 +135,7 @@ def create_intent(user,session,type,amount,quantity):
                     'individual_amount': amount,
                     'quantity': quantity,
                     'user':user.id,
+                    'our_fee':0,
                     },
                 )
     elif type == Purchase.SPECTATOR:
@@ -161,6 +163,7 @@ def create_intent(user,session,type,amount,quantity):
                     'individual_amount': amount,
                     'quantity': quantity,
                     'user':user.id,
+                    'our_fee':our_fee/100,
                     },
                 )
     elif type == Purchase.ACCESS_CODE:
@@ -176,6 +179,7 @@ def create_intent(user,session,type,amount,quantity):
                     'individual_amount': amount,
                     'quantity': quantity,
                     'user':user.id,
+                    'our_fee':0,
                     },
                 )
     elif type == Purchase.SCOREBOARD:
@@ -191,7 +195,9 @@ def create_intent(user,session,type,amount,quantity):
                     'individual_amount': amount,
                     'quantity': quantity,
                     'user':user.id,
+                    'our_fee':0,
                     },
                 )
    
     return intent.client_secret
+
