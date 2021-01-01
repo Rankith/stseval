@@ -40,11 +40,14 @@
         </div>
     </div>
 
+   
     <div class="row no-gutters pt-3">
         <div class="col-3 pr-4" align="right">
              <h2>Earnings</h2>
         </div>
         <div class="col-8 pt-2 pl-2" align="left">
+            Your earnings from competitions so far.
+            {% if totals|length > 0 %}
             <table cellpadding="0" cellspacing="0">
                 <tr>
                     <td></td>
@@ -64,8 +67,10 @@
                 {% endfor %}
                 
             </table>
+            {% endif %}
         </div>
     </div>
+    
    
 </div>
 
