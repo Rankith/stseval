@@ -154,6 +154,7 @@
     <Content Include="account\templates\account\signup.html" />
     <Content Include="account\templates\account\earnings.html" />
     <Content Include="app\static\app\content\chat.css" />
+    <Content Include="app\static\app\scripts\spectator_export.js" />
     <Content Include="app\static\app\scripts\help.js" />
     <Content Include="app\static\app\scripts\sortable.min.js" />
     <Content Include="app\static\app\scripts\check_browser.js" />

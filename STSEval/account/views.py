@@ -4,7 +4,7 @@ from .forms import SignUpForm,LoginForm,EmailPasswordForm
 from django.contrib.auth import authenticate, login
 from management.models import Judge,Camera,Session,Competition,Team
 import datetime
-from django.db.models import Q
+from django.db.models import Q, F, Sum, Count
 import stripe
 from django.conf import settings
 from django.views.decorators.csrf import csrf_exempt
@@ -12,6 +12,7 @@ from django.http import HttpResponse
 from account.models import Purchase
 from account import stripe_handler
 from django.contrib.auth.decorators import login_required,user_passes_test
+import csv
 
 def signup(request,type='spectator'):
     if request.method == 'POST':
@@ -362,13 +363,39 @@ def earnings(request):
     if connect_status == "complete":
         #now check for things they may need soon
         account = stripe_handler.get_connect_account(request.user)
+    purchases = Purchase.objects.filter(Q(session__competition__admin=request.user) & (Q(type=Purchase.SPECTATOR) | Q(type=Purchase.SPECTATOR_VIA_CODE))).order_by('-session__competition__date','-session__time')
+    totals = purchases.values('session_id','session__finished','session__competition__date','session__name','session__competition__name','session__spectator_fee').annotate(total=Sum('amount')-Sum('our_fee'),spectators=Count('id'))
 
     context = {
         'title':'Earnings',
         'connect_status':connect_status,
         'account':account,
+        'totals': totals,
     }
     return render(request,'account/earnings.html',context)
+
+@login_required(login_url='/account/login/admin/')
+def spectator_list_csv(request,session_id):
+    session = Session.objects.get(pk=session_id)
+    spectators = Purchase.objects.filter(Q(session=session) & (Q(type=Purchase.SPECTATOR) | Q(type=Purchase.SPECTATOR_VIA_CODE)))
+    
+    headers = ['First Name','Last Name', 'Email', 'Type']  
+   
+    output = []
+    response = HttpResponse (content_type='text/csv')
+    writer = csv.writer(response)
+    #Header
+    writer.writerow(headers)
+    for s in spectators:
+        out = [s.user.first_name,s.user.last_name,s.user.email]
+        if s.type == Purchase.SPECTATOR:
+            out.append('Purchase')
+        else:
+            out.appsend('Access Code')
+        output.append(out)
+    #CSV Data
+    writer.writerows(output)
+    return response
 
 @login_required(login_url='/account/login/admin/')
 def stripe_payment_screen(request,session_id,type,qty):

@@ -27,6 +27,7 @@ urlpatterns = [
     path('stripe_webhook/', views.stripe_webhook, name='stripe_webhook'),
     path('stripe_payment_screen/<int:session_id>/<str:type>/<int:qty>', views.stripe_payment_screen, name='stripe_payment_screen'),
     path('earnings/', views.earnings, name='earnings'),
+    path('spectator_list_csv/<int:session_id>', views.spectator_list_csv, name='spectator_list_csv'),
     path('stripe_connect_account/<int:session_id>', views.stripe_connect_account, name='stripe_connect_account'),
     path('stripe_goto_dashboard/', views.stripe_goto_dashboard, name='stripe_goto_dashboard'),
     path('check_session_access/<int:session_id>/', views.check_session_access, name='check_session_access'),

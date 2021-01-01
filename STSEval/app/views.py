@@ -740,13 +740,13 @@ def get_routines_aa(request):
     return JsonResponse(list(routines),safe=False)
 
 def scoreboard_export(request,session_id):
-    session = Session.objects.get(pk=request.session.get('session'))
+    session = Session.objects.get(pk=session_id)
     teams = Team.objects.filter(session=session)
     events = Event.objects.filter(disc=session.competition.disc)
     return render(request, 'app/scoreboard_export.html', {'events':events,'teams':teams})
 
 def scoreboard_export_get(request,session_id):
-    session = Session.objects.get(pk=request.session.get('session'))
+    session = Session.objects.get(pk=session_id)
     event_id = request.GET.get('event','-1')
     team_id = request.GET.get('team','-1')
     has_e = []
