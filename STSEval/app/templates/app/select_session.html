@@ -70,7 +70,10 @@
 
     function btnPurchaseAccessClick() {
         if (SelectedSession != -1) {
-            $("#modalMainTitle").html("Get Spectator Access");
+            if ($("#selFilter").val()=="completed")
+                $("#modalMainTitle").html("Get Scoreboard Access");
+            else
+                $("#modalMainTitle").html("Get Spectator Access");
             $("#modalBodyArea2").hide();
             $("#modalBodyArea1").empty();
             $("#modalBodyArea1").load("/account/stripe_payment_screen/" + SelectedSession + "/SPECTATOR/1", function () {

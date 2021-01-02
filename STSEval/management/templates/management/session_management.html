@@ -2,7 +2,8 @@
 
 {% block content %}
 <div align="center" style="margin:10px;padding:0">
-    <h3>{{session.full_name}}</h3><br/>
+    <h3>{{session.full_name}}</h3>
+    Session Management<br/><br/>
     <div class="row no-gutters">
         <div class="col-3 pr-4" align="right">
              <h2>Overview</h2>
@@ -17,7 +18,7 @@
         </div>
         <div class="col-8 pt-2 pl-2 mt-4" align="left">
             <span class="muted-text">Manage Judges, Coaches, Athletes, Cameras and Sponsors here.</span><br/>
-            <a href="/management/setup_judges/{{session.id}}"><button href="#"  type="button" class="btn btn-main mt-2">Session Setup</button></a>
+            <a href="/management/setup_judges/{{session.id}}"><button href="#"  type="button" class="btn btn-main mt-2">Modify Session</button></a>
         </div>
 
         <div class="col-3 pr-4 mt-4" align="right">

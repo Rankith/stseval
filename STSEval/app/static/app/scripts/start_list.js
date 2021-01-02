@@ -74,7 +74,7 @@ function ShowRoutineOptions(sl) {
 
     if (CurrentStatus != "S") {
         //$("#modalMainDoc").addClass("modal-lg");
-        $("#modalSecondTitle").html("Manage Athlete Routine");
+        $("#modalSecondTitle").html("Manage Routine");
         $("#modalSecondArea1").empty();
         $("#modalSecondArea1").load("/athlete_start_list_swap/" + sl, function () {
 
