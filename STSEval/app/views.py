@@ -270,6 +270,39 @@ def routine_ejudge_done(request):
 
     return HttpResponse(status=200)
 
+def routine_ejudge_set_score(request):
+    routine = Routine.objects.get(pk=request.POST.get('routine'))
+    judge = int(request.POST.get('judge'))
+    if judge==1:
+        routine.e1_done = True
+        try:
+            routine.score_e1 = round(float(request.POST.get('score',0)),3)
+        except:
+            routine.score_e1 = 0
+    elif judge==2:
+        routine.e2_done = True
+        try:
+            routine.score_e2 = round(float(request.POST.get('score',0)),3)
+        except:
+            routine.score_e2 = 0
+    elif judge==3:
+        routine.e3_done = True
+        try:
+            routine.score_e3 = round(float(request.POST.get('score',0)),3)
+        except:
+            routine.score_e3 = 0
+    elif judge==4:
+        routine.e4_done = True
+        try:
+            routine.score_e4 = round(float(request.POST.get('score',0)),3)
+        except:
+            routine.score_e4 = 0
+
+    routine.save()
+    app.firebase.routine_set_ejudge_done(str(routine.session.id),routine.event.name,judge,True)
+
+    return HttpResponse(status=200)
+
 def routine_delete(request):
     routine = Routine.objects.get(pk=request.POST.get('routine'))
     routine.status = Routine.DELETED
@@ -402,10 +435,14 @@ def set_judge_ready(request,session_id):
 
 @valid_login_type(match='e')
 def ejudge_select(request):
-    context = {
-        'title': 'E-Jury - ' + request.session.get("name"),
-    }
-    return render(request,'app/ejudge_select.html',context)
+    session = Session.objects.get(pk=request.session.get('session'))
+    if session.use_ejudge_dots:
+        context = {
+            'title': 'E-Jury - ' + request.session.get("name"),
+        }
+        return render(request,'app/ejudge_select.html',context)
+    else:
+        return redirect('/evideo') 
 
 @valid_login_type(match='e')
 def ejudge(request):
@@ -1167,7 +1204,7 @@ def camera_get_event_on(camera):
 
 def athlete_start_list_spectate(request,event_name):
     session_id = request.session.get('session')
-    this_rot = StartList.objects.filter(session_id=session_id,event__name=event_name,completed=False).first()
+    this_rot = StartList.objects.filter(session_id=session_id,event__name=event_name,completed=False,active=True).first()
     if this_rot != None:
         this_rot = this_rot.athlete.rotation
     else:

@@ -86,12 +86,23 @@
 	                    </div>
 	                   
                     </div>
-                    <div style="padding-left:5px">
+                    <div style="padding-left:5px" id="divAccountabilityButton">
 	                    <button href="#" id="btnAccountability" type="button" class="btn btn-main mb-2 ui-disabled" onclick="ViewAccountabilityReport()">Report</button>
 	                </div>
                 </div>
             </td>
         </tr>
+        {% if not session.use_ejudge_dots %}
+            <tr>
+                <td style="width:854px;" align="center">
+                    <div id="divRoutineStatus"></div>
+                    Your Score<br/>
+                    <input type="text" id="txtYourScore" placeholder="Your Score" class="ui-disabled" onkeypress="return isNumberKey(event)" ><br/>
+                    <button href="#" id="btnSubmitScore" type="button" class="btn btn-main mt-2 ui-disabled" style="width:200px" onclick="SubmitEScore()">Submit Score</button><br/>
+                </td>
+                <td></td>
+            </tr>
+        {% endif %}
     </table> 
  </div>
 <div id="play-settings" style="display:none">
@@ -115,6 +126,7 @@
     var Session = "{{session.id}}";
     var SessionName = "{{session}}";
     var D1Judge = "{{judges.d1}}";
+    var UseDots = {{session.use_ejudge_dots|lower}}
     var EJudges = new Array();
     EJudges[1] = "{{judges.e1}}";
     EJudges[2] = "{{judges.e2}}";
@@ -168,7 +180,15 @@
         });
     SetupChatListener();
 
-    SetDotsArea();
+    if (UseDots)
+        SetDotsArea();
+    else {
+        $("#divDotsHolder").hide();
+        $("#divDotsAreaGlobal").hide();
+         $("#divAccountabilityButton").hide();
+        
+
+    }
 
     function CreateDotNotice(deduction, id) {
         let thisname = "divTry" + id;
@@ -204,9 +224,25 @@
                         vp.currentTime = 0;
                         vp.play();
                     }
+                    if (!UseDots) {
+                        if (Status == "N" || Status == "") {
+                            AllowEdit(false);
+                            $("#divRoutineStatus").html("WAITING TO START").addClass("timer-red").removeClass("timer-yellow").removeClass("timer-green");
+                        }
+                        else if (Status == "S") {
+                            AllowEdit(false);
+                            $("#divRoutineStatus").html("ROUTINE IN PROGRESS").addClass("timer-green").removeClass("timer-yellow").removeClass("timer-red");
+                        }
+                    }
+
                 }
                 if (doc.data().status == "AD") {
-                    BuildDots(false);
+                    if (UseDots)
+                        BuildDots(false);
+                    else {
+                        AllowEdit(true);
+                        $("#divRoutineStatus").html("ATHLETE DONE, ENTER SCORE").addClass("timer-yellow").removeClass("timer-green").removeClass("timer-red");
+                    }
                     Status = doc.data().status;
                     if (BackupVideo != -1) {
                         document.getElementById("video-playback").pause();
@@ -214,7 +250,12 @@
                     }
                 }
                 if (doc.data().status == "RD") {
-                    BuildDots(false);
+                    if (UseDots)
+                        BuildDots(false);
+                    else {
+                        AllowEdit(true);
+                         $("#divRoutineStatus").html("ATHLETE DONE, ENTER SCORE").addClass("timer-yellow").removeClass("timer-green").removeClass("timer-red");
+                    }
                     LoadRoutine();
                     Status = doc.data().status;
                     if (BackupVideo != -1) {
@@ -227,8 +268,7 @@
                 }
                 else
                     CheckJudges(doc);
-                
-                // $("#divStatus").html(doc.data().stream + " | " + doc.data().status);
+               
             }
             else
                 CheckJudges(doc);
@@ -237,6 +277,21 @@
         }
         CheckStream(doc);
     }
+
+    function AllowEdit(edit) {
+        if (edit) {
+            $("#btnSubmitScore").removeClass("ui-disabled");
+            $("#txtYourScore").removeClass("ui-disabled");
+            $("#btnSubmitScore").text("Submit Score");
+        }
+        else {
+            $("#btnSubmitScore").addClass("ui-disabled");
+            $("#txtYourScore").addClass("ui-disabled");
+            $("#btnSubmitScore").text("Submit Score");
+        }
+
+    }
+
     function SetJudgesDone(statusIn) {
         for (var i = 1; i <= 4; i++) {
             EJudgesDone[i] = statusIn;
@@ -290,6 +345,10 @@
             document.getElementById("video-playback").pause();
             document.getElementById("video-playback").currentTime = 0;
         }
+        if (!UseDots) {
+            AllowEdit(false);
+            $("#divRoutineStatus").html("WAITING TO START").addClass("timer-red").removeClass("timer-yellow").removeClass("timer-green");
+        }
     }
     function GetAthleteInfo() {
         $.ajax({
@@ -332,7 +391,7 @@
                 EJudgesDone[4] = doc.data().e4done;
                 RedoDots = true;
             }
-            if (RedoDots) {
+            if (RedoDots && UseDots) {
                 BuildDots(false);
                 if (Status == "RD")
                     LoadRoutine();
@@ -474,6 +533,40 @@
     function CloseAccountabilityReport() {
         $("#AccountabilityReportBlackOut").hide();
         $("#divAccountabilityReport").hide();
+    }
+
+    function isNumberKey(evt) {
+        var charCode = (evt.which) ? evt.which : evt.keyCode;
+        if (charCode != 46 && charCode > 31
+            && (charCode < 48 || charCode > 57))
+            return false;
+
+        return true;
+    }
+
+    function SubmitEScore() {
+        if ($("#txtYourScore").val() != '' && $("#txtYourScore").val() != ' ') {
+            RoutineSetConfirmDeductions();
+        }
+        else
+            alert("Please Enter a Score");
+    }
+
+    function RoutineSetConfirmDeductions() {
+        $.ajax({
+            url: "/routine_ejudge_set_score/",
+            type: "POST",
+            headers: { "X-CSRFToken": token },
+            data: {
+                'routine': RoutineID,
+                'judge': ThisJudge,
+                'score':$("#txtYourScore").val(),
+            },
+            success: function (data) {
+                alert("Score Submitted");
+                $("#btnSubmitScore").text("Re-Submit Score");
+            }
+        });
     }
 
 </script>

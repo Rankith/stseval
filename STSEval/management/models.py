@@ -69,6 +69,7 @@ class Session(models.Model):
     access_code = models.CharField(max_length=20,blank=True,default='')
     access_code_total = models.IntegerField(default=5)
     access_code_used = models.IntegerField(default=0)
+    use_ejudge_dots = models.BooleanField(default=True)
     def full_name(self):
         return self.competition.name + " - " + self.competition.get_type_display() + " - " + self.name
     def __str__(self):
