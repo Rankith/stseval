@@ -143,11 +143,18 @@
                         <tr id="trConnection" style="display:none"><td id="tdConnection" align="right">Connection:</td><td><input type="text" id="txtConnection" placeholder="Connection Bonus" class="ui-disabled entrybox" onkeypress="return isNumberKey(event)" ></td></tr>
 	                    <tr><td id="tdNeutralDed" align="right">Neutral Deductions:</td><td><input type="text" id="txtNeutralDed" placeholder="Neutral Ded." class="ui-disabled entrybox" onkeypress="return isNumberKey(event)" ></td></tr>
 	                    <tr><td id="tdDScore" align="right" style="text-decoration:underline">D-Score:</td><td><div id="lblDScore" style="text-decoration:underline"></div></td></tr>
-	                    <tr><td colspan="2" align="right"><a href="#" id="btnSetDScore" type="button" class="btn btn-main mb-2 mt-2 ui-disabled" onclick="SetDScoreClick()" style="font-size:1rem">Set D-Score</a></td></tr>
-	                    <tr><td id="tdE1" align="right">E1 Execution:</td><td id="divET1">0.0</td></tr>
-	                    <tr><td id="tdE2" align="right">E2 Execution:</td><td id="divET2">0.0</td></tr>
-	                    <tr><td id="tdE3" align="right">E3 Execution:</td><td id="divET3">0.0</td></tr>
-	                    <tr><td id="tdE4" align="right">E4 Execution:</td><td id="divET4">0.0</td></tr>
+	                    <tr><td colspan="2" align="right"><a href="#" id="btnSetDScore" type="button" class="btn btn-main mb-2 mt-2 ui-disabled" onclick="SetDScoreClick()" style="font-size:1rem">{% if session.use_ejudge_dots %}Set D-Score{% else %}Set Score{% endif %}</a></td></tr>
+                        {% if session.use_ejudge_dots %}
+	                        <tr><td id="tdE1" align="right">E1 Execution:</td><td id="divET1">0.0</td></tr>
+	                        <tr><td id="tdE2" align="right">E2 Execution:</td><td id="divET2">0.0</td></tr>
+	                        <tr><td id="tdE3" align="right">E3 Execution:</td><td id="divET3">0.0</td></tr>
+	                        <tr><td id="tdE4" align="right">E4 Execution:</td><td id="divET4">0.0</td></tr>
+                        {% else %}
+                            <tr><td id="tdE1" align="right">E1 Execution:</td><td id="divET1"><input type="text" id="txtE1" class="ui-disabled entrybox" onkeypress="return isNumberKey(event)"></td></tr>
+	                        <tr><td id="tdE2" align="right">E2 Execution:</td><td id="divET2"><input type="text" id="txtE2" class="ui-disabled entrybox" onkeypress="return isNumberKey(event)"></td></tr>
+	                        <tr><td id="tdE3" align="right">E3 Execution:</td><td id="divET3"><input type="text" id="txtE3" class="ui-disabled entrybox" onkeypress="return isNumberKey(event)"></td></tr>
+	                        <tr><td id="tdE4" align="right">E4 Execution:</td><td id="divET4"><input type="text" id="txtE4" class="ui-disabled entrybox" onkeypress="return isNumberKey(event)"></td></tr>
+                        {% endif %}
 	                    <tr><td id="tdEScore" align="right" style="text-decoration:underline">E-Score:</td><td id="divEScore" style="text-decoration:underline">0.0</td></tr>
 	                    <tr><td align="right" style="height:10px"></td><td></td></tr>
 	                    <tr><td id="tdTotal" align="right" style="text-decoration:underline">Total Score:</td><td id="divTotalScore" style="text-decoration:underline">0.0</td></tr>
@@ -243,6 +250,7 @@
     var VideoLocation = "/media/routine_videos/";
     var MultiD = {{multi_d|lower}};
     var LoadFrom = "";
+    var UseDots = {{session.use_ejudge_dots|lower}};
 
 </script>
 <script type="text/javascript">
@@ -288,7 +296,7 @@
     var BackupVideo = -1;
     var Overview = false;
     var db = firebase.firestore();
-    firebase.firestore.setLogLevel('debug');
+    //firebase.firestore.setLogLevel('debug');
     for (var i = 1; i <= 4; i++) {
         EJudgesReady[i] = false;
     }
@@ -393,7 +401,8 @@
     }
 
     function EditScoreClick() {
-        BuildDots();
+        if (UseDots)
+            BuildDots();
         $("#divEditDScore").load("/d1_edit_score/" + LoadRot,  function () {
             $("#divEditDScore").show();
             $("#btnEdit").addClass("ui-disabled");
@@ -408,6 +417,12 @@
         $("#lblGroups").html($("#txtGroups").val());
         $("#lblBonus").html($("#txtBonus").val());
         $("#lblNeutralDed").html($("#txtNeutralDed").val());
+        if (!UseDots) {
+            try { $("#divET1").html($("#txtE1").val()); } catch { }
+            try { $("#divET2").html($("#txtE2").val()); } catch { }
+            try { $("#divET3").html($("#txtE3").val()); } catch { }
+            try { $("#divET4").html($("#txtE4").val()); } catch {}
+        }
         SetDScore();
         CloseScoreEdit();
     }
@@ -420,7 +435,8 @@
         $("#divEditDScore").hide();
         $("#divEditDScore").empty();
         $("#btnEdit").removeClass("ui-disabled");
-        BuildDots(false, '1');
+        if (UseDots)
+            BuildDots(false, '1');
         EditableDots = false;
     }
 
@@ -665,40 +681,48 @@
                     RedoDots = true;
                 }
                 if (RedoDots) {
-                    if (Status == "AD")
-                        BuildDots(false);
-                    else
-                        BuildDots(true);
+                    if (UseDots) {
+                        if (Status == "AD")
+                            BuildDots(false);
+                        else
+                            BuildDots(true);
+                    }
+                    else {
+                        if (Status == "RD")
+                            GetEJudgeScores(true);
+                        else
+                            GetEJudgeScores(false);
+                    }
                 }
             }
-            if (EJudgesReady[1] != doc.data().e1ready) {
+            //if (EJudgesReady[1] != doc.data().e1ready) {
                 EJudgesReady[1] = doc.data().e1ready;
                 if (EJudgesReady[1])
                     $("#divJudgeDotE1").removeClass("status-dot-red").addClass("status-dot-green");
                 else
                     $("#divJudgeDotE1").addClass("status-dot-red").removeClass("status-dot-green");
-            }
-            if (EJudgesReady[2] != doc.data().e2ready) {
+            //}
+            //if (EJudgesReady[2] != doc.data().e2ready) {
                 EJudgesReady[2] = doc.data().e2ready;
                 if (EJudgesReady[2])
                     $("#divJudgeDotE2").removeClass("status-dot-red").addClass("status-dot-green");
                 else
                     $("#divJudgeDotE2").addClass("status-dot-red").removeClass("status-dot-green");
-            }
-            if (EJudgesReady[3] != doc.data().e3ready) {
+            //}
+            //if (EJudgesReady[3] != doc.data().e3ready) {
                 EJudgesReady[3] = doc.data().e3ready;
                 if (EJudgesReady[3])
                     $("#divJudgeDotE3").removeClass("status-dot-red").addClass("status-dot-green");
                 else
                     $("#divJudgeDotE3").addClass("status-dot-red").removeClass("status-dot-green");
-            }
-            if (EJudgesReady[4] != doc.data().e4ready) {
+           // }
+           // if (EJudgesReady[4] != doc.data().e4ready) {
                 EJudgesReady[4] = doc.data().e4ready;
                 if (EJudgesReady[4])
                     $("#divJudgeDotE4").removeClass("status-dot-red").addClass("status-dot-green");
                 else
                     $("#divJudgeDotE4").addClass("status-dot-red").removeClass("status-dot-green");
-            }
+            //}
         }
     }
 
@@ -761,11 +785,16 @@
 
         if (ev == "FX")
             $("#btnFloorTimer").show();
-
-        ReadyUp();
-        SetDotsArea();
-        //$("#divDotsArea").width(VidWidth - VideoLossRight);
-        document.getElementById('divDotsArea').addEventListener('click', NewDeduction);
+         ReadyUp();
+        if (UseDots) {
+           
+            SetDotsArea();
+            //$("#divDotsArea").width(VidWidth - VideoLossRight);
+            document.getElementById('divDotsArea').addEventListener('click', NewDeduction);
+        }
+        else {
+            //$("#divDotsHolder").hide();
+        }
         $("#divHeader").html("<h4 style='display:inline'>" + ThisJudge + "</h4>");
 
         Reset();
@@ -915,11 +944,15 @@
 
     function ExerciseDoneClick(Syncing = false, CalcScoreAfter = false) {
         if (!Syncing) {
-            
+
             StopRecording();
         }
-        else
-            BuildDots(CalcScoreAfter);
+        else {
+            if (UseDots)
+                BuildDots(CalcScoreAfter);
+            else if (CalcScoreAfter)
+                CalculateScores();
+        }
         $(".entrybox").removeClass('ui-disabled');
         $("#btnSetDScore").removeClass('ui-disabled');
         if (LoadFrom == "active")
@@ -953,6 +986,30 @@
             }
         });
     }
+
+    function GetEJudgeScores(CalcScoreAfter = false) {
+        $.ajax({
+            url: "/routine_get_info/",
+            type: "POST",
+            dataType: 'json',
+            headers: { "X-CSRFToken": token },
+            data: {
+                'routine': RoutineID,
+            },
+            success: function (data) {
+                //console.log(data);
+                $("#txtE1").val(FormatWith0(data['score_e1']));
+                $("#txtE2").val(FormatWith0(data['score_e2']));
+                $("#txtE3").val(FormatWith0(data['score_e3']));
+                $("#txtE4").val(FormatWith0(data['score_e4']));
+                if (CalcScoreAfter)
+                    CalculateScores(); 
+               
+               
+            }
+        });
+    }
+
 
     function LoadRoutine() {
         $.ajax({
@@ -1005,7 +1062,8 @@
         }
     }
     function RoutineLoadBuildDots() {
-        BuildDots(false,'1');
+        if (UseDots)
+            BuildDots(false,'1');
         CalculateScores();
     }
 
@@ -1023,6 +1081,22 @@
 
         }
         CalculateScores();
+        let e1 = 0;
+        let e2 = 0;
+        let e3 = 0;
+        let e4 = 0;
+        if (UseDots || LoadRot != '') {
+            e1 = $("#divET1").html();
+            e2 = $("#divET2").html();
+            e3 = $("#divET3").html();
+            e4 = $("#divET4").html();
+        }
+        else {
+            e1 = $("#txtE1").val();
+            e2 = $("#txtE2").val();
+            e3 = $("#txtE3").val();
+            e4 = $("#txtE4").val();
+        }
         $.ajax({
             url: "/routine_set_score/",
             type: "POST",
@@ -1035,10 +1109,10 @@
                 'score_bonus': $("#txtBonus").val(),
                 'score_connection': $("#txtConnection").val(),
                 'score_neutral': $("#txtNeutralDed").val(),
-                'score_e1': $("#divET1").html(),
-                'score_e2': $("#divET2").html(),
-                'score_e3': $("#divET3").html(),
-                'score_e4': $("#divET4").html(),
+                'score_e1': e1,
+                'score_e2': e2,
+                'score_e3': e3,
+                'score_e4': e4,
                 'score_e': $("#divEScore").html(),
                 'score_d': $("#lblDScore").html(),
                 'score_final': $("#divTotalScore").html(),
@@ -1175,46 +1249,92 @@
         JudgesCounting = 0;
         console.log("Calc deductins");
         console.log(Against);
-        //console.log("Deductions:");
-        for (var j = 1; j <= 4; j++) {
-            EScores[j] = -1;
-            //console.log(j + " : " + $("#chkE" + j).prop('checked'));
-            //if ($("#chkE" + j).prop('checked')) {
-            if ($("#chkE" + j).prop('checked')) {
-                if (JudgeDeductions[j] == undefined)
-                    JudgeDeductions[j] = 0;
-                if (EJudges[j] != "") {
-                    $("#tdE" + j).show();
-                    $("#divET" + j).show();
-                    $("#tdE" + j).removeClass("judge-strike");
-                    $("#divET" + j).removeClass("judge-strike");
-                    //console.log(JudgeTotals[j]);
-                    if (Against != -1)
-                        EScores[j] = parseFloat(Against - JudgeDeductions[j]).toPrecision(2);
-                    else
-                        EScores[j] = parseFloat(JudgeDeductions[j]).toPrecision(2);
-                    if (EScores[j] < 0)
-                        EScores[j] = 0
-                    $("#divET" + j).html(FormatWith0(parseFloat(EScores[j])))
-                    JudgesCounting += 1;
-                    if (parseFloat(JudgeDeductions[j]).toPrecision(2) > highest) {
-                        highest = parseFloat(JudgeDeductions[j]);
-                        high = j;
+        if (UseDots) {
+            //console.log("Deductions:");
+            for (var j = 1; j <= 4; j++) {
+                EScores[j] = -1;
+                //console.log(j + " : " + $("#chkE" + j).prop('checked'));
+                //if ($("#chkE" + j).prop('checked')) {
+                if ($("#chkE" + j).prop('checked')) {
+                    if (JudgeDeductions[j] == undefined)
+                        JudgeDeductions[j] = 0;
+                    if (EJudges[j] != "") {
+                        $("#tdE" + j).show();
+                        $("#divET" + j).show();
+                        $("#tdE" + j).removeClass("judge-strike");
+                        $("#divET" + j).removeClass("judge-strike");
+                        //console.log(JudgeTotals[j]);
+                        if (Against != -1)
+                            EScores[j] = parseFloat(Against - JudgeDeductions[j]).toPrecision(2);
+                        else
+                            EScores[j] = parseFloat(JudgeDeductions[j]).toPrecision(2);
+                        if (EScores[j] < 0)
+                            EScores[j] = 0
+                        $("#divET" + j).html(FormatWith0(parseFloat(EScores[j])))
+                        JudgesCounting += 1;
+                        if (parseFloat(JudgeDeductions[j]).toPrecision(2) > highest) {
+                            highest = parseFloat(JudgeDeductions[j]);
+                            high = j;
+                        }
+                        if (parseFloat(JudgeDeductions[j]).toPrecision(2) < highest) {
+                            lowest = parseFloat(JudgeDeductions[j]);
+                            low = j;
+                        }
+                        ETotal += JudgeDeductions[j];
                     }
-                    if (parseFloat(JudgeDeductions[j]).toPrecision(2) < highest) {
-                        lowest = parseFloat(JudgeDeductions[j]);
-                        low = j;
+                    else {
+                        $("#tdE" + j).hide();
+                        $("#divET" + j).hide();
                     }
-                    ETotal += JudgeDeductions[j];
                 }
                 else {
                     $("#tdE" + j).hide();
                     $("#divET" + j).hide();
                 }
             }
-            else {
-                $("#tdE" + j).hide();
-                $("#divET" + j).hide();
+        }
+        else {
+            for (var j = 1; j <= 4; j++) {
+                EScores[j] = -1;
+                if ($("#chkE" + j).prop('checked')) {
+                    if (EJudges[j] != "") {
+                        $("#tdE" + j).show();
+                        $("#divET" + j).show();
+                        $("#tdE" + j).removeClass("judge-strike");
+                        $("#divET" + j).removeClass("judge-strike");
+                        if (LoadRot == "") {
+                            if ($("#txtE" + j).val() != '' && $("#txtE" + j).val() != ' ')
+                                EScores[j] = parseFloat($("#txtE" + j).val());
+                        }
+                        else {
+                            if ($("#divET" + j).html() != '' && $("#divET" + j).html() != ' ')
+                                EScores[j] = parseFloat($("#divET" + j).html());
+                        }
+                        if (EScores[j] != -1) {
+                            console.log(EScores[j]);
+                            ETotal += EScores[j];
+                            if (Against != -1)
+                                EScores[j] = parseFloat(Against - EScores[j]).toPrecision(2);
+                            else
+                                EScores[j] = parseFloat(EScores[j]).toPrecision(2);
+                            if (EScores[j] < 0)
+                                EScores[j] = 0
+                        }
+                        JudgesCounting += 1;
+                        if (parseFloat(JudgeDeductions[j]).toPrecision(2) > highest) {
+                            highest = parseFloat(JudgeDeductions[j]);
+                            high = j;
+                        }
+                        if (parseFloat(JudgeDeductions[j]).toPrecision(2) < highest) {
+                            lowest = parseFloat(JudgeDeductions[j]);
+                            low = j;
+                        }
+                    }
+                    else {
+                        $("#tdE" + j).hide();
+                        $("#divET" + j).hide();
+                    }
+                }
             }
         }
         if (JudgesCounting == 0)
@@ -1229,7 +1349,7 @@
             $("#divET" + low).addClass("judge-strike");
         }
         ETotal = ETotal / (JudgesCounting);
-        //console.log(ETotal);
+        console.log(ETotal);
         return ETotal;
     }
 
@@ -1246,9 +1366,21 @@
             }
         }
     }
-
+    function CheckJudgesDone() {
+        let ok = true;
+        for (var i = 1; i <= NumJudges; i++) {
+            if (EJudgesInclude[i] && !EJudgesDone[i]) {
+                ok = false;
+                break;
+            }
+        }
+        if (!ok)
+            alert("All EJudges need to submit their scores")
+        return ok;
+    }
     function FinishRoutineClick() {
-        SetDScore(true);
+        if (CheckJudgesDone())
+            SetDScore(true);
        
     }
 
@@ -1309,7 +1441,8 @@
             dataType: 'json',
             success: function (data) {
                 RoutineLength = data['athlete_done_time'] - data['start_time']
-                BuildDots();
+                if (UseDots)
+                    BuildDots();
             }
         });
     }
@@ -1655,7 +1788,10 @@
                 $("#chkE" + i).prop('checked', true);
                 $("#divET" + i).show();
                 $("#tdE" + i).show();
-                $("#divET" + i).html('');
+                if (UseDots)
+                    $("#divET" + i).html('');
+                else
+                    $("#txtE" + i).val('0.0');
                 $("#divE" + i + "N").removeClass("judge-strike");
                 AddJudge(i);
                 JudgeDeductions[i] = 0;

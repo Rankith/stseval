@@ -95,10 +95,15 @@
         {% if not session.use_ejudge_dots %}
             <tr>
                 <td style="width:854px;" align="center">
-                    <div id="divRoutineStatus"></div>
-                    Your Score<br/>
-                    <input type="text" id="txtYourScore" placeholder="Your Score" class="ui-disabled" onkeypress="return isNumberKey(event)" ><br/>
-                    <button href="#" id="btnSubmitScore" type="button" class="btn btn-main mt-2 ui-disabled" style="width:200px" onclick="SubmitEScore()">Submit Score</button><br/>
+                    <div id="divEJudgeEntry">
+                        <div id="divRoutineStatus"></div>
+                        Your Score<br/>
+                        <input type="text" id="txtYourScore" placeholder="Your Score" class="ui-disabled" onkeypress="return isNumberKey(event)" ><br/>
+                        <button href="#" id="btnSubmitScore" type="button" class="btn btn-main mt-2 ui-disabled" style="width:200px" onclick="SubmitEScore()">Submit Score</button><br/>
+                    </div>
+                    <div id="divReady" style="height:100%;display:none;justify-content:center;flex-grow:1;color:black">
+                        <div id="divReadyButton" class="div-button" style="background:#4af335;color:black" onclick="ReadyUp()">Ready</div>
+                    </div>
                 </td>
                 <td></td>
             </tr>
@@ -126,7 +131,7 @@
     var Session = "{{session.id}}";
     var SessionName = "{{session}}";
     var D1Judge = "{{judges.d1}}";
-    var UseDots = {{session.use_ejudge_dots|lower}}
+    var UseDots = {{session.use_ejudge_dots|lower}};
     var EJudges = new Array();
     EJudges[1] = "{{judges.e1}}";
     EJudges[2] = "{{judges.e2}}";
@@ -272,12 +277,39 @@
             }
             else
                 CheckJudges(doc);
+
+            if (ThisJudge == 1 && doc.data().e1ready == false || ThisJudge == 2 && doc.data().e2ready == false || ThisJudge == 3 && doc.data().e3ready == false || ThisJudge == 4 && doc.data().e4ready == false)
+                ShowReadyButton();
             
             console.log("Current data: ", doc.data());
         }
         CheckStream(doc);
     }
+    function ShowReadyButton() {
+        $("#divEJudgeEntry").hide();
+        $("#divReady").css("display", "flex");
+    }
+    function HideReadyButton()
+    {
+        $("#divReady").hide();
+        $("#divEJudgeEntry").show();
+    }
 
+    function ReadyUp() {
+        $.ajax({
+            url: "/set_judge_ready/" + Session,
+            type: "POST",
+            headers: { "X-CSRFToken": token },
+            data: {
+                'ready': true,
+                'judge': "e" + ThisJudge + "ready",
+                'event':ev,
+            },
+            success: function (data) {
+                HideReadyButton();
+            }
+        });
+    }
     function AllowEdit(edit) {
         if (edit) {
             $("#btnSubmitScore").removeClass("ui-disabled");
@@ -348,6 +380,7 @@
         if (!UseDots) {
             AllowEdit(false);
             $("#divRoutineStatus").html("WAITING TO START").addClass("timer-red").removeClass("timer-yellow").removeClass("timer-green");
+            $("#txtYourScore").val('');
         }
     }
     function GetAthleteInfo() {
@@ -564,7 +597,7 @@
             },
             success: function (data) {
                 alert("Score Submitted");
-                $("#btnSubmitScore").text("Re-Submit Score");
+                AllowEdit(false);
             }
         });
     }
