@@ -165,13 +165,16 @@ def session_delete(request):
 def setup_judges(request,id):
     session = Session.objects.get(pk=id)
     events = Event.objects.filter(disc=session.competition.disc)
+    sp = session.paid
+    if session.test:
+        sp = False
    
     context = {
         'title': 'Competition Setup (2/7)',
         'session_name': session.full_name,
         'events':events,
         'id':session.id,
-        'session_paid':session.paid,
+        'session_paid':sp,
         'help':'competition_setup_judges',
     }
     return render(request,'management/setup_judges.html',context)
