@@ -136,46 +136,58 @@
 		            <button id="btnStartPlayBack" type="button" class="btn btn-main mb-2" onclick="StartPlayBack()" style="display:none">Playback</button>
 
                     <table cellspacing="0" cellpadding="0" border="0" style="font-size:0.75rem;">
-	                    <tr><td id="tdElements" align="right">Elements:</td><td><input type="text" id="txtElements" placeholder="Elements" class="ui-disabled entrybox" onkeypress="return isNumberKey(event)" ></td></tr>
-	                    <tr><td id="tdDifficulty" align="right">Base Score:</td><td><input type="text" id="txtDifficulty" placeholder="Difficulty" class="ui-disabled entrybox"  onkeypress="return isNumberKey(event)" ></td></tr>
-	                    <tr><td id="tdGroups" align="right">Groups:</td><td><input type="text" id="txtGroups" placeholder="Groups" class="ui-disabled entrybox"  onkeypress="return isNumberKey(event)" ></td></tr>
-	                    <tr id="trBonus"><td id="tdBonus" align="right">Bonus:</td><td><input type="text" id="txtBonus" placeholder="Bonus" class="ui-disabled entrybox" onkeypress="return isNumberKey(event)" ></td></tr>
-                        <tr id="trConnection" style="display:none"><td id="tdConnection" align="right">Connection:</td><td><input type="text" id="txtConnection" placeholder="Connection Bonus" class="ui-disabled entrybox" onkeypress="return isNumberKey(event)" ></td></tr>
-	                    <tr><td id="tdNeutralDed" align="right">Neutral Deductions:</td><td><input type="text" id="txtNeutralDed" placeholder="Neutral Ded." class="ui-disabled entrybox" onkeypress="return isNumberKey(event)" ></td></tr>
-	                    <tr><td id="tdDScore" align="right" style="text-decoration:underline">D-Score:</td><td><div id="lblDScore" style="text-decoration:underline"></div></td></tr>
-	                    <tr><td colspan="2" align="right"><a href="#" id="btnSetDScore" type="button" class="btn btn-main mb-2 mt-2 ui-disabled" onclick="SetDScoreClick()" style="font-size:1rem">{% if session.use_ejudge_dots %}Set D-Score{% else %}Set Score{% endif %}</a></td></tr>
-                        {% if session.use_ejudge_dots %}
+                        {% if simple_d %}
+                            <tr><td id="tdYourTotal" align="right" style="text-decoration:underline">Total Score:</td><td><input type="text" id="txtYourTotal" placeholder="Total" class="ui-disabled entrybox" onkeypress="return isNumberKey(event)" ></td></tr>
+                            <tr><td colspan="2" align="right"><a href="#" id="btnSetDScore" type="button" class="btn btn-main mb-2 mt-2 ui-disabled" onclick="SetScoreClick()" style="font-size:1rem">Set Score</a></td></tr>
+                            <tr><td id="tdTotal" align="right" style="text-decoration:underline">Total Score:</td><td id="divTotalScore" style="text-decoration:underline">0.0</td></tr>
+                        {% else %}
+                            <tr><td id="tdElements" align="right">Elements:</td><td><input type="text" id="txtElements" placeholder="Elements" class="ui-disabled entrybox" onkeypress="return isNumberKey(event)" ></td></tr>
+	                        <tr><td id="tdDifficulty" align="right">Base Score:</td><td><input type="text" id="txtDifficulty" placeholder="Difficulty" class="ui-disabled entrybox"  onkeypress="return isNumberKey(event)" ></td></tr>
+	                        <tr><td id="tdGroups" align="right">Groups:</td><td><input type="text" id="txtGroups" placeholder="Groups" class="ui-disabled entrybox"  onkeypress="return isNumberKey(event)" ></td></tr>
+	                        <tr id="trBonus"><td id="tdBonus" align="right">Bonus:</td><td><input type="text" id="txtBonus" placeholder="Bonus" class="ui-disabled entrybox" onkeypress="return isNumberKey(event)" ></td></tr>
+                            <tr id="trConnection" style="display:none"><td id="tdConnection" align="right">Connection:</td><td><input type="text" id="txtConnection" placeholder="Connection Bonus" class="ui-disabled entrybox" onkeypress="return isNumberKey(event)" ></td></tr>
+	                        <tr><td id="tdNeutralDed" align="right">Neutral Deductions:</td><td><input type="text" id="txtNeutralDed" placeholder="Neutral Ded." class="ui-disabled entrybox" onkeypress="return isNumberKey(event)" ></td></tr>
+	                        <tr><td id="tdDScore" align="right" style="text-decoration:underline">D-Score:</td><td><div id="lblDScore" style="text-decoration:underline"></div></td></tr>
+	                        <tr><td colspan="2" align="right"><a href="#" id="btnSetDScore" type="button" class="btn btn-main mb-2 mt-2 ui-disabled" onclick="SetDScoreClick()" style="font-size:1rem">{% if session.use_ejudge_dots %}Set D-Score{% else %}Set Score{% endif %}</a></td></tr>
+                            {% if session.use_ejudge_dots %}
+	                            <tr><td id="tdE1" align="right">E1 Execution:</td><td id="divET1">0.0</td></tr>
+	                            <tr><td id="tdE2" align="right">E2 Execution:</td><td id="divET2">0.0</td></tr>
+	                            <tr><td id="tdE3" align="right">E3 Execution:</td><td id="divET3">0.0</td></tr>
+	                            <tr><td id="tdE4" align="right">E4 Execution:</td><td id="divET4">0.0</td></tr>
+                            {% else %}
+                                <tr><td id="tdE1" align="right">E1 Execution:</td><td id="divET1"><input type="text" id="txtE1" class="ui-disabled entrybox" onkeypress="return isNumberKey(event)"></td></tr>
+	                            <tr><td id="tdE2" align="right">E2 Execution:</td><td id="divET2"><input type="text" id="txtE2" class="ui-disabled entrybox" onkeypress="return isNumberKey(event)"></td></tr>
+	                            <tr><td id="tdE3" align="right">E3 Execution:</td><td id="divET3"><input type="text" id="txtE3" class="ui-disabled entrybox" onkeypress="return isNumberKey(event)"></td></tr>
+	                            <tr><td id="tdE4" align="right">E4 Execution:</td><td id="divET4"><input type="text" id="txtE4" class="ui-disabled entrybox" onkeypress="return isNumberKey(event)"></td></tr>
+                            {% endif %}
+	                        <tr><td id="tdEScore" align="right" style="text-decoration:underline">E-Score:</td><td id="divEScore" style="text-decoration:underline">0.0</td></tr>
+	                        <tr><td align="right" style="height:10px"></td><td></td></tr>
+	                        <tr><td id="tdTotal" align="right" style="text-decoration:underline">Total Score:</td><td id="divTotalScore" style="text-decoration:underline">0.0</td></tr>
+                        {% endif %}
+	                   
+	                </table>
+                {% else %}
+                    <table cellspacing="0" cellpadding="0" border="0" style="font-size:0.75rem">
+                        {% if simple_d %}
+                            <tr><td id="tdTotal" align="right" style="text-decoration:underline">Total Score:</td><td id="divTotalScore" style="text-decoration:underline">0.0</td></tr>
+                        {% else %}
+                            <tr><td id="tdElements" align="right">Elements:</td><td><div id="lblElements"></div></td></tr>
+	                        <tr><td id="tdDifficulty" align="right">Base Score:</td><td><div id="lblDifficulty"></div></td></tr>
+	                        <tr><td id="tdGroups" align="right">Groups:</td><td><div id="lblGroups"></div></td></tr>
+	                        <tr id="trBonus"><td id="tdBonus" align="right">Bonus:</td><td><div id="lblBonus"></div></td></tr>
+                            <tr id="trConnection" style="display:none"><td id="tdConnection" align="right">Connection:</td><td><div id="lblConnection"></div></td></tr>
+	                        <tr><td id="tdNeutralDed" align="right">Neutral Deductions:</td><td><div id="lblNeutralDed"></div></td></tr>
+	                        <tr><td id="tdDScore" align="right" style="text-decoration:underline">D-Score:</td><td><div id="lblDScore" style="text-decoration:underline"></div></td></tr>
+	                        <tr><td colspan="2" align="right"></td></tr>
 	                        <tr><td id="tdE1" align="right">E1 Execution:</td><td id="divET1">0.0</td></tr>
 	                        <tr><td id="tdE2" align="right">E2 Execution:</td><td id="divET2">0.0</td></tr>
 	                        <tr><td id="tdE3" align="right">E3 Execution:</td><td id="divET3">0.0</td></tr>
 	                        <tr><td id="tdE4" align="right">E4 Execution:</td><td id="divET4">0.0</td></tr>
-                        {% else %}
-                            <tr><td id="tdE1" align="right">E1 Execution:</td><td id="divET1"><input type="text" id="txtE1" class="ui-disabled entrybox" onkeypress="return isNumberKey(event)"></td></tr>
-	                        <tr><td id="tdE2" align="right">E2 Execution:</td><td id="divET2"><input type="text" id="txtE2" class="ui-disabled entrybox" onkeypress="return isNumberKey(event)"></td></tr>
-	                        <tr><td id="tdE3" align="right">E3 Execution:</td><td id="divET3"><input type="text" id="txtE3" class="ui-disabled entrybox" onkeypress="return isNumberKey(event)"></td></tr>
-	                        <tr><td id="tdE4" align="right">E4 Execution:</td><td id="divET4"><input type="text" id="txtE4" class="ui-disabled entrybox" onkeypress="return isNumberKey(event)"></td></tr>
+	                        <tr><td id="tdEScore" align="right" style="text-decoration:underline">E-Score:</td><td id="divEScore" style="text-decoration:underline">0.0</td></tr>
+	                        <tr><td align="right" style="height:10px"></td><td></td></tr>
+	                        <tr><td id="tdTotal" align="right" style="text-decoration:underline">Total Score:</td><td id="divTotalScore" style="text-decoration:underline">0.0</td></tr>
                         {% endif %}
-	                    <tr><td id="tdEScore" align="right" style="text-decoration:underline">E-Score:</td><td id="divEScore" style="text-decoration:underline">0.0</td></tr>
-	                    <tr><td align="right" style="height:10px"></td><td></td></tr>
-	                    <tr><td id="tdTotal" align="right" style="text-decoration:underline">Total Score:</td><td id="divTotalScore" style="text-decoration:underline">0.0</td></tr>
-	                </table>
-                {% else %}
-                    <table cellspacing="0" cellpadding="0" border="0" style="font-size:0.75rem">
-	                    <tr><td id="tdElements" align="right">Elements:</td><td><div id="lblElements"></div></td></tr>
-	                    <tr><td id="tdDifficulty" align="right">Base Score:</td><td><div id="lblDifficulty"></div></td></tr>
-	                    <tr><td id="tdGroups" align="right">Groups:</td><td><div id="lblGroups"></div></td></tr>
-	                    <tr id="trBonus"><td id="tdBonus" align="right">Bonus:</td><td><div id="lblBonus"></div></td></tr>
-                        <tr id="trConnection" style="display:none"><td id="tdConnection" align="right">Connection:</td><td><div id="lblConnection"></div></td></tr>
-	                    <tr><td id="tdNeutralDed" align="right">Neutral Deductions:</td><td><div id="lblNeutralDed"></div></td></tr>
-	                    <tr><td id="tdDScore" align="right" style="text-decoration:underline">D-Score:</td><td><div id="lblDScore" style="text-decoration:underline"></div></td></tr>
-	                    <tr><td colspan="2" align="right"></td></tr>
-	                    <tr><td id="tdE1" align="right">E1 Execution:</td><td id="divET1">0.0</td></tr>
-	                    <tr><td id="tdE2" align="right">E2 Execution:</td><td id="divET2">0.0</td></tr>
-	                    <tr><td id="tdE3" align="right">E3 Execution:</td><td id="divET3">0.0</td></tr>
-	                    <tr><td id="tdE4" align="right">E4 Execution:</td><td id="divET4">0.0</td></tr>
-	                    <tr><td id="tdEScore" align="right" style="text-decoration:underline">E-Score:</td><td id="divEScore" style="text-decoration:underline">0.0</td></tr>
-	                    <tr><td align="right" style="height:10px"></td><td></td></tr>
-	                    <tr><td id="tdTotal" align="right" style="text-decoration:underline">Total Score:</td><td id="divTotalScore" style="text-decoration:underline">0.0</td></tr>
+	                    
 	                </table>
                 {% endif %}
            
@@ -251,6 +263,9 @@
     var MultiD = {{multi_d|lower}};
     var LoadFrom = "";
     var UseDots = {{session.use_ejudge_dots|lower}};
+    var SimpleD = {{simple_d|lower}};
+    if (SimpleD)
+    UseDots = false;
 
 </script>
 <script type="text/javascript">
@@ -828,13 +843,16 @@
         FloorTiming = false;
         FloorTimerDone();
         $("#btnAccountability").addClass("ui-disabled");
-        document.getElementById('lblDScore').innerHTML = "";
-        document.getElementById('divEScore').innerHTML = "";
-        document.getElementById('divTotalScore').innerHTML = "";
-        for (var i = 1; i <= 4; i++) {
-            $("#tdE" + i).removeClass("judge-strike");
-            $("#divET" + i).removeClass("judge-strike");
+        if (!SimpleD) {
+            document.getElementById('lblDScore').innerHTML = "";
+            document.getElementById('divEScore').innerHTML = "";
+            
+            for (var i = 1; i <= 4; i++) {
+                $("#tdE" + i).removeClass("judge-strike");
+                $("#divET" + i).removeClass("judge-strike");
+            }
         }
+        document.getElementById('divTotalScore').innerHTML = "";
         if (BackupVideo != -1) {
             document.getElementById("video-playback").pause();
             document.getElementById("video-playback").currentTime = 0;
@@ -1072,6 +1090,11 @@
         SetDScore();
     }
 
+    function SetScoreClick() {
+        Status = status.REVIEW_DONE;
+        SetDScore();
+    }
+
     //also sets next ath for d2 if that is a thing
     function SetDScore(completeRoutine = false) {
         try {
@@ -1081,62 +1104,93 @@
 
         }
         CalculateScores();
-        let e1 = 0;
-        let e2 = 0;
-        let e3 = 0;
-        let e4 = 0;
-        if (UseDots || LoadRot != '') {
-            e1 = $("#divET1").html();
-            e2 = $("#divET2").html();
-            e3 = $("#divET3").html();
-            e4 = $("#divET4").html();
+        if (!SimpleD) {
+            let e1 = 0;
+            let e2 = 0;
+            let e3 = 0;
+            let e4 = 0;
+            if (UseDots || LoadRot != '') {
+                e1 = $("#divET1").html();
+                e2 = $("#divET2").html();
+                e3 = $("#divET3").html();
+                e4 = $("#divET4").html();
+            }
+            else {
+                e1 = $("#txtE1").val();
+                e2 = $("#txtE2").val();
+                e3 = $("#txtE3").val();
+                e4 = $("#txtE4").val();
+            }
+            $.ajax({
+                url: "/routine_set_score/",
+                type: "POST",
+                headers: { "X-CSRFToken": token },
+                data: {
+                    'routine': RoutineID,
+                    'score_elements': $("#txtElements").val(),
+                    'score_difficulty': $("#txtDifficulty").val(),
+                    'score_groups': $("#txtGroups").val(),
+                    'score_bonus': $("#txtBonus").val(),
+                    'score_connection': $("#txtConnection").val(),
+                    'score_neutral': $("#txtNeutralDed").val(),
+                    'score_e1': e1,
+                    'score_e2': e2,
+                    'score_e3': e3,
+                    'score_e4': e4,
+                    'score_e': $("#divEScore").html(),
+                    'score_d': $("#lblDScore").html(),
+                    'score_final': $("#divTotalScore").html(),
+                },
+                success: function (data) {
+                    if (completeRoutine) {
+                        FinishRoutine();
+                        Status = status.BLANK;
+                        /*if (MultiD && !$("#btnReleaseEJudges").hasClass('ui-disabled'))
+                        {
+                            $("#btnFinish").addClass("ui-disabled");
+                            $("#btnAccountability").addClass("ui-disabled");
+                            ReleaseEJudges(true);
+                        }
+                        else*/
+                        MarkDoneAndGetNextAthlete();
+
+
+                    }
+                }
+            });
+            if (!MultiD || $("#btnReleaseEJudges").hasClass('ui-disabled'))
+                $("#btnFinish").removeClass("ui-disabled");
+            $("#btnAccountability").removeClass("ui-disabled");
         }
         else {
-            e1 = $("#txtE1").val();
-            e2 = $("#txtE2").val();
-            e3 = $("#txtE3").val();
-            e4 = $("#txtE4").val();
-        }
-        $.ajax({
-            url: "/routine_set_score/",
-            type: "POST",
-            headers: { "X-CSRFToken": token },
-            data: {
-                'routine': RoutineID,
-                'score_elements': $("#txtElements").val(),
-                'score_difficulty': $("#txtDifficulty").val(),
-                'score_groups': $("#txtGroups").val(),
-                'score_bonus': $("#txtBonus").val(),
-                'score_connection': $("#txtConnection").val(),
-                'score_neutral': $("#txtNeutralDed").val(),
-                'score_e1': e1,
-                'score_e2': e2,
-                'score_e3': e3,
-                'score_e4': e4,
-                'score_e': $("#divEScore").html(),
-                'score_d': $("#lblDScore").html(),
-                'score_final': $("#divTotalScore").html(),
-            },
-            success: function (data) {
-                if (completeRoutine) {
-                    FinishRoutine();
-                    Status = status.BLANK;
-                    /*if (MultiD && !$("#btnReleaseEJudges").hasClass('ui-disabled'))
-                    {
-                        $("#btnFinish").addClass("ui-disabled");
-                        $("#btnAccountability").addClass("ui-disabled");
-                        ReleaseEJudges(true);
-                    }
-                    else*/
+            $.ajax({
+                url: "/routine_set_score/",
+                type: "POST",
+                headers: { "X-CSRFToken": token },
+                data: {
+                    'routine': RoutineID,
+                    'score_final': $("#divTotalScore").html(),
+                },
+                success: function (data) {
+                    if (completeRoutine) {
+                        FinishRoutine();
+                        Status = status.BLANK;
+                        /*if (MultiD && !$("#btnReleaseEJudges").hasClass('ui-disabled'))
+                        {
+                            $("#btnFinish").addClass("ui-disabled");
+                            $("#btnAccountability").addClass("ui-disabled");
+                            ReleaseEJudges(true);
+                        }
+                        else*/
                         MarkDoneAndGetNextAthlete();
-                    
-                   
+
+
+                    }
                 }
-            }
-        });
-        if (!MultiD || $("#btnReleaseEJudges").hasClass('ui-disabled'))
-            $("#btnFinish").removeClass("ui-disabled");
-        $("#btnAccountability").removeClass("ui-disabled");
+            });
+            if (!MultiD || $("#btnReleaseEJudges").hasClass('ui-disabled'))
+                $("#btnFinish").removeClass("ui-disabled");
+        }
     }
 
     function PlayerJump(jump) {
@@ -1154,88 +1208,95 @@
         let groups = 0;
         let neutral = 0;
         var StartValueScore = 0;
-        if (LoadRot == "") {
-            Score = parseFloat($("#txtDifficulty").val()) + parseFloat($("#txtBonus").val()) + parseFloat($("#txtConnection").val());
-            difScore = parseFloat(Score).toFixed(2);
-            countedE = parseInt($("#txtElements").val());
-            groups = parseFloat($("#txtGroups").val());
-            neutral = parseFloat($("#txtNeutralDed").val());
+        if (!SimpleD) {
+            if (LoadRot == "") {
+                Score = parseFloat($("#txtDifficulty").val()) + parseFloat($("#txtBonus").val()) + parseFloat($("#txtConnection").val());
+                difScore = parseFloat(Score).toFixed(2);
+                countedE = parseInt($("#txtElements").val());
+                groups = parseFloat($("#txtGroups").val());
+                neutral = parseFloat($("#txtNeutralDed").val());
+            }
+            else {
+                Score = parseFloat($("#lblDifficulty").html()) + parseFloat($("#lblBonus").html()) + parseFloat($("#lblConnection").html());
+                difScore = parseFloat(Score).toFixed(2);
+                countedE = parseInt($("#lblElements").html());
+                groups = parseFloat($("#lblGroups").html());
+                neutral = parseFloat($("#lblNeutralDed").html());
+            }
+
+            if (ScoringType == "JO4567") {
+                StartValueScore = parseFloat(Score).toFixed(1);
+                DeductFrom = -1;//ignore if -1
+                var TotalDeductions = CalcDeductions(DeductFrom);
+                EScore = parseFloat(TotalDeductions).toFixed(3);
+                DScore = StartValueScore;
+                if (EScore < 0)
+                    EScore = 0;
+                //console.log ("TotalDeductions: " + TotalDeductions + " | StartValueScore: " + StartValueScore )
+                document.getElementById('divEScore').innerHTML = parseFloat(EScore).toFixed(2);
+                document.getElementById('lblDScore').innerHTML = FormatWith0(StartValueScore);
+                //StartValueScore = parseFloat(DeductFrom) + parseFloat(StartValueScore);
+                let tot = (parseFloat(StartValueScore - neutral - TotalDeductions).toFixed(2))
+                if (tot < 0)
+                    tot = 0
+                document.getElementById('divTotalScore').innerHTML = FormatWith0(parseFloat(tot).toFixed(2));
+                //FormatWith0(parseFloat(+StartValueScore + +EScore - +neutral).toFixed(2));
+            }
+            else if (ScoringType == "JO8910") {
+                /*if (countedE > 1 && countedE <= 3)
+                    DeductFrom = 2;
+                else if (countedE > 3 && countedE <= 5)
+                    DeductFrom = 4;
+                else if (countedE > 5 && countedE <= 7)
+                    DeductFrom = 6;
+                else if (countedE > 5)*/
+                DeductFrom = 10;
+
+                if (ev == "VT")
+                    DeductFrom = 10;
+                StartValueScore = +parseFloat(Score).toFixed(1) + +parseFloat(groups).toFixed(1);
+                var TotalDeductions = CalcDeductions(DeductFrom);
+                EScore = parseFloat(DeductFrom - TotalDeductions).toFixed(3);
+                DScore = StartValueScore;
+                if (EScore < 0)
+                    EScore = 0;
+                document.getElementById('divEScore').innerHTML = FormatWith0(parseFloat(EScore));
+                document.getElementById('lblDScore').innerHTML = FormatWith0(StartValueScore);
+                let tot = (parseFloat(+StartValueScore + +EScore - +neutral).toFixed(2));
+                if (tot < 0)
+                    tot = 0
+                document.getElementById('divTotalScore').innerHTML = FormatWith0(parseFloat(tot).toFixed(2));
+            }
+            else //fig
+            {
+                if (countedE > 1 && countedE <= 2)
+                    DeductFrom = 2;
+                else if (countedE > 3 && countedE <= 4)
+                    DeductFrom = 4;
+                else if (countedE > 5 && countedE <= 6)
+                    DeductFrom = 6;
+                else if (countedE >= 7)
+                    DeductFrom = 10;
+
+                if (ev == "VT")
+                    DeductFrom = 10;
+                StartValueScore = +parseFloat(Score).toFixed(1) + +parseFloat(groups).toFixed(1);
+                var TotalDeductions = CalcDeductions(DeductFrom);
+
+                EScore = parseFloat(DeductFrom - TotalDeductions).toFixed(3);
+                DScore = StartValueScore;
+                if (EScore < 0)
+                    EScore = 0;
+                document.getElementById('divEScore').innerHTML = FormatWith0(parseFloat(EScore));
+                document.getElementById('lblDScore').innerHTML = FormatWith0(StartValueScore);
+
+                document.getElementById('divTotalScore').innerHTML = FormatWith0(parseFloat(+StartValueScore + +EScore - +neutral).toFixed(2));
+            }
         }
         else {
-            Score = parseFloat($("#lblDifficulty").html()) + parseFloat($("#lblBonus").html()) + parseFloat($("#lblConnection").html());
-            difScore = parseFloat(Score).toFixed(2);
-            countedE = parseInt($("#lblElements").html());
-            groups = parseFloat($("#lblGroups").html());
-            neutral = parseFloat($("#lblNeutralDed").html());
-        }
-
-        if (ScoringType == "JO4567") {
-            StartValueScore = parseFloat(Score).toFixed(1);
-            DeductFrom = -1;//ignore if -1
-            var TotalDeductions = CalcDeductions(DeductFrom);
-            EScore = parseFloat(TotalDeductions).toFixed(3);
-            DScore = StartValueScore;
-            if (EScore < 0)
-                EScore = 0;
-            //console.log ("TotalDeductions: " + TotalDeductions + " | StartValueScore: " + StartValueScore )
-            document.getElementById('divEScore').innerHTML =  parseFloat(EScore).toFixed(2);
-            document.getElementById('lblDScore').innerHTML = FormatWith0(StartValueScore);
-            //StartValueScore = parseFloat(DeductFrom) + parseFloat(StartValueScore);
-            let tot = (parseFloat(StartValueScore - neutral - TotalDeductions).toFixed(2))
-            if (tot < 0)
-                tot = 0
-            document.getElementById('divTotalScore').innerHTML = FormatWith0(parseFloat(tot).toFixed(2));
-            //FormatWith0(parseFloat(+StartValueScore + +EScore - +neutral).toFixed(2));
-        }
-        else if (ScoringType == "JO8910") {
-            /*if (countedE > 1 && countedE <= 3)
-                DeductFrom = 2;
-            else if (countedE > 3 && countedE <= 5)
-                DeductFrom = 4;
-            else if (countedE > 5 && countedE <= 7)
-                DeductFrom = 6;
-            else if (countedE > 5)*/
-                DeductFrom = 10;
-
-            if (ev == "VT")
-                DeductFrom = 10;
-            StartValueScore = +parseFloat(Score).toFixed(1) + +parseFloat(groups).toFixed(1);
-            var TotalDeductions = CalcDeductions(DeductFrom);
-            EScore = parseFloat(DeductFrom - TotalDeductions).toFixed(3);
-            DScore = StartValueScore;
-            if (EScore < 0)
-                EScore = 0;
-            document.getElementById('divEScore').innerHTML = FormatWith0(parseFloat(EScore));
-            document.getElementById('lblDScore').innerHTML = FormatWith0(StartValueScore);
-            let tot =  (parseFloat(+StartValueScore + +EScore - +neutral).toFixed(2));
-            if (tot < 0)
-                tot = 0
-            document.getElementById('divTotalScore').innerHTML = FormatWith0(parseFloat(tot).toFixed(2));
-        }
-        else //fig
-        {
-            if (countedE > 1 && countedE <= 2)
-                DeductFrom = 2;
-            else if (countedE > 3 && countedE <= 4)
-                DeductFrom = 4;
-            else if (countedE > 5 && countedE <= 6)
-                DeductFrom = 6;
-            else if (countedE >= 7)
-                DeductFrom = 10;
-
-            if (ev == "VT")
-                DeductFrom = 10;
-            StartValueScore = +parseFloat(Score).toFixed(1) + +parseFloat(groups).toFixed(1);
-            var TotalDeductions = CalcDeductions(DeductFrom);
-
-            EScore = parseFloat(DeductFrom - TotalDeductions).toFixed(3);
-            DScore = StartValueScore;
-            if (EScore < 0)
-                EScore = 0;
-            document.getElementById('divEScore').innerHTML = FormatWith0(parseFloat(EScore));
-            document.getElementById('lblDScore').innerHTML = FormatWith0(StartValueScore);
-
-            document.getElementById('divTotalScore').innerHTML = FormatWith0(parseFloat(+StartValueScore + +EScore - +neutral).toFixed(2));
+            //simple version
+            Score = parseFloat($("#txtYourTotal").val());
+            document.getElementById('divTotalScore').innerHTML = FormatWith0(parseFloat(Score).toFixed(3));
         }
     }
 
@@ -1657,102 +1718,107 @@
         return true;
     }
     function SetDScoreDefaults() {
-        if (ScoringType == "JO4567") {
-            console.log("Setting Scoring JO4567");
-            $("#tdDifficulty").html("Base Score:");
-            $("#tdDScore").html("Start Value:");
-            $("#btnSetDScore").children(0).children(0).text("Set Start Value");
-            for (var i = 1; i <= 4; i++) {
-                if (EJudges[i] != "" && EJudges[i] != " ") {
-                    $("#tdE" + i).html("E" + i + " Deduction:");
+        if (!SimpleD) {
+            if (ScoringType == "JO4567") {
+                console.log("Setting Scoring JO4567");
+                $("#tdDifficulty").html("Base Score:");
+                $("#tdDScore").html("Start Value:");
+                $("#btnSetDScore").children(0).children(0).text("Set Start Value");
+                for (var i = 1; i <= 4; i++) {
+                    if (EJudges[i] != "" && EJudges[i] != " ") {
+                        $("#tdE" + i).html("E" + i + " Deduction:");
+                    }
                 }
-            }
-            $("#txtDifficulty").val('9.5');
-            $("#txtElements").val('8');
-            $("#txtBonus").val('0.0');
-            $("#txtConnection").val('0.0');
-            $("#txtNeutralDed").val('0.0');
-            $("#txtGroups").hide();
-            $("#tdGroups").hide();
-            $("#lblGroups").hide();
-            $("#tdBonus").html("Bonus: ");
-            $("#tdEScore").html("Average Deduction: ");
-        }
-        else if (ScoringType == "JO8910") {
-            console.log("Setting Scoring JO8910");
-            if (ev == "FX" || ev == "HB")
-                $("#trConnection").show();
-            else
-                $("#trConnection").hide();
-            $("#tdDifficulty").html("Difficulty:");
-            $("#btnSetDScore").children(0).children(0).text("Set D-Score");
-            for (var i = 1; i <= 4; i++) {
-                if (EJudges[i] != "" && EJudges[i] != " ") {
-                    $("#tdE" + i).html("E" + i + " Execution:");
-                }
-            }
-            $("#tdDScore").html("D-Score:");
-            $("#txtDifficulty").val('0.0');
-            $("#txtBonus").val('0.0');
-            $("#txtConnection").val('0.0');
-            $("#txtNeutralDed").val('0.0');
-            $("#txtGroups").val('2.0');
-            $("#txtElements").val('8');
-            $("#tdEScore").html("E-Score: ");
-            if (LoadRot != "") {
+                $("#txtDifficulty").val('9.5');
+                $("#txtElements").val('8');
+                $("#txtBonus").val('0.0');
+                $("#txtConnection").val('0.0');
+                $("#txtNeutralDed").val('0.0');
                 $("#txtGroups").hide();
-                $("#lblGroups").show();
-            }
-            else {
+                $("#tdGroups").hide();
                 $("#lblGroups").hide();
-                $("#txtGroups").show();
+                $("#tdBonus").html("Bonus: ");
+                $("#tdEScore").html("Average Deduction: ");
             }
-            $("#tdGroups").show();
-        }
-        else//fig or elite
-        {
-            console.log("Setting Scoring FIG");
-            $("#tdDifficulty").html("Difficulty:");
-            $("#tdDScore").html("D-Score:");
-            $("#btnSetDScore").children(0).children(0).text("Set D-Score");
-            for (var i = 1; i <= 4; i++) {
-                if (EJudges[i] != "" && EJudges[i] != " ") {
-                    $("#tdE" + i).html("E" + i + " Execution:");
+            else if (ScoringType == "JO8910") {
+                console.log("Setting Scoring JO8910");
+                if (ev == "FX" || ev == "HB")
+                    $("#trConnection").show();
+                else
+                    $("#trConnection").hide();
+                $("#tdDifficulty").html("Difficulty:");
+                $("#btnSetDScore").children(0).children(0).text("Set D-Score");
+                for (var i = 1; i <= 4; i++) {
+                    if (EJudges[i] != "" && EJudges[i] != " ") {
+                        $("#tdE" + i).html("E" + i + " Execution:");
+                    }
                 }
+                $("#tdDScore").html("D-Score:");
+                $("#txtDifficulty").val('0.0');
+                $("#txtBonus").val('0.0');
+                $("#txtConnection").val('0.0');
+                $("#txtNeutralDed").val('0.0');
+                $("#txtGroups").val('2.0');
+                $("#txtElements").val('8');
+                $("#tdEScore").html("E-Score: ");
+                if (LoadRot != "") {
+                    $("#txtGroups").hide();
+                    $("#lblGroups").show();
+                }
+                else {
+                    $("#lblGroups").hide();
+                    $("#txtGroups").show();
+                }
+                $("#tdGroups").show();
             }
-            $("#txtDifficulty").val('0.0');
-            $("#txtGroups").val('2.0');
-            $("#txtElements").val('10');
-            $("#txtBonus").val('0.0');
-            $("#txtConnection").val('0.0');
-            $("#txtNeutralDed").val('0.0');
-            $("#tdEScore").html("E-Score: ");
-            if (ScoringSpecific == "NCAA") {
-                $("#tdBonus").html("Stick: ");
-                $("#trBonus").show();
+            else//fig or elite
+            {
+                console.log("Setting Scoring FIG");
+                $("#tdDifficulty").html("Difficulty:");
+                $("#tdDScore").html("D-Score:");
+                $("#btnSetDScore").children(0).children(0).text("Set D-Score");
+                for (var i = 1; i <= 4; i++) {
+                    if (EJudges[i] != "" && EJudges[i] != " ") {
+                        $("#tdE" + i).html("E" + i + " Execution:");
+                    }
+                }
+                $("#txtDifficulty").val('0.0');
+                $("#txtGroups").val('2.0');
+                $("#txtElements").val('10');
+                $("#txtBonus").val('0.0');
+                $("#txtConnection").val('0.0');
+                $("#txtNeutralDed").val('0.0');
+                $("#tdEScore").html("E-Score: ");
+                if (ScoringSpecific == "NCAA") {
+                    $("#tdBonus").html("Stick: ");
+                    $("#trBonus").show();
+                }
+                else {
+                    $("#trBonus").hide();
+                }
+                if (ev == "FX" || ev == "HB")
+                    $("#trConnection").show();
+                else
+                    $("#trConnection").hide();
+                if (LoadRot != "") {
+                    $("#txtGroups").hide();
+                    $("#lblGroups").show();
+                }
+                else {
+                    $("#lblGroups").hide();
+                    $("#txtGroups").show();
+                }
+                $("#tdGroups").show();
             }
-            else {
-                $("#trBonus").hide();
-            }
-            if (ev == "FX" || ev == "HB")
-                $("#trConnection").show();
-            else
-                $("#trConnection").hide();
-            if (LoadRot != "") {
+            if (ev == "VT") {
+                $("#txtGroups").val('0');
                 $("#txtGroups").hide();
-                $("#lblGroups").show();
-            }
-            else {
+                $("#tdGroups").hide();
                 $("#lblGroups").hide();
-                $("#txtGroups").show();
             }
-            $("#tdGroups").show();
         }
-        if (ev == "VT") {
-            $("#txtGroups").val('0');
-            $("#txtGroups").hide();
-            $("#tdGroups").hide();
-            $("#lblGroups").hide();
+        else {
+            $("#txtYourTotal").val('0.0');
         }
     }
 

@@ -48,12 +48,12 @@ class Session(models.Model):
     NCAA = 'NCAA'
     FIG = 'FIG'
     USAG = 'USAG'
-    JO = 'JO'
+    WDP = 'WDP'
     SESSION_LEVEL = [
         (NCAA,'NCAA'),
         (FIG,'FIG'),
         (USAG,'USAG'),
-        (JO,'JO'),
+        (WDP,'WDP'),
         ]
     level = models.CharField(max_length=6,choices=SESSION_LEVEL,default=NCAA)
     spectator_fee = models.DecimalField(max_digits=6, decimal_places=2)

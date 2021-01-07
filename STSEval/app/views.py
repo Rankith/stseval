@@ -85,6 +85,14 @@ def d1(request):
         multi_d = True
     else:
         multi_d = False
+
+    simple_d = False
+
+    if disc == "WAG":
+        if session.level == Session.WDP or session.level == Session.NCAA:
+            #check if its a no E and limited D type of event
+            simple_d = True
+
     
     context = {
         'title':  judge_type + ' Overview - ' + event + ' ' + session.full_name(),
@@ -99,6 +107,7 @@ def d1(request):
         'judge_type':judge_type,
         'this_judge':this_judge,
         'multi_d':multi_d,
+        'simple_d':simple_d,
         'help':'djudge',
 
     }
