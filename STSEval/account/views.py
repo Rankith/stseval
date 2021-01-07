@@ -157,9 +157,13 @@ def login_judge_do(request,session,event,name,email,jt,ej):
         request.session['ej'] = ej
         request.session['chat_name'] = event.name + " " + jt + " - " + name
         return redirect('/ejudge_select/')
-    else:
-        request.session['chat_name'] = event.name + " D1 - " + name
-        return redirect('/d1/')
+    else:#D
+        if jt == 'D2' and session.competition.disc.name == "WAG" and (session.level == Session.WDP or session.level == Session.NCAA): #d2_wag version
+            request.session['chat_name'] = event.name + " D2 - " + name
+            return redirect('/d2_wag/')
+        else:
+            request.session['chat_name'] = event.name + " D1 - " + name
+            return redirect('/d1/')
 
 def login_judge(request):
     err = ''

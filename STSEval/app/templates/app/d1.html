@@ -137,9 +137,10 @@
 
                     <table cellspacing="0" cellpadding="0" border="0" style="font-size:0.75rem;">
                         {% if simple_d %}
-                            <tr><td id="tdYourTotal" align="right" style="text-decoration:underline">Total Score:</td><td><input type="text" id="txtYourTotal" placeholder="Total" class="ui-disabled entrybox" onkeypress="return isNumberKey(event)" ></td></tr>
+                            <tr><td id="tdYourTotal" align="right" style="text-decoration:underline">Your Score:</td><td><input type="text" id="txtYourTotal" placeholder="Total" class="ui-disabled entrybox" onkeypress="return isNumberKey(event)" ></td></tr>
                             <tr><td colspan="2" align="right"><a href="#" id="btnSetDScore" type="button" class="btn btn-main mb-2 mt-2 ui-disabled" onclick="SetScoreClick()" style="font-size:1rem">Set Score</a></td></tr>
-                            <tr><td id="tdTotal" align="right" style="text-decoration:underline">Total Score:</td><td id="divTotalScore" style="text-decoration:underline">0.0</td></tr>
+                            <tr><td id="tdD2Score" align="right" style="display:none">D2 Score:</td><td id="divD2Score" style="display:none"></td></tr>
+                            <tr><td id="tdTotal" align="right" style="text-decoration:underline">Total Score:</td><td id="divTotalScore" style="text-decoration:underline"></td></tr>
                         {% else %}
                             <tr><td id="tdElements" align="right">Elements:</td><td><input type="text" id="txtElements" placeholder="Elements" class="ui-disabled entrybox" onkeypress="return isNumberKey(event)" ></td></tr>
 	                        <tr><td id="tdDifficulty" align="right">Base Score:</td><td><input type="text" id="txtDifficulty" placeholder="Difficulty" class="ui-disabled entrybox"  onkeypress="return isNumberKey(event)" ></td></tr>
@@ -169,7 +170,7 @@
                 {% else %}
                     <table cellspacing="0" cellpadding="0" border="0" style="font-size:0.75rem">
                         {% if simple_d %}
-                            <tr><td id="tdTotal" align="right" style="text-decoration:underline">Total Score:</td><td id="divTotalScore" style="text-decoration:underline">0.0</td></tr>
+                            <tr><td id="tdTotal" align="right" class="pt-3" style="text-decoration:underline">Total Score:</td><td id="divTotalScore" class="pt-3" style="text-decoration:underline">0.0</td></tr>
                         {% else %}
                             <tr><td id="tdElements" align="right">Elements:</td><td><div id="lblElements"></div></td></tr>
 	                        <tr><td id="tdDifficulty" align="right">Base Score:</td><td><div id="lblDifficulty"></div></td></tr>
@@ -266,6 +267,7 @@
     var SimpleD = {{simple_d|lower}};
     if (SimpleD)
     UseDots = false;
+    var d2 = "{{judges.d2_email}}";
 
 </script>
 <script type="text/javascript">
@@ -311,6 +313,8 @@
     var BackupVideo = -1;
     var Overview = false;
     var db = firebase.firestore();
+    var SimpleHasD2 = false;
+
     //firebase.firestore.setLogLevel('debug');
     for (var i = 1; i <= 4; i++) {
         EJudgesReady[i] = false;
@@ -427,19 +431,26 @@
     }
 
     function EditScoreDoneClick() {
-        $("#lblElements").html($("#txtElements").val());
-        $("#lblDifficulty").html($("#txtDifficulty").val());
-        $("#lblGroups").html($("#txtGroups").val());
-        $("#lblBonus").html($("#txtBonus").val());
-        $("#lblNeutralDed").html($("#txtNeutralDed").val());
-        if (!UseDots) {
-            try { $("#divET1").html($("#txtE1").val()); } catch { }
-            try { $("#divET2").html($("#txtE2").val()); } catch { }
-            try { $("#divET3").html($("#txtE3").val()); } catch { }
-            try { $("#divET4").html($("#txtE4").val()); } catch {}
+        if (!SimpleD) {
+            $("#lblElements").html($("#txtElements").val());
+            $("#lblDifficulty").html($("#txtDifficulty").val());
+            $("#lblGroups").html($("#txtGroups").val());
+            $("#lblBonus").html($("#txtBonus").val());
+            $("#lblNeutralDed").html($("#txtNeutralDed").val());
+            if (!UseDots) {
+                try { $("#divET1").html($("#txtE1").val()); } catch { }
+                try { $("#divET2").html($("#txtE2").val()); } catch { }
+                try { $("#divET3").html($("#txtE3").val()); } catch { }
+                try { $("#divET4").html($("#txtE4").val()); } catch { }
+            }
+            SetDScore();
+            CloseScoreEdit();
         }
-        SetDScore();
-        CloseScoreEdit();
+        else {
+            $("#divTotalScore").html($("#txtTotal").val());
+            SetDScore();
+            CloseScoreEdit();
+        }
     }
 
     function EditScoreCancelClick() {
@@ -738,6 +749,12 @@
                 else
                     $("#divJudgeDotE4").addClass("status-dot-red").removeClass("status-dot-green");
             //}
+
+            if (SimpleHasD2) {
+                $("#divD2Score").html(doc.data().d2score)
+                if (Status == status.REVIEW_DONE)
+                    CalculateScores();
+            }
         }
     }
 
@@ -797,7 +814,11 @@
 
         //if ((ev == "FX" || ev == "HB") && ScoringType != "JO4567")
          //   $("#tdBonus").html("Connections and Bonus: ");
-
+        if (d2 != '' && SimpleD) {
+            SimpleHasD2 = true;
+            $("#tdD2Score").show();
+            $("#divD2Score").show();
+        }
         if (ev == "FX")
             $("#btnFloorTimer").show();
          ReadyUp();
@@ -852,6 +873,8 @@
                 $("#divET" + i).removeClass("judge-strike");
             }
         }
+        if (SimpleHasD2)
+            $("#divD2Score").html();
         document.getElementById('divTotalScore').innerHTML = "";
         if (BackupVideo != -1) {
             document.getElementById("video-playback").pause();
@@ -1040,34 +1063,39 @@
             },
             success: function (data) {
                 //console.log(data);
-                SetDScoreType(data['athlete_id']);
-                SetDScoreDefaults();
-                $("#lblElements").html(data['score_elements']);
-                $("#lblDifficulty").html(FormatWith0(data['score_difficulty']));
-                $("#lblGroups").html(data['score_groups']);
-                $("#lblBonus").html(FormatWith0(data['score_bonus']));
-                $("#lblConnection").html(FormatWith0(data['score_connection']));
-                $("#lblNeutralDed").html(FormatWith0(data['score_neutral']));
-                $("#lblDScore").html(FormatWith0(data['score_d']));
-                $("#divET1").html(FormatWith0(data['score_e1']));
-                $("#divET2").html(FormatWith0(data['score_e2']));
-                $("#divET3").html(FormatWith0(data['score_e3']));
-                $("#divET4").html(FormatWith0(data['score_e4']));
-                $("#chkE1").prop('checked',data['e1_include']);
-                $("#chkE2").prop('checked',data['e2_include']);
-                $("#chkE3").prop('checked',data['e3_include']);
-                $("#chkE4").prop('checked',data['e4_include']);
-                $("#divEScore").html(FormatWith0(data['score_e']));
-                $("#divTotalScore").html(FormatWith0(data['score_final']));
-                $("#divHeader").html("<h2 style='display:inline'>" + GymnastLabels[data['athlete_id']] + "</h2>");
-                LoadVideo();
-                console.log($("#divDotsArea").width());
-                RoutineLength = data['athlete_done_time'] - data['start_time'];
-                
-                $("#btnAccountability").removeClass("ui-disabled");
-                setTimeout(RoutineLoadBuildDots,1000)
-                if (ev != "VT")
-                    RedLineInterval = setInterval(UpdateRedLine, 250);
+                if (!SimpleD) {
+                    SetDScoreType(data['athlete_id']);
+                    SetDScoreDefaults();
+                    $("#lblElements").html(data['score_elements']);
+                    $("#lblDifficulty").html(FormatWith0(data['score_difficulty']));
+                    $("#lblGroups").html(data['score_groups']);
+                    $("#lblBonus").html(FormatWith0(data['score_bonus']));
+                    $("#lblConnection").html(FormatWith0(data['score_connection']));
+                    $("#lblNeutralDed").html(FormatWith0(data['score_neutral']));
+                    $("#lblDScore").html(FormatWith0(data['score_d']));
+                    $("#divET1").html(FormatWith0(data['score_e1']));
+                    $("#divET2").html(FormatWith0(data['score_e2']));
+                    $("#divET3").html(FormatWith0(data['score_e3']));
+                    $("#divET4").html(FormatWith0(data['score_e4']));
+                    $("#chkE1").prop('checked', data['e1_include']);
+                    $("#chkE2").prop('checked', data['e2_include']);
+                    $("#chkE3").prop('checked', data['e3_include']);
+                    $("#chkE4").prop('checked', data['e4_include']);
+                    $("#divEScore").html(FormatWith0(data['score_e']));
+                    $("#divTotalScore").html(FormatWith0(data['score_final']));
+                    $("#divHeader").html("<h2 style='display:inline'>" + GymnastLabels[data['athlete_id']] + "</h2>");
+                    LoadVideo();
+                    console.log($("#divDotsArea").width());
+                    RoutineLength = data['athlete_done_time'] - data['start_time'];
+
+                    $("#btnAccountability").removeClass("ui-disabled");
+                    setTimeout(RoutineLoadBuildDots, 1000)
+                    if (ev != "VT")
+                        RedLineInterval = setInterval(UpdateRedLine, 250);
+                }
+                else {
+                    $("#divTotalScore").html(FormatWith0(data['score_final']));
+                }
                
             }
         });
@@ -1295,8 +1323,16 @@
         }
         else {
             //simple version
-            Score = parseFloat($("#txtYourTotal").val());
-            document.getElementById('divTotalScore').innerHTML = FormatWith0(parseFloat(Score).toFixed(3));
+            if (LoadRot == "") {
+                Score = parseFloat($("#txtYourTotal").val()).toFixed(3);
+                if (SimpleHasD2) {
+                    Score = parseFloat(Score) + parseFloat(parseFloat($("#divD2Score").html()).toFixed(3));
+                    Score = Score / 2;
+                    Score = Score.toFixed(3);
+                }
+                document.getElementById('divTotalScore').innerHTML = FormatWith0(parseFloat(Score).toFixed(3));
+            }
+
         }
     }
 

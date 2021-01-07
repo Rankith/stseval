@@ -69,6 +69,7 @@ class Routine(models.Model):
     score_e = models.FloatField(default=0)
     score_d = models.FloatField(default=0)
     score_final = models.FloatField(default=0)
+    score_final_d2 = models.FloatField(default=0)
     start_time = models.BigIntegerField(blank=True,null=True)
     athlete_done_time = models.BigIntegerField(blank=True,null=True)
     d1_done_time = models.BigIntegerField(blank=True,null=True)

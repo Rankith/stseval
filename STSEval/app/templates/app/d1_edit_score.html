@@ -1,23 +1,27 @@
 {% if loadroutine != '' %} 
     <table cellspacing="0" cellpadding="0" border="0" style="font-size:0.75rem;">
-	    <tr><td id="tdElements" align="right">Elements:</td><td><input type="text" id="txtElements" placeholder="Elements" class="entrybox" onkeypress="return isNumberKey(event)" value="{{loadroutine.score_elements}}"></td></tr>
-	    <tr><td id="tdDifficulty" align="right">Base Score:</td><td><input type="text" id="txtDifficulty" placeholder="Difficulty" class="entrybox"  onkeypress="return isNumberKey(event)"  value="{{loadroutine.score_difficulty}}"></td></tr>
-	    <tr><td id="tdGroups" align="right">Groups:</td><td><input type="text" id="txtGroups" placeholder="Groups" class="entrybox"  onkeypress="return isNumberKey(event)"  value="{{loadroutine.score_groups}}"></td></tr>
-	    <tr><td id="tdBonus" align="right">Bonus:</td><td><input type="text" id="txtBonus" placeholder="Bonus" class="entrybox" onkeypress="return isNumberKey(event)" value="{{loadroutine.score_bonus}}" ></td></tr>
-	    <tr><td id="tdNeutralDed" align="right">Neutral Deductions:</td><td><input type="text" id="txtNeutralDed" placeholder="Neutral Ded." class="entrybox" onkeypress="return isNumberKey(event)"  value="{{loadroutine.score_neutral}}"></td></tr>
-        {% if not loadroutine.session.use_ejudge_dots %}
-            {% if loadroutine.e1_name != '' and loadroutine.e1_include %}
-                <tr><td id="tdE1Edit" align="right">E1:</td><td><input type="text" id="txtE1" class="entrybox" onkeypress="return isNumberKey(event)"  value="{{loadroutine.score_e1}}"></td></tr>
+        {% if not simple_d %}
+	        <tr><td id="tdElements" align="right">Elements:</td><td><input type="text" id="txtElements" placeholder="Elements" class="entrybox" onkeypress="return isNumberKey(event)" value="{{loadroutine.score_elements}}"></td></tr>
+	        <tr><td id="tdDifficulty" align="right">Base Score:</td><td><input type="text" id="txtDifficulty" placeholder="Difficulty" class="entrybox"  onkeypress="return isNumberKey(event)"  value="{{loadroutine.score_difficulty}}"></td></tr>
+	        <tr><td id="tdGroups" align="right">Groups:</td><td><input type="text" id="txtGroups" placeholder="Groups" class="entrybox"  onkeypress="return isNumberKey(event)"  value="{{loadroutine.score_groups}}"></td></tr>
+	        <tr><td id="tdBonus" align="right">Bonus:</td><td><input type="text" id="txtBonus" placeholder="Bonus" class="entrybox" onkeypress="return isNumberKey(event)" value="{{loadroutine.score_bonus}}" ></td></tr>
+	        <tr><td id="tdNeutralDed" align="right">Neutral Deductions:</td><td><input type="text" id="txtNeutralDed" placeholder="Neutral Ded." class="entrybox" onkeypress="return isNumberKey(event)"  value="{{loadroutine.score_neutral}}"></td></tr>
+            {% if not loadroutine.session.use_ejudge_dots %}
+                {% if loadroutine.e1_name != '' and loadroutine.e1_include %}
+                    <tr><td id="tdE1Edit" align="right">E1:</td><td><input type="text" id="txtE1" class="entrybox" onkeypress="return isNumberKey(event)"  value="{{loadroutine.score_e1}}"></td></tr>
+                {% endif %}
+                {% if loadroutine.e2_name != '' and loadroutine.e2_include %}
+                    <tr><td id="tdE2Edit" align="right">E2:</td><td><input type="text" id="txt21" class="entrybox" onkeypress="return isNumberKey(event)"  value="{{loadroutine.score_e2}}"></td></tr>
+                {% endif %}
+                {% if loadroutine.e3_name != '' and loadroutine.e3_include %}
+                    <tr><td id="tdE3Edit" align="right">E3:</td><td><input type="text" id="txtE3" class="entrybox" onkeypress="return isNumberKey(event)"  value="{{loadroutine.score_e3}}"></td></tr>
+                {% endif %}
+                {% if loadroutine.e4_name != '' and loadroutine.e4_include %}
+                    <tr><td id="tdE4Edit" align="right">E4:</td><td><input type="text" id="txtE4" class="entrybox" onkeypress="return isNumberKey(event)"  value="{{loadroutine.score_e4}}"></td></tr>
+                {% endif %}
             {% endif %}
-            {% if loadroutine.e2_name != '' and loadroutine.e2_include %}
-                <tr><td id="tdE2Edit" align="right">E2:</td><td><input type="text" id="txt21" class="entrybox" onkeypress="return isNumberKey(event)"  value="{{loadroutine.score_e2}}"></td></tr>
-            {% endif %}
-            {% if loadroutine.e3_name != '' and loadroutine.e3_include %}
-                <tr><td id="tdE3Edit" align="right">E3:</td><td><input type="text" id="txtE3" class="entrybox" onkeypress="return isNumberKey(event)"  value="{{loadroutine.score_e3}}"></td></tr>
-            {% endif %}
-            {% if loadroutine.e4_name != '' and loadroutine.e4_include %}
-                <tr><td id="tdE4Edit" align="right">E4:</td><td><input type="text" id="txtE4" class="entrybox" onkeypress="return isNumberKey(event)"  value="{{loadroutine.score_e4}}"></td></tr>
-            {% endif %}
+        {% else %}
+             <tr><td id="tdTotalScore" align="right">Total Score:</td><td><input type="text" id="txtTotal" class="entrybox" onkeypress="return isNumberKey(event)" value="{{loadroutine.score_final}}"></td></tr>
         {% endif %}
     </table>
     <div class="d-flex">

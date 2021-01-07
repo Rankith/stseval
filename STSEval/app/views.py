@@ -82,7 +82,11 @@ def d1(request):
         this_judge = judges[0].d1
 
     if judges[0].d2_email != '':
-        multi_d = True
+        #check if dumb wag bullshit
+        if session.competition.disc.name == "WAG" and (session.level == Session.WDP or session.level == Session.NCAA): #d2_wag version
+            multi_d = False
+        else:
+            multi_d = True
     else:
         multi_d = False
 
@@ -135,6 +139,13 @@ def view_routine(request,routine_id,popup):
     elif 'admin' in request.session.get('type'):#admin can always edit
         editable = True
 
+    simple_d = False
+
+    if session.competition.disc.name == "WAG":
+        if session.level == Session.WDP or session.level == Session.NCAA:
+            #check if its a no E and limited D type of event
+            simple_d = True
+
     routine = routine.id
     context = {
         'title': 'D1 Overview - ' + event + ' ' + session.full_name(),
@@ -146,6 +157,7 @@ def view_routine(request,routine_id,popup):
         'layout':layout,
         'editable':editable,
         'video_file':video_file,
+        'simple_d':simple_d,
         'multi_d':False,
     }
     return render(request,'app/d1.html',context)
@@ -160,8 +172,14 @@ def d1_edit_score(request,routine_id):
     elif 'admin' in request.session.get('type'):#admin can always edit
         loadroutine = routine
 
+    session = routine.session
+    if session.competition.disc.name == "WAG" and (session.level == Session.WDP or session.level == Session.NCAA):
+        simple_d = True
+    else:
+        simple_d = False
     context = {
         'loadroutine':routine,
+        'simple_d':simple_d,
     }
     return render(request,'app/d1_edit_score.html',context)
 
@@ -309,6 +327,18 @@ def routine_ejudge_set_score(request):
 
     routine.save()
     app.firebase.routine_set_ejudge_done(str(routine.session.id),routine.event.name,judge,True)
+
+    return HttpResponse(status=200)
+
+def routine_d2_set_score(request):
+    routine = Routine.objects.get(pk=request.POST.get('routine'))
+    try:
+        routine.score_final_d2 = round(float(request.POST.get('score',0)),3)
+    except:
+        routine.score_final_d2 = 0
+
+    routine.save()
+    app.firebase.routine_set_d2_score(str(routine.session.id),routine.event.name,routine.score_final_d2)
 
     return HttpResponse(status=200)
 
@@ -514,7 +544,25 @@ def evideo(request):
     }
     return render(request,'app/evideo.html',context)
 
-
+@valid_login_type(match='d')
+def d2_wag(request):
+    event = request.session.get('event')
+    session = Session.objects.get(pk=request.session.get('session'))
+    judges = Judge.objects.filter(session=session,event__name=event).first()
+    disc = session.competition.disc.name
+    athletes = Athlete.objects.filter(team__session=session)
+    context = {
+        'title': 'STS D2 - ' + event + ' ' + session.competition.name + ' - ' + judges.d2,
+        'judges':judges,
+        'disc':disc,
+        'event':event,
+        'session':session,
+        'this_judge':judges.d2,
+        'athletes':athletes,
+        'scoreboard':True,
+        'help':help,
+    }
+    return render(request,'app/d2_wag.html',context)
 
 def deduct(request):
     routine = request.POST.get('routine')

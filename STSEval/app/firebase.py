@@ -86,6 +86,14 @@ def routine_set_ejudge_done(s,e,ejudge,done):
         u'e' + str(ejudge) + 'done': done
     },merge=True)
 
+def routine_set_d2_score(s,e,score):
+    db = firestore.Client()
+
+    doc_ref = db.collection(u'sessions').document(str(s)).collection(u'event_managers').document(str(e))
+    doc_ref.set({
+        u'd2score':score,
+    },merge=True)
+
 def routine_all_done(session,e):
     db = firestore.Client()
     doc_ref = db.collection(u'sessions').document(str(session.id)).collection(u'event_managers').document(str(e))
@@ -124,6 +132,7 @@ def routine_setup(session,e,athlete,camera,judge):
                     u'e2ready':False,
                     u'e3ready':False,
                     u'e4ready':False,
+                    u'd2score':0,
                     u'stream':camera,
                     u'video':video,
                 },merge=True)
@@ -144,6 +153,7 @@ def routine_setup(session,e,athlete,camera,judge):
                     u'e2include':True,
                     u'e3include':True,
                     u'e4include':True,
+                    u'd2score':0,
                     u'stream':camera,
                     u'video':video,
                 },merge=True)
@@ -168,6 +178,7 @@ def routine_setup(session,e,athlete,camera,judge):
                     u'e2ready':False,
                     u'e3ready':False,
                     u'e4ready':False,
+                    u'd2score':0,
                     u'stream':camera,
                     u'video':video,
                 },merge=True)
@@ -194,6 +205,7 @@ def routine_setup(session,e,athlete,camera,judge):
             u'e2ready':False,
             u'e3ready':False,
             u'e4ready':False,
+            u'd2score':0,
             u'stream':camera,
             u'video':video,
         },merge=True)
