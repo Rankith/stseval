@@ -914,6 +914,11 @@ def scoreboard(request,event_name='-1'):
     events = Event.objects.filter(disc=session.competition.disc)
     if event_name == '-1':
         event_name = events.first().name
+
+    if session.competition.disc.name == "WAG" and (session.level == Session.WDP or session.level == Session.NCAA): #d2_wag version
+        total_only = True
+    else:
+        total_only = False
     context = {
         'title': session.full_name(),
         'judges':judges,
@@ -921,6 +926,7 @@ def scoreboard(request,event_name='-1'):
         'events':events,
         'event_name':event_name,
         'exports':True,
+        'total_only':total_only,
     }
     return render(request,'app/scoreboard.html',context)
 

@@ -25,6 +25,7 @@
     var SessionName = "{{session}}";
     var ev = "{{event_name}}";
     var token = "{{ csrf_token }}";
+    var TotalOnly = {{total_only|lower}};
 
     
 </script>
@@ -184,37 +185,65 @@
 
         }
 
-        $("#jsGrid").jsGrid({
-            width: "100%",
-            height: "600px",
-            inserting: false,
-            editing: false,
-            sorting: true,
-            paging: false,
+        if (!TotalOnly) {
+            $("#jsGrid").jsGrid({
+                width: "100%",
+                height: "600px",
+                inserting: false,
+                editing: false,
+                sorting: true,
+                paging: false,
 
-            data: DataMod,
+                data: DataMod,
 
-            rowClick: RowClick,
+                rowClick: RowClick,
 
-            fields: [
-                { name: "Place", title: "#", type: "number", width: 25 },
-                { name: "athlete__level__name", title: "Level", type: "text", width: 55 },
-                { name: "athlete__team__name", title: "Team", type: "text" },
-                { name: "athlete__name", title: "Gymnast", type: "text" },
-                { name: "score_d", title: "D-Score<hr class='jsgrid-hr'>Start Value", type: "number" },
-                { name: "score_neutral", title: "Neutral<br/>Deductions", type: "number" },
-                { name: "score_e", title: "E-Score<hr class='jsgrid-hr'>Deductions", type: "number" },
-                { name: "score_e1", title: "E-1", type: "number" },
-                { name: "score_e2", title: "E-2", type: "number" },
-                { name: "score_e3", title: "E-3", type: "number" },
-                { name: "score_e4", title: "E-4", type: "number" },
-                { name: "score_final", title: "Final Score", type: "number" }
-            ]
-        });
+                fields: [
+                    { name: "Place", title: "#", type: "number", width: 25 },
+                    { name: "athlete__level__name", title: "Level", type: "text", width: 55 },
+                    { name: "athlete__team__name", title: "Team", type: "text" },
+                    { name: "athlete__name", title: "Gymnast", type: "text" },
+                    { name: "score_d", title: "D-Score<hr class='jsgrid-hr'>Start Value", type: "number" },
+                    { name: "score_neutral", title: "Neutral<br/>Deductions", type: "number" },
+                    { name: "score_e", title: "E-Score<hr class='jsgrid-hr'>Deductions", type: "number" },
+                    { name: "score_e1", title: "E-1", type: "number" },
+                    { name: "score_e2", title: "E-2", type: "number" },
+                    { name: "score_e3", title: "E-3", type: "number" },
+                    { name: "score_e4", title: "E-4", type: "number" },
+                    { name: "score_final", title: "Final Score", type: "number" }
+                ]
+            });
 
-        AverageD = (AverageD / data.length).toFixed(3);
-        AverageE = (AverageE / data.length).toFixed(3);
-        AverageTotal = (AverageTotal / data.length).toFixed(3);
+            AverageD = (AverageD / data.length).toFixed(3);
+            AverageE = (AverageE / data.length).toFixed(3);
+            AverageTotal = (AverageTotal / data.length).toFixed(3);
+        }
+        else {
+
+            $("#jsGrid").jsGrid({
+                width: "100%",
+                height: "600px",
+                inserting: false,
+                editing: false,
+                sorting: true,
+                paging: false,
+
+                data: DataMod,
+
+                rowClick: RowClick,
+
+                fields: [
+                    { name: "Place", title: "#", type: "number", width: 25 },
+                    { name: "athlete__level__name", title: "Level", type: "text", width: 55 },
+                    { name: "athlete__team__name", title: "Team", type: "text" },
+                    { name: "athlete__name", title: "Gymnast", type: "text" },
+                    { name: "score_final", title: "Final Score", type: "number" }
+                ]
+            });
+
+             AverageTotal = (AverageTotal / data.length).toFixed(3);
+
+        }
 
     }
 
