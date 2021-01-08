@@ -133,7 +133,7 @@ def view_routine(request,routine_id,popup):
     else:
         layout = 'app/layout.html'
     editable = False
-    if 'd1' in request.session.get('type') or 'd2' in request.session.get('type'):#d1 can edit if its their event
+    if 'd1' in request.session.get('type') or ('d2' in request.session.get('type') and session.competition.disc.name != 'WAG'):#d1 can edit if its their event
         if request.session.get('event','').lower() == event.lower():
             editable = True
     elif 'admin' in request.session.get('type'):#admin can always edit

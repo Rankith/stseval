@@ -7,7 +7,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.forms import ModelForm,CheckboxSelectMultiple,ImageField
 from django.utils.safestring import mark_safe
-from management.models import Competition,Session,Athlete,Judge,Team,Camera,Event,Sponsor
+from management.models import Competition,Session,Athlete,Judge,Team,Camera,Event,Sponsor,AthleteLevel
 
 class DateInput(forms.DateInput):
     input_type = 'date'
@@ -118,6 +118,10 @@ class AthleteForm(ModelForm):
         self.fields["team"].widget.attrs['class'] = 'selectpicker management-input'
         self.fields["team"].widget.attrs['data-style'] = 'btn-main'
         self.fields["team"].queryset = Team.objects.filter(session=session)
+        self.fields["level"].widget = forms.Select()
+        self.fields["level"].widget.attrs['class'] = 'selectpicker management-input'
+        self.fields["level"].widget.attrs['data-style'] = 'btn-main'
+        self.fields["level"].queryset = AthleteLevel.objects.filter(disc=session.competition.disc)
         events = Event.objects.filter(disc=session.competition.disc) 
         self.fields["events_count_for_team"].widget = CheckboxSelectMultiple()
         self.fields["events_count_for_team"].widget.attrs['class'] = 'camera-checkbox'
