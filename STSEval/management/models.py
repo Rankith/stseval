@@ -105,11 +105,20 @@ class AthleteLevel(models.Model):
     class Meta:
         ordering = ['order']
 
+class AthleteAge(models.Model):
+    athlete_level = models.ForeignKey(AthleteLevel, related_name='athlete_age', on_delete=models.CASCADE)
+    name = models.CharField(max_length=10)
+    order = models.IntegerField(default=1)
+    def __str__(self):
+        return self.name
+    class Meta:
+        ordering = ['order']
+
 class Athlete(models.Model):
     team = models.ForeignKey(Team, on_delete=models.CASCADE,default=None,null=True)
     name = models.CharField(max_length=50)
     level = models.ForeignKey(AthleteLevel,on_delete=models.SET_NULL,default=None,null=True)
-    age = models.IntegerField(default=8)
+    age = models.ForeignKey(AthleteAge,on_delete=models.SET_NULL,default=None,null=True)
     rotation =  models.CharField(max_length=2,default='A')
     order = models.IntegerField(default=1)
     events_competing = models.ManyToManyField(Event,related_name='events_competing_related',blank=True)

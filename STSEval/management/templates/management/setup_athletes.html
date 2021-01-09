@@ -196,6 +196,22 @@
 
     function AttachAthleteForm() {
         var frm = $('#form');
+        $("#id_level").change(function () {
+            var levelID = $(this).val();  // get the selected country ID from the HTML input
+
+            $.ajax({                       // initialize an AJAX request
+            url: "/management/athlete_ages_list/",                    // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
+            data: {
+                'level': levelID       // add the country id to the GET parameters
+            },
+            success: function (data) {   // `data` is the return of the `load_cities` view function
+                $("#id_age").html(data);  // replace the contents of the city input with the data that came from the server
+                $("#id_age").selectpicker('refresh');
+                $("#id_age")[0].selectedIndex = 0;
+            }
+            });
+
+        });
         //$("#id_team").val(SelectedTeam);
         $("#id_session").val(SessionID);
         $('.selectpicker').selectpicker();
@@ -221,6 +237,7 @@
             });
             return false;
         });
+        
     }
 
     function AttachImportForm() {

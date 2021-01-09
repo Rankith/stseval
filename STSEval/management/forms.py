@@ -7,7 +7,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.forms import ModelForm,CheckboxSelectMultiple,ImageField
 from django.utils.safestring import mark_safe
-from management.models import Competition,Session,Athlete,Judge,Team,Camera,Event,Sponsor,AthleteLevel
+from management.models import Competition,Session,Athlete,Judge,Team,Camera,Event,Sponsor,AthleteLevel,AthleteAge
 
 class DateInput(forms.DateInput):
     input_type = 'date'
@@ -105,7 +105,7 @@ class AthleteForm(ModelForm):
                 ('E', 'E'),
                 ('F', 'F'),
                 )
-        fields = ['team','level','name','rotation','events_count_for_team','events_competing']
+        fields = ['team','level','name','age','rotation','events_count_for_team','events_competing']
         widgets = {'name':forms.TextInput(attrs={'class':'management-input'}),
                    'rotation':forms.Select(choices=ROTATION_CHOICES,attrs={'class':'selectpicker management-input','data-style':'btn-main'}),
                    'level':forms.Select(attrs={'class':'selectpicker management-input','data-style':'btn-main'})}
@@ -133,6 +133,18 @@ class AthleteForm(ModelForm):
         self.fields["events_competing"].queryset = events
         self.fields["events_competing"].initial=[c.id for c in events]
         self.fields['events_competing'].label_from_instance = lambda obj: "%s - %s" % (obj.name, obj.full_name)
+        self.fields["age"].widget = forms.Select()
+        self.fields["age"].widget.attrs['class'] = 'selectpicker management-input'
+        self.fields["age"].widget.attrs['data-style'] = 'btn-main'
+        self.fields["age"].queryset = AthleteAge.objects.none()
+        if 'level' in self.data:
+            try:
+                level_id = int(self.data.get('level'))
+                self.fields['age'].queryset = AthleteAge.objects.filter(athlete_level_id=level_id)
+            except (ValueError, TypeError):
+                pass  # invalid input from the client; ignore and fallback to empty City queryset
+        elif self.instance.pk:
+            self.fields['age'].queryset = self.instance.level.athlete_age.all()
 
 class CameraForm(ModelForm):
     class Meta:

@@ -2,7 +2,7 @@
     {% csrf_token %}
     <div id="divManageAthlete" align="center">
         <div class="row">
-            <div class="col-4">
+            <div class="col-3">
                 TEAM<br/>
                 {{ form.team }}<br/>
                 {{form.team.errors}}
@@ -12,7 +12,12 @@
                 {{ form.level }}<br/>
                 {{form.level.errors}}
             </div>
-            <div class="col-4">
+            <div class="col-2">
+                AGE<br/>
+                {{ form.age }}<br/>
+                {{form.age.errors}}
+            </div>
+            <div class="col-3">
                 NAME<br/>
                 {{ form.name }}<br/>
                 {{form.name.errors}}

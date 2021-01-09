@@ -31,6 +31,7 @@ urlpatterns = [
     path('judges_check_missing/<int:session_id>', views.judges_check_missing, name='judges_check_missing'),
     path('team_form/', views.team_form, name='team_form'),
     path('athlete_form/', views.athlete_form, name='athlete_form'),
+    path('athlete_ages_list/', views.athlete_ages_list, name='athlete_ages_list'),
     path('athlete_list/<int:team_id>', views.athlete_list, name='athlete_list'),
     path('athlete_delete/<int:id>', views.athlete_delete, name='athlete_delete'),
     path('athlete_update_order/', views.athlete_update_order, name='athlete_update_order'),

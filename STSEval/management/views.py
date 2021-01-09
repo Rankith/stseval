@@ -5,7 +5,7 @@ from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 import datetime
 from .forms import CompetitionForm,SessionForm,JudgeForm,TeamForm,AthleteForm,CameraForm,SponsorForm,AthleteListUploadForm,JudgeListUploadForm
-from .models import Competition,Session,Athlete,Judge,Team,Disc,Event,Camera,Sponsor,StartList,AthleteLevel,RotationOrder
+from .models import Competition,Session,Athlete,Judge,Team,Disc,Event,Camera,Sponsor,StartList,AthleteLevel,RotationOrder,AthleteAge
 from django.core.mail import send_mail
 from django.contrib.auth.decorators import login_required,user_passes_test
 from django.db.models import Count
@@ -320,6 +320,15 @@ def setup_athletes(request,id):
         'help':'competition_setup_athletes',
     }
     return render(request,'management/setup_athletes.html',context)
+
+def athlete_ages_list(request):
+    level_id = request.GET.get('level')
+    ages = AthleteAge.objects.filter(athlete_level_id=level_id)
+
+    context = {
+        'ages':ages,
+    }
+    return render(request, 'management/athlete_ages_list.html', context)
 
 @login_required(login_url='/account/login/admin/')
 def team_form(request):

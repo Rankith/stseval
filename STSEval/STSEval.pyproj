@@ -230,6 +230,7 @@
     <Content Include="app\templates\app\select_session.html" />
     <Content Include="chat\templates\chat\chat.html" />
     <Content Include="account\templates\account\stripe_payment_screen.html" />
+    <Content Include="management\templates\management\athlete_ages_list.html" />
     <Content Include="management\templates\management\competition_list_spectator.html" />
     <Content Include="management\templates\management\judge_list_upload_form.html" />
     <Content Include="management\templates\management\athlete_list_upload_form.html" />
