@@ -425,15 +425,18 @@ def import_athletes(session,ath_dict):
     for i in range(len(ath_dict['Name'])):
         team = teams.filter(Q(name=ath_dict['Team'][i]) | Q(abbreviation=ath_dict['Team'][i])).first()
         if team == None:
-            return "Could not find corresponding team " + ath_dict['Team'][i] + " for " + ath_dict['Name'][i] + ".  Make sure the Team column matches the name or abbreviation you entered for the team."
+            return "Could not find corresponding team " + str(ath_dict['Team'][i]) + " for " + ath_dict['Name'][i] + ".  Make sure the Team column matches the name or abbreviation you entered for the team."
         else:
-            level = AthleteLevel.objects.filter(Q(name=ath_dict['Level'][i]) | Q(abbreviation=ath_dict['Level'][i])).first()
+            level = AthleteLevel.objects.filter(Q(disc=session.competition.disc) & (Q(name=ath_dict['Level'][i]) | Q(abbreviation=ath_dict['Level'][i]))).first()
             if level == None:
-                return "Could not find corresponding level " + ath_dict['Level'][i] + " for " + ath_dict['Name'][i] + ".  Make sure the Level column matches the name of an athlete level."
+                return "Could not find corresponding level " + str(ath_dict['Level'][i]) + " for " + ath_dict['Name'][i] + ".  Make sure the Level column matches the name of an athlete level."
+            age = AthleteAge.objects.filter(athlete_level=level,name=ath_dict['Age Group'][i]).first()
+            if age == None:
+                return "Could not find corresponding age " + str(ath_dict['Age Group'][i]) + " for " + ath_dict['Name'][i] + ".  Make sure the Age column matches a valid Age category."
             if team.name not in teams_found:
                 teams_found.append(team.name)
                 Athlete.objects.filter(team=team).delete()
-            ath = Athlete(team=team,name=ath_dict['Name'][i],level=level,rotation=ath_dict['Rotation'][i].upper(),order=i+1)
+            ath = Athlete(team=team,name=ath_dict['Name'][i],level=level,age=age,rotation=ath_dict['Rotation'][i].upper(),order=i+1)
             ath.save()
             for e in events:
                 ath.events_competing.add(e)
