@@ -330,6 +330,15 @@ def athlete_ages_list(request):
     }
     return render(request, 'management/athlete_ages_list.html', context)
 
+def athlete_ages_list_all(request):
+    level_id = request.GET.get('level')
+    ages = AthleteAge.objects.filter(athlete_level_id=level_id)
+
+    context = {
+        'ages':ages,
+    }
+    return render(request, 'management/athlete_ages_list_all.html', context)
+
 @login_required(login_url='/account/login/admin/')
 def team_form(request):
     if request.method == 'POST':

@@ -2,7 +2,7 @@
     {% for athlete in athletes %}
         <div id="divAthlete{{athlete.id}}" onclick="AthleteClick({{athlete.id}});" athid="{{athlete.id}}" class="row no-gutters ath-list sortable">
             <div class="col-2 pl-2" align="left">{{athlete.team.abbreviation}}</div>
-            <div class="col-2" align="center">{{athlete.level}}</div>
+            <div class="col-2" align="center">{{athlete.level.abbreviation}}</div>
             <div class="col-6" align="center">{{athlete.name}}</div>
             <div class="col-2 pr-2" align="right">{{athlete.rotation}}</div>
         </div>

@@ -8,9 +8,32 @@
 </div>
 <div id="divResults" align="center" style="color:black;margin:auto" >
     {% include "app/event_select_with_aa.html" %}  
-    <div id="jsGridTeam" ></div>
-    <br/>
-    <div id="jsGrid" ></div>
+    <div id="jsGridTeam" class="mb-2" ></div>
+
+    {% if show_filters %}
+        <div id="divFilters" class="row no-gutters text-white justify-content-center" style="width:400px">
+            <div style="width:150px" class="mr-2">
+                Level<br/>
+                <select id="selLevel" onchange="LevelChanged()" class="selectpicker management-input" data-style="btn-main">
+                    {% if levels|length > 1 %}
+                        <option value="-1" selected>All</option>
+                    {% endif %}
+                    {% for level in levels %}
+                        <option value="{{ level.id }}">{{ level.name }}</option>
+                    {% endfor %}
+                    
+                </select>
+            </div>
+            <div style="width:100px">
+                Age Group<br/>
+                <select id="selAge" onchange="AgeChanged()" class="selectpicker management-input" data-style="btn-main">
+                    <option value="-1" selected>All</option>
+                </select>
+            </div>
+        </div>
+
+    {% endif %}
+    <div id="jsGrid" class="mt-2" ></div>
 </div>
 <div id="desktopTest" class="d-none d-lg-block"></div>
 {% endblock %}
@@ -26,6 +49,8 @@
     var ev = "{{event_name}}";
     var token = "{{ csrf_token }}";
     var TotalOnly = {{total_only|lower}};
+    var DisplayFilters = {{show_filters|lower}};
+
 
     
 </script>
@@ -70,6 +95,12 @@
     }
     //GetRoutineData();
     function GetRoutineData() {
+        let flevel = '-1';
+        let fage = '-1';
+        if (DisplayFilters) {
+            flevel = $("#selLevel").val();
+            fage = $("#selAge").val();
+        }
         $.ajax({
             url: "/get_routines_by_SE/",
             type: "POST",
@@ -78,6 +109,8 @@
             data: {
                 'Session': Session,
                 'Ev': ev,
+                'level': flevel,
+                'age':fage,
             },
             success: function (data) {
                 UpdateRoutines(data)
@@ -201,6 +234,7 @@
                 fields: [
                     { name: "Place", title: "#", type: "number", width: 25 },
                     { name: "athlete__level__name", title: "Level", type: "text", width: 55 },
+                    { name: "athlete__age__name", title: "Age Group", type: "text", width: 55 },
                     { name: "athlete__team__name", title: "Team", type: "text" },
                     { name: "athlete__name", title: "Gymnast", type: "text" },
                     { name: "score_d", title: "D-Score<hr class='jsgrid-hr'>Start Value", type: "number" },
@@ -235,6 +269,7 @@
                 fields: [
                     { name: "Place", title: "#", type: "number", width: 25 },
                     { name: "athlete__level__name", title: "Level", type: "text", width: 55 },
+                    { name: "athlete__age__name", title: "Age Group", type: "text", width: 55 },
                     { name: "athlete__team__name", title: "Team", type: "text" },
                     { name: "athlete__name", title: "Gymnast", type: "text" },
                     { name: "score_final", title: "Final Score", type: "number" }
@@ -387,6 +422,29 @@
         $("#" + obj).animate({ width: '92%', left: '4%', top: '4%', height: theight + 40 }, 500, function () {  });
 
     }
+
+    function LevelChanged() {
+        var levelID = $("#selLevel").val();  // get the selected country ID from the HTML input
+
+        $.ajax({                       // initialize an AJAX request
+            url: "/management/athlete_ages_list_all/",                    // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
+            data: {
+                'level': levelID       // add the country id to the GET parameters
+            },
+            success: function (data) {   // `data` is the return of the `load_cities` view function
+                $("#selAge").html(data);  // replace the contents of the city input with the data that came from the server
+                $("#selAge").selectpicker('refresh');
+                $("#selAge")[0].selectedIndex = 0;
+                $("#selAge").change();
+            }
+        });
+
+    }
+
+    function AgeChanged() {
+        GetRoutineData();
+    }
+
 
 </script>
 {% endblock %}

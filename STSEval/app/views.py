@@ -8,7 +8,7 @@ from django.template import RequestContext
 from datetime import datetime
 from django.contrib.auth import authenticate, login
 from app.models import Twitch,Routine,EJuryDeduction,BackupVideo,DJuryIndicator
-from management.models import Competition,Judge,Athlete,Session,Camera,StartList,Team,Event,Disc,Sponsor,RotationOrder
+from management.models import Competition,Judge,Athlete,Session,Camera,StartList,Team,Event,Disc,Sponsor,RotationOrder,AthleteLevel,AthleteAge
 from app.twitch import TwitchAPI
 import app.firebase
 from time import time
@@ -824,12 +824,21 @@ def accountability_report(request):
     return render(request,'app/accountability_report.html',context)
 
 def get_routines_by_SE(request):
-    routines = Routine.objects.values('athlete__name','athlete__team__name','athlete__level__name','id','score_e1','score_e2','score_e3','score_e4','score_e','score_d','score_final','score_neutral').filter(session_id=request.POST.get('Session'),event__name=request.POST.get('Ev'),status=Routine.FINISHED).order_by('id')
+    vals = ['athlete__name','athlete__team__name','athlete__level__name','athlete__age__name','id','score_e1','score_e2','score_e3','score_e4','score_e','score_d','score_final','score_neutral']
+    level_filter = request.POST.get('level','-1')
+    age_filter = request.POST.get('age','-1')
+    if level_filter != '-1':
+        if age_filter != '-1':
+            routines = Routine.objects.values(*vals).filter(session_id=request.POST.get('Session'),event__name=request.POST.get('Ev'),status=Routine.FINISHED,athlete__level_id=level_filter,athlete__age_id=age_filter).order_by('id')
+        else:
+            routines = Routine.objects.values(*vals).filter(session_id=request.POST.get('Session'),event__name=request.POST.get('Ev'),status=Routine.FINISHED,athlete__level_id=level_filter).order_by('id')
+    else:
+        routines = Routine.objects.values(*vals).filter(session_id=request.POST.get('Session'),event__name=request.POST.get('Ev'),status=Routine.FINISHED).order_by('id')
 
     return JsonResponse(list(routines),safe=False)
 
 def get_routines_aa(request):
-    routines = Routine.objects.values('athlete__name','athlete__team__name','athlete__level__name').filter(session_id=request.POST.get('Session'),status=Routine.FINISHED).annotate(total_score=Sum('score_final')).order_by('-total_score')
+    routines = Routine.objects.values('athlete__name','athlete__team__name','athlete__level__name','athlete__age__name').filter(session_id=request.POST.get('Session'),status=Routine.FINISHED).annotate(total_score=Sum('score_final')).order_by('-total_score')
         
     return JsonResponse(list(routines),safe=False)
 
@@ -844,7 +853,7 @@ def scoreboard_export_get(request,session_id):
     event_id = request.GET.get('event','-1')
     team_id = request.GET.get('team','-1')
     has_e = []
-    values_list = ['athlete__level__name','athlete__team__name','athlete__name','score_d','score_neutral','score_e','score_e1','score_e2','score_e3','score_e4','score_final']
+    values_list = ['athlete__level__name','athlete__age__name','athlete__team__name','athlete__name','score_d','score_neutral','score_e','score_e1','score_e2','score_e3','score_e4','score_final']
     if event_id != '-1':
         if team_id != '-1':
             routines = Routine.objects.filter(session=session,event_id=event_id,athlete__team_id=team_id,status=Routine.FINISHED).order_by('id')
@@ -856,7 +865,7 @@ def scoreboard_export_get(request,session_id):
         else:
             routines = Routine.objects.filter(session=session,status=Routine.FINISHED).order_by('event__order','id')
     
-    headers = ['Event','Level', 'Team', 'Name', 'D-Score/Start Value','Neutral Deductions','E-Score/Deductions']  
+    headers = ['Event','Level','Age Group', 'Team', 'Name', 'D-Score/Start Value','Neutral Deductions','E-Score/Deductions']  
     #find which es to include
     if len(routines.filter(score_e1__gt=0)) >= 1:
         has_e1 = True
@@ -886,7 +895,7 @@ def scoreboard_export_get(request,session_id):
     #Header
     writer.writerow(headers)
     for r in routines:
-        out = [r.event.name,r.athlete.level.name,r.athlete.team.name,r.athlete.name,r.score_d,r.score_neutral,r.score_e]
+        out = [r.event.name,r.athlete.level.name,r.athlete.age.name,r.athlete.team.name,r.athlete.name,r.score_d,r.score_neutral,r.score_e]
         if has_e1:
             out.append(r.score_e1)
         if has_e2:
@@ -915,6 +924,18 @@ def scoreboard(request,event_name='-1'):
     if event_name == '-1':
         event_name = events.first().name
 
+    levels = Athlete.objects.filter(team__session=session).values_list('level_id').distinct()
+    levels = AthleteLevel.objects.filter(id__in=levels)
+    show_filters = False
+    if len(levels) == 1:
+        #if only 1, check its ages
+        ages = Athlete.objects.filter(team__session=session).values_list('age_id').distinct()
+        ages = AthleteAge.objects.filter(id__in=ages)
+        if len(ages) > 1:
+            show_filters = True
+    elif len(levels) > 1:
+        show_filters = True
+
     if session.competition.disc.name == "WAG" and (session.level == Session.WDP or session.level == Session.NCAA): #d2_wag version
         total_only = True
     else:
@@ -927,6 +948,8 @@ def scoreboard(request,event_name='-1'):
         'event_name':event_name,
         'exports':True,
         'total_only':total_only,
+        'levels':levels,
+        'show_filters':show_filters,
     }
     return render(request,'app/scoreboard.html',context)
 

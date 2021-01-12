@@ -1,0 +1,6 @@
+{% block content %}
+    <option value="-1" selected>All</option>
+    {% for age in ages %}
+        <option value="{{ age.pk }}">{{ age.name }}</option>
+    {% endfor %}
+{% endblock %}
