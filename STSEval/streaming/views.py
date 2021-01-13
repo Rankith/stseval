@@ -79,7 +79,7 @@ def create_stream(camera):
     # Create a Live Stream
     response = wowza_instance.create({
         'name': new_name,
-        'broadcast_location': 'us_east_virginia',
+        'broadcast_location': 'us_west_oregon',#'us_east_virginia',
         'encoder': 'other_webrtc',
         'aspect_ratio_width': 1280,
         'aspect_ratio_height': 720,

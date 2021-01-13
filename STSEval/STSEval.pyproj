@@ -170,6 +170,7 @@
     <Content Include="app\templates\app\help\coach.html" />
     <Content Include="app\templates\app\help\ejudge.html" />
     <Content Include="app\templates\app\help\djudge.html" />
+    <Content Include="app\templates\app\comp.html" />
     <Content Include="app\templates\app\session_complete_warn.html" />
     <Content Include="app\templates\app\scoreboard_export.html" />
     <Content Include="app\templates\app\update_area.html" />

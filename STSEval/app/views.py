@@ -1572,6 +1572,22 @@ def spectator_video(request):
     }
     return render(request,'app/spectator_video.html',context)
 
+def comp(request,session_id):
+    session = Session.objects.get(pk=session_id)
+    #check for access
+    if request.user.is_authenticated:
+        access =  account.views.check_session_access_direct(request.user,session_id)
+        if access == "Yes":
+            return redirect('/spectate/' + str(session.id) + "/single/")
+    else:
+        access = "No"
+
+    context = {
+        'session':session,
+        'access':access
+    }
+    return render(request,'app/comp.html',context)
+
 def set_floor_timer(request):
     ath = Athlete.objects.filter(pk=request.POST.get('athlete')).first()
     if ath != None:

@@ -1,0 +1,75 @@
+{% extends "app/layout.html" %}
+
+{% block content %}
+<div align="center" style="margin:10px;padding:0">
+    <h1>{{session.full_name}}</h1>
+    <br/>
+    {% if request.user.is_authenticated %}
+        <div>
+            {% if access == "Yes" %}
+                <button href="#" id="btnView" type="button" class="btn-main btn-wide pt-4 pb-4" style="border-radius: 1rem;" onclick="btnViewClick()">View</button>
+            {% else %}
+                <div id="divGetAccess">
+                    <button href="#" id="btnPurchase" type="button" class="btn-main btn-wide pt-4 pb-4" style="border-radius: 1rem;" onclick="btnPurchaseAccessClick()">Get Access</button><br/>
+                    <span style="font-size:.8rem">Have an Access Code? <a href="#" onclick="EnterAccessCode()">Enter it here</a></span>
+                </div>
+            {% endif %}
+            <br/><br/>
+        </div>
+    {% else %}
+        To view the competition you need to <a href="/account/login/?next=/comp/{{session.id}}/">Login</a> or <a href="/account/signup/spectator/?next=/comp/{{session.id}}/">Sign Up</a>
+    {% endif %}
+		
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript">
+    var token = "{{ csrf_token }}";
+    var SelectedSession = {{session.id}};
+    var finished = {{session.finished|lower}};
+</script>
+<script src="https://js.stripe.com/v3/"></script>
+<link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid.min.css" />
+<link type="text/css" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid-theme.min.css" />
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid.min.js"></script>
+<script type="text/javascript">
+ 
+    function btnPurchaseAccessClick() {
+
+        if (finished)
+            $("#modalMainTitle").html("Get Scoreboard Access");
+        else
+            $("#modalMainTitle").html("Get Spectator Access");
+        $("#modalBodyArea2").hide();
+        $("#modalBodyArea1").empty();
+        $("#modalBodyArea1").load("/account/stripe_payment_screen/" + SelectedSession + "/SPECTATOR/1", function () {
+        });
+        $("#modalMain").modal('show');
+        $("#modalBodyArea1").show();
+
+    }
+
+    function EnterAccessCode() {
+
+        $("#modalMainTitle").html("Get Spectator Access");
+        $("#modalBodyArea2").hide();
+        $("#modalBodyArea1").empty();
+        $("#modalBodyArea1").load("/management/enter_access_code/" + SelectedSession + "", function () {
+        });
+        $("#modalMain").modal('show');
+        $("#modalBodyArea1").show();
+
+    }
+
+    function btnViewClick() {
+
+        if (finished)
+            window.location = "/scoreboard/?ses=" + SelectedSession;
+        else
+            window.location = "/spectate/" + SelectedSession + "/single/";
+
+    }
+</script>
+{% endblock %}

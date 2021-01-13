@@ -29,7 +29,9 @@ def signup(request,type='spectator'):
             if type == "admin":
                 return redirect('/management/setup_competition/')
             else:
-                return redirect('/select_session/')
+                next = request.GET.get('next','/select_session/')
+                return redirect(next)
+
     else:
         form = SignUpForm()
     return render(request, 'account/signup.html', {'form': form})
@@ -64,7 +66,8 @@ def login_admin(request,type='spectator'):
                     request.session['backup_video_manage'] = True
                     return redirect('/management/setup_competition/')
                 else:
-                    return redirect('/select_session/')
+                    next = request.GET.get('next','/select_session/')
+                    return redirect(next)
             else:
                 err = "Incorrect Login Information"
     else:
