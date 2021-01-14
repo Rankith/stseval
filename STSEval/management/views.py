@@ -18,6 +18,7 @@ import string, random
 from django.conf import settings
 from account import stripe_handler
 from account.models import Purchase,User
+import csv
 
 # Create your views here.
 @login_required(login_url='/account/login/admin/')
@@ -427,10 +428,12 @@ def athlete_list_upload(request):
             res = import_athletes(session,athdict)
             return HttpResponse(res)
     else:
+        session = Session.objects.get(pk=request.GET.get('session'))
         form = AthleteListUploadForm()
     return render(request,"management/athlete_list_upload_form.html",
         {
             "form": form,
+            "disc_name":session.competition.disc.name,
         },
     )
 
@@ -462,6 +465,14 @@ def import_athletes(session,ath_dict):
         return "Unknown issue with upload, please make sure your spreadsheet matches the example sheet."
             
     return "Athletes Imported."
+
+def athlete_levels_ages(request,disc_name):
+    levels = AthleteLevel.objects.filter(disc__name=disc_name)
+    context = {
+        'levels': levels,
+    }
+    return render(request,'management/athlete_levels_ages.html',context)
+    
 
 def start_list_warn(request):
     return render(request,'management/start_list_warn.html')

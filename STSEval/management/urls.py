@@ -33,6 +33,7 @@ urlpatterns = [
     path('athlete_form/', views.athlete_form, name='athlete_form'),
     path('athlete_ages_list/', views.athlete_ages_list, name='athlete_ages_list'),
     path('athlete_ages_list_all/', views.athlete_ages_list_all, name='athlete_ages_list_all'),
+    path('athlete_levels_ages/<str:disc_name>/', views.athlete_levels_ages, name='athlete_levels_ages'),
     path('athlete_list/<int:team_id>', views.athlete_list, name='athlete_list'),
     path('athlete_delete/<int:id>', views.athlete_delete, name='athlete_delete'),
     path('athlete_update_order/', views.athlete_update_order, name='athlete_update_order'),

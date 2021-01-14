@@ -1,0 +1,22 @@
+ {% load staticfiles %}
+        <link rel="stylesheet" type="text/css" href="{% static 'app/content/bootstrap.min.css' %}" />
+        <link rel="stylesheet" type="text/css" href="{% static 'app/content/site.css' %}" />
+        <link rel="shortcut icon" href="{% static 'app/images/favicon.png' %}"/>
+<div align="center">
+<h4>Available athlete levels and ages</h4>
+    <table cellpadding="0" cellspacing="0" border="1" style="border: 1px solid #353535;">
+        <tr>
+            <td>Level</td><td>Age Groups</td>
+        </tr>
+        {% for level in levels %}
+            <tr>
+                <td align="right" class="pr-1" valign="top">{{level.name}}</td>
+                <td align="left" class="pl-1">
+                    {% for age in level.athlete_age.all %}
+                        {{age.name}}<br/>
+                    {% endfor %}
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+</div>
