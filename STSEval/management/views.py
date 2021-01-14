@@ -168,6 +168,12 @@ def setup_judges(request,id):
     sp = session.paid
     if session.test:
         sp = False
+    sp = False #just always make session not paid so judges can be edited
+    hide_e = False
+    if session.competition.disc.name == "WAG":
+        if session.level == Session.WDP or session.level == Session.NCAA:
+            #check if its a no E and limited D type of event
+            hide_e = True
    
     context = {
         'title': 'Competition Setup (2/7)',
@@ -175,6 +181,7 @@ def setup_judges(request,id):
         'events':events,
         'id':session.id,
         'session_paid':sp,
+        'hide_e':hide_e,
         'help':'competition_setup_judges',
     }
     return render(request,'management/setup_judges.html',context)

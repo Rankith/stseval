@@ -38,6 +38,7 @@
     var SessionID = "{{id}}";
     var sp = {{session_paid|lower}};
     var firstev = '{{events.first.name}}';
+    var HideE = {{hide_e|lower}};
 </script>
 <script type="text/javascript">
     var SelectedEvent = -1;
@@ -154,6 +155,13 @@
             $("#id_e3_email").attr("readonly", true);
             $("#id_e4_email").attr("readonly", true);
             $("#btnImport").hide();
+        }
+        else if (HideE)
+        {
+            $("#id_e1_email").attr("readonly", true);
+            $("#id_e2_email").attr("readonly", true);
+            $("#id_e3_email").attr("readonly", true);
+            $("#id_e4_email").attr("readonly", true);
         }
         frm.submit(function () {
             console.log("forming");
