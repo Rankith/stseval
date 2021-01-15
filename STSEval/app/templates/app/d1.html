@@ -1563,6 +1563,10 @@
                     Status = status.FINISHED;
                     //window.location = "/scoreboard/" + ev;
                 }
+                else {
+                    if (data['routine'] == -1)
+                        alert(data['error']);
+                }
                 /*RoutineID = data['routine'];
                 if (RoutineID == -1)
                     alert(data['error']);*/

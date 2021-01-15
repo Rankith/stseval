@@ -295,7 +295,7 @@
         //$('#divShorthandResults').empty();
         for (var i = 0; i < data.length; i++) {
             data[i]["Place"] = i + 1;
-            data[i]["total_score"] = FormatWith0(Math.round((data[i]["total_score"] + Number.EPSILON) * 100) / 100);
+            data[i]["total_score"] = FormatWith0(Math.round((data[i]["total_score"] + Number.EPSILON) * 1000) / 1000);
         }
 
         $("#jsGrid").jsGrid({

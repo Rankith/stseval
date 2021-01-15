@@ -377,7 +377,11 @@ def routine_finished(request):
     
     routine.save()
     app.firebase.routine_set_status(str(routine.session.id) ,routine.event.name,routine)
-    app.firebase.update_spectator_feed(str(routine.session.id),routine.event.name,'routine_finished',routine.athlete.id,"{:.1f}".format(routine.score_final))
+    if routine.session.competition.disc.name == 'WAG':
+        score = "{:.3f}".format(routine.score_final)
+    else:
+        score = "{:.1f}".format(routine.score_final)
+    app.firebase.update_spectator_feed(str(routine.session.id),routine.event.name,'routine_finished',routine.athlete.id,score)
     #camera = Camera.objects.filter(teams=routine.athlete.team,events__name=routine.event.name).first()
     #check_update_camera_event(routine.session.id,camera)
 
