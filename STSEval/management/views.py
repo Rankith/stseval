@@ -77,7 +77,7 @@ def get_competition_list_spectator(request):
     if filter == "completed":
         sessions = Session.objects.filter(active=True,finished=True).order_by('-competition__date','-time')
     elif filter == "upcoming":
-        sessions = Session.objects.filter(active=True,finished=False,competition__date__gte=datetime.datetime.today()).order_by('competition__date','time')
+        sessions = Session.objects.filter(active=True,finished=False,competition__date__gte=datetime.datetime.today() - datetime.timedelta(days=1)).order_by('competition__date','time')
     elif filter == "purchased":
         sessions = request.user.sessions_available.all().order_by('competition__date','time')
     
