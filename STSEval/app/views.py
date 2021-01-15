@@ -256,6 +256,8 @@ def routine_start_judging(request):
     routine.save()
     app.firebase.routine_set_status(str(request.session.get('session')),request.session.get('event'),routine)
     app.firebase.update_spectator_feed(str(request.session.get('session')),request.session.get('event'),'routine_start',request.POST.get('athlete'))
+    if session.competition.disc.name=='WAG':
+            app.firebase.reset_start_value(str(session.id),request.session.get('event'),routine.athlete.team.id)
 
     resp = {'routine':routine.id}
     return JsonResponse(resp)
@@ -339,6 +341,7 @@ def routine_d2_set_score(request):
 
     routine.save()
     app.firebase.routine_set_d2_score(str(routine.session.id),routine.event.name,routine.score_final_d2)
+    app.firebase.set_start_value(str(routine.session.id),routine.event.name,routine.athlete.team.id,round(float(request.POST.get('start_value',0)),3),'d2')
 
     return HttpResponse(status=200)
 
@@ -450,6 +453,12 @@ def routine_set_score(request):
         app.firebase.routine_set_status(str(routine.session.id),routine.event.name,routine)
     else:
         routine.save()
+    
+    try:
+        start_value = round(float(request.POST.get('start_value',0)),3)
+    except:
+        start_value = ''
+    app.firebase.set_start_value(str(routine.session.id),routine.event.name,routine.athlete.team.id,start_value,'d1')
 
     return HttpResponse(status=200)
 

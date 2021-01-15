@@ -137,6 +137,7 @@
 
                     <table cellspacing="0" cellpadding="0" border="0" style="font-size:0.75rem;">
                         {% if simple_d %}
+                            <tr><td id="tdStartValue" align="right" style="text-decoration:underline">Start Value:</td><td><input type="text" id="txtStartValue" placeholder="Start Value" class="ui-disabled entrybox" onkeypress="return isNumberKey(event)" ></td></tr>
                             <tr><td id="tdYourTotal" align="right" style="text-decoration:underline">Your Score:</td><td><input type="text" id="txtYourTotal" placeholder="Total" class="ui-disabled entrybox" onkeypress="return isNumberKey(event)" ></td></tr>
                             <tr><td colspan="2" align="right"><a href="#" id="btnSetDScore" type="button" class="btn btn-main mb-2 mt-2 ui-disabled" onclick="SetScoreClick()" style="font-size:1rem">Set Score</a></td></tr>
                             <tr><td id="tdD2Score" align="right" style="display:none">D2 Score:</td><td id="divD2Score" style="display:none"></td></tr>
@@ -867,11 +868,16 @@
         if (!SimpleD) {
             document.getElementById('lblDScore').innerHTML = "";
             document.getElementById('divEScore').innerHTML = "";
-            
+
             for (var i = 1; i <= 4; i++) {
                 $("#tdE" + i).removeClass("judge-strike");
                 $("#divET" + i).removeClass("judge-strike");
             }
+        }
+        else {
+            $("#txtYourTotal").val('0.0');
+            if (LoadRot=="")
+                $("#txtStartValue").val('0.0');
         }
         if (SimpleHasD2)
             $("#divD2Score").html();
@@ -1198,6 +1204,7 @@
                 data: {
                     'routine': RoutineID,
                     'score_final': $("#divTotalScore").html(),
+                    'start_value': $("#txtStartValue").val(),
                 },
                 success: function (data) {
                     if (completeRoutine) {
@@ -1859,6 +1866,9 @@
         }
         else {
             $("#txtYourTotal").val('0.0');
+            if (LoadRot=="")
+                $("#txtStartValue").val('0.0');
+            
         }
     }
 

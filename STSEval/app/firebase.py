@@ -411,6 +411,25 @@ def set_credit(s,e,team,credit):
         u'credit':credit,
     },merge=True)
 
+def reset_start_value(s,e,team):
+    db = firestore.Client()
+
+    doc_ref = db.collection(u'sessions').document(str(s)).collection(u'event_managers').document(str(e) + "_start_value")
+    doc_ref.set({
+        u'd1':0,
+        u'd2':0,
+        u'team':team,
+    },merge=True)
+
+def set_start_value(s,e,team,sv,judge):
+    db = firestore.Client()
+
+    doc_ref = db.collection(u'sessions').document(str(s)).collection(u'event_managers').document(str(e) + "_start_value")
+    doc_ref.set({
+        judge:sv,
+        u'team':team,
+    },merge=True)
+
 def update_spectator_feed(s,e,type,athlete=-1,score=-1):
     db = firestore.Client()
     ath = Athlete.objects.filter(pk=athlete).first()

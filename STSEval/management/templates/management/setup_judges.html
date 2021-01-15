@@ -158,10 +158,25 @@
         }
         else if (HideE)
         {
-            $("#id_e1_email").attr("readonly", true);
-            $("#id_e2_email").attr("readonly", true);
-            $("#id_e3_email").attr("readonly", true);
-            $("#id_e4_email").attr("readonly", true);
+            $("#id_e1_email").attr("readonly", true).addClass('ui-disabled');
+            $("#id_e2_email").attr("readonly", true).addClass('ui-disabled');
+            $("#id_e3_email").attr("readonly", true).addClass('ui-disabled');
+            $("#id_e4_email").attr("readonly", true).addClass('ui-disabled');
+
+            $("#id_e1").attr("readonly", true).addClass('ui-disabled');
+            $("#id_e2").attr("readonly", true).addClass('ui-disabled');
+            $("#id_e3").attr("readonly", true).addClass('ui-disabled');
+            $("#id_e4").attr("readonly", true).addClass('ui-disabled');
+
+            $("#id_e1_affil").attr("readonly", true).addClass('ui-disabled');
+            $("#id_e2_affil").attr("readonly", true).addClass('ui-disabled');
+            $("#id_e3_affil").attr("readonly", true).addClass('ui-disabled');
+            $("#id_e4_affil").attr("readonly", true).addClass('ui-disabled');
+
+            $("#id_e1_password").attr("readonly", true).addClass('ui-disabled');
+            $("#id_e2_password").attr("readonly", true).addClass('ui-disabled');
+            $("#id_e3_password").attr("readonly", true).addClass('ui-disabled');
+            $("#id_e4_password").attr("readonly", true).addClass('ui-disabled');
         }
         frm.submit(function () {
             console.log("forming");

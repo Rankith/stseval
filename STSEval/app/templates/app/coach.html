@@ -22,6 +22,16 @@
             </div>
         </div>
     </div>
+    <div id="divStartValueArea" class="coach-fall-container" align="center" style="display:none">
+        <div class="row no-gutters justify-content-center">
+            <div class="col-9 col-md-4 col-lg-3 coach-fall-background pt-1 pb-2">
+                <div>Start Value</div>
+                <div id="divSVD1">&nbsp;</div>
+                <div id="divSVD2">&nbsp;</div>
+                <button id="btnCloseSV" type="button" class="btn btn-main mb-2" onclick="CloseSVArea()">Close</button><br/>
+            </div>
+        </div>
+    </div>
     {% include "app/event_select.html" %}  
     <div class="">
         <div id="divStatus" style="margin:auto;text-align:center;" class="timer-red"></div>
@@ -41,6 +51,7 @@
     var Team= "{{team.id}}";
     var ev = "{{event_name}}";
     var token = "{{ csrf_token }}";
+    var disc = "{{session.competition.disc.name}}";
 </script>
 <script type="text/javascript">
     //const firebase = require("firebase");
@@ -53,6 +64,8 @@
     var FloorTimerStart;
     var FloorTimerInterval;
     var CurrentStatus = "";
+    var d1sv = 0;
+    var d2sv = 0;
 
     var db = firebase.firestore();
     db.collection("sessions").doc(Session).collection("event_managers").doc(ev)
@@ -70,8 +83,40 @@
             UpdateTimer(doc);
         });
     }
+    if (disc == "WAG") {
+         db.collection("sessions").doc(Session).collection("event_managers").doc(ev + "_start_value")
+        .onSnapshot(function (doc) {
+            UpdateStartValues(doc);
+        });
+    }
 
-    
+    function CloseSVArea() {
+        $("#divStartValueArea").hide();
+    }
+
+    function UpdateStartValues(doc) {
+        let data = doc.data();
+        if (data.team == Team) {
+            if (data.d1 != 0)
+                $("#divSVD1").html(data.d1);
+            else
+                $("#divSVD1").html('');
+            if (data.d2 != 0)
+                $("#divSVD2").html(data.d2);
+            else
+                $("#divSVD2").html('');
+            
+            if (d1sv != data.d1 || d2sv != data.d2) {
+                if (Status == "AD" || Status == "F" || Status == "RD") {
+                    if (data.d1 != 0 || data.d2 != 0)
+                        $("#divStartValueArea").show();
+                    else
+                        $("#divStartValueArea").hide();
+                }
+            }
+        }
+    }
+
     function UpdateStatus(doc) {
         if (doc.data() != undefined) {
             console.log("Status: " + Status + " | " + doc.data().status);
@@ -114,6 +159,9 @@
                 StatusDotsGreen();
                 $("#divStatus").html("ROUTINE IN PROGRESS").removeClass("timer-yellow").addClass("timer-green").removeClass("timer-red");
                 $("#" + $("#hdnUpNext").val()).removeClass("status-dot-yellow").addClass("status-dot-green").removeClass("status-dot-red");
+                d1sv = 0;
+                d2sv = 0;
+                $("#divStartValueArea").hide();
             }
         }
         else {

@@ -33,6 +33,8 @@
             <td style="width:854px;" align="center">
                 <div id="divDJudgeEntry">
                     <div id="divRoutineStatus"></div>
+                     Start Value<br/>
+                    <input type="text" id="txtStartValue" placeholder="Start Value" class="ui-disabled" onkeypress="return isNumberKey(event)" ><br/>
                     Your Score<br/>
                     <input type="text" id="txtYourScore" placeholder="Your Score" class="ui-disabled" onkeypress="return isNumberKey(event)" ><br/>
                     <button href="#" id="btnSubmitScore" type="button" class="btn btn-main mt-2 ui-disabled" style="width:200px" onclick="SubmitScore()">Submit Score</button><br/>
@@ -197,11 +199,13 @@
         if (edit) {
             $("#btnSubmitScore").removeClass("ui-disabled");
             $("#txtYourScore").removeClass("ui-disabled");
+            $("#txtStartValue").removeClass("ui-disabled");
             $("#btnSubmitScore").text("Submit Score");
         }
         else {
             $("#btnSubmitScore").addClass("ui-disabled");
             $("#txtYourScore").addClass("ui-disabled");
+            $("#txtStartValue").addClass("ui-disabled");
             $("#btnSubmitScore").text("Submit Score");
         }
 
@@ -224,6 +228,7 @@
         AllowEdit(false);
         $("#divRoutineStatus").html("WAITING TO START").addClass("timer-red").removeClass("timer-yellow").removeClass("timer-green");
         $("#txtYourScore").val('');
+        $("#txtStartValue").val('');
     }
     function GetAthleteInfo() {
         $.ajax({
@@ -302,7 +307,8 @@
             headers: { "X-CSRFToken": token },
             data: {
                 'routine': RoutineID,
-                'score':$("#txtYourScore").val(),
+                'score': $("#txtYourScore").val(),
+                'start_value': $("#txtStartValue").val(),
             },
             success: function (data) {
                 alert("Score Submitted");
