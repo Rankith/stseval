@@ -1,5 +1,5 @@
 from django.contrib import admin
-from app.models import Routine,EJuryDeduction,BackupVideo,DJuryIndicator
+from app.models import Routine,EJuryDeduction,BackupVideo,DJuryIndicator,ConversionSetting
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin
 
@@ -22,7 +22,12 @@ class DJuryIndicatorAdmin(ImportExportModelAdmin):
     list_editable=('routine','type','value','time_stamp_relative')
     list_filter = ('routine__session__competition','routine__event','type')
 
+class ConversionSettingAdmin(ImportExportModelAdmin):
+    list_display=('id', 'do_conversions')
+    list_editable=('do_conversions',)
+
 admin.site.register(Routine,RoutineAdmin)
 admin.site.register(EJuryDeduction,EJuryDeductionAdmin)
 admin.site.register(BackupVideo,BackupVideoAdmin)
 admin.site.register(DJuryIndicator,DJuryIndicatorAdmin)
+admin.site.register(ConversionSetting,ConversionSettingAdmin)

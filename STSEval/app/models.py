@@ -124,3 +124,6 @@ class BackupVideo(models.Model):
     video_file= models.FileField(upload_to=backup_video_path, null=True)
     reviewed = models.BooleanField(default=False)
     converted = models.BooleanField(default=False)
+
+class ConversionSetting(models.Model):
+    do_conversions = models.BooleanField(default=True) 
