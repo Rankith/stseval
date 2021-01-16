@@ -232,6 +232,7 @@
         </div>
     </div>
 </div>
+<div id="stats" align="center"></div>
 {% endblock %}
 
 {% block scripts %}
@@ -246,6 +247,12 @@
 <script type="text/javascript">
     var SetupInterval;
     var LastStatus = "";
+    var video = document.getElementById('publisher-video');
+    var decodedFrames = 0,
+                    droppedFrames = 0,
+                    startTime = new Date().getTime(),
+        initialTime = new Date().getTime();
+     calculateStats();
     CheckStreamStatus().then((state) => {
         if (state != "started") {
             $('#modalLoading').modal('show');
@@ -351,7 +358,7 @@
             },
             dataType: 'json',
             success: function (data) {
-                
+               
             }
         });
     }
@@ -362,6 +369,44 @@
         $('#divSetupDone').hide();
     }
 
+      function calculateStats() {
+ 
+            
+          
+            window.setInterval(function(){
+ 
+                //see if webkit stats are available; exit if they aren't
+                if (!video.webkitDecodedFrameCount){
+                    console.log("Video FPS calcs not supported");
+                    return;
+                }
+                //get the stats
+                else{
+                    var currentTime = new Date().getTime();
+                    var deltaTime = (currentTime - startTime) / 1000;
+                    var totalTime = (currentTime - initialTime) / 1000;
+                    startTime = currentTime;
+
+                    console.log("hi");
+                    // Calculate decoded frames per sec.
+                    var currentDecodedFPS  = (video.webkitDecodedFrameCount - decodedFrames) / deltaTime;
+                    var decodedFPSavg = video.webkitDecodedFrameCount / totalTime;
+                    decodedFrames = video.webkitDecodedFrameCount;
+ 
+                    // Calculate dropped frames per sec.
+                    var currentDroppedFPS = (video.webkitDroppedFrameCount - droppedFrames) / deltaTime;
+                    var droppedFPSavg = video.webkitDroppedFrameCount / totalTime;
+                    droppedFrames = video.webkitDroppedFrameCount;
+ 
+                    //write the results to a table
+                    $("#stats").html("<table><tr><th>Type</th><th>Total</th><th>Avg</th><th>Current</th></tr>" +
+                        "<tr><td>Decoded</td><td>" + decodedFrames + "</td><td>" + decodedFPSavg.toFixed() + "</td><td>" + currentDecodedFPS.toFixed() + "</td></tr>" +
+                        "<tr><td>Dropped</td><td>" + droppedFrames + "</td><td>" + droppedFPSavg.toFixed() + "</td><td>" + currentDroppedFPS.toFixed() + "</td></tr>" +
+                        "<tr><td>All</td><td>" + (decodedFrames + droppedFrames) + "</td><td>" + (decodedFPSavg + droppedFPSavg).toFixed() + "</td><td>" + (currentDecodedFPS + currentDroppedFPS).toFixed() + "</td></tr></table>" +
+                        "Camera resolution: " + video.videoWidth + " x " + video.videoHeight);
+                }
+            }, 1000);
+        }
 
 </script>
 {% endblock %}
