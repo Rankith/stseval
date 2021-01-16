@@ -175,7 +175,7 @@ def setup_judges(request,id):
         if session.level == Session.WDP or session.level == Session.NCAA:
             #check if its a no E and limited D type of event
             hide_e = True
-   
+
     context = {
         'title': 'Competition Setup (2/7)',
         'session_name': session.full_name,
@@ -247,16 +247,28 @@ def judge_list_upload(request):
             res = import_judges(session,judgedict)
             return HttpResponse(res)
     else:
+        session = Session.objects.get(pk=request.GET.get('session'))
         form = JudgeListUploadForm()
+    hide_e = False
+    if session.competition.disc.name == "WAG":
+        if session.level == Session.WDP or session.level == Session.NCAA:
+            #check if its a no E and limited D type of event
+            hide_e = True
+
+    example_file='example_judge_import_' + session.competition.disc.name.lower()
+    if hide_e:
+        example_file += "_noe"
     return render(request,"management/judge_list_upload_form.html",
         {
             "form": form,
+            "example_file":example_file,
         },
     )
 
 def import_judges(session,judge_dict):
     events = Event.objects.filter(disc=session.competition.disc)
-    for i in range(len(judge_dict['Role'])):
+    max = len(judge_dict['Role'])
+    for i in range(max):
         if judge_dict['Role'][i] == 'D1':#skip to d1s
             #find event
             event = events.filter(name=judge_dict['Event'][i]).first()
@@ -279,40 +291,44 @@ def import_judges(session,judge_dict):
                         new_judge.d2_password = ''.join(random.choices(string.ascii_uppercase + string.ascii_lowercase + string.digits, k=6))
                     else:
                         new_judge.d2_password = judge_dict['Password'][i+1]
-                if judge_dict['Email'][i+2] != '' and judge_dict['Email'][i+2] != ' ':
-                    new_judge.e1_email = judge_dict['Email'][i+2]
-                    new_judge.e1 = judge_dict['Name'][i+2]
-                    new_judge.e1_affil = judge_dict['Association'][i+2]
-                    if judge_dict['Password'][i+2] == '' or judge_dict['Password'][i+2] == ' ':
-                        new_judge.e1_password = ''.join(random.choices(string.ascii_uppercase + string.ascii_lowercase + string.digits, k=6))
-                    else:
-                        new_judge.e1_password = judge_dict['Password'][i+2]
-                if judge_dict['Email'][i+3] != '' and judge_dict['Email'][i+3] != ' ':
-                    new_judge.e2_email = judge_dict['Email'][i+3]
-                    new_judge.e2 = judge_dict['Name'][i+3]
-                    new_judge.e2_affil = judge_dict['Association'][i+3]
-                    if judge_dict['Password'][i+3] == '' or judge_dict['Password'][i+3] == ' ':
-                        new_judge.e2_password = ''.join(random.choices(string.ascii_uppercase + string.ascii_lowercase + string.digits, k=6))
-                    else:
-                        new_judge.e2_password = judge_dict['Password'][i+3]
-                if judge_dict['Email'][i+4] != '' and judge_dict['Email'][i+4] != ' ':
-                    new_judge.e3_email = judge_dict['Email'][i+4]
-                    new_judge.e3 = judge_dict['Name'][i+4]
-                    new_judge.e3_affil = judge_dict['Association'][i+4]
-                    if judge_dict['Password'][i+4] == '' or judge_dict['Password'][i+4] == ' ':
-                        new_judge.e3_password = ''.join(random.choices(string.ascii_uppercase + string.ascii_lowercase + string.digits, k=6))
-                    else:
-                        new_judge.e3_password = judge_dict['Password'][i+4]
-                if judge_dict['Email'][i+5] != '' and judge_dict['Email'][i+5] != ' ':
-                    new_judge.e4_email = judge_dict['Email'][i+5]
-                    new_judge.e4 = judge_dict['Name'][i+5]
-                    new_judge.e4_affil = judge_dict['Association'][i+5]
-                    if judge_dict['Password'][i+5] == '' or judge_dict['Password'][i+5] == ' ':
-                        new_judge.e4_password = ''.join(random.choices(string.ascii_uppercase + string.ascii_lowercase + string.digits, k=6))
-                    else:
-                        new_judge.e4_password = judge_dict['Password'][i+5]
-                new_judge.save()
-                i = i + 6      
+                if i+2 < max and judge_dict['Role'][i+2] == 'E1':
+                    if judge_dict['Email'][i+2] != '' and judge_dict['Email'][i+2] != ' ':
+                        new_judge.e1_email = judge_dict['Email'][i+2]
+                        new_judge.e1 = judge_dict['Name'][i+2]
+                        new_judge.e1_affil = judge_dict['Association'][i+2]
+                        if judge_dict['Password'][i+2] == '' or judge_dict['Password'][i+2] == ' ':
+                            new_judge.e1_password = ''.join(random.choices(string.ascii_uppercase + string.ascii_lowercase + string.digits, k=6))
+                        else:
+                            new_judge.e1_password = judge_dict['Password'][i+2]
+                    if judge_dict['Email'][i+3] != '' and judge_dict['Email'][i+3] != ' ':
+                        new_judge.e2_email = judge_dict['Email'][i+3]
+                        new_judge.e2 = judge_dict['Name'][i+3]
+                        new_judge.e2_affil = judge_dict['Association'][i+3]
+                        if judge_dict['Password'][i+3] == '' or judge_dict['Password'][i+3] == ' ':
+                            new_judge.e2_password = ''.join(random.choices(string.ascii_uppercase + string.ascii_lowercase + string.digits, k=6))
+                        else:
+                            new_judge.e2_password = judge_dict['Password'][i+3]
+                    if judge_dict['Email'][i+4] != '' and judge_dict['Email'][i+4] != ' ':
+                        new_judge.e3_email = judge_dict['Email'][i+4]
+                        new_judge.e3 = judge_dict['Name'][i+4]
+                        new_judge.e3_affil = judge_dict['Association'][i+4]
+                        if judge_dict['Password'][i+4] == '' or judge_dict['Password'][i+4] == ' ':
+                            new_judge.e3_password = ''.join(random.choices(string.ascii_uppercase + string.ascii_lowercase + string.digits, k=6))
+                        else:
+                            new_judge.e3_password = judge_dict['Password'][i+4]
+                    if judge_dict['Email'][i+5] != '' and judge_dict['Email'][i+5] != ' ':
+                        new_judge.e4_email = judge_dict['Email'][i+5]
+                        new_judge.e4 = judge_dict['Name'][i+5]
+                        new_judge.e4_affil = judge_dict['Association'][i+5]
+                        if judge_dict['Password'][i+5] == '' or judge_dict['Password'][i+5] == ' ':
+                            new_judge.e4_password = ''.join(random.choices(string.ascii_uppercase + string.ascii_lowercase + string.digits, k=6))
+                        else:
+                            new_judge.e4_password = judge_dict['Password'][i+5]
+                    new_judge.save()
+                    i = i + 6
+                else:
+                    new_judge.save()
+                    i = i + 2
     return "Judges Imported."
 
 @login_required(login_url='/account/login/admin/')
