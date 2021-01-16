@@ -124,7 +124,7 @@ class Athlete(models.Model):
     events_competing = models.ManyToManyField(Event,related_name='events_competing_related',blank=True)
     events_count_for_team = models.ManyToManyField(Event,blank=True)
     def __str__(self):
-        return self.team.name + " - " + " - " + self.name
+        return self.team.name + " - " + self.level.name + " - " + self.name
 
 class StartList(models.Model):
     session = models.ForeignKey(Session, on_delete=models.CASCADE)
