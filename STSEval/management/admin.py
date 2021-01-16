@@ -5,6 +5,11 @@ from management.models import Competition,Athlete,Judge,Session,Team,AthleteLeve
 from import_export import resources
 from import_export.admin import ImportExportModelAdmin
 
+class AthleteAdmin(ImportExportModelAdmin):
+    list_display=('id','name','team','level','age','rotation')
+    list_editable=('name','rotation')
+    list_filter=('team','team__session')
+
 class AthleteLevelAdmin(ImportExportModelAdmin):
     list_display=('id', 'disc','name','abbreviation','order','scoring_type')
     list_editable=('disc','name','abbreviation','order','scoring_type')
@@ -49,7 +54,7 @@ admin.site.register(Event,EventAdmin)
 admin.site.register(Disc,DiscAdmin)
 admin.site.register(Competition)
 admin.site.register(Judge,JudgeAdmin)
-admin.site.register(Athlete)
+admin.site.register(Athlete,AthleteAdmin)
 admin.site.register(Session,SessionAdmin)
 admin.site.register(Team)
 admin.site.register(Sponsor)
