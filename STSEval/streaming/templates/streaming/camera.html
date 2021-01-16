@@ -60,7 +60,7 @@
                     </select>
                 </div>
             </div>
-             
+             <div id="stats" align="center"></div>
         </div>
         <div class="col-md-4 col-sm-12" id="publish-settings" style="display:none" >
             <form id="publish-settings-form">
@@ -232,7 +232,6 @@
         </div>
     </div>
 </div>
-<div id="stats" align="center"></div>
 {% endblock %}
 
 {% block scripts %}
@@ -399,11 +398,12 @@
                     droppedFrames = video.webkitDroppedFrameCount;
  
                     //write the results to a table
-                    $("#stats").html("<table><tr><th>Type</th><th>Total</th><th>Avg</th><th>Current</th></tr>" +
+                    $("#stats").html("FPS: " + currentDecodedFPS.toFixed());
+                    /*$("#stats").html("<table><tr><th>Type</th><th>Total</th><th>Avg</th><th>Current</th></tr>" +
                         "<tr><td>Decoded</td><td>" + decodedFrames + "</td><td>" + decodedFPSavg.toFixed() + "</td><td>" + currentDecodedFPS.toFixed() + "</td></tr>" +
                         "<tr><td>Dropped</td><td>" + droppedFrames + "</td><td>" + droppedFPSavg.toFixed() + "</td><td>" + currentDroppedFPS.toFixed() + "</td></tr>" +
                         "<tr><td>All</td><td>" + (decodedFrames + droppedFrames) + "</td><td>" + (decodedFPSavg + droppedFPSavg).toFixed() + "</td><td>" + (currentDecodedFPS + currentDroppedFPS).toFixed() + "</td></tr></table>" +
-                        "Camera resolution: " + video.videoWidth + " x " + video.videoHeight);
+                        "Camera resolution: " + video.videoWidth + " x " + video.videoHeight);*/
                 }
             }, 1000);
         }
