@@ -28,6 +28,9 @@
       Forgot Password? <a href="/account/password_reset/">Request Password Reset</a>
         </form>
     <br/>
+    {% if type == 'spectator' %}
+        <a href="/media/stslivegym-spectator-signup.mp4" target="_blank">How to spectate a session</a><br/>
+    {% endif %}
     </div>
 </div>
 {% endblock %}
