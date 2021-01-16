@@ -97,17 +97,8 @@ class TeamForm(ModelForm):
 class AthleteForm(ModelForm):
     class Meta:
         model = Athlete
-        ROTATION_CHOICES = (
-                ('A', 'A'),
-                ('B', 'B'), #First one is the value of select option and second is the displayed value in option
-                ('C', 'C'),
-                ('D', 'D'),
-                ('E', 'E'),
-                ('F', 'F'),
-                )
         fields = ['team','level','name','age','rotation','events_count_for_team','events_competing']
         widgets = {'name':forms.TextInput(attrs={'class':'management-input'}),
-                   'rotation':forms.Select(choices=ROTATION_CHOICES,attrs={'class':'selectpicker management-input','data-style':'btn-main'}),
                    'level':forms.Select(attrs={'class':'selectpicker management-input','data-style':'btn-main'})}
 
     def __init__(self, *args, **kwargs):
@@ -137,6 +128,25 @@ class AthleteForm(ModelForm):
         self.fields["age"].widget.attrs['class'] = 'selectpicker management-input'
         self.fields["age"].widget.attrs['data-style'] = 'btn-main'
         self.fields["age"].queryset = AthleteAge.objects.none()
+        if session.competition.disc.name == 'WAG':
+            ROTATION_CHOICES = (
+                    ('A', 'A'),
+                    ('B', 'B'), #First one is the value of select option and second is the displayed value in option
+                    ('C', 'C'),
+                    ('D', 'D'),
+                    )
+        else:
+            ROTATION_CHOICES = (
+                    ('A', 'A'),
+                    ('B', 'B'), #First one is the value of select option and second is the displayed value in option
+                    ('C', 'C'),
+                    ('D', 'D'),
+                    ('E', 'E'),
+                    ('F', 'F'),
+                    )
+        self.fields["rotation"].widget = forms.Select(choices=ROTATION_CHOICES)
+        self.fields["rotation"].widget.attrs['class'] = 'selectpicker management-input'
+        self.fields["rotation"].widget.attrs['data-style'] = 'btn-main'
         if 'level' in self.data:
             try:
                 level_id = int(self.data.get('level'))
