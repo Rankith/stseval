@@ -1110,7 +1110,7 @@
          if (Number.isInteger(num)) { 
             return num + ".0"
         } else {
-            return num.toString(); 
+            return (Math.round(num*1000)/1000).toString(); 
         }
     }
     function RoutineLoadBuildDots() {
