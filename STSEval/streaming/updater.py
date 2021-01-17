@@ -28,7 +28,7 @@ def convert_backup_video(bv):
     conversionfile = os.path.splitext(vidfile)[0] + ".mp4"
     conversionfilename = os.path.splitext(bv.video_file.name)[0] + ".mp4"
     if os.path.exists(vidfile):
-        os.system("ffmpeg -threads 1 -y -i {0} -c:v libx264 -profile:v main -vf format=yuv420p -c:a aac -movflags +faststart  {1}".format(vidfile,conversionfile))
+        os.system("ffmpeg -threads 2 -y -i {0} -c:v libx264 -profile:v main -vf format=yuv420p -c:a aac -movflags +faststart  {1}".format(vidfile,conversionfile))
         bv.video_file.name = conversionfilename
         bv.converted = True
         bv.save()
@@ -45,7 +45,7 @@ def check_convert_video():
         for routine in routines:
             vidfile=routine.video_file.path
             if os.path.exists(vidfile):
-                os.system("ffmpeg -threads 1 -y -i {0} -c:v libx264 -profile:v main -vf format=yuv420p -c:a aac -movflags +faststart {1}".format(vidfile,vidfile.replace("webm","mp4")))
+                os.system("ffmpeg -threads 2 -y -i {0} -c:v libx264 -profile:v main -vf format=yuv420p -c:a aac -movflags +faststart {1}".format(vidfile,vidfile.replace("webm","mp4")))
                 routine.video_converted = True
                 routine.save()
 
