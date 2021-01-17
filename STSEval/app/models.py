@@ -127,3 +127,4 @@ class BackupVideo(models.Model):
 
 class ConversionSetting(models.Model):
     do_conversions = models.BooleanField(default=True) 
+    e_dots_preview = models.BooleanField(default=True) 

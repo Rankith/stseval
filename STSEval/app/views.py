@@ -7,7 +7,7 @@ from django.http import HttpRequest,JsonResponse,HttpResponse
 from django.template import RequestContext
 from datetime import datetime
 from django.contrib.auth import authenticate, login
-from app.models import Twitch,Routine,EJuryDeduction,BackupVideo,DJuryIndicator
+from app.models import Twitch,Routine,EJuryDeduction,BackupVideo,DJuryIndicator,ConversionSetting
 from management.models import Competition,Judge,Athlete,Session,Camera,StartList,Team,Event,Disc,Sponsor,RotationOrder,AthleteLevel,AthleteAge
 from app.twitch import TwitchAPI
 import app.firebase
@@ -598,7 +598,8 @@ def deduct(request):
     ded = EJuryDeduction(routine=routine,judge=judge,deduction=deduction,action=action,editor=editor,time_stamp=mili,time_stamp_relative=relative_time,artistry_type=artistry_type)
     ded.save()
     try:
-        app.firebase.update_e_ping(routine.session.id,routine.event.name,judge,deduction)
+        if ConversionSetting.objects.all().first().e_dots_preview:
+            app.firebase.update_e_ping(routine.session.id,routine.event.name,judge,deduction)
     except:
         pass
     
