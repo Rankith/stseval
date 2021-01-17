@@ -9,8 +9,9 @@ class EJuryDeductionAdmin(ImportExportModelAdmin):
     list_filter = ('routine__session__competition','routine__event')
 
 class RoutineAdmin(ImportExportModelAdmin):
-    list_display=('id', 'event','athlete','status')
-    list_filter = ('session','event')
+    list_display=('id', 'event','athlete','status','video_converted','video_saved')
+    list_editable=('status','video_converted','video_saved')
+    list_filter = ('session','event','video_converted')
 
 class BackupVideoAdmin(ImportExportModelAdmin):
     list_display=('id','session','event','athlete','reviewed','video_file')
