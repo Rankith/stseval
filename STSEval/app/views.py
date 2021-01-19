@@ -257,7 +257,10 @@ def routine_start_judging(request):
 
     routine.save()
     app.firebase.routine_set_status(str(request.session.get('session')),request.session.get('event'),routine)
-    app.firebase.update_spectator_feed(str(request.session.get('session')),request.session.get('event'),'routine_start',request.POST.get('athlete'))
+    if request.POST.get('backup_video') != '-1' and request.POST.get('backup_video') != -1: ##backup video
+        app.firebase.update_spectator_feed(str(request.session.get('session')),request.session.get('event'),'routine_start_backup',request.POST.get('athlete'))
+    else:
+        app.firebase.update_spectator_feed(str(request.session.get('session')),request.session.get('event'),'routine_start',request.POST.get('athlete'))
     if session.competition.disc.name=='WAG':
             app.firebase.reset_start_value(str(session.id),request.session.get('event'),routine.athlete.team.id)
 

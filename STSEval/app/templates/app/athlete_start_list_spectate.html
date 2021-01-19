@@ -7,7 +7,7 @@
                  {% for sl in start_list %}
                     <tr class="{% if sl.completed or sl.secondary_judging %}start-list-completed{% endif %}" athid="{{sl.id}}" id="trStartList{{sl.id}}">
                         <td class="pr-2"><span id="divAthleteDots{{sl.athlete.id}}" class="status-dot-small mr-1 athlete-dot mt-1" style="display:none"></span></td>
-			            <td id="divSL{{sl.id}}" class="pr-1 {% if not sl.active %}start-list-scratched{% endif %}" align="center">{{sl.athlete.team.abbreviation}} - {{sl.athlete.name}}</td>
+			            <td id="divSL{{sl.id}}" class="pr-1 {% if not sl.active %}start-list-scratched{% endif %}" align="center">{{sl.athlete.team.abbreviation}} - {{sl.athlete.level.abbreviation}} - {{sl.athlete.name}}</td>
                         <td class="pl-2 pr-4">{% if sl.id == first_not_completed %}{{ordinal_total}}{% endif %}</td>
                     </tr>
                 {% endfor %} 
