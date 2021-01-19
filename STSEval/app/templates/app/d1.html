@@ -951,8 +951,9 @@
 
     function StopRecording() {
         if (BackupVideo == -1) {
+            RoutineAthleteDone();
             recorder.stopRecording(function () {
-                RoutineAthleteDone();
+                
                 getSeekableBlob(recorder.getBlob(), function (seekableBlob) {
                     //videoElement.src = URL.createObjectURL(seekableBlob);
                     console.log(seekableBlob);

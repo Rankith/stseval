@@ -328,7 +328,7 @@
             data[i]["Place"] = i + 1;
             //console.log("to fixed " + i);
             try {
-                data[i]["score"] = data[i]["score"].toFixed(2);
+                data[i]["score"] = FormatWith0(Math.round((data[i]["score"]) * 1000) / 1000);//data[i]["score"].toFixed(2);
             }
             catch {
             }

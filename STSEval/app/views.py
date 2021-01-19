@@ -341,7 +341,9 @@ def routine_d2_set_score(request):
 
     routine.save()
     app.firebase.routine_set_d2_score(str(routine.session.id),routine.event.name,routine.score_final_d2)
-    app.firebase.set_start_value(str(routine.session.id),routine.event.name,routine.athlete.team.id,round(float(request.POST.get('start_value',0)),3),'d2')
+    sv = request.POST.get('start_value',0)
+    if sv != '':
+        app.firebase.set_start_value(str(routine.session.id),routine.event.name,routine.athlete.team.id,round(float(sv),3),'d2')
 
     return HttpResponse(status=200)
 
@@ -998,8 +1000,12 @@ def get_team_scores(request):
                             t['score'] = t['score'] + this_score['score']
                             break
     
-        for t in team_scores:
-            t['score'] = "{:.2f}".format(t['score'])
+        if session.competition.disc.name == 'WAG':
+            for t in team_scores:
+                t['score'] = "{:.3f}".format(t['score'])#3 decimal wag
+        else:
+            for t in team_scores:
+                t['score'] = "{:.2f}".format(t['score'])
         scores = team_scores
 
     #sort by score
@@ -1026,6 +1032,10 @@ def video_scoreboard(request):
 
     team_scores = sorted(team_scores,key = lambda i: i['score'],reverse=True)
     high = 0
+    if session.competition.disc.name == 'WAG':
+        format_string = "{:.3f}"#3 decimals for wagerino
+    else:
+        format_string = "{:.2f}"
     for t in team_scores:
         if t['score'] > high:
             high = t['score']
@@ -1035,8 +1045,8 @@ def video_scoreboard(request):
             if t['dif'] >= 0:
                 t['dif'] = '--'
             else:
-                t['dif'] = "{:.2f}".format(t['dif'])
-        t['score'] = "{:.2f}".format(t['score'])
+                t['dif'] = format_string.format(t['dif'])
+        t['score'] = format_string.format(t['score'])
 
     #check which teams to show
     team_scores_filtered = []
@@ -1079,7 +1089,10 @@ def calc_team_scores(session,event=''):
         if count < max and routine.athlete.events_count_for_team.filter(name=routine.event.name).exists(): #fix routines to have actual event link not a freaking char field
             count += 1
             scores[-1]['score'] += routine.score_final
-            scores[-1]['score'] = round(scores[-1]['score'],2)
+            if routine.session.competition.disc.name == 'WAG':
+                scores[-1]['score'] = round(scores[-1]['score'],3)#wag is 3 decimals
+            else:
+                scores[-1]['score'] = round(scores[-1]['score'],2)
 
     #sort by score
     scores = sorted(scores,key = lambda i: i['score'],reverse=True)
