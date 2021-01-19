@@ -81,9 +81,11 @@ def d1(request):
         judge_type = "D1"
         this_judge = judges[0].d1
 
+    judge_type_display = judge_type
     if judges[0].d2_email != '':
         #check if dumb wag bullshit
         if session.competition.disc.name == "WAG" and (session.level == Session.WDP or session.level == Session.NCAA): #d2_wag version
+            judge_type_display = "J1"
             multi_d = False
         else:
             multi_d = True
@@ -99,7 +101,7 @@ def d1(request):
 
     
     context = {
-        'title':  judge_type + ' Overview - ' + event + ' ' + session.full_name(),
+        'title':  judge_type_display + ' Overview - ' + event + ' ' + session.full_name(),
         'judges':judges[0],
         'athletes':athletes,
         'disc':disc,
@@ -567,7 +569,7 @@ def d2_wag(request):
     disc = session.competition.disc.name
     athletes = Athlete.objects.filter(team__session=session)
     context = {
-        'title': 'STS D2 - ' + event + ' ' + session.competition.name + ' - ' + judges.d2,
+        'title': 'STS J2 - ' + event + ' ' + session.competition.name + ' - ' + judges.d2,
         'judges':judges,
         'disc':disc,
         'event':event,
@@ -1505,6 +1507,10 @@ def overview(request,session_id,event_name='-1'):
             has_d2 = True
 
     setup_firebase_managers(session,event.name)
+    if session.competition.disc.name == "WAG" and (session.level == Session.WDP or session.level == Session.NCAA):
+        djudge_letter='J'
+    else:
+        djudge_letter='D'
     
     context = {
         'title': 'Administrator Overview',
@@ -1516,6 +1522,7 @@ def overview(request,session_id,event_name='-1'):
         'judges':judges,
         'cameras':cameras,
         'has_d2':has_d2,
+        'djudge_letter':djudge_letter,
         'help':'admin_overview',
     }
     return render(request,'app/overview.html',context)

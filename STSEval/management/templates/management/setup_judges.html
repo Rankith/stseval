@@ -38,6 +38,7 @@
     var SessionID = "{{id}}";
     var sp = {{session_paid|lower}};
     var firstev = '{{events.first.name}}';
+    var firstevid = {{events.first.id}};
     var HideE = {{hide_e|lower}};
 </script>
 <script type="text/javascript">
@@ -158,6 +159,9 @@
         }
         else if (HideE)
         {
+            $("#D1label").html("J1&nbsp;");
+            $("#D2label").html("J2&nbsp;");
+
             $("#id_e1_email").attr("readonly", true).addClass('ui-disabled');
             $("#id_e2_email").attr("readonly", true).addClass('ui-disabled');
             $("#id_e3_email").attr("readonly", true).addClass('ui-disabled');
@@ -255,8 +259,8 @@
         $("#modalBodyArea1").show();
     }
      function JudgeImportFinishParent() {
-        $("#modalMain").modal('hide');
-         EventClick(1,firstev);
+         $("#modalMain").modal('hide');
+         EventClick(firstevid,firstev);
         
     }
     function AttachImportForm() {

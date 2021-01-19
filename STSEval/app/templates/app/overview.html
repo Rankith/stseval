@@ -24,10 +24,10 @@
             <div id="divOfficials">
                 {% if judges != None %}
                     {% if judges.d1 != '' %}
-                        <div id="divD1"><span id="divJudgeDotD1" class="status-dot-small status-dot-red mr-1"></span> D1: {{judges.d1}}</div>
+                        <div id="divD1"><span id="divJudgeDotD1" class="status-dot-small status-dot-red mr-1"></span> {{djudge_letter}}1: {{judges.d1}}</div>
                     {% endif %}
                     {% if judges.d2 != '' and has_d2 %}
-                        <div id="divD2"><span id="divJudgeDotD2" class="status-dot-small status-dot-red mr-1"></span> D2: {{judges.d2}}</div>
+                        <div id="divD2"><span id="divJudgeDotD2" class="status-dot-small status-dot-red mr-1"></span> {{djudge_letter}}2: {{judges.d2}}</div>
                     {% endif %}
                     {% if judges.e1 != '' %}
                         <div id="divE1"><span id="divJudgeDotE1" class="status-dot-small status-dot-red mr-1"></span> E1: {{judges.e1}}</div>

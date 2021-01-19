@@ -268,8 +268,12 @@ def judge_list_upload(request):
 def import_judges(session,judge_dict):
     events = Event.objects.filter(disc=session.competition.disc)
     max = len(judge_dict['Role'])
+    if 'J1' in judge_dict['Role']:
+        key = 'J1'
+    else:
+        key = 'D1'
     for i in range(max):
-        if judge_dict['Role'][i] == 'D1':#skip to d1s
+        if judge_dict['Role'][i] == key:#skip to d1s
             #find event
             event = events.filter(name=judge_dict['Event'][i]).first()
             if event != None:

@@ -17,18 +17,18 @@
             {% for field in form.visible_fields %}
                 <div class="col-3 pb-1">
                   
-                        {% if forloop.counter0|divisibleby:4 %}
-                      <div class="d-flex align-items-center">
-                            <div>
+                    {% if forloop.counter0|divisibleby:4 %}
+                        <div class="d-flex align-items-center">
+                            <div id="{{field.label}}label" style="width:25px">
                                 {{field.label}}&nbsp;
                             </div>
-                             <div >
+                            <div >
                                 {{field}}
                             </div>
                         </div>
-                        {% else %}
-                             {{field}}
-                        {% endif %}
+                    {% else %}
+                            {{field}}
+                    {% endif %}
                         
                         {{field.errors}}
                 </div>
