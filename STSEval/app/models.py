@@ -30,6 +30,7 @@ class Routine(models.Model):
     FINISHED = 'F'
     DELETED = 'D'
     MANUAL = 'M'
+    LOWER_VAULT = 'LV'
     ROUTINE_STATUS = [
         (NEW,'New'),
         (STARTED,'Started'),
@@ -38,6 +39,7 @@ class Routine(models.Model):
         (FINISHED,'Finished'),
         (DELETED,'Deleted'),
         (MANUAL,'Manual'),
+        (LOWER_VAULT,'LowerVault'),
         ]
     status = models.CharField(max_length=2,choices=ROUTINE_STATUS,default=NEW)
     e1_done = models.BooleanField(default=False)

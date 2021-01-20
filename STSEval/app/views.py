@@ -337,18 +337,20 @@ def routine_ejudge_set_score(request):
 
     return HttpResponse(status=200)
 
-def routine_d2_set_score(request):
+def routine_set_dscore(request):
     routine = Routine.objects.get(pk=request.POST.get('routine'))
-    try:
-        routine.score_final_d2 = round(float(request.POST.get('score',0)),3)
-    except:
-        routine.score_final_d2 = 0
-
-    routine.save()
-    app.firebase.routine_set_d2_score(str(routine.session.id),routine.event.name,routine.score_final_d2)
+    type = request.POST.get('type','d2')
+    if type == 'd2':
+        try:
+            routine.score_final_d2 = round(float(request.POST.get('score',0)),3)
+        except:
+            routine.score_final_d2 = 0
+        routine.save()
+    
+    app.firebase.routine_set_dscore(str(routine.session.id),routine.event.name,type,round(float(request.POST.get('score',0)),3))
     sv = request.POST.get('start_value',0)
     if sv != '':
-        app.firebase.set_start_value(str(routine.session.id),routine.event.name,routine.athlete.team.id,round(float(sv),3),'d2')
+        app.firebase.set_start_value(str(routine.session.id),routine.event.name,routine.athlete.team.id,round(float(sv),3),type)
 
     return HttpResponse(status=200)
 
@@ -391,6 +393,20 @@ def routine_finished(request):
         score = "{:.3f}".format(routine.score_final)
     else:
         score = "{:.1f}".format(routine.score_final)
+    if routine.session.competition.disc.name == 'WAG' and routine.event.name == "VT":
+        #check if this is first or second, then take highest
+        routines = Routine.objects.filter(session=routine.session,event=routine.event,athlete=routine.athlete,status=Routine.FINISHED)
+        if len(routines) > 1:
+            if routines[0].score_final > routines[1].score_final:
+                highest = routines[0]
+                lowest = routines[1]
+            else:
+                highest = routines[1]
+                lowest = routines[0]
+            lowest.status=Routine.LOWER_VAULT
+            lowest.save()
+            #app.firebase.update_spectator_feed(str(routine.session.id),routine.event.name,'routine_finished',routine.athlete.id,"{:.3f}".format(highest.score_final))
+
     app.firebase.update_spectator_feed(str(routine.session.id),routine.event.name,'routine_finished',routine.athlete.id,score)
     #camera = Camera.objects.filter(teams=routine.athlete.team,events__name=routine.event.name).first()
     #check_update_camera_event(routine.session.id,camera)

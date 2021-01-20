@@ -33,6 +33,7 @@
             <td style="width:854px;" align="center">
                 <div id="divDJudgeEntry">
                     <div id="divRoutineStatus"></div>
+                    <div id="J1Score">J1 Score: ---</div>
                      Start Value<br/>
                     <input type="text" id="txtStartValue" placeholder="Start Value" class="ui-disabled" onkeypress="return isNumberKey(event)" ><br/>
                     Your Score<br/>
@@ -153,7 +154,8 @@
                     AllowEdit(true);
                     $("#divRoutineStatus").html("ATHLETE DONE, ENTER SCORE").addClass("timer-yellow").removeClass("timer-green").removeClass("timer-red");
 
-                    LoadRoutine();
+                    console.log("get routine");
+                    //LoadRoutine();
                     Status = doc.data().status;
                     if (BackupVideo != -1) {
                         document.getElementById("video-playback").pause();
@@ -169,6 +171,8 @@
             console.log("Current data: ", doc.data());
         }
         CheckStream(doc);
+        $("#J1Score").html('J1 Score: ' + doc.data().d1score);
+
     }
     function ShowReadyButton() {
         $("#divEJudgeEntry").hide();
@@ -216,7 +220,7 @@
        
       
         $("#lblDScore").html('');
-
+        $("#J1Score").html('J1 Score: ---');
         $("#divTotalScore").html('');
         $("#btnAccountability").addClass("ui-disabled");
         //SetJudges();
@@ -302,13 +306,14 @@
 
     function RoutineSubmitScore() {
         $.ajax({
-            url: "/routine_d2_set_score/",
+            url: "/routine_set_dscore/",
             type: "POST",
             headers: { "X-CSRFToken": token },
             data: {
                 'routine': RoutineID,
                 'score': $("#txtYourScore").val(),
                 'start_value': $("#txtStartValue").val(),
+                'type':'d2',
             },
             success: function (data) {
                 alert("Score Submitted");
@@ -317,7 +322,7 @@
     }
 
     function LoadRoutine() {
-        /*$.ajax({
+        $.ajax({
             url: "/routine_get_info/",
             type: "POST",
             dataType: 'json',
@@ -329,23 +334,12 @@
                 console.log(data);
                 //SetDScoreType(data['athlete_id']);
                 //SetDScoreDefaults();
-                $("#lblElements").html(data['score_elements']);
-                $("#lblDifficulty").html(data['score_difficulty']);
-                $("#lblGroups").html(data['score_groups']);
-                $("#lblBonus").html(data['score_bonus']);
-                $("#lblConnection").html(data['score_connection']);
-                $("#lblNeutralDed").html(data['score_neutral']);
-                $("#lblDScore").html(data['score_d']);
-                $("#divET1").html(data['score_e1']);
-                $("#divET2").html(data['score_e2']);
-                $("#divET3").html(data['score_e3']);
-                $("#divET4").html(data['score_e4']);
-                $("#divEScore").html(data['score_e']);
-                $("#divTotalScore").html(data['score_final']);
-                $("#btnAccountability").removeClass("ui-disabled");
+
+                $("#J1Score").html('J1 Score: ' + data['score_d']);
+               
 
             }
-        });*/
+        });
     }
 
 </script>

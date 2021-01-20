@@ -63,7 +63,9 @@
     var FallTimerInterval;
     var FloorTimerStart;
     var FloorTimerInterval;
+    var FloorTimerGoing = false;
     var CurrentStatus = "";
+    var TimeFallen = 0;
     var d1sv = 0;
     var d2sv = 0;
 
@@ -77,8 +79,8 @@
         .onSnapshot(function (doc) {
             UpdateFalls(doc);
         });
-    if (ev == "FX") {
-        db.collection("sessions").doc(Session).collection("event_managers").doc("FX_timer")
+    if (ev == "FX" || ev == "BB") {
+        db.collection("sessions").doc(Session).collection("event_managers").doc(ev + "_timer")
         .onSnapshot(function (doc) {
             UpdateTimer(doc);
         });
@@ -128,6 +130,7 @@
                 $("#divStartList").load("/athlete_start_list/" + ev + "/" + Team, function () {
                     SetStatus();
                 });
+                
             }
             else if (Status != doc.data().status) {
                 Status = doc.data().status;
@@ -146,6 +149,7 @@
     function SetStatus() {
         if ($("#" + $("#hdnUpNext").val()).html() != undefined) {
             if (Status == "AD" || Status == "F" || Status == "RD") {
+                FloorTimerGoing = false;
                 StatusDotsRed();
                 $("#divStatus").html("EVALUATION IN PROGRESS").removeClass("timer-yellow").removeClass("timer-green").addClass("timer-red");
                 $("#" + $("#hdnUpNext").val()).removeClass("status-dot-yellow").removeClass("status-dot-green").addClass("status-dot-red");
@@ -161,6 +165,8 @@
                 $("#" + $("#hdnUpNext").val()).removeClass("status-dot-yellow").addClass("status-dot-green").removeClass("status-dot-red");
                 d1sv = 0;
                 d2sv = 0;
+                TimeFallen = 0;
+                FloorTimerGoing = false;
                 $("#divStartValueArea").hide();
             }
         }
@@ -184,6 +190,10 @@
                     FallTimerInterval = setInterval(UpdateFallTimer, 1000);
                     $("#divFallTimer").removeClass("errorlist");
                     UpdateFallTimer();
+                    if (FloorTimerGoing) {
+                         clearInterval(FloorTimerInterval);
+                        $("#divTimerArea").hide();
+                    }
                     $("#divFallCredit").html(doc.data().credit);
                     if (doc.data().credit != "CREDIT NOT AWARDED") {
                         $("#divFallCredit").addClass("coach-fall-credit");
@@ -198,6 +208,14 @@
                 else {
                     clearInterval(FallTimerInterval);
                     $("#divFallArea").hide();
+                    if (FloorTimerGoing) {
+                        //floor timer was going, replace it
+                        let ftime = Math.round(Date.now() / 1000) - FallTimerStart;
+                        TimeFallen = ftime;
+                        FloorTimerInterval = setInterval(UpdateFloorTimer, 1000);
+                        UpdateFloorTimer();
+                         $("#divTimerArea").show();
+                    }
                 }
             }
             else {
@@ -222,12 +240,13 @@
                     FloorTimerStart = doc.data().start.seconds;
                     FloorTimerInterval = setInterval(UpdateFloorTimer, 1000);
                     UpdateFloorTimer();
-                   
+                    FloorTimerGoing = true;
                     $("#divTimerArea").show();
                 }
                 else {
                     clearInterval(FloorTimerInterval);
                     $("#divTimerArea").hide();
+                    FloorTimerGoing = false;
                 }
             }
             else {
@@ -238,7 +257,7 @@
     }
 
     function UpdateFloorTimer() {
-        $("#divFloorTimer").html((Math.round(Date.now() / 1000) - FloorTimerStart) + " seconds");
+        $("#divFloorTimer").html((Math.round(Date.now() / 1000) - FloorTimerStart - TimeFallen) + " seconds");
     }
 
 </script>

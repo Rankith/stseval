@@ -119,7 +119,8 @@
 	                <button id="btnRestartE" type="button" class="btn btn-main mb-2" onclick="RestartE()" style="display:none">Judge E</button>
 	                <button id="btnRestartBoth" type="button" class="btn btn-main mb-2" onclick="RestartBoth()" style="display:none">Both</button>
                     <button id="btnFloorTimer" type="button" class="btn btn-main mb-4 ui-disabled" onclick="FloorTimerClick()" style="width:200px;display:none">Timer</button>
-                    {% if event == 'FX' %} <br/>{% endif %}
+                    {% if event == 'FX' and disc == 'MAG' %} <br/>{% endif %}
+                    {% if event == 'BB' and disc == 'WAG' %} <br/>{% endif %}
 	                <button id="btnExerciseDone" type="button" class="btn btn-main mb-2" onclick="ExerciseDoneClick()" style="width:200px">Exercise Done</button><br/>
                     <div id="divReleaseEJudges" {% if not multi_d %}style="display:none"{% endif %}>
                         <button id="btnReleaseEJudges" type="button" class="btn btn-main-selected  mb-2 ui-disabled" onclick="ReleaseEJudges()" style="width:200px">Release EJudges</button>
@@ -269,6 +270,7 @@
     if (SimpleD)
     UseDots = false;
     var d2 = "{{judges.d2_email}}";
+    
 
 </script>
 <script type="text/javascript">
@@ -315,6 +317,11 @@
     var Overview = false;
     var db = firebase.firestore();
     var SimpleHasD2 = false;
+    var OnVault = 1;
+    var TwoVaults = false;
+    var TimeFallen = 0;
+    if (Disc == "WAG" && ev == "VT")
+        TwoVaults = true;
 
     //firebase.firestore.setLogLevel('debug');
     for (var i = 1; i <= 4; i++) {
@@ -679,6 +686,12 @@
                 CurrentAthlete = doc.data().athlete_id;
                 console.log("Athlete changed: " + Status);
                 GetAthleteInfo();
+                //reset to first vault
+                if (TwoVaults) {
+                    OnVault = 1;
+                    $("#btnFinish").html("Next Vault");
+                }
+
                 //update the gymnast if on status New
                 //if (Status == status.NEW)
                     //GetNextAthlete(true);
@@ -820,9 +833,9 @@
             $("#tdD2Score").show();
             $("#divD2Score").show();
         }
-        if (ev == "FX")
+        if ((ev == "FX" && Disc == "MAG") || (ev == "BB" && Disc == "WAG"))
             $("#btnFloorTimer").show();
-         ReadyUp();
+        ReadyUp();
         if (UseDots) {
            
             SetDotsArea();
@@ -844,7 +857,7 @@
         SetJudges();
         SetJudgesDone(false);
         ClearFall();
-        
+        TimeFallen = 0;
         RoutineID = 0;
         //$("#btnStartJudging").show();
         $("#btnStartJudging").addClass('ui-disabled');
@@ -881,6 +894,11 @@
         }
         if (SimpleHasD2)
             $("#divD2Score").html();
+        if (OnVault == 1 && TwoVaults) {
+            $("#btnFinish").html("Next Vault");
+        }
+        else
+            $("#btnFinish").html("Post Score");
         document.getElementById('divTotalScore').innerHTML = "";
         if (BackupVideo != -1) {
             document.getElementById("video-playback").pause();
@@ -1127,7 +1145,24 @@
 
     function SetScoreClick() {
         Status = status.REVIEW_DONE;
+        DScoreUpdate();
         SetDScore();
+    }
+
+    function DScoreUpdate() {
+        $.ajax({
+            url: "/routine_set_dscore/",
+            type: "POST",
+            headers: { "X-CSRFToken": token },
+            data: {
+                'routine': RoutineID,
+                'score': $("#txtYourTotal").val(),
+                'start_value': $("#txtStartValue").val(),
+                'type':'d1',
+            },
+            success: function (data) {
+            }
+        });
     }
 
     //also sets next ath for d2 if that is a thing
@@ -1187,7 +1222,7 @@
                             ReleaseEJudges(true);
                         }
                         else*/
-                        MarkDoneAndGetNextAthlete();
+                        
 
 
                     }
@@ -1218,7 +1253,14 @@
                             ReleaseEJudges(true);
                         }
                         else*/
-                        MarkDoneAndGetNextAthlete();
+                        if (TwoVaults && OnVault == 1) {
+                            OnVault = 2;
+                            Reset();
+                            JudgesReadyClick();
+                            SetupRoutine();
+                        }
+                        else
+                            MarkDoneAndGetNextAthlete();
 
 
                     }
@@ -1589,6 +1631,8 @@
             data: {
             },
             success: function (data) {
+                if (TwoVaults && OnVault == 2)
+                    OnVault = 1;
                 if (MultiD && JudgeOnFirebase != DType)//only make the reset load next if its not multi D setup
                     Reset();
                 else if (MultiD && JudgeOnFirebase == DType) {
@@ -2032,7 +2076,7 @@
     function FloorTimerDone() {
         if (FloorTiming) {
             //if it was timing, put the time on the right of button
-            let cur = (Math.round(Date.now() / 1000) - FloorTimerStart);
+            let cur = (Math.round(Date.now() / 1000) - FloorTimerStart - TimeFallen);
             $("#btnFloorTimer").html("Timer (" + cur + " sec)");
         }
         else
@@ -2053,7 +2097,7 @@
     }
 
     function UpdateFloorTimer() {
-        let cur = (Math.round(Date.now() / 1000) - FloorTimerStart)
+        let cur = (Math.round(Date.now() / 1000) - FloorTimerStart - TimeFallen)
         $("#btnFloorTimer").html("Stop Timer (" + (cur) + " sec)");
         if (cur > 70)
              $("#btnFloorTimer").removeClass("btn-main-selected").addClass("btn-red");
@@ -2095,6 +2139,11 @@
         clearInterval(FallTimerInterval);
         SetFall(false);
         ResetCreditButtons();
+        if (FloorTiming) {
+            let ftime = Math.round(Date.now() / 1000) - FallTimerStart;
+            TimeFallen += ftime;
+            FloorTimerInterval = setInterval(UpdateFloorTimer, 1000);
+        }
     }
 
     function StartFall() {
@@ -2105,6 +2154,9 @@
         clearInterval(FallTimerInterval);
         SetFall(true);
         ResetCreditButtons();
+        if (FloorTiming) {
+            clearInterval(FloorTimerInterval);
+        }
     }
 
     function UpdateFallTimer() {
