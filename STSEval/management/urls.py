@@ -61,6 +61,7 @@ urlpatterns = [
     path('enter_access_code/<int:session_id>', views.enter_access_code, name='enter_access_code'),
     path('try_access_code/<int:session_id>', views.try_access_code, name='try_access_code'),
     path('session_management/<int:session_id>', views.session_management, name='session_management'),
+    path('setup_testing/', views.setup_testing, name='setup_testing'),
     #path('competition_manage/', views.competition_manage, name='competition_manage'),
     #path('competition_create_update/', views.competition_create_update, name='competition_create_update'),
     #path('session_manage/', views.session_manage, name='session_manage'),

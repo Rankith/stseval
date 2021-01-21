@@ -240,6 +240,7 @@
     <Content Include="management\templates\management\email_notice.html" />
     <Content Include="management\templates\management\enter_access_code.html" />
     <Content Include="management\templates\management\session_management.html" />
+    <Content Include="management\templates\management\setup_testing.html" />
     <Content Include="management\templates\management\spectator_management.html" />
     <Content Include="management\templates\management\setup_rotations.html" />
     <Content Include="management\templates\management\start_list_warn.html" />

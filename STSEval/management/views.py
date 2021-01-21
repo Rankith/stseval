@@ -1062,6 +1062,10 @@ def try_access_code(request,session_id):
     else:
         return HttpResponse("Fail")
 
+@login_required(login_url='/account/login/admin/')
+def setup_testing(request):
+    return render(request,'management/setup_testing.html')
+
 
 def judges_get(request):
     comp = request.GET.get('comp')

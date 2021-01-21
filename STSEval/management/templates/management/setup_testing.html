@@ -1,0 +1,42 @@
+{% extends "app/layout.html" %}
+{% load staticfiles %}
+{% block content %}
+<div align="center" style="margin:10px;padding:0">
+    <h2>Testing</h2>
+    <div class="row no-gutters">
+         <div class="col-3 pr-4" align="right">
+             <h2>Overview</h2>
+        </div>
+        <div class="col-8 pt-2 pl-2" align="left">
+            <span>
+                Testing with each new participant is <b>required</b>. There are multiple test events setup for you to use depending on what kind of competition you are running.<br/>
+                All logins follow the simple pattern of login: [role]@[testname].com password: test<br/>
+            </span><br/>
+        </div>
+        <div class="col-3 pr-4" align="right">
+             <h2>MAG testing</h2>
+        </div>
+        <div class="col-8 pt-2 pl-2" align="left">
+            <span>
+                There is one test competition for MAG. FX through VT use 1 D Judge and 2 E Judges.  PB and HB have 2 D judges and 2 E Judges.<br/>
+                There are two separate teams, one starts on FX and one starts on PB.<br/>
+                <a href="{% static 'app/MAGTestLogins.xlsx' %}">Download full login list</a><br/>
+                <a href="/overview/11/"><button id="btnSessionManagement" type="button" class="btn btn-main">Session Overview</button></a><br/>
+            </span><br/>
+        </div>
+        <div class="col-3 pr-4" align="right">
+             <h2>WAG testing</h2>
+        </div>
+        <div class="col-8 pt-2 pl-2" align="left">
+            <span>
+                Blah<br/>
+                <a href="{% static 'app/WAGTestLogins.xlsx' %}">Download full login list</a><br/>
+                <a href="/overview/11/"><button id="btnSessionManagement" type="button" class="btn btn-main">Session Overview</button></a><br/>
+            </span><br/>
+        </div>
+    </div>
+
+		
+</div>
+
+{% endblock %}
