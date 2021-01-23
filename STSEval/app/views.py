@@ -257,7 +257,7 @@ def routine_start_judging(request):
 
     routine.save()
     app.firebase.routine_set_status(str(request.session.get('session')),request.session.get('event'),routine)
-    if request.POST.get('backup_video') != '-1' and request.POST.get('backup_video') != -1: ##backup video
+    if request.POST.get('backup_video') != '-1' and request.POST.get('backup_video') != -1: #backup video
         app.firebase.update_spectator_feed(str(request.session.get('session')),request.session.get('event'),'routine_start_backup',request.POST.get('athlete'))
     else:
         app.firebase.update_spectator_feed(str(request.session.get('session')),request.session.get('event'),'routine_start',request.POST.get('athlete'))
@@ -1320,18 +1320,20 @@ def check_update_camera_event(session_id,camera = None):
 
 def camera_get_event_on(camera):
     #t1 = perf_counter()
-    rotation = camera.teams.first().athlete_set.first().rotation
+    rotation = camera.teams.first().athlete_set.first().rotation#this r bad
     next_event = None
     rotation_order = RotationOrder.objects.filter(session=camera.session,rotation=rotation).order_by('order')
     sls = StartList.objects.filter(athlete__rotation=rotation,session=camera.session,active=True,completed=False)#all un finished athletes on this rotation with no backup video
     for ord in rotation_order:
-        sl = sls.filter(event=ord.event)
-        for s in sl: #check to see if its just a backup video in which case dont move camera back
-            if s.athlete.backupvideo_set.all().filter(event__name=ord.event.name).count() == 0:
-                next_event = s.event
+        if ord.event in camera.events.all():
+            sl = sls.filter(event=ord.event)
+            camera.events
+            for s in sl: #check to see if its just a backup video in which case dont move camera back
+                if s.athlete.backupvideo_set.all().filter(event__name=ord.event.name).count() == 0:
+                    next_event = s.event
+                    break
+            if next_event != None:
                 break
-        if next_event != None:
-            break
 
     #print(perf_counter())
     return next_event
@@ -1440,6 +1442,10 @@ def reset_athlete_warn(request):
 
 @login_required(login_url='/account/login/admin/')
 def reset_athlete(request,session_id,event_name):
+    reset_athlete_do(session_id,event_name)
+    return render(request,'app/reset_athlete_warn.html')
+
+def reset_athlete_do(session_id,event_name):
     #kill any secondary judging
     StartList.objects.filter(session_id=session_id,event__name=event_name,secondary_judging=True,completed=False).update(secondary_judging=False)
     sl = athlete_get_next_do(event_name,session_id)
@@ -1447,8 +1453,6 @@ def reset_athlete(request,session_id,event_name):
     app.firebase.routine_reset_previous(sl.session,event_name)
     app.firebase.routine_setup(sl.session,event_name,sl.athlete,camera.id,'D1')
     check_update_camera_event(camera.session.id,camera)
-
-    return render(request,'app/reset_athlete_warn.html')
 
 @valid_login_type(match='coach')
 def coach(request,event_name='FX'):
@@ -1780,6 +1784,24 @@ def session_mark_complete(request,session_id):
     session = Session.objects.get(pk=session_id)
     session.finished = True
     session.save()
+
+    return HttpResponse(200)
+
+def session_disable_test_mode(request,session_id):
+    session = Session.objects.get(pk=session_id)
+    #check if it is in test mode
+    if session.admin_test_mode:
+        #delete all routines
+        Routine.objects.filter(session=session).delete()
+        #mark all gymnasts not completed
+        sls = StartList.objects.filter(session=session,completed=True)
+        events_to_reset = list(sls.values_list('event__name',flat=True).distinct())
+        sls.update(completed=False)
+        for ev in events_to_reset:
+            reset_athlete_do(session.id,ev)
+        BackupVideo.objects.filter(session=session).delete()
+        session.admin_test_mode = False
+        session.save()
 
     return HttpResponse(200)
 

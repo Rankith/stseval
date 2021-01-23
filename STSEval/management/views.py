@@ -1150,7 +1150,7 @@ def session_create_update(request):
         session.competition_id = request.GET.get('comp_id')
         session.save()
     else:
-        session = Session(name=request.GET.get('name',''),time=request.GET.get('time'),competition_id=request.GET.get('comp_id'))
+        session = Session(name=request.GET.get('name',''),time=request.GET.get('time'),competition_id=request.GET.get('comp_id'),admin_test_mode=True)
         session.save()
     return HttpResponse(status=200)
 

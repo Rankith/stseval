@@ -636,3 +636,13 @@ input[type="checkbox"].input-validation-error {
 tr.highlight td.jsgrid-cell {
     background-color: #535c8a !important;
 }
+
+.blink_me {
+    animation: blinker 2s linear infinite;
+}
+
+@keyframes blinker {
+    50% {
+        opacity: 0;
+    }
+}

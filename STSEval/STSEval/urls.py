@@ -97,6 +97,7 @@ urlpatterns = [
     path('reset_athlete/<int:session_id>/<str:event_name>/', views.reset_athlete, name='reset_athlete'),
     path('session_complete_warn/', views.session_complete_warn, name='session_complete_warn'),
     path('session_mark_complete/<int:session_id>/', views.session_mark_complete, name='session_mark_complete'),
+    path('session_disable_test_mode/<int:session_id>/', views.session_disable_test_mode, name='session_disable_test_mode'),
     path('check_all_athletes_done/<int:session_id>/', views.check_all_athletes_done, name='check_all_athletes_done'),
     path('streaming/', include('streaming.urls')),
     path('management/', include('management.urls')),

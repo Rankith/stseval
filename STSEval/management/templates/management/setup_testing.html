@@ -9,30 +9,64 @@
         </div>
         <div class="col-8 pt-2 pl-2" align="left">
             <span>
-                Testing with each new participant is <b>required</b>. There are multiple test events setup for you to use depending on what kind of competition you are running.<br/>
-                All logins follow the simple pattern of login: [role]@[testname].com password: test<br/>
+                Testing with each new participant is <b>required</b>. After creation, your competition is in Test Mode by default<br/>
+                This allows you to test cameras and judges, it must be disabled before the start of the competition.<br/>
+                Disabling test mode resets the meet to the start and clears out routines and scores.<br/>
+                <span style="color:red;font-weight:bold">Test mode must be disabled before the competition begins.</span>
             </span><br/>
         </div>
         <div class="col-3 pr-4" align="right">
-             <h2>MAG testing</h2>
+             <h2>Camera Testing</h2>
         </div>
         <div class="col-8 pt-2 pl-2" align="left">
-            <span>
-                There is one test competition for MAG. FX through VT use 1 D Judge and 2 E Judges.  PB and HB have 2 D judges and 2 E Judges.<br/>
-                There are two separate teams, one starts on FX and one starts on PB.<br/>
-                <a href="{% static 'app/MAGTestLogins.xlsx' %}">Download full login list</a><br/>
-                <a href="/overview/11/FX"><button id="btnSessionManagement" type="button" class="btn btn-main">Session Overview</button></a><br/>
-            </span><br/>
+            Each camera needs to:
+            <ul>
+                <li>Stream for 5+ minutes</li>
+                <li>Have rapid movement in front of the camera (an actual performance would be best)</li>
+                <li>Be observed by the administrator (you)</li>
+            </ul>
+            What to check for:
+            <ul>
+                <li>Blurry movement
+                    <ul>
+                        <li>This is most likely from a low quality camera or computer</li>
+                        <li>Try finding a better camera or adjusting your camera's settings (disable auto white-balance and lighting compensation)</li>
+                    </ul>
+                </li>
+                <li>Glitches, freezing or pixelization
+                    <ul>
+                        <li>This is a connection issue</li>
+                        <li>Ask multiple participants if they all see it to make sure it is on the camera's end</li>
+                        <li>Make sure the camera is using an ethernet cable</li>
+                        <li>Have the camera run a speed test at <a href="https://www.speedtest.net/">speedtest.net</a> and make sure they meet the minimum requirements of 25Mbps upload per camera at the location</li>
+                    </ul>
+                </li>
+                <li>Other issues
+                    <ul>
+                        <li>Some devices may have a hard time connecting.  Refresh the page and hit the start button again if this occurs.</li>
+                        <li>Try another device if nothing else works.</li>
+                    </ul>
+                </li>
+            </ul>  
         </div>
         <div class="col-3 pr-4" align="right">
-             <h2>WAG testing</h2>
+             <h2>Judge Testing</h2>
         </div>
         <div class="col-8 pt-2 pl-2" align="left">
-            <span>
-                Blah<br/>
-                <a href="{% static 'app/WAGTestLogins.xlsx' %}">Download full login list</a><br/>
-                <a href="/overview/11/VT"><button id="btnSessionManagement" type="button" class="btn btn-main">Session Overview</button></a><br/>
-            </span><br/>
+            You should use this opportunity to train the judges on how to use the system.<br/>
+            Each judge needs to:
+            <ul>
+                <li>Login to their appropriate role(s)</li>
+                <li>Run through the judging process as if the competition was proceeding as normal at least twice for each role</li>
+                <li>Observe a stream for at least 5 minutes and watch for glitches, freezing, pixelization or lagging behind the other viewers
+                    <ul>
+                        <li>If these are not experienced by everyone it means they are specific to their system/internet.</li>
+                        <li>Make sure they are connected to their internet via an ethernet cable.</li>
+                        <li>If they are unable to reliably view the stream, they will be unable to judge and you may need a replacement.</li>
+                    </ul>
+                </li>
+            </ul>
+            
         </div>
     </div>
 

@@ -10,6 +10,10 @@
 <div  align="center">
     {% include "app/event_select.html" %}  
     <div id="divHeader"><h4>{{session.full_name}}</h4></div>
+    {% if session.admin_test_mode %}
+        <div><h3 style="display:inline;color:red">TEST MODE</h3> <i style="vertical-align:top" class="fa fa-info-circle" aria-hidden="true" title="Test mode allows you to test cameras and judges.  This must be disabled before the start of the competition."></i></div>
+        <button id="btnDisableTest" type="button" class="btn btn-main btn-small" onclick="DisableTestMode()" title="Disabling test mode resets the meet to the start and clears out routines and scores.">Disable Test Mode</button>
+    {% endif %}
    <div class="row no-gutters">
         <div class="col-xl-6 col-12 pr-4" align="right">
             <div id="play-video-container" class="live-container d-flex align-items-center justify-content-center">
@@ -20,6 +24,7 @@
             <div id="video-playback"></div>
         </div>
         <div class="col-xl-6 col-12 pl-4" align="left">
+           
             <h3 class="pl-4">Officials</h3>
             <div id="divOfficials">
                 {% if judges != None %}
@@ -274,6 +279,21 @@
              success: function (data) {
                  SessionFinished = true;
                 $("#btnFinish").addClass("ui-disabled");
+              
+            }
+        });
+    }
+
+    function DisableTestMode() {
+        $.ajax({
+            url: "/session_disable_test_mode/" + Session + "/",
+            type: "POST",
+            headers: { "X-CSRFToken": token },
+            data: {
+            },
+             success: function (data) {
+                 alert("Test Mode Disabled");
+                location.reload();
               
             }
         });

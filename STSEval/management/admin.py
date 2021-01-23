@@ -44,8 +44,8 @@ class RotationOrderAdmin(ImportExportModelAdmin):
     list_filter=('session','event','rotation')
 
 class SessionAdmin(ImportExportModelAdmin):
-    list_display=('id','name','active','paid','finished','free','payment_intent')
-    list_editable=('active','paid','finished','free','payment_intent')
+    list_display=('id','name','active','paid','finished','admin_test_mode','free','payment_intent')
+    list_editable=('active','paid','finished','admin_test_mode','free','payment_intent')
     list_filter=('competition__disc','active','finished')
 
 admin.site.register(AthleteLevel,AthleteLevelAdmin)
