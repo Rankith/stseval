@@ -1623,6 +1623,14 @@ def spectate(request,session_id,display_type,event_name='-1'):
     }
     return render(request,'app/spectate.html',context)
 
+def spectate_splash_start(request,session_id):
+    session = Session.objects.get(pk=session_id)
+
+    context = {
+        'session':session,
+    }
+    return render(request,'app/spectate_splash_start.html',context)
+
 def spectator_video(request):
     context = {
         'player_id':request.POST.get('player_id'),

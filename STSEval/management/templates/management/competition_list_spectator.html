@@ -3,7 +3,7 @@
     {% for s in sessions %}
     <tr id="trSession{{s.id}}" onclick="SessionClick({{s.id}});" class="session-list">
         <td width="45px">&nbsp;{{s.competition.disc.name}}</td>
-        <td>{{s.competition.date|date:'m/d'}} {{s.time}} <span style="font-size:0.6rem">(EST)</span></td>
+        <td>{{s.competition.date|date:'m/d'}} {{s.time}} <span style="font-size:0.6rem">(PST)</span></td>
         <td>{{s.competition.name}}</td>
         <td>{{s.name}}</td>
         <td>{{s.competition.get_type_display}}</td>

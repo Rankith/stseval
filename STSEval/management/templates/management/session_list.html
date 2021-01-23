@@ -2,7 +2,7 @@
     {% for session in sessions %}
         <div id="divSession{{session.id}}" onclick="SessionClick({{session.id}},{{session.active|lower}});"class="row no-gutters session-list">
             <div class="col-7 pl-2" align="left">{{session.name}}</div>
-            <div class="col-5 pr-2" align="right">{{session.time}} <span style="font-size:0.6rem">(EST)</span></div>
+            <div class="col-5 pr-2" align="right">{{session.time}} <span style="font-size:0.6rem">(PST)</span></div>
         </div>
         
     {% endfor %}

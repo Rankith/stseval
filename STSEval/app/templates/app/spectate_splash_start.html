@@ -1,0 +1,49 @@
+
+{% block content %}
+{% load staticfiles %}
+<link rel="stylesheet" type="text/css" href="{% static 'app/content/site.css' %}?v=1.44" />
+<link rel="stylesheet" type="text/css" href="{% static 'app/content/bootstrap.min.css' %}" />
+<div class="spectate-splash vh-100 d-flex flex-column justify-content-center" align="center">
+    <!--<div style="flex:1"></div>-->
+    <div style="display:flex;justify-content:center;align-items:center">
+        <div style="font-size:1.3rem">
+            <div class="spectate-splash-title">Welcome To The {{session}} Competition</div>
+            Admin welcome note here.<br/><br/>
+            <table cellpadding="0" cellspacing="0" style="font-size:1.3rem">
+                <tr>
+                    <td style="color:#8e8ea7" align="right">
+                        Date:
+                    </td>
+                    <td class="pl-4">
+                        {{session.competition.date}}
+                    </td>
+                </tr>
+                <tr>
+                    <td style="color:#8e8ea7" align="right">
+                        Time:
+                    </td>
+                    <td class="pl-4">
+                        {{session.time}} <span style="font-size:0.6rem">(PST)</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="color:#8e8ea7" align="right" valign="top">
+                        Gyms:
+                    </td>
+                    <td class="pl-4">
+                        {% for team in session.team_set.all %}
+                            {{team.name}}<br/>
+                        {% endfor %}
+                    </td>
+                </tr>
+            </table><br/><br/>
+            <img class="pt-1" src="{% static 'app/images/stslivegym-white.svg' %}" style="height:25vh">
+            <br/>
+            <br/><br/>
+            <span style="font-size:.8rem">(Click anywhere to continue)</span>
+        </div>
+        
+    </div>
+</div>
+
+{% endblock %}

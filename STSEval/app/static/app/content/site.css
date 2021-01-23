@@ -646,3 +646,18 @@ tr.highlight td.jsgrid-cell {
         opacity: 0;
     }
 }
+
+.spectate-splash {
+    /*border: 1px solid #2489CE {c-bup-border}*/;
+    background-color: #3e3748ff;
+    background-image: -webkit-gradient(linear, left top, left bottom, from( #3e3748ff), to(#110f14ff));
+    background-image: -webkit-linear-gradient(top, #3e3748ff, #110f14ff);
+    background-image: -moz-linear-gradient(top, #3e3748ff, #110f14ff);
+    background-image: -ms-linear-gradient(top, #3e3748ff, #110f14ff);
+    background-image: -o-linear-gradient(top, #3e3748ff, #110f14ff);
+    background-image: linear-gradient(to bottom, #3e3748ff, #110f14ff);
+    filter: progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#3e3748ff, endColorstr=#110f14ff);
+}
+.spectate-splash-title {
+    font-size:3rem;
+}
