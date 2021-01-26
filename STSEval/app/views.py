@@ -1586,9 +1586,12 @@ def spectate(request,session_id,display_type,event_name='-1'):
     if account.views.check_session_access_direct(request.user,session_id) == "No":
         return redirect('/select_session')
     events = Event.objects.filter(disc=session.competition.disc)
+    
     if event_name == '-1':
         event = events.first()
+        show_splash = 'start'
     else:
+        show_splash = ''
         event = events.filter(name=event_name).first()
     athletes = Athlete.objects.filter(team__session=session)
     sponsors = Sponsor.objects.filter(session=session)
@@ -1620,16 +1623,29 @@ def spectate(request,session_id,display_type,event_name='-1'):
         'sponsors':sponsors,
         'display_type':display_type,
         'scoreboard_overlay':scoreboard_overlay,
+        'show_splash':show_splash
     }
     return render(request,'app/spectate.html',context)
 
 def spectate_splash_start(request,session_id):
     session = Session.objects.get(pk=session_id)
+    sponsors = Sponsor.objects.filter(session=session)
 
     context = {
         'session':session,
+        'sponsors':sponsors,
     }
     return render(request,'app/spectate_splash_start.html',context)
+
+def spectate_splash_end(request,session_id):
+    session = Session.objects.get(pk=session_id)
+    sponsors = Sponsor.objects.filter(session=session)
+
+    context = {
+        'session':session,
+        'sponsors':sponsors,
+    }
+    return render(request,'app/spectate_splash_end.html',context)
 
 def spectator_video(request):
     context = {
@@ -1792,6 +1808,14 @@ def session_mark_complete(request,session_id):
     session = Session.objects.get(pk=session_id)
     session.finished = True
     session.save()
+
+    try:
+        session.closing_message = request.POST.get('message')
+        session.save()
+    except:
+        pass
+
+    app.firebase.update_spectator_feed(str(request.session.get('session')),'','session_complete')
 
     return HttpResponse(200)
 

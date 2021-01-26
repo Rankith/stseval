@@ -708,10 +708,13 @@ def cameras_check_missing_call(session_id):
 @login_required(login_url='/account/login/admin/')
 def setup_sponsors(request,id):
     session = Session.objects.get(pk=id)
+    if session.welcome_message == '':
+        session.welcome_message = 'Welcome to the ' + session.competition.name + ' Competition'
     context = {
         'title': 'Competition Setup (6/7)',
         'session_name': session.full_name,
         'id':session.id,
+        'welcome_message':session.welcome_message,
         'help':'competition_setup_sponsors',
     }
     return render(request,'management/setup_sponsors.html',context)
@@ -748,6 +751,17 @@ def sponsor_list(request,session_id):
 @login_required(login_url='/account/login/admin/')
 def sponsor_delete(request,id):
     Sponsor.objects.filter(id=id).delete()
+    return HttpResponse(status=200)
+
+@login_required(login_url='/account/login/admin/')
+def update_splash_message(request,session_id):
+    session = Session.objects.get(pk=session_id)
+    if request.GET.get('type','welcome') == 'welcome':
+        session.welcome_message = request.GET.get('message')
+    else:
+        session.closing_message = request.GET.get('message')
+    session.save()
+
     return HttpResponse(status=200)
 
 def calculate_judge_panels(session):

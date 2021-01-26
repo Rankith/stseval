@@ -274,7 +274,8 @@
             url: "/session_mark_complete/" + Session + "/",
             type: "POST",
             headers: { "X-CSRFToken": token },
-            data: {
+             data: {
+                'message':$("#spectator_message").val()
             },
              success: function (data) {
                  SessionFinished = true;

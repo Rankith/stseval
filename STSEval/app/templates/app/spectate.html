@@ -11,7 +11,7 @@
     <div class="d-flex">
         <div class="flex-grow-1">
              <div id="divHeader"><h4>{{session.full_name}}</h4></div>
-        
+        <span id="divMobileHidden" class="d-none d-lg-block"></span>
             <div class="row no-gutters">
 
                {% if display_type == 'single' %}
@@ -77,6 +77,16 @@
         <div style="width:200px" class="ml-2 d-md-block d-none">{% include "app/update_area.html" %} </div>
     </div>
    </div>
+<div class="modal fade" id="modalSplash" tabindex="-1" role="dialog" aria-hidden="true" onclick="SplashClose();">
+  <div id="modalSplashDoc" class="modal-dialog spectate-splash" role="document" style="max-width:none;width:75%;cursor:pointer" onclick="SplashClose();">
+      <button type="button" class="close" aria-label="Close" style="margin-left:inherit">
+          <span aria-hidden="true">&times;</span>
+        </button>
+    <div class="modal-content" id="modalSplashBody" style="background-color:transparent!important;border:none!important">
+      
+    </div>
+  </div>
+</div>
 {% endblock %}
 
 {% block scripts %}
@@ -103,6 +113,7 @@
     var HLSPlayer = new Array();
     var AthleteNames = new Array();
     var ScoreboardOverlay = {{scoreboard_overlay|lower}};
+    var ShowSplash = '{{show_splash}}';
     {% for athlete in athletes %}
         AthleteNames[{{athlete.id}}] = "{{athlete}}";
     {% endfor %}
@@ -112,6 +123,7 @@
     var CurrentAthlete = new Array();
     CurrentAthlete[1] = -1;
     CurrentAthlete[2] = -1;
+    var ended = false;
     var test;
     var refs = new Array();
     var uid;
@@ -182,6 +194,32 @@
     //if (Hls.isSupported())
         //alert("HLS Supported");
    // alert("Can Play = " + document.getElementById("player-video1").canPlayType('application/vnd.apple.mpegurl'));
+   //only show non mobile
+    if (ShowSplash == 'start')
+        ShowSplashStart();
+
+    function ShowSplashStart() {
+        if ($("#divMobileHidden").is(":visible")) {
+            $("#modalSplashBody").load("/spectate_splash_start/" + Session + "/", function () {
+                $("#modalSplash").modal('show');
+            });
+        }
+    }
+    function ShowSplashEnd() {
+        if ($("#divMobileHidden").is(":visible")) {
+            $("#modalSplashBody").load("/spectate_splash_end/" + Session + "/", function () {
+                $("#modalSplash").modal('show');
+            });
+        }
+    }
+
+    function SplashClose() {
+        if (!ended)
+            $("#modalSplash").modal('hide');
+        else
+            window.location = "/scoreboard/" + ev[1];
+    }
+
 
     function UpdateCompetitionStream(querySnapshot) {
         querySnapshot.docChanges().forEach(function (change) {
@@ -196,6 +234,10 @@
                 else if (docdata.type == 'routine_start_backup') {
                     let message = "<span class='update-message-header'>" + docdata.athlete_display + "</span><br/>" + "Backup Video Being Evaluated " + docdata.event;
                     $("#divUpdates").prepend("<div id='divUpdate" + docdata.id + "' class='update-message' align='center' style='display:none'>" + message + "</div>");
+                }
+                else if (docdata.type == 'session_complete') {
+                    ended = true;
+                    ShowSplashEnd();
                 }
                 else {
                     let message = "<span class='update-message-header'>" +docdata.athlete_display + "</span><br/>" + "Scored " + docdata.score + " on " + docdata.event;

@@ -73,6 +73,8 @@ class Session(models.Model):
     access_code_used = models.IntegerField(default=0)
     use_ejudge_dots = models.BooleanField(default=True)
     admin_test_mode =  models.BooleanField(default=True)
+    welcome_message = models.CharField(max_length=150,blank=True,default='')
+    closing_message = models.CharField(max_length=150,blank=True,default='')
     def full_name(self):
         return self.competition.name + " - " + self.competition.get_type_display() + " - " + self.name
     def __str__(self):

@@ -1,17 +1,15 @@
 
 {% block content %}
 {% load staticfiles %}
-<link rel="stylesheet" type="text/css" href="{% static 'app/content/site.css' %}?v=1.44" />
-<link rel="stylesheet" type="text/css" href="{% static 'app/content/bootstrap.min.css' %}" />
-<div class="spectate-splash vh-100 d-flex flex-column justify-content-center" align="center">
+<div class="d-flex flex-column justify-content-center" align="center">
+    {% include "app/sponsor_display.html" %}<br/><br/>
     <!--<div style="flex:1"></div>-->
     <div style="display:flex;justify-content:center;align-items:center">
         <div style="font-size:1.3rem">
-            <div class="spectate-splash-title">Welcome To The {{session}} Competition</div>
-            Admin welcome note here.<br/><br/>
+            <div class="spectate-splash-title">{{session.welcome_message}}</div><br/>
             <table cellpadding="0" cellspacing="0" style="font-size:1.3rem">
                 <tr>
-                    <td style="color:#8e8ea7" align="right">
+                    <td style="color:#8e8ea7;font-weight:bold" align="right">
                         Date:
                     </td>
                     <td class="pl-4">
@@ -19,7 +17,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td style="color:#8e8ea7" align="right">
+                    <td style="color:#8e8ea7;font-weight:bold" align="right">
                         Time:
                     </td>
                     <td class="pl-4">
@@ -27,7 +25,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td style="color:#8e8ea7" align="right" valign="top">
+                    <td style="color:#8e8ea7;font-weight:bold" align="right" valign="top">
                         Gyms:
                     </td>
                     <td class="pl-4">
@@ -40,7 +38,7 @@
             <img class="pt-1" src="{% static 'app/images/stslivegym-white.svg' %}" style="height:25vh">
             <br/>
             <br/><br/>
-            <span style="font-size:.8rem">(Click anywhere to continue)</span>
+            <span>Click anywhere to continue</span>
         </div>
         
     </div>

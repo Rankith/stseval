@@ -1,0 +1,24 @@
+
+{% block content %}
+{% load staticfiles %}
+<div class="d-flex flex-column justify-content-center" align="center">
+    {% include "app/sponsor_display.html" %}<br/><br/>
+    <!--<div style="flex:1"></div>-->
+    <div style="display:flex;justify-content:center;align-items:center">
+        <div style="font-size:1.3rem">
+            <div>The competition is now complete.</div><br/>
+            <div>Thank you for watching.</div><br/>
+            {% if session.closing_message != '' %}
+                <div style="color:#8e8ea7;">{{session.closing_message}}</div><br/>
+            {% endif %}
+           <br/>
+            <img class="pt-1" src="{% static 'app/images/stslivegym-white.svg' %}" style="height:25vh">
+            <br/>
+            <br/><br/>
+            <span>Click anywhere to continue</span>
+        </div>
+        
+    </div>
+</div>
+
+{% endblock %}

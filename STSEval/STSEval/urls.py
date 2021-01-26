@@ -92,6 +92,7 @@ urlpatterns = [
     path('spectate/<int:session_id>/<str:display_type>/<str:event_name>/', views.spectate, name='spectate'),
     path('spectate/<int:session_id>/<str:display_type>/', views.spectate, name='spectate'),
     path('spectate_splash_start/<int:session_id>/', views.spectate_splash_start, name='spectate_splash_start'),
+    path('spectate_splash_end/<int:session_id>/', views.spectate_splash_end, name='spectate_splash_end'),
     path('comp/<int:session_id>/', views.comp, name='comp'),
     path('help/<str:help_screen>/', views.help, name='help'),
     path('reset_athlete_warn/', views.reset_athlete_warn, name='reset_athlete_warn'),
