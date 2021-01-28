@@ -776,7 +776,7 @@ def calculate_judge_panels(session):
 
 def calculate_session_cost(session):
     panels = calculate_judge_panels(session)
-    if session.level == Session.WDP:
+    if session.level == Session.WDP or session.level == Session.MDP or session.level == Session.USAG:
         cost = settings.PANEL_COST_JO
     else:
         cost = settings.PANEL_COST
