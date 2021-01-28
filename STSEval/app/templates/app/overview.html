@@ -8,7 +8,7 @@
     <span id="divViewsLabel">0</span>
 </div>
 <div  align="center">
-    {% include "app/event_select.html" %}  
+    {% include "app/event_select_withdots.html" %}  
     <div id="divHeader"><h4>{{session.full_name}}</h4></div>
     {% if session.admin_test_mode %}
         <div><h3 style="display:inline;color:red">TEST MODE</h3> <i style="vertical-align:top" class="fa fa-info-circle" aria-hidden="true" title="Test mode allows you to test cameras and judges.  This must be disabled before the start of the competition."></i></div>
@@ -93,6 +93,9 @@
     var SessionName = "{{session}}";
     var token = "{{ csrf_token }}";
     var HasD2 = {{has_d2|lower}};
+    var CameraEventStreams = new Array();
+    var Events = new Array();
+    var CameraStatus = new Array();
     var VidJSPlayer;
     var AthleteNames = new Array();
     {% for athlete in athletes %}
@@ -102,7 +105,10 @@
     {% for camera in cameras %}
         streams.push("{{camera.id}}");
     {% endfor %}
-
+    {% for event in events %}
+        Events.push("{{event}}");
+        CameraEventStreams['{{event}}'] = -1;
+    {% endfor %}
 
 </script>
 <script type="text/javascript">
@@ -115,6 +121,19 @@
     var CurrentSL = -1
     var CurrentStatus = "";
     var docRef = db.collection("sessions").doc(Session).collection("event_managers").doc(ev);
+
+    Array.prototype.remove = function() {
+    var what, a = arguments, L = a.length, ax;
+    while (L && this.length) {
+        what = a[--L];
+        while ((ax = this.indexOf(what)) !== -1) {
+            this.splice(ax, 1);
+        }
+    }
+    return this;
+    };
+
+
     docRef.onSnapshot(function (doc) {
         console.log("Event Manager Snapshot CurAth: " + CurrentAthlete + " | NewAth: " + doc.data().athlete_id);
         if (CurrentAthlete != doc.data().athlete_id) {
@@ -122,6 +141,7 @@
             CurrentSL = doc.data().start_list_change;
             $("#divAthlete").html(AthleteNames[doc.data().athlete_id]);
             CheckStream(doc);
+            CheckCamera(doc);
             CheckJudges(doc);
             LoadStartList(doc);
             HighlightCamera();
@@ -143,7 +163,7 @@
         }
     });
 
-    db.collection("sessions").doc(Session).collection("streams").where(firebase.firestore.FieldPath.documentId(), "in", streams)
+    db.collection("sessions").doc(Session).collection("streams")//.where(firebase.firestore.FieldPath.documentId(), "in", streams)
         .onSnapshot(function (querySnapshot) {
             querySnapshot.forEach(function (doc) {
                 SetCameraDots(doc);
@@ -154,22 +174,51 @@
     ViewsRef.on('value', function(snapshot) {
         SetViews(snapshot.numChildren());
     });
+
+    //event camera dot listeners
+    Events.remove(ev).forEach(e => {
+        db.collection("sessions").doc(Session).collection("event_managers").doc(e)
+        .onSnapshot(function (doc) {
+             CheckCamera(doc);
+        });
+    });
+
+   
+
+    function CheckCamera(doc) {
+        console.log("CheckCamera " + doc.id);
+        CameraEventStreams[doc.id] = doc.data().stream;
+        UpdateEventDots();
+    }
+
     function SetCameraDots(doc) {
         console.log(doc.id + " | " + doc.data().connected + " | " + doc.data().status);
         if (doc.data().connected == true) {
+            CameraStatus[doc.id] = "status-dot-green";
             $("#camdot" + doc.id).removeClass("status-dot-red").removeClass("status-dot-yellow").addClass("status-dot-green");
             $("#camdot" + doc.id).prop("title", "LIVE");
         }
         else {
             if (doc.data().status == "started") {
+                CameraStatus[doc.id] = "status-dot-yellow";
                 $("#camdot" + doc.id).removeClass("status-dot-red").addClass("status-dot-yellow").removeClass("status-dot-green");
                 $("#camdot" + doc.id).prop("title", "NOT CONNECTED");
             }
             else {
+                CameraStatus[doc.id] = "status-dot-red";
                 $("#camdot" + doc.id).addClass("status-dot-red").removeClass("status-dot-yellow").removeClass("status-dot-green");
                 $("#camdot" + doc.id).prop("title", "NOT STARTED");
             }
         }
+        UpdateEventDots();
+    }
+
+    function UpdateEventDots() {
+        Object.keys(CameraEventStreams).forEach(function (key) {
+            console.log("Update Event Dot: " + CameraEventStreams[key] + " | " + key);
+            $("#eventdot" + key).removeClass("status-dot-red").removeClass("status-dot-yellow").removeClass("status-dot-green").addClass(CameraStatus[CameraEventStreams[key]]);
+        }); 
+
     }
 
     function SetViews(numIn) {

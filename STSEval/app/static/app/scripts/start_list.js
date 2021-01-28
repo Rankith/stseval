@@ -24,8 +24,8 @@ function StartListDragSetup() {
 function LoadStartList(doc=-1) {
     $("#divStartList").load("/athlete_start_list_admin/" + ev + "/", function () {
         console.log("start list loaded doc: " + doc);
-        if ($("#hdnTopPosition").val() != 'divSL-1')
-            document.getElementById($("#hdnTopPosition").val()).scrollIntoView(true);
+        //if ($("#hdnTopPosition").val() != 'divSL-1')
+            //document.getElementById($("#hdnTopPosition").val()).scrollIntoView(true);
         StartListDragSetup();
         if (doc != -1)
             SetStartListDot(doc);

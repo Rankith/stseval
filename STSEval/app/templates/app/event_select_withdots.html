@@ -1,0 +1,12 @@
+{% load staticfiles %}
+<div class="d-flex col-12 flex-wrap" style="padding-left:0px!important;padding-right:0px!important">
+    {% for ev in events %}
+        <div class="flex-grow-1">
+            
+            <button id="btn{{ev.name}}" type="button" class="btn btn-event{% if ev.name|lower == event_name|lower %}-selected{% endif %}" onclick="SwapEvent('{{ev.name|upper}}')">
+                <span id="eventdot{{ev.name}}" class="status-dot-small status-dot-red"></span>    
+                <img src="{% static 'app/images/' %}{{ev.name|lower}}-white.svg" height="45px"/>
+            </button>
+        </div>
+    {% endfor %} 
+</div>
