@@ -43,9 +43,9 @@
     function SpectatorFeeChanged() {
         let fee = $("#id_spectator_fee").val();
         let our = 0
-        our = Number(fee) * .3;
-        if (our < 3)
-            our = 3;
+        our = Number(fee) * .5;
+        if (our < 5)
+            our = 5;
         our = fee - our;
         our = our.toFixed(2);
         if (our < 0)
