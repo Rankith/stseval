@@ -48,8 +48,8 @@ class SessionForm(ModelForm):
 
     def clean(self):
         data = self.cleaned_data
-        if data.get('spectator_fee') < 3:
-            raise forms.ValidationError('Spectator Fee has a $3.00 minimum')
+        if data.get('spectator_fee') < 5:
+            raise forms.ValidationError('Spectator Fee has a $5.00 minimum')
         else:
             return data
 
