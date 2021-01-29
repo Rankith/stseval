@@ -899,7 +899,7 @@ def build_judge_notice(session,event,name,email,password,type):
         'assigned_full': type + ' Judge on ' + event,
         'url_extra':'/account/login_judge',
         'reqs':reqs,
-        'tutorial_video':'stslivegym-tutorial-' + type[0:1].lower() + '-jury-' + session.competition.disc.name.lower() + '.mp4'
+        'tutorial_video':'STSLG-' + session.competition.disc.name + '-Tutorial-' + type[0:1] + '-Jury.mp4'
     }
     html_message = render_to_string('management/email_notice.html', context)
     plain_message = strip_tags(html_message)
