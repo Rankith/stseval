@@ -9,7 +9,10 @@
     <b>Competition Date:</b> {{session.competition.date|date:'l, F d, Y'}}<br><b>Competition Time:</b> {{session.time|date:'g:i A'}} (PST)<br><b>Assignment:</b> {{assigned_full}} </td></tr></table>
 
 
-<p>To sign in to the competition, go to <a href='https://stslivegym.com{{url_extra}}' target='_blank'>STS Live Gym</a>. Your login information for this assignment is as follows:</p>
+<p>{% if tutorial_video %}
+        View a tutorial for your role <a href="https://stslivegym.com/media/{{tutorial_video}}">here</a><br/>
+    {% endif %}
+    To sign in to the competition, go to <a href='https://stslivegym.com{{url_extra}}' target='_blank'>STS Live Gym</a>. Your login information for this assignment is as follows:</p>
 
 
 <table cellpadding='10px;' align='center'>
