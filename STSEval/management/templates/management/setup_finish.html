@@ -25,7 +25,8 @@
             <div>
                 You have {{num_panels}} judging panels, this session will cost ${{session_cost}}.<br/>
                 Once paid you will not be able to edit judge emails, make sure they are correct.<br/>
-                <div class="payment-container">
+                <div class="payment-container"> 
+                    <input id="card_name" class="field mb-1" placeholder="Cardholder Name" style="width:100%;max-width:none"/>
                     <div id="card-element">
                         <!-- Elements will create input elements here -->
                     </div>
@@ -118,7 +119,7 @@
         //var cardholderName = document.querySelector("#name").value;
         var data = {
             card: card,
-            billing_details: {}
+            billing_details: {name: document.getElementById('card_name').value}
         };
         //if (cardholderName) {
         //    data["billing_details"]["name"] = cardholderName;
