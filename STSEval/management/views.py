@@ -890,6 +890,11 @@ def build_judge_notice(session,event,name,email,password,type):
     reqs.append("10Mbps (up/down) bandwidth")
     reqs.append("Google Chrome 46+")
     reqs.append("8 Gb or higher RAM")
+    vidlink = ''
+    if session.competition.disc.name.lower() == 'wag' and type[0:1].lower() == 'd':
+        vidlink = 'stslg-' + session.competition.disc.name.lower() + '-tutorial-j' + type[1:2].lower() + '.mp4';
+    else:
+        vidlink = 'stslg-' + session.competition.disc.name.lower() + '-tutorial-' + type[0:1].lower() + '-jury.mp4'
     context = {
         'name': name,
         'email': email,
@@ -899,7 +904,7 @@ def build_judge_notice(session,event,name,email,password,type):
         'assigned_full': type + ' Judge on ' + event,
         'url_extra':'/account/login_judge',
         'reqs':reqs,
-        'tutorial_video':'stslg-' + session.competition.disc.name.lower() + '-tutorial-' + type[0:1].lower() + '-jury.mp4'
+        'tutorial_video':vidlink
     }
     html_message = render_to_string('management/email_notice.html', context)
     plain_message = strip_tags(html_message)
