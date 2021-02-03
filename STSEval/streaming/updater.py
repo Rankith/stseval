@@ -8,7 +8,6 @@ from django.conf import settings
 import os
 import sys, socket
 from django.db.models import Q
-import datetime
 
 def start():
     try: #stupid hack for not multiple schedulers running
