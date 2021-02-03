@@ -1,4 +1,4 @@
-from datetime import datetime,timezone
+from datetime import datetime,timezone,timedelta
 from apscheduler.schedulers.background import BackgroundScheduler
 from streaming.wowza import LiveStreams, WOWZA_API_KEY, WOWZA_ACCESS_KEY
 from streaming.models import WowzaStream
@@ -27,7 +27,7 @@ def start():
 
 
 def check_remove_old_videos():
-    routines = Routine.objects.filter(Q(session__competition__date__lt=datetime.datetime.now() - datetime.timedelta(days=-29)) & Q(video_saved=True) & Q(status=Routine.FINISHED) & (Q(session__level=Session.WDP) | Q(session__level=Session.MDP))).exclude(video_file='')
+    routines = Routine.objects.filter(Q(session__competition__date__lt=datetime.now() - timedelta(days=-29)) & Q(video_saved=True) & Q(status=Routine.FINISHED) & (Q(session__level=Session.WDP) | Q(session__level=Session.MDP))).exclude(video_file='')
     for r in routines:
         vidfile = r.video_file.path
         r.video_file.delete()
