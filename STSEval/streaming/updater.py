@@ -31,7 +31,7 @@ def check_remove_old_videos():
     for r in routines:
         vidfile = r.video_file.path
         r.video_file.delete()
-        os.remove(vidfile)
+        #os.remove(vidfile)
 
 def convert_backup_video(bv):
     vidfile=bv.video_file.path
