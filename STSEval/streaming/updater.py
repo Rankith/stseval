@@ -30,7 +30,9 @@ def start():
 def check_remove_old_videos():
     routines = Routine.objects.filter(Q(session__competition__date__lt=datetime.datetime.now() - datetime.timedelta(days=-29)) & Q(video_saved=True) & Q(status=Routine.FINISHED) & (Q(session__level=Session.WDP) | Q(session__level=Session.MDP))).exclude(video_file='')
     for r in routines:
+        vidfile = r.video_file.path
         r.video_file.delete()
+        os.remove(vidfile)
 
 def convert_backup_video(bv):
     vidfile=bv.video_file.path
@@ -57,7 +59,7 @@ def check_convert_video():
                     os.system("ffmpeg -threads 2 -y -i {0} -c:v libx264 -profile:v main -vf format=yuv420p -c:a aac -movflags +faststart {1}".format(vidfile,vidfile.replace("webm","mp4")))
                     routine.video_converted = True
                     routine.save()
-                    os.remove(vidfile)
+                    #os.remove(vidfile)
 
 def check_update_wowza_player():
     streams = WowzaStream.objects.filter(wowza_player_code='')
