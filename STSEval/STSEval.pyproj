@@ -167,6 +167,8 @@
     <Content Include="app\templates\app\d2_wag.html" />
     <Content Include="app\templates\app\event_select_withdots.html" />
     <Content Include="app\templates\app\help\admin_overview.html" />
+    <Content Include="app\templates\app\help\jjudge.html" />
+    <Content Include="app\templates\app\help\jjudge2.html" />
     <Content Include="app\templates\app\help\ejudge_vault.html" />
     <Content Include="app\templates\app\help\coach.html" />
     <Content Include="app\templates\app\help\ejudge.html" />

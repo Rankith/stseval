@@ -81,11 +81,13 @@ def d1(request):
         judge_type = "D1"
         this_judge = judges[0].d1
 
+    help = 'djudge'
     judge_type_display = judge_type
     if judges[0].d2_email != '':
         #check if dumb wag bullshit
         if session.competition.disc.name == "WAG" and (session.level == Session.WDP or session.level == Session.NCAA): #d2_wag version
             judge_type_display = "J1"
+            help = 'jjudge'
             multi_d = False
         else:
             multi_d = True
@@ -114,7 +116,7 @@ def d1(request):
         'this_judge':this_judge,
         'multi_d':multi_d,
         'simple_d':simple_d,
-        'help':'djudge',
+        'help':help,
 
     }
     return render(request,'app/d1.html',context)
@@ -596,7 +598,7 @@ def d2_wag(request):
         'this_judge':judges.d2,
         'athletes':athletes,
         'scoreboard':True,
-        'help':help,
+        'help':'jjudge2',
     }
     return render(request,'app/d2_wag.html',context)
 
