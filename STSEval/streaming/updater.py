@@ -2,11 +2,13 @@ from datetime import datetime,timezone
 from apscheduler.schedulers.background import BackgroundScheduler
 from streaming.wowza import LiveStreams, WOWZA_API_KEY, WOWZA_ACCESS_KEY
 from streaming.models import WowzaStream
-from app.models import Routine,BackupVideo,ConversionSetting
+from app.models import Routine,BackupVideo,ConversionSetting,Session
 import app.firebase
 from django.conf import settings
 import os
 import sys, socket
+from django.db.models import Q
+import datetime
 
 def start():
     try: #stupid hack for not multiple schedulers running
@@ -18,10 +20,17 @@ def start():
         scheduler = BackgroundScheduler()
         scheduler.add_job(check_and_stop_streams, 'interval', seconds=10)
         scheduler.add_job(check_convert_video, 'interval', seconds=20)
+        scheduler.add_job(check_remove_old_videos, 'interval', hours=8)
+        check_remove_old_videos()
         #scheduler.add_job(check_update_wowza_player, 'interval', seconds=5)
         scheduler.start()
         print("scheduler started")
 
+
+def check_remove_old_videos():
+    routines = Routine.objects.filter(Q(session__competition__date__lt=datetime.datetime.now() - datetime.timedelta(days=-29)) & Q(video_saved=True) & Q(status=Routine.FINISHED) & (Q(session__level=Session.WDP) | Q(session__level=Session.MDP))).exclude(video_file='')
+    for r in routines:
+        r.video_file.delete()
 
 def convert_backup_video(bv):
     vidfile=bv.video_file.path
@@ -48,6 +57,7 @@ def check_convert_video():
                     os.system("ffmpeg -threads 2 -y -i {0} -c:v libx264 -profile:v main -vf format=yuv420p -c:a aac -movflags +faststart {1}".format(vidfile,vidfile.replace("webm","mp4")))
                     routine.video_converted = True
                     routine.save()
+                    os.remove(vidfile)
 
 def check_update_wowza_player():
     streams = WowzaStream.objects.filter(wowza_player_code='')
