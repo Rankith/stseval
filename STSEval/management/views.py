@@ -961,7 +961,8 @@ def build_coach_notice(session,team):
         'assigned': 'to coach',
         'assigned_full': 'Coach for ' + team.name,
         'url_extra':'/account/login_coach',
-        'reqs':reqs
+        'reqs':reqs,
+        'tutorial_video':'stslg-tutorial-coach.mp4'
     }
     html_message = render_to_string('management/email_notice.html', context)
     plain_message = strip_tags(html_message)
