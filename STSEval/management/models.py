@@ -126,6 +126,7 @@ class Athlete(models.Model):
     order = models.IntegerField(default=1)
     events_competing = models.ManyToManyField(Event,related_name='events_competing_related',blank=True)
     events_count_for_team = models.ManyToManyField(Event,blank=True)
+    video_opt_out = models.BooleanField(default=False)
     def __str__(self):
         try:
             return self.team.name + " - " + self.level.name + " - " + self.name

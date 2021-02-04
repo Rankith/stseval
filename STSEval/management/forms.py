@@ -97,7 +97,7 @@ class TeamForm(ModelForm):
 class AthleteForm(ModelForm):
     class Meta:
         model = Athlete
-        fields = ['team','level','name','age','rotation','events_count_for_team','events_competing']
+        fields = ['team','level','name','age','rotation','events_count_for_team','events_competing','video_opt_out']
         widgets = {'name':forms.TextInput(attrs={'class':'management-input'}),
                    'level':forms.Select(attrs={'class':'selectpicker management-input','data-style':'btn-main'})}
 

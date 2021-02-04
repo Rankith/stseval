@@ -1818,6 +1818,15 @@ def session_mark_complete(request,session_id):
         pass
 
     app.firebase.update_spectator_feed(str(request.session.get('session')),'','session_complete')
+    #remove videos from athletes that opted out
+    routines = Routine.objects.filter(session=session,athlete__video_opt_out=True,status=Routine.FINISHED).exclude(video_file='')
+    for r in routines:
+        vidfile = r.video_file.path
+        r.video_file.delete()
+        if os.path.exists(vidfile):
+            os.remove(vidfile)
+        if os.path.exists(vidfile.replace("webm","mp4")):
+            os.remove(vidfile.replace("webm","mp4"))
 
     return HttpResponse(200)
 
