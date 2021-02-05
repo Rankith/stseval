@@ -67,13 +67,13 @@
     {% else %}
         {% if connect_status == 'details' %}
             This is your first competition with STSLiveGym, you need to complete your account setup to recieve payouts.<br/>
-            <a href="/account/stripe_connect_account/{{id}}"><button id="btnSetupAccount" type="button" class="btn btn-main btn-long mt-2">Finish Stripe Account Setup</button></a>
+            <a href="/account/stripe_connect_account/{{id}}"><button id="btnSetupAccount" type="button" class="btn btn-main btn-long mt-2">Finish Stripe Account Setup</button></a><br/>
         {% elif connect_status == 'payouts' %}
             This is your first competition with STSLiveGym, you need to complete your account setup to recieve payouts.<br/>
-            <a href="/account/stripe_connect_account/{{id}}"><button id="btnSetupAccount" type="button" class="btn btn-main btn-long mt-2">Finish Stripe Account Setup</button></a>
+            <a href="/account/stripe_connect_account/{{id}}"><button id="btnSetupAccount" type="button" class="btn btn-main btn-long mt-2">Finish Stripe Account Setup</button></a><br/>
         {% else %}
             This is your first competition with STSLiveGym, you need to setup your account to recieve payouts.<br/>
-            <a href="/account/stripe_connect_account/{{id}}"><button id="btnSetupAccount" type="button" class="btn btn-main btn-long mt-2">Setup Stripe Account</button></a>
+            <a href="/account/stripe_connect_account/{{id}}"><button id="btnSetupAccount" type="button" class="btn btn-main btn-long mt-2">Setup Stripe Account</button></a><br/>
         {% endif %}
     {% endif %}
      If there are first time participants, testing with them is <b>required</b>. <a href="/management/setup_testing/">How to test</a><br/>

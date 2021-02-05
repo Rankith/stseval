@@ -123,21 +123,40 @@ def create_intent(user,session,type,amount,quantity):
             session.payment_intent = intent.id
             session.save()
         else:
-            intent = stripe.PaymentIntent.modify(
-                session.payment_intent,
-                amount=total,
-                currency='usd',
-                customer=user.stripe_customer,
-                description=description,
-                metadata={
-                    'type': type,
-                    'session_id': session.id,
-                    'individual_amount': amount,
-                    'quantity': quantity,
-                    'user':user.id,
-                    'our_fee':0,
-                    },
-                )
+            try:
+                intent = stripe.PaymentIntent.modify(
+                    session.payment_intent,
+                    amount=total,
+                    currency='usd',
+                    customer=user.stripe_customer,
+                    description=description,
+                    metadata={
+                        'type': type,
+                        'session_id': session.id,
+                        'individual_amount': amount,
+                        'quantity': quantity,
+                        'user':user.id,
+                        'our_fee':0,
+                        },
+                    )
+            except:
+                intent = stripe.PaymentIntent.create(
+                    amount=total,
+                    currency='usd',
+                    customer=user.stripe_customer,
+                    description=description,
+                    metadata={
+                        'type': type,
+                        'session_id': session.id,
+                        'individual_amount': amount,
+                        'quantity': quantity,
+                        'user':user.id,
+                        'our_fee':0,
+                        },
+                    )
+                session.payment_intent = intent.id
+                session.save()
+                
     elif type == Purchase.SPECTATOR:
         #spectator so calc our fee and split it out in the intent
         total_for_calc = amount*quantity
