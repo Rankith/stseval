@@ -9,6 +9,7 @@ from datetime import datetime
 from django.contrib.auth import authenticate, login
 from app.models import Twitch,Routine,EJuryDeduction,BackupVideo,DJuryIndicator,ConversionSetting
 from management.models import Competition,Judge,Athlete,Session,Camera,StartList,Team,Event,Disc,Sponsor,RotationOrder,AthleteLevel,AthleteAge
+from management.views import create_start_List_direct
 from app.twitch import TwitchAPI
 import app.firebase
 from time import time
@@ -1837,11 +1838,12 @@ def session_disable_test_mode(request,session_id):
         #delete all routines
         Routine.objects.filter(session=session).delete()
         #mark all gymnasts not completed
-        sls = StartList.objects.filter(session=session,completed=True)
-        events_to_reset = list(sls.values_list('event__name',flat=True).distinct())
-        sls.update(completed=False)
-        for ev in events_to_reset:
-            reset_athlete_do(session.id,ev)
+        create_start_List_direct(session_id)
+        #sls = StartList.objects.filter(session=session)
+        #events_to_reset = list(sls.values_list('event__name',flat=True).distinct())
+        #sls.update(completed=False)
+        for ev in Event.objects.filter(disc=session.competition.disc):
+            reset_athlete_do(session.id,ev.name)
         BackupVideo.objects.filter(session=session).delete()
         session.admin_test_mode = False
         session.save()
