@@ -936,7 +936,8 @@ def build_camera_notice(session,camera):
         'assigned': 'to operate a camera for',
         'assigned_full': 'Camera Operator for' + teams[1:] + " on" + events[1:],
         'url_extra':'/account/login_camera',
-        'reqs':reqs
+        'reqs':reqs,
+        'tutorial_video':'stslg-tutorial-camera.mp4'
     }
     html_message = render_to_string('management/email_notice.html', context)
     plain_message = strip_tags(html_message)
