@@ -205,6 +205,7 @@
                         {% if editable %}
                             <button href="#" id="btnEdit" type="button" class="btn btn-main mb-2" style="width:200px" onclick="EditScoreClick()">Edit Score</button><br/>
                             <div id="divEditDScore" style="display:none;width:200px"></div>
+                            <button href="#" id="btnDelete" type="button" class="btn btn-red mb-2" style="width:200px" onclick="EditDeleteClick()">Delete Routine</button><br/>
                         {% endif %}
 	                    <button href="#" id="btnAccountability" type="button" class="btn btn-main mb-2" style="width:200px" onclick="ViewAccountabilityReport()">Report</button><br/>
 	                    <button href="#" id="btnCloseMain" type="button" class="btn btn-main mb-2" style="width:200px" onclick="HideDetails()">Close</button>
@@ -425,6 +426,13 @@
         });
 
         $("#modalBodyArea1").show();
+    }
+
+    function EditDeleteClick() {
+        if (confirm("Are you sure you want to delete this routine?")) {
+            DeleteRoutineAdmin();
+            HideDetails();
+        }
     }
 
     function EditScoreClick() {
@@ -687,7 +695,7 @@
                 console.log("Athlete changed: " + Status);
                 GetAthleteInfo();
                 //reset to first vault
-                if (TwoVaults) {
+                if (TwoVaults && BackupVideo == -1) {
                     OnVault = 1;
                     $("#btnFinish").html("Next Vault");
                 }
@@ -894,7 +902,7 @@
         }
         if (SimpleHasD2)
             $("#divD2Score").html();
-        if (OnVault == 1 && TwoVaults) {
+        if (OnVault == 1 && TwoVaults  && BackupVideo == -1) {
             $("#btnFinish").html("Next Vault");
         }
         else
@@ -1253,7 +1261,7 @@
                             ReleaseEJudges(true);
                         }
                         else*/
-                        if (TwoVaults && OnVault == 1) {
+                        if (TwoVaults && OnVault == 1 && BackupVideo == -1) {
                             OnVault = 2;
                             Reset();
                             JudgesReadyClick();
@@ -1544,6 +1552,19 @@
         });
     }
 
+    function DeleteRoutineAdmin() {
+        $.ajax({
+            url: "/routine_delete_admin/",
+            type: "POST",
+            headers: { "X-CSRFToken": token },
+            data: {
+                'routine': RoutineID,
+            },
+            success: function (data) {
+            }
+        });
+    }
+
      function FinishRoutine() {
         $.ajax({
             url: "/routine_finished/",
@@ -1631,7 +1652,7 @@
             data: {
             },
             success: function (data) {
-                if (TwoVaults && OnVault == 2)
+                if (TwoVaults && OnVault == 2 && BackupVideo == -1)
                     OnVault = 1;
                 if (MultiD && JudgeOnFirebase != DType)//only make the reset load next if its not multi D setup
                     Reset();

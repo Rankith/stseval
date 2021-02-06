@@ -44,6 +44,7 @@ urlpatterns = [
     path('set_judge_ready/<int:session_id>', views.set_judge_ready, name='set_judge_ready'),
     path('routine_get_info/', views.routine_get_info, name='routine_get_info'),
     path('routine_delete/', views.routine_delete, name='routine_delete'),
+    path('routine_delete_admin/', views.routine_delete_admin, name='routine_delete_admin'),
     path('routine_finished/', views.routine_finished, name='routine_finished'),
     path('routine_set_score/', views.routine_set_score, name='routine_set_score'),
     path('routine_swap_d/', views.routine_swap_d, name='routine_swap_d'),

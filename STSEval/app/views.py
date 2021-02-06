@@ -5,7 +5,7 @@ Definition of views.
 from django.shortcuts import render,redirect
 from django.http import HttpRequest,JsonResponse,HttpResponse
 from django.template import RequestContext
-from datetime import datetime
+from datetime import datetime, timedelta
 from django.contrib.auth import authenticate, login
 from app.models import Twitch,Routine,EJuryDeduction,BackupVideo,DJuryIndicator,ConversionSetting
 from management.models import Competition,Judge,Athlete,Session,Camera,StartList,Team,Event,Disc,Sponsor,RotationOrder,AthleteLevel,AthleteAge
@@ -20,7 +20,7 @@ from binascii import a2b_base64
 import distutils.util
 import os
 from django.contrib.auth.decorators import login_required,user_passes_test
-from django.db.models import F, Sum
+from django.db.models import F, Sum, Q
 from apscheduler.schedulers.background import BackgroundScheduler
 from .forms import VideoUploadForm
 from django.core.files import File
@@ -359,17 +359,33 @@ def routine_set_dscore(request):
 
 def routine_delete(request):
     routine = Routine.objects.get(pk=request.POST.get('routine'))
-    routine.status = Routine.DELETED
+    if 'd1' in request.session.get('type') or ('d2' in request.session.get('type') and session.competition.disc.name != 'WAG'):#d1 can edit if its their event
+        if request.session.get('event','').lower() == routine.event.name.lower():
+            routine.status = Routine.DELETED
 
-    routine.save()
+            routine.save()
 
-    if os.path.exists(settings.MEDIA_ROOT + '/routine_videos/' + str(routine.session.id) + '/' + routine.event.name + '/' + routine.athlete.name.replace(" ","") + "_" + str(routine.id) + '.webm'):
-        os.remove(settings.MEDIA_ROOT + '/routine_videos/' + str(routine.session.id) + '/' + routine.event.name + '/' + routine.athlete.name.replace(" ","") + "_" + str(routine.id) + '.webm')
+            if os.path.exists(settings.MEDIA_ROOT + '/routine_videos/' + str(routine.session.id) + '/' + routine.event.name + '/' + routine.athlete.name.replace(" ","") + "_" + str(routine.id) + '.webm'):
+                os.remove(settings.MEDIA_ROOT + '/routine_videos/' + str(routine.session.id) + '/' + routine.event.name + '/' + routine.athlete.name.replace(" ","") + "_" + str(routine.id) + '.webm')
 
-    app.firebase.routine_set_status(str(routine.session.id),routine.event.name,routine)
-    app.firebase.clear_e_ping(str(routine.session.id),routine.event.name)
+            app.firebase.routine_set_status(str(routine.session.id),routine.event.name,routine)
+            app.firebase.clear_e_ping(str(routine.session.id),routine.event.name)
     
 
+    return HttpResponse(status=200)
+
+def routine_delete_admin(request):
+    routine = Routine.objects.get(pk=request.POST.get('routine'))
+    if 'd1' in request.session.get('type') or ('d2' in request.session.get('type') and session.competition.disc.name != 'WAG'):#d1 can edit if its their event
+        if request.session.get('event','').lower() ==  routine.event.name.lower():
+            can_delete = True
+    elif 'admin' in request.session.get('type'):#admin can always edit
+        can_delete = True
+    if can_delete:
+        routine = Routine.objects.get(pk=request.POST.get('routine'))
+        routine.status = Routine.DELETED
+
+        routine.save()
     return HttpResponse(status=200)
 
 def routine_finished(request):
