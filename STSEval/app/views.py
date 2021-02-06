@@ -1457,6 +1457,10 @@ def reset_athlete_do(session_id,event_name):
     app.firebase.routine_setup(sl.session,event_name,sl.athlete,camera.id,'D1')
     check_update_camera_event(camera.session.id,camera)
 
+def check_reset_athlete_for_backup(bv):
+    if bv.athlete == athlete_get_next_do(bv.event.name,bv.session.id).athlete:
+        reset_athlete_do(bv.session.id,bv.event.name)
+
 @valid_login_type(match='coach')
 def coach(request,event_name='FX'):
     session_id = request.session.get('session')
@@ -1732,6 +1736,7 @@ def backup_video_upload(request,session_id):
             if bv.video_file.name.endswith(".mp4"):
                 bv.converted = True
                 bv.save()
+                check_reset_athlete_for_backup(bv)
             return render(request, 'app/backup_video_upload.html', {'form': form,'session_id':session_id,'bv':bv})
         else:
             return render(request, 'app/backup_video_upload.html', {'form': form,'session_id':session_id})
