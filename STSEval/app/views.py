@@ -1458,8 +1458,11 @@ def reset_athlete_do(session_id,event_name):
     check_update_camera_event(camera.session.id,camera)
 
 def check_reset_athlete_for_backup(bv):
-    if bv.athlete == athlete_get_next_do(bv.event.name,bv.session.id).athlete:
-        reset_athlete_do(bv.session.id,bv.event.name)
+    try:
+        if bv.athlete == athlete_get_next_do(bv.event.name,bv.session.id).athlete:
+            reset_athlete_do(bv.session.id,bv.event.name)
+    except:
+        pass
 
 @valid_login_type(match='coach')
 def coach(request,event_name='FX'):
