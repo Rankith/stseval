@@ -19,7 +19,7 @@ def start():
         scheduler = BackgroundScheduler()
         scheduler.add_job(check_and_stop_streams, 'interval', seconds=10)
         scheduler.add_job(check_convert_video, 'interval', seconds=20)
-        scheduler.add_job(check_remove_old_videos, 'interval', hours=8)
+        #scheduler.add_job(check_remove_old_videos, 'interval', hours=8)
         #check_remove_old_videos()
         #scheduler.add_job(check_update_wowza_player, 'interval', seconds=5)
         scheduler.start()

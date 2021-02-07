@@ -1329,12 +1329,15 @@ def check_update_camera_event(session_id,camera = None):
     if camera != None:
         cameras = cameras.filter(id=camera.id)
     for cam in cameras:
-        event_on = camera_get_event_on(cam)
-        if cam.current_event != event_on:
-            if event_on != None:
-                cam.current_event = event_on
-                cam.save()
-                app.firebase.stream_set_event(cam.session.id,event_on.name,cam.id)
+        try:
+            event_on = camera_get_event_on(cam)
+            if cam.current_event != event_on:
+                if event_on != None:
+                    cam.current_event = event_on
+                    cam.save()
+                    app.firebase.stream_set_event(cam.session.id,event_on.name,cam.id)
+        except:
+            pass
         
 
 def camera_get_event_on(camera):
