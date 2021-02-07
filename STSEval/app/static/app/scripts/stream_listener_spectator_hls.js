@@ -47,7 +47,7 @@ function HandleStreamChanges(doc,which) {
                 StreamConnected[which] = false;
                 $("#player-waiting" + which).show();
                 $("#player-video" + which).hide();
-                $("#player-waiting" + which).html("<h1>No Video Stream At This Time</h1>");
+                $("#player-waiting" + which).html("<div><h1>No Video Stream At This Time</h1><h5>See Scoreboard for Completed Exercises</h5></div>");
             }
         }
         else if (doc.data().connected == false) {
@@ -55,7 +55,7 @@ function HandleStreamChanges(doc,which) {
             console.log("dispose " + which);
             $("#player-waiting" + which).show();
             $("#player-video" + which).hide();
-            $("#player-waiting" + which).html("<h1>Waiting for Camera</h1>");
+            $("#player-waiting" + which).html("<div><h1>Waiting for Camera</h1><h5>See Scoreboard for Completed Exercises</h5></div >");
             //clearTimeout(ReCheck[which]);
             //clearInterval(ReadyStateCheck[which]);
             if (HLSPlayer[which] != undefined) {
