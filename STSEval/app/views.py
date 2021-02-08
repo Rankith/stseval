@@ -1714,11 +1714,11 @@ def set_fall(request):
     ath = Athlete.objects.filter(pk=request.POST.get('athlete')).first()
     routine = Routine.objects.filter(pk=request.POST.get('routine')).first()
     mili = int(time() * 1000)
-    relative_time = mili - routine.start_time
     if ath != None:
         if request.POST.get('fall') == "true":
             fall = True
             if routine != None:
+                relative_time = mili - routine.start_time
                 djury_indicator = DJuryIndicator(routine=routine,time_stamp_relative=relative_time,type=DJuryIndicator.FALL,value=fall)
                 djury_indicator.save()
         else:
