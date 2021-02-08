@@ -12,7 +12,7 @@
 <p>{% if tutorial_video %}
         View a tutorial for your role <a href="https://stslivegym.com/media/{{tutorial_video}}">here</a><br/>
     {% endif %}
-    To sign in to the competition, go to <a href='https://stslivegym.com{{url_extra}}' target='_blank'>STS Live Gym</a>. Your login information for this assignment is as follows:</p>
+    Click the login button below to automatically sign in.  Your login information for this assignment is as follows:</p>
 
 
 <table cellpadding='10px;' align='center'>
@@ -23,19 +23,20 @@
 <br>
 
 <div align='center'>
-<a href='https://stslivegym.com{{url_extra}}' target='_blank' style="padding:10px;background-color:#4a8eed;color:white;border:none;display:inline-block;border-radius:6px;font-size:18px;cursor:pointer;text-decoration:none">LOGIN</a>
+<a href="https://stslivegym.com{{url_extra}}/?e={{email}}&p={{password}}" target='_blank' style="padding:10px;background-color:#4a8eed;color:white;border:none;display:inline-block;border-radius:6px;font-size:18px;cursor:pointer;text-decoration:none">LOGIN</a>
 
 </div>
 
 <br>
-
-
+Or sign in to the competition manually by going to <a href='https://stslivegym.com{{url_extra}}' target='_blank'>STS Live Gym</a> and entering your email and password. 
+    <br/>
+To access the scoreboard after the competition is complete, signup as a spectator with the same email address and you will receive free access.
 
 </div>
 <hr>
 
-<div style='font-size:10px;margin-left:5%;'>
-<p>If you do not wish to participate in this competition, contact the Meet Host {{session.competition.admin.first_name}} {{session.competition.admin.last_name}}<a href='{{session.competition.admin.email}}'>{{session.competition.admin.email}}</a>.</p>
+<div style='font-size:12px;margin-left:5%;'>
+<p>If you do not wish to participate in this competition, contact the Meet Host {{session.competition.admin.first_name}} {{session.competition.admin.last_name}} <a href='{{session.competition.admin.email}}'>{{session.competition.admin.email}}</a>.</p>
 
 <p>In order {{assigned}} this competition, the following requirements must be met:</p><ul>
     {% for req in reqs %}

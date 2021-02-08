@@ -170,84 +170,92 @@ def login_judge_do(request,session,event,name,email,jt,ej):
 
 def login_judge(request):
     err = ''
+    email = ''
+    password = ''
+    type = None
     if request.method == 'POST':
         login_form = EmailPasswordForm(data=request.POST)
         if login_form.is_valid():
             email = login_form.cleaned_data.get('email')
             password = login_form.cleaned_data.get('password')
-            type = None
-            judges = Judge.objects.filter((Q(session__competition__date__gte=datetime.datetime.now() - datetime.timedelta(days=3)) | Q(session__test=True)) & Q(session__active=True)) #got possible judges
-            if len(judges) > 0:
-                judges = judges.filter(Q(d1_email=email,d1_password=password) | Q(d2_email=email,d2_password=password) | Q(e1_email=email,e1_password=password) | Q(e2_email=email,e2_password=password) | Q(e3_email=email,e3_password=password) | Q(e4_email=email,e4_password=password))
-                possibles = []
-                for judge in judges:
-                    if judge.d1_email == email and judge.d1_password == password:
-                        p = {}
-                        name = judge.d1
-                        p['type'] = 'D1'
-                        p['display'] = judge.session.full_name() + ": " + judge.event.name + " " + p['type']
-                        p['id'] = judge.id
-                        ej = 0
-                        possibles.append(p)
-                    if judge.d2_email == email and judge.d2_password == password:
-                        p = {}
-                        name = judge.d2
-                        p['type'] = 'D2'
-                        p['display'] = judge.session.full_name() + ": " + judge.event.name + " " + p['type']
-                        p['id'] = judge.id
-                        ej = 0
-                        possibles.append(p)
-                    if judge.e1_email == email and judge.e1_password == password:
-                        p = {}
-                        name = judge.e1
-                        p['type'] = 'E1'
-                        p['display'] = judge.session.full_name() + ": " + judge.event.name + " " + p['type']
-                        p['id'] = judge.id
-                        ej = 1
-                        possibles.append(p)
-                    if judge.e2_email == email and judge.e2_password == password:
-                        p = {}
-                        name = judge.e2
-                        p['type'] = 'E2'
-                        p['display'] = judge.session.full_name() + ": " + judge.event.name + " " + p['type']
-                        p['id'] = judge.id
-                        ej = 2
-                        possibles.append(p)
-                    if judge.e3_email == email and judge.e3_password == password:
-                        p = {}
-                        name = judge.e3
-                        p['type'] = 'E3'
-                        p['display'] = judge.session.full_name() + ": " + judge.event.name + " " + p['type']
-                        p['id'] = judge.id
-                        ej = 3
-                        possibles.append(p)
-                    if judge.e4_email == email and judge.e4_password == password:
-                        p = {}
-                        name = judge.e4
-                        p['type'] = 'E4'
-                        p['display'] = judge.session.full_name() + ": " + judge.event.name + " " + p['type']
-                        p['id'] = judge.id
-                        ej = 4
-                        possibles.append(p)
-                if len(possibles) > 0:
-                    if len(possibles) == 1:
-                        judge = Judge.objects.get(pk=possibles[0]['id'])
-                        return login_judge_do(request,judge.session,judge.event,name,email,possibles[0]['type'],ej)
-                    else:
-                        #more then one
-                        context = {
-                            'possibles': possibles,
-                            'email':email,
-                            'password':password,
-                            'type':'judge',
-                        }
-                        return render(request, 'account/login_multiple.html', context)
+            
+    else:
+        if request.GET.get('e','') != '':
+            email = request.GET.get('e','')
+            password = request.GET.get('p','')
+        login_form = EmailPasswordForm()
+
+    if email != '':
+        judges = Judge.objects.filter((Q(session__competition__date__gte=datetime.datetime.now() - datetime.timedelta(days=3)) | Q(session__test=True)) & Q(session__active=True)) #got possible judges
+        if len(judges) > 0:
+            judges = judges.filter(Q(d1_email=email,d1_password=password) | Q(d2_email=email,d2_password=password) | Q(e1_email=email,e1_password=password) | Q(e2_email=email,e2_password=password) | Q(e3_email=email,e3_password=password) | Q(e4_email=email,e4_password=password))
+            possibles = []
+            for judge in judges:
+                if judge.d1_email == email and judge.d1_password == password:
+                    p = {}
+                    name = judge.d1
+                    p['type'] = 'D1'
+                    p['display'] = judge.session.full_name() + ": " + judge.event.name + " " + p['type']
+                    p['id'] = judge.id
+                    ej = 0
+                    possibles.append(p)
+                if judge.d2_email == email and judge.d2_password == password:
+                    p = {}
+                    name = judge.d2
+                    p['type'] = 'D2'
+                    p['display'] = judge.session.full_name() + ": " + judge.event.name + " " + p['type']
+                    p['id'] = judge.id
+                    ej = 0
+                    possibles.append(p)
+                if judge.e1_email == email and judge.e1_password == password:
+                    p = {}
+                    name = judge.e1
+                    p['type'] = 'E1'
+                    p['display'] = judge.session.full_name() + ": " + judge.event.name + " " + p['type']
+                    p['id'] = judge.id
+                    ej = 1
+                    possibles.append(p)
+                if judge.e2_email == email and judge.e2_password == password:
+                    p = {}
+                    name = judge.e2
+                    p['type'] = 'E2'
+                    p['display'] = judge.session.full_name() + ": " + judge.event.name + " " + p['type']
+                    p['id'] = judge.id
+                    ej = 2
+                    possibles.append(p)
+                if judge.e3_email == email and judge.e3_password == password:
+                    p = {}
+                    name = judge.e3
+                    p['type'] = 'E3'
+                    p['display'] = judge.session.full_name() + ": " + judge.event.name + " " + p['type']
+                    p['id'] = judge.id
+                    ej = 3
+                    possibles.append(p)
+                if judge.e4_email == email and judge.e4_password == password:
+                    p = {}
+                    name = judge.e4
+                    p['type'] = 'E4'
+                    p['display'] = judge.session.full_name() + ": " + judge.event.name + " " + p['type']
+                    p['id'] = judge.id
+                    ej = 4
+                    possibles.append(p)
+            if len(possibles) > 0:
+                if len(possibles) == 1:
+                    judge = Judge.objects.get(pk=possibles[0]['id'])
+                    return login_judge_do(request,judge.session,judge.event,name,email,possibles[0]['type'],ej)
                 else:
-                    err = "Incorrect Login Information.  Make sure you selected the correct login"
+                    #more then one
+                    context = {
+                        'possibles': possibles,
+                        'email':email,
+                        'password':password,
+                        'type':'judge',
+                    }
+                    return render(request, 'account/login_multiple.html', context)
             else:
                 err = "Incorrect Login Information.  Make sure you selected the correct login"
-    else:
-        login_form = EmailPasswordForm()
+        else:
+            err = "Incorrect Login Information.  Make sure you selected the correct login"
 
     context = {
         'form': login_form,
@@ -258,38 +266,46 @@ def login_judge(request):
 
 def login_camera(request):
     err = ''
+    email = ''
+    password = ''
+    type = None
     if request.method == 'POST':
         login_form = EmailPasswordForm(data=request.POST)
         if login_form.is_valid():
             email = login_form.cleaned_data.get('email')
             password = login_form.cleaned_data.get('password')
             type = None
-            cameras = Camera.objects.filter((Q(session__competition__date__gte=datetime.datetime.now() - datetime.timedelta(days=1)) | Q(session__test=True)) & Q(session__active=True))  #got possible cameras
-            if len(cameras) > 0:
-                camera = cameras.filter(email=email,password=password)
-                if len(camera) == 1:
-                    camera = camera.first()
-                    return login_camera_do(request,camera)
-                elif len(camera) > 1:
-                    possibles = []
-                    for cam in camera:
-                        p = {}
-                        p['type'] = 'camera'
-                        p['id'] = cam.id
-                        p['display'] = cam.session.full_name() + ": " + cam.name
-                        possibles.append(p)
-                    #more then one
-                    context = {
-                        'possibles': possibles,
-                        'email':email,
-                        'password':password,
-                        'type':'camera',
-                    }
-                    return render(request, 'account/login_multiple.html', context)
- 
-            err = "Incorrect Login Information.  Make sure you selected the correct login"
     else:
+        if request.GET.get('e','') != '':
+            email = request.GET.get('e','')
+            password = request.GET.get('p','')
         login_form = EmailPasswordForm()
+
+    if email != '':
+        cameras = Camera.objects.filter((Q(session__competition__date__gte=datetime.datetime.now() - datetime.timedelta(days=1)) | Q(session__test=True)) & Q(session__active=True))  #got possible cameras
+        if len(cameras) > 0:
+            camera = cameras.filter(email=email,password=password)
+            if len(camera) == 1:
+                camera = camera.first()
+                return login_camera_do(request,camera)
+            elif len(camera) > 1:
+                possibles = []
+                for cam in camera:
+                    p = {}
+                    p['type'] = 'camera'
+                    p['id'] = cam.id
+                    p['display'] = cam.session.full_name() + ": " + cam.name
+                    possibles.append(p)
+                #more then one
+                context = {
+                    'possibles': possibles,
+                    'email':email,
+                    'password':password,
+                    'type':'camera',
+                }
+                return render(request, 'account/login_multiple.html', context)
+ 
+        err = "Incorrect Login Information.  Make sure you selected the correct login"
 
     context = {
         'form': login_form,
@@ -300,38 +316,46 @@ def login_camera(request):
 
 def login_coach(request):
     err = ''
+    email = ''
+    password = ''
+    type = None
     if request.method == 'POST':
         login_form = EmailPasswordForm(data=request.POST)
         if login_form.is_valid():
             email = login_form.cleaned_data.get('email')
             password = login_form.cleaned_data.get('password')
-            type = None
-            teams = Team.objects.filter((Q(session__competition__date__gte=datetime.datetime.now() - datetime.timedelta(days=3)) | Q(session__test=True)) & Q(session__active=True))  #got possible teams
-            if len(teams) > 0:
-                coach = teams.filter(head_coach_email=email,coach_password=password)
-                if len(coach) == 1:
-                    coach = coach.first()
-                    return login_coach_do(request,coach.session,coach)
-                elif len(coach) > 1:
-                    possibles = []
-                    for c in coach:
-                        p = {}
-                        p['type'] = 'coach'
-                        p['id'] = c.id
-                        p['display'] = c.session.full_name() + ": " + c.name
-                        possibles.append(p)
-                    #more then one
-                    context = {
-                        'possibles': possibles,
-                        'email':email,
-                        'password':password,
-                        'type':'coach',
-                    }
-                    return render(request, 'account/login_multiple.html', context)
- 
-            err = "Incorrect Login Information.  Make sure you selected the correct login"
+            
     else:
+        if request.GET.get('e','') != '':
+            email = request.GET.get('e','')
+            password = request.GET.get('p','')
         login_form = EmailPasswordForm()
+
+    if email != '':
+        teams = Team.objects.filter((Q(session__competition__date__gte=datetime.datetime.now() - datetime.timedelta(days=3)) | Q(session__test=True)) & Q(session__active=True))  #got possible teams
+        if len(teams) > 0:
+            coach = teams.filter(head_coach_email=email,coach_password=password)
+            if len(coach) == 1:
+                coach = coach.first()
+                return login_coach_do(request,coach.session,coach)
+            elif len(coach) > 1:
+                possibles = []
+                for c in coach:
+                    p = {}
+                    p['type'] = 'coach'
+                    p['id'] = c.id
+                    p['display'] = c.session.full_name() + ": " + c.name
+                    possibles.append(p)
+                #more then one
+                context = {
+                    'possibles': possibles,
+                    'email':email,
+                    'password':password,
+                    'type':'coach',
+                }
+                return render(request, 'account/login_multiple.html', context)
+ 
+        err = "Incorrect Login Information.  Make sure you selected the correct login"
 
     context = {
         'form': login_form,
