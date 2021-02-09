@@ -894,9 +894,16 @@ def get_routines_by_SE(request):
     return JsonResponse(list(routines),safe=False)
 
 def get_routines_aa(request):
-    routines = Routine.objects.values('athlete__name','athlete__team__name','athlete__level__name','athlete__age__name').filter(session_id=request.POST.get('Session'),status=Routine.FINISHED).annotate(total_score=Sum('score_final')).order_by('-total_score')
-        
-    return JsonResponse(list(routines),safe=False)
+    session = Session.objects.get(pk=request.POST.get('Session'))
+    events = Event.objects.filter(disc=session.competition.disc)
+    athletes = list(Routine.objects.values('athlete_id','athlete__name','athlete__team__name','athlete__level__name','athlete__age__name').filter(session_id=request.POST.get('Session'),status=Routine.FINISHED).annotate(total_score=Sum('score_final')).order_by('-total_score'))
+    for ath in athletes:
+        #arrange each athlete
+        for ev in events:
+            ath[ev.name] = 0.0
+        for rot in Routine.objects.values('score_final','event__name').filter(session_id=request.POST.get('Session'),status=Routine.FINISHED,athlete_id=ath['athlete_id']):
+            ath[rot['event__name']] = rot['score_final']
+    return JsonResponse(athletes,safe=False)
 
 def scoreboard_export(request,session_id):
     session = Session.objects.get(pk=session_id)
