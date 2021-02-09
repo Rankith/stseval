@@ -266,3 +266,4 @@ __pycache__/
 /STSEval/media/sponsors/2
 /STSEval/media/project-stslivegym-setup.mp4
 /STSEval/static
+/STSEval/app/static/app/example_team_import.xlsx

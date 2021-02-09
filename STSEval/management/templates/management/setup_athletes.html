@@ -20,7 +20,8 @@
 	        <div id="divTeamButtonsArea">
 		        <button href="#" id="btnTeamsAdd"  type="button" class="btn btn-main management-button" data-toggle="modal" data-target="#modalMain" onclick="AddTeamStart()">Add</button>
 		        <button href="#" id="btnTeamsEdit"  type="button" class="btn btn-main management-button ui-disabled" data-toggle="modal" data-target="#modalMain" onclick="EditTeamStart()">Edit</button>
-		        <button href="#" id="btnTeamsDelete"  type="button" class="btn btn-red management-button ui-disabled" onclick="TeamDelete()">Delete</button>
+		        <button href="#" id="btnTeamsDelete"  type="button" class="btn btn-red management-button ui-disabled" onclick="TeamDelete()">Delete</button><br/>
+                <button href="#" id="btnTeamsImport"   type="button" class="btn btn-main management-button"  data-toggle="modal" data-target="#modalMain" onclick="ImportTeamStart()">Import</button>
 	        </div>
 	    </div>
 
@@ -65,6 +66,7 @@
 <script type="text/javascript">
     var token = "{{ csrf_token }}";
     var SessionID = "{{id}}";
+    var started = {{started|lower}};
 </script>
 <script type="text/javascript">
     var SelectedTeam = -1;
@@ -118,7 +120,34 @@
         EnableDisableButtons("Teams", true);
         //$("#btnNext").addClass("ui-disabled");
     }
+    function ImportTeamStart() {
+        if (!started) {
+            $("#modalMainDoc").addClass("modal-lg");
+            $("#modalMainTitle").html("IMPORT ATHLETES");
+            $(".modal-dialog")
+            $("#modalBodyArea2").hide();
+            $("#modalBodyArea1").empty();
+            $("#modalBodyArea1").load("/management/team_list_upload/?session=" + SessionID, function () {
+                AttachImportFormTeam();
+            });
 
+            $("#modalBodyArea1").show();
+        }
+         else
+            alert("Competition started, teams cannot be imported");
+    }
+     function TeamImportFinishParent() {
+        $("#modalMain").modal('hide');
+         $("#divTeamList").load("/management/team_list/" + SessionID, function () {
+            Changed = false;
+            SelectedTeam = -1;
+            $('.athlete-list').removeClass("ctxSelected");
+            $("#divAthletes").addClass('ui-disabled');
+            $("#divAthleteList").empty();
+            EnableDisableButtons("Teams", false);
+        });
+        
+    }
     function AddTeamStart() {
         $("#modalMainDoc").addClass("modal-lg");
         $("#modalMainTitle").html("ADD TEAM");
@@ -148,20 +177,24 @@
     }
     function TeamDelete() {
         if (SelectedTeam != -1) {
-            $.ajax({
-                url: "/management/team_delete/" + SelectedTeam,
-                success: function () {
-                    $("#divTeamList").load("/management/team_list/" + SessionID); 
-                    Changed = false;
-                    SelectedTeam = -1;
-                    $('.athlete-list').removeClass("ctxSelected");
-                    $("#divAthletes").addClass('ui-disabled');
-                    $("#divAthleteList").empty();
-                    EnableDisableButtons("Ath", false);
-                    EnableDisableButtons("Teams", false);
-                    //$("#btnNext").addClass("ui-disabled");
-                }
-            });
+            if (!started) {
+                $.ajax({
+                    url: "/management/team_delete/" + SelectedTeam,
+                    success: function () {
+                        $("#divTeamList").load("/management/team_list/" + SessionID);
+                        Changed = false;
+                        SelectedTeam = -1;
+                        $('.athlete-list').removeClass("ctxSelected");
+                        $("#divAthletes").addClass('ui-disabled');
+                        $("#divAthleteList").empty();
+                        EnableDisableButtons("Ath", false);
+                        EnableDisableButtons("Teams", false);
+                        //$("#btnNext").addClass("ui-disabled");
+                    }
+                });
+            }
+            else
+                alert("Competition started, teams cannot be removed");
     
         }
     }
@@ -264,6 +297,30 @@
         });
     }
 
+        function AttachImportFormTeam() {
+        var frm = $('#form');
+        //$("#id_team").val(SelectedTeam);
+        $("#id_session").val(SessionID);
+        frm.submit(function () {
+            console.log("forming");
+            $.ajax({
+                type: frm.attr('method'),
+                url: frm.attr('action'),
+                data: new FormData(document.getElementById("form")),
+                contentType: false,
+                processData: false,
+                success: function (data) {
+                    alert(data);
+                    TeamImportFinishParent();
+
+                },
+                error: function(data) {
+                }
+            });
+            return false;
+        });
+    }
+
     function TeamManageFinishParent() {
         $("#modalMain").modal('hide');
         $("#divTeamList").load("/management/team_list/" + SessionID, function () {
@@ -277,16 +334,20 @@
     }
 
     function ImportAthleteStart() {
-        $("#modalMainDoc").addClass("modal-lg");
-        $("#modalMainTitle").html("IMPORT ATHLETES");
-        $(".modal-dialog")
-        $("#modalBodyArea2").hide();
-        $("#modalBodyArea1").empty();
-        $("#modalBodyArea1").load("/management/athlete_list_upload/?session=" + SessionID, function () {
-            AttachImportForm();
-        });
+        if (!started) {
+            $("#modalMainDoc").addClass("modal-lg");
+            $("#modalMainTitle").html("IMPORT ATHLETES");
+            $(".modal-dialog")
+            $("#modalBodyArea2").hide();
+            $("#modalBodyArea1").empty();
+            $("#modalBodyArea1").load("/management/athlete_list_upload/?session=" + SessionID, function () {
+                AttachImportForm();
+            });
 
-        $("#modalBodyArea1").show();
+            $("#modalBodyArea1").show();
+        }
+         else
+            alert("Competition started, athletes cannot be imported");
     }
      function AthleteImportFinishParent() {
         $("#modalMain").modal('hide');
@@ -339,17 +400,21 @@
 
     function AthleteDelete() {
         if (SelectedAthlete != -1) {
-            $.ajax({
-                url: "/management/athlete_delete/" + SelectedAthlete,
-                data: {
-                    'id': SelectedAthlete,
-                },
-                success: function () {
-                    FillAthletes();
-                    SelectedAthlete = -1;
-                    //$("#btnNext").addClass("ui-disabled");
-                }
-            });
+            if (!started) {
+                $.ajax({
+                    url: "/management/athlete_delete/" + SelectedAthlete,
+                    data: {
+                        'id': SelectedAthlete,
+                    },
+                    success: function () {
+                        FillAthletes();
+                        SelectedAthlete = -1;
+                        //$("#btnNext").addClass("ui-disabled");
+                    }
+                });
+            }
+             else
+                alert("Competition started, athletes cannot be removed");
         }
     }
 

@@ -240,6 +240,7 @@
     <Content Include="management\templates\management\athlete_levels_ages.html" />
     <Content Include="management\templates\management\athlete_ages_list_all.html" />
     <Content Include="management\templates\management\athlete_ages_list.html" />
+    <Content Include="management\templates\management\team_list_upload_form.html" />
     <Content Include="management\templates\management\competition_list_spectator.html" />
     <Content Include="management\templates\management\judge_list_upload_form.html" />
     <Content Include="management\templates\management\athlete_list_upload_form.html" />

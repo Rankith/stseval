@@ -1,0 +1,15 @@
+{% load staticfiles %}
+<form id="form" action="/management/team_list_upload/" method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div>You can upload a excel document (.xlsx) or CSV file to populate the team list.  The required fields are:<br/>'Name' 'Abbrev' 'Coach Email' 'Password'<br/><br/>
+    <span style="color:#dc3545;font-weight:bold">WARNING:</span> This will reset the athlete list and all athletes currently entered will be removed.<br/><br/>
+    <a href="{% static 'app/example_team_import.xlsx' %}">Click here to download a sample excel sheet</a>
+    <br/><br/>
+    </div>
+        File<br/>
+        {{ form.file }}<br/>
+        {{form.session}}
+           <br/>
+        <input type="submit" href="#" id="btnImportFinish" class="btn btn-main" value="Import">
+        <button href="#" id="btnImportCancel" type="button" class="btn btn-red" data-dismiss="modal">Cancel</button>
+</form>

@@ -229,3 +229,7 @@ class AthleteListUploadForm(forms.Form):
 class JudgeListUploadForm(forms.Form):
     file = forms.FileField(widget=forms.FileInput(attrs={'accept':'.csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}))
     session_upload = forms.CharField(widget=forms.HiddenInput())
+
+class TeamListUploadForm(forms.Form):
+    file = forms.FileField(widget=forms.FileInput(attrs={'accept':'.csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}))
+    session = forms.CharField(widget=forms.HiddenInput())

@@ -57,6 +57,7 @@ urlpatterns = [
     path('start_list_warn/', views.start_list_warn, name='start_list_warn'),
     path('athlete_list_upload/', views.athlete_list_upload, name='athlete_list_upload'),
     path('judge_list_upload/', views.judge_list_upload, name='judge_list_upload'),
+    path('team_list_upload/', views.team_list_upload, name='team_list_upload'),
     path('spectator_management/<int:session_id>', views.spectator_management, name='spectator_management'),
     path('set_access_code/<int:session_id>', views.set_access_code, name='set_access_code'),
     path('enter_access_code/<int:session_id>', views.enter_access_code, name='enter_access_code'),

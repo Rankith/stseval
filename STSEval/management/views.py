@@ -4,7 +4,7 @@ from django.template import RequestContext
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 import datetime
-from .forms import CompetitionForm,SessionForm,JudgeForm,TeamForm,AthleteForm,CameraForm,SponsorForm,AthleteListUploadForm,JudgeListUploadForm
+from .forms import CompetitionForm,SessionForm,JudgeForm,TeamForm,AthleteForm,CameraForm,SponsorForm,AthleteListUploadForm,JudgeListUploadForm,TeamListUploadForm
 from .models import Competition,Session,Athlete,Judge,Team,Disc,Event,Camera,Sponsor,StartList,AthleteLevel,RotationOrder,AthleteAge
 from django.core.mail import send_mail
 from django.contrib.auth.decorators import login_required,user_passes_test
@@ -340,12 +340,17 @@ def setup_athletes(request,id):
     session = Session.objects.get(pk=id)
     events = Event.objects.filter(disc=session.competition.disc).order_by('display_order')
     rotation_note = "A = " + events[0].name + " B = " + events[1].name + " etc."
+    if len(StartList.objects.filter(session_id=id,completed=True)) <= 0:
+        started = False
+    else:
+        started = True
     context = {
         'title': 'Competition Setup (3/7)',
         'session_name': session.full_name,
         'id':session.id,
         'rotation_note':rotation_note,
         'help':'competition_setup_athletes',
+        'started':started,
     }
     return render(request,'management/setup_athletes.html',context)
 
@@ -398,8 +403,12 @@ def team_list(request,session_id):
 
 @login_required(login_url='/account/login/admin/')
 def team_delete(request,id):
-    Team.objects.filter(id=id).delete()
-    return HttpResponse(status=200)
+    session = Team.objects.filter(id=id).first().session
+    if len(StartList.objects.filter(session=session,completed=True)) <= 0:
+        Team.objects.filter(id=id).delete()
+        return HttpResponse(status=200)
+    else:
+        return HttpResponse(status=401)
 
 @login_required(login_url='/account/login/admin/')
 def athlete_form(request):
@@ -435,6 +444,12 @@ def athlete_list(request,team_id):
 
 @login_required(login_url='/account/login/admin/')
 def athlete_delete(request,id):
+    session =  Athlete.objects.filter(id=id).first().team.session
+    if len(StartList.objects.filter(session=session,completed=True)) <= 0:
+        Athlete.objects.filter(id=id).delete()
+        return HttpResponse(status=200)
+    else:
+        return HttpResponse(status=401)
     Athlete.objects.filter(id=id).delete()
     return HttpResponse(status=200)
 
@@ -485,6 +500,41 @@ def import_athletes(session,ath_dict):
         return "Unknown issue with upload, please make sure your spreadsheet matches the example sheet."
             
     return "Athletes Imported."
+
+def team_list_upload(request):
+    if request.method == "POST":
+        form = TeamListUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            session = Session.objects.get(pk=request.POST.get('session'))
+            athdict = request.FILES["file"].get_dict()
+            #athdict = athdict[list(athdict.keys())[0]]
+            res = import_teams(session,athdict)
+            return HttpResponse(res)
+    else:
+        session = Session.objects.get(pk=request.GET.get('session'))
+        form = TeamListUploadForm()
+    return render(request,"management/team_list_upload_form.html",
+        {
+            "form": form,
+            "disc_name":session.competition.disc.name,
+        },
+    )
+
+def import_teams(session,team_dict):
+    events = Event.objects.filter(disc=session.competition.disc)
+    try:
+        Team.objects.filter(session=session).delete()
+        for i in range(len(team_dict['Name'])):
+            if team_dict['Password'][i] == '' or team_dict['Password'][i] == ' ':
+                newpass = ''.join(random.choices(string.ascii_uppercase + string.ascii_lowercase + string.digits, k=6))
+            else:
+                newpass = team_dict['Password'][i]
+            team = Team(name=team_dict['Name'][i],abbreviation=team_dict['Abbrev'][i],head_coach_email=team_dict['Coach Email'][i],coach_password=newpass,session=session)
+            team.save()
+    except:
+        return "Unknown issue with upload, please make sure your spreadsheet matches the example sheet."
+            
+    return "Teams Imported."
 
 def athlete_levels_ages(request,disc_name):
     levels = AthleteLevel.objects.filter(disc__name=disc_name)
