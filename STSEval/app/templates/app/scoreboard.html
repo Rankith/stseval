@@ -119,6 +119,12 @@
     }
 
     function GetRoutineAAData() {
+        let flevel = '-1';
+        let fage = '-1';
+        if (DisplayFilters) {
+            flevel = $("#selLevel").val();
+            fage = $("#selAge").val();
+        }
         $.ajax({
             url: "/get_routines_aa/",
             type: "POST",
@@ -126,6 +132,8 @@
             headers: { "X-CSRFToken": token },
             data: {
                 'Session': Session,
+                'level': flevel,
+                'age':fage,
             },
             success: function (data) {
                 UpdateAA(data)
@@ -415,7 +423,10 @@
     }
 
     function AgeChanged() {
-        GetRoutineData();
+        if (ev == "AA")
+            GetRoutineAAData();
+        else
+            GetRoutineData();
     }
 
 

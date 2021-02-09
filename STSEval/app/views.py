@@ -896,7 +896,16 @@ def get_routines_by_SE(request):
 def get_routines_aa(request):
     session = Session.objects.get(pk=request.POST.get('Session'))
     events = Event.objects.filter(disc=session.competition.disc)
-    athletes = list(Routine.objects.values('athlete_id','athlete__name','athlete__team__name','athlete__level__name','athlete__age__name').filter(session_id=request.POST.get('Session'),status=Routine.FINISHED).annotate(total_score=Sum('score_final')).order_by('-total_score'))
+    level_filter = request.POST.get('level','-1')
+    age_filter = request.POST.get('age','-1')
+    if level_filter != '-1':
+        if age_filter != '-1':
+            athletes = list(Routine.objects.values('athlete_id','athlete__name','athlete__team__name','athlete__level__name','athlete__age__name').filter(session_id=request.POST.get('Session'),status=Routine.FINISHED,athlete__level_id=level_filter,athlete__age_id=age_filter).annotate(total_score=Sum('score_final')).order_by('-total_score'))
+        else:
+            athletes = list(Routine.objects.values('athlete_id','athlete__name','athlete__team__name','athlete__level__name','athlete__age__name').filter(session_id=request.POST.get('Session'),status=Routine.FINISHED,athlete__level_id=level_filter).annotate(total_score=Sum('score_final')).order_by('-total_score'))
+    else:
+        athletes = list(Routine.objects.values('athlete_id','athlete__name','athlete__team__name','athlete__level__name','athlete__age__name').filter(session_id=request.POST.get('Session'),status=Routine.FINISHED).annotate(total_score=Sum('score_final')).order_by('-total_score'))
+    
     for ath in athletes:
         #arrange each athlete
         for ev in events:
