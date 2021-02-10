@@ -936,8 +936,8 @@ def send_session_emails(request,session_id):
 
 def build_judge_notice(session,event,name,email,password,type):
     reqs = []
-    reqs.append("An internet connection - broadband wired or wireless (3G or 4G/LTE)")
-    reqs.append("10Mbps (up/down) bandwidth")
+    reqs.append("A wired internet connection")
+    reqs.append("30Mbps+ internet speed")
     reqs.append("Google Chrome 46+")
     reqs.append("8 Gb or higher RAM")
     vidlink = ''
@@ -968,9 +968,11 @@ def build_judge_notice(session,event,name,email,password,type):
 
 def build_camera_notice(session,camera):
     reqs = []
-    reqs.append("A wired internet connection")
-    reqs.append("20 Mbps (up/down) bandwidth")
+    reqs.append("A dedicated STABLE wired internet connection")
+    reqs.append("30 Mbps+ (up/down) speed PER camera")
     reqs.append("Iphone IOS 13+, Android 9+, Windows 8.1+ with Chrome 46+")
+    reqs.append("Webcam capable of 30fps at 720p resolution such as a Logitech C920 HD Pro")
+    reqs.append("Camcorder that can connect to computer as a webcam")
     reqs.append("Camera and microphone access allowed in settings")
     teams = ""
     events = ""
