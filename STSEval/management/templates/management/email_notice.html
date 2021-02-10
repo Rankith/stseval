@@ -39,9 +39,11 @@ To access the scoreboard after the competition is complete, signup as a spectato
 <p>If you do not wish to participate in this competition, contact the Meet Host {{session.competition.admin.first_name}} {{session.competition.admin.last_name}} <a href='{{session.competition.admin.email}}'>{{session.competition.admin.email}}</a>.</p>
 
 <p>In order {{assigned}} this competition, the following requirements must be met:</p><ul>
+    {% autoescape off %}
     {% for req in reqs %}
         <li>{{req}}</li>
     {% endfor %}
+    {% endautoescape %}
     </ul>
 </div>
 </body>

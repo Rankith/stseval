@@ -969,11 +969,10 @@ def build_judge_notice(session,event,name,email,password,type):
 def build_camera_notice(session,camera):
     reqs = []
     reqs.append("A dedicated STABLE wired internet connection")
-    reqs.append("30 Mbps+ (up/down) speed PER camera")
-    reqs.append("Iphone IOS 13+, Android 9+, Windows 8.1+ with Chrome 46+")
-    reqs.append("Webcam capable of 30fps at 720p resolution such as a Logitech C920 HD Pro")
-    reqs.append("Camcorder that can connect to computer as a webcam")
+    reqs.append("30 Mbps+ (up/down) speed PER camera at location (check speedtest.net)")
+    reqs.append("Camera devices:<ul><li>IPhone with IOS 13+</li><li>Android phone with Android 9+</li><li>Windows 8.1+ computer with webcam capable of 30fps at 720p resolution (Such as Logitech C920 HD Pro)</li><li>Camcorder that can connect to computer via usb as a webcam</li></ul>")
     reqs.append("Camera and microphone access allowed in settings")
+    reqs.append("Ability to run zoom video call with no video glitches or stutters")
     teams = ""
     events = ""
     for t in camera.teams.all():
@@ -1053,10 +1052,11 @@ def email_test(request):
     session = Session.objects.all().first()
     judge = Judge.objects.filter(session=session).first()
     reqs = []
-    reqs.append("An internet connection - broadband wired or wireless (3G or 4G/LTE)")
-    reqs.append("2.5Mbps (up/down) bandwidth")
-    reqs.append("Google Chrome 46+")
-    reqs.append("8 Gb or higher RAM")
+    reqs.append("A dedicated STABLE wired internet connection")
+    reqs.append("30 Mbps+ (up/down) speed PER camera at location (check speedtest.net)")
+    reqs.append("Camera devices:<ul><li>IPhone with IOS 13+</li><li>Android phone with Android 9+</li><li>Windows 8.1+ computer with webcam capable of 30fps at 720p resolution (Such as Logitech C920 HD Pro)</li><li>Camcorder that can connect to computer via usb as a webcam</li></ul>")
+    reqs.append("Camera and microphone access allowed in settings")
+    reqs.append("Ability to run zoom video call with no video glitches or stutters")
     
     context = {
         'name': judge.d1,
