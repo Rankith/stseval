@@ -106,6 +106,7 @@ urlpatterns = [
     path('management/', include('management.urls')),
     path('account/', include('account.urls')),
     path('chat/', include('chat.urls')),
+    path('video_tutorials/', views.video_tutorials, name='video_tutorials'),
     #url(r'^login/$',
     #    django.contrib.auth.views.login,
     #    {

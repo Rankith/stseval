@@ -175,6 +175,7 @@
     <Content Include="app\templates\app\help\ejudge.html" />
     <Content Include="app\templates\app\help\djudge.html" />
     <Content Include="app\templates\app\comp.html" />
+    <Content Include="app\templates\app\video_tutorials.html" />
     <Content Include="app\templates\app\spectate_splash_end.html" />
     <Content Include="app\templates\app\spectate_splash_start.html" />
     <Content Include="app\templates\app\session_complete_warn.html" />

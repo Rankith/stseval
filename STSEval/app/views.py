@@ -1905,3 +1905,6 @@ def wowza_broadcast(request):
 def wowza_play(request):
     return render(request,'app/dev-view-play.html')
 
+def video_tutorials(request):
+    return render(request,'app/video_tutorials.html')
+
