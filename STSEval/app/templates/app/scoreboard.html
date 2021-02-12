@@ -50,8 +50,11 @@
     var token = "{{ csrf_token }}";
     var TotalOnly = {{total_only|lower}};
     var DisplayFilters = {{show_filters|lower}};
-
-    
+    var ShowRoutine = -1;
+    {% if show_routine %}
+        ShowRoutine = {{show_routine.id}};
+        var ShowRoutineExtra = "{{show_routine.athlete.team.name}} - {{show_routine.athlete.level.name}} - {{show_routine.athlete.name}}";
+    {% endif %}
 </script>
 <script type="text/javascript">
     //const firebase = require("firebase");
@@ -60,6 +63,7 @@
     var Status = "";
     var Videos = new Array();
     var dbF = firebase.firestore();
+    var FirstLoad = true;
     firebase.firestore.setLogLevel('debug');
     var fieldstest;
     if (ev == "AA") {
@@ -287,6 +291,12 @@
              AverageTotal = (AverageTotal / data.length).toFixed(3);
 
         }
+        if (FirstLoad) {
+            FirstLoad = false;
+            if (ShowRoutine != -1) {
+                ShowDetails(ShowRoutine, ShowRoutineExtra, null);
+            }
+        }
 
     }
 
@@ -393,14 +403,19 @@
         console.log(ev.pageY);
         console.log($("#" + obj).offset().left);
         console.log($("#" + obj).offset().top);*/
-        FurlX = ev.pageX;
-        FurlY = ev.pageY;
-        Furl = true;
-        $("#" + obj).width("1");
-        $("#" + obj).height("1");
-        $("#" + obj).show();
-        $("#" + obj).offset({ top: ev.pageY, left: ev.pageX });
-        $("#" + obj).animate({ width: '92%', left: '4%', top: '4%', height: theight + 40 }, 500, function () {  });
+        if (ev != null) {
+            FurlX = ev.pageX;
+            FurlY = ev.pageY;
+            Furl = true;
+            $("#" + obj).width("1");
+            $("#" + obj).height("1");
+            $("#" + obj).show();
+            $("#" + obj).offset({ top: ev.pageY, left: ev.pageX });
+            $("#" + obj).animate({ width: '92%', left: '4%', top: '4%', height: theight + 40 }, 500, function () { });
+        }
+        else {
+            $("#" + obj).show();
+        }
 
     }
 

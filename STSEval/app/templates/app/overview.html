@@ -74,7 +74,7 @@
     </form>
     <button id="play-toggle" type="button" class="btn btn-main mb-2" style="display:none">Wozwa Hack</button>
 </div>
-    <button href="#" id="btnFinish" type="button" class="btn-main btn-wide ui-disabled pt-4 pb-4" style="border-radius: 1rem;" onclick="btnFinishClick()">Session<br>Complete</button>
+    <button href="#" id="btnFinish" type="button" class="{% if session.finished %}btn-red{% else %}btn-main{% endif %} btn-wide ui-disabled pt-4 pb-4" style="border-radius: 1rem;" onclick="btnFinishClick()">{% if session.finished %}Session<br/>Completed{% else %}Finish<br>Session{% endif %}</button>
  </div>
 {% endblock %}
 
@@ -330,6 +330,7 @@
                  SessionFinished = true;
                  $("#btnFinish").addClass("ui-disabled");
                  alert("Session has been completed.");
+                 $("#btnFinish").html("Session<br/>Completed").addClass("btn-red").removeClass("btn-main");
               
             }
         });

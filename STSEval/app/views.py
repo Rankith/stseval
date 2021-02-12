@@ -1082,6 +1082,7 @@ def scoreboard_export_get_old(request,session_id):
 
 def scoreboard(request,event_name='-1'):
     session_in = request.GET.get('ses','')
+    auto_show = request.GET.get('ath','')
     if session_in != '':
         if account.views.check_session_access_direct(request.user,session_in) == "No":
             return redirect('/select_session')
@@ -1092,6 +1093,11 @@ def scoreboard(request,event_name='-1'):
     events = Event.objects.filter(disc=session.competition.disc)
     if event_name == '-1':
         event_name = events.first().name
+
+    show_routine = None
+    if auto_show != '':
+        show_routine = Routine.objects.filter(athlete_id=auto_show,event__name=event_name,status=Routine.FINISHED).first()
+
 
     levels = Athlete.objects.filter(team__session=session).values_list('level_id').distinct()
     levels = AthleteLevel.objects.filter(id__in=levels)
@@ -1119,6 +1125,7 @@ def scoreboard(request,event_name='-1'):
         'total_only':total_only,
         'levels':levels,
         'show_filters':show_filters,
+        'show_routine':show_routine,
     }
     return render(request,'app/scoreboard.html',context)
 

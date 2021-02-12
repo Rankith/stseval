@@ -96,7 +96,7 @@
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jsgrid/1.5.3/jsgrid.min.js"></script>
 <!--<script src="https://vjs.zencdn.net/7.6.6/video.js"></script>-->
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-<script src="{% static 'app/scripts/stream_listener_spectator_hls.js' %}?v=1.26"></script>
+<script src="{% static 'app/scripts/stream_listener_spectator_hls.js' %}?v=1.27"></script>
 <script type="text/javascript">
     var ev = new Array();
     {% if display_type == 'single' %}
@@ -243,12 +243,16 @@
                 }
                 else {
                     let message = "<span class='update-message-header'>" +docdata.athlete_display + "</span><br/>" + "Scored " + docdata.score + " on " + docdata.event;
-                    $("#divUpdates").prepend("<div id='divUpdate" + docdata.id + "' class='update-message' align='center' style='display:none'>" + message + "</div>");
+                    $("#divUpdates").prepend("<div id='divUpdate" + docdata.id + "' class='update-message' align='center' onclick='ScoreboardFromFeed(\"" + docdata.event + "\",\"" + docdata.athlete + "\")' style='display:none;cursor:pointer'>" + message + "</div>");
                 }
                 $("#divUpdate" + docdata.id).show('slow');
             }
         });
         FirstUpdateShow = false;
+    }
+
+    function ScoreboardFromFeed(ev,ath) {
+        window.open("/scoreboard/" + ev + "?ath=" + ath);
     }
 
     function SetEventListeners(which) {
