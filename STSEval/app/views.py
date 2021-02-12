@@ -943,7 +943,7 @@ def scoreboard_export_get(request,session_id):
         athletes = Athlete.objects.filter(team__session=session).order_by('team','level')
         writer.writerow(headers)
         for a in athletes:
-            out = [a.name,a.team.name,a.level.name]
+            out = [a.name,a.team.name,a.level.abbreviation]
             for ev in events:
                 r = routines.filter(event=ev,athlete=a).first()
                 if r != None:
