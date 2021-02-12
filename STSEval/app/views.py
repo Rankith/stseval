@@ -1585,7 +1585,7 @@ def reset_athlete_do(session_id,event_name):
     StartList.objects.filter(session_id=session_id,event__name=event_name,secondary_judging=True,completed=False).update(secondary_judging=False)
     sl = athlete_get_next_do(event_name,session_id)
     camera = Camera.objects.filter(teams=sl.athlete.team,events__name=event_name).first()
-    app.firebase.routine_reset_previous(sl.session,event_name)
+    app.firebase.routine_reset_previous(sl.session.id,event_name)
     app.firebase.routine_setup(sl.session,event_name,sl.athlete,camera.id,'D1')
     check_update_camera_event(camera.session.id,camera)
 
@@ -2005,3 +2005,8 @@ def wowza_play(request):
 def video_tutorials(request):
     return render(request,'app/video_tutorials.html')
 
+def get_routines_evaluated(request,session_id):
+    evald = len(StartList.objects.filter(session_id=session_id,completed=True))
+    notevald = len(StartList.objects.filter(session_id=session_id,completed=False,active=True))
+
+    return HttpResponse(str(evald) + " exercise evaluated, " + str(notevald) + " remaining")

@@ -21,7 +21,7 @@
 
                             </div>
                     
-                            <div id="player-waiting1" style="height:480px;display:flex" class="align-items-center"><div><h1>Waiting for Camera</h1><h5>See Scoreboard for Completed Exercises</h5></div></div>
+                            <div id="player-waiting1" style="height:480px;display:flex" class="align-items-center"><div><h1>No Video at This Time</h1><h5>See Scoreboard for Completed Exercises</h5></div></div>
                             <video id="player-video1" class="live-video" style="display:none" controls autoplay muted></video>
                             <div id="divStartList1" align="center" class=" mt-1 spectate_start_list_container"></div>
                         </div>
@@ -33,7 +33,7 @@
                              <div id="divScoreboard1" style="width:175px;position:absolute;top:5px;left:5px;z-index:104">
 
                             </div>
-                            <div id="player-waiting1" style="height:480px;display:flex" class="align-items-center"><div><h1>Waiting for Camera</h1><h5>See Scoreboard for Completed Exercises</h5></div></div>
+                            <div id="player-waiting1" style="height:480px;display:flex" class="align-items-center"><div><h1>No Video at This Time</h1><h5>See Scoreboard for Completed Exercises</h5></div></div>
                             <video id="player-video1" class="live-video" style="display:none" controls autoplay muted></video>
                             <div class="d-flex w-100">
                                 {% for ev in events %}
@@ -51,7 +51,7 @@
                              <div id="divScoreboard2" style="width:175px;position:absolute;top:5px;left:5px;z-index:104">
 
                             </div>
-                            <div id="player-waiting2" style="height:480px;display:flex" class="align-items-center"><div><h1>Waiting for Camera</h1><h5>See Scoreboard for Completed Exercises</h5></div></div>
+                            <div id="player-waiting2" style="height:480px;display:flex" class="align-items-center"><div><h1>No Video at This Time</h1><h5>See Scoreboard for Completed Exercises</h5></div></div>
                             <video id="player-video2" class="live-video" style="display:none" controls autoplay muted></video>
                             <div class="d-flex w-100">
                                 {% for ev in events %}
@@ -70,6 +70,7 @@
                <br/>
                <br/>
                <div class="col-12 pt-4">
+                   <div id="divRoutinesEvaluated" style="font-size:.8rem"></div><br/>
                    {% include "app/sponsor_display.html" %}
                </div>
             </div>
@@ -182,7 +183,8 @@
     var errorMessage = error.message;
     console.log(errorMessage);
     });
-
+    UpdateRoutinesEvaluated();
+    setInterval(UpdateRoutinesEvaluated, 30000);
 
     var db = firebase.firestore();
     SetEventListeners(1);
@@ -400,6 +402,17 @@
             $(active).removeClass("status-dot-yellow").addClass("status-dot-green").removeClass("status-dot-red");
         }
         $(active).show();
+    }
+
+     function UpdateRoutinesEvaluated() {
+        $.ajax({
+            url: "/get_routines_evaluated/" + Session + "/",
+            type: "POST",
+            headers: { "X-CSRFToken": token },
+            success: function (data) {
+                $("#divRoutinesEvaluated").html(data);
+            }
+        });
     }
 
 
