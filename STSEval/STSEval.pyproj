@@ -168,6 +168,7 @@
     <Content Include="app\templates\app\event_select_withdots.html" />
     <Content Include="app\templates\app\help\admin_overview.html" />
     <Content Include="app\templates\app\help\camera.html" />
+    <Content Include="app\templates\app\help\spectator.html" />
     <Content Include="app\templates\app\help\jjudge.html" />
     <Content Include="app\templates\app\help\jjudge2.html" />
     <Content Include="app\templates\app\help\ejudge_vault.html" />

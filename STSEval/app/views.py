@@ -1772,7 +1772,8 @@ def spectate(request,session_id,display_type,event_name='-1'):
         'sponsors':sponsors,
         'display_type':display_type,
         'scoreboard_overlay':scoreboard_overlay,
-        'show_splash':show_splash
+        'show_splash':show_splash,
+        'help':'spectator',
     }
     return render(request,'app/spectate.html',context)
 
