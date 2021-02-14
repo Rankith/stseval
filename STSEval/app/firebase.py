@@ -480,3 +480,16 @@ def delete_collection(coll_ref, batch_size):
     if deleted >= batch_size:
         return delete_collection(coll_ref, batch_size)
 
+def set_backup_videos(s,e):
+    db = firestore.Client()
+
+    bvs = BackupVideo.objects.filter(session_id=s,event__name=e)
+
+    backups = []
+    for bv in bvs:
+        backups.append(bv.athlete.id)
+
+    doc_ref = db.collection(u'sessions').document(str(s)).collection(u'event_managers').document(str(e) + "_backup_videos")
+    doc_ref.set({
+        u'athletes':backups,
+    })

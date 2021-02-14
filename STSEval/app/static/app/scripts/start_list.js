@@ -114,6 +114,7 @@ function StartListRoutineDelete(sl) {
         success: function (data) {
             //LoadStartList();
             $("#modalSecond").modal('hide');
+            $("#modalMain").modal('hide');
         }
     });
 }

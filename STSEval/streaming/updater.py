@@ -19,7 +19,7 @@ def start():
         scheduler = BackgroundScheduler()
         scheduler.add_job(check_and_stop_streams, 'interval', seconds=10)
         scheduler.add_job(check_convert_video, 'interval', seconds=20)
-        #scheduler.add_job(check_remove_old_videos, 'interval', hours=8)
+        scheduler.add_job(check_remove_old_videos, 'interval', hours=8)
         #check_remove_old_videos()
         #scheduler.add_job(check_update_wowza_player, 'interval', seconds=5)
         scheduler.start()
@@ -27,7 +27,7 @@ def start():
 
 
 def check_remove_old_videos():
-    routines = Routine.objects.filter(Q(session__competition__date__lt=datetime.now() - timedelta(days=29)) & Q(video_saved=True) & Q(status=Routine.FINISHED) & (Q(session__level=Session.WDP) | Q(session__level=Session.MDP))).exclude(video_file='')
+    routines = Routine.objects.filter(Q(session__competition__date__lt=datetime.now() - timedelta(days=30)) & Q(video_saved=True) & Q(status=Routine.FINISHED) & (Q(session__level=Session.WDP) | Q(session__level=Session.MDP))).exclude(video_file='')
     for r in routines:
         vidfile = r.video_file.path
         r.video_file.delete()
@@ -46,6 +46,7 @@ def convert_backup_video(bv):
         bv.converted = True
         bv.save()
         os.remove(vidfile)
+        app.firebase.set_backup_videos(bv.session.id,bv.event.name)
     else:
         bv.converted = True
         bv.save()

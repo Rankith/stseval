@@ -1,14 +1,19 @@
 <div class="row no-gutters" align="center">
      <table cellspacing="0" border=0 cellpadding="0">
          <tbody id="StartListDrag">
-            {% for sl in start_list %}
-                <tr class="{% if sl.completed or sl.secondary_judging %}start-list-completed{% else %}start-list-draggable{% endif %}" athid="{{sl.id}}">
-                    <td class="pl-1"><span id="divAthleteDots{{sl.athlete.id}}" class="status-dot-small mr-1 athlete-dot pt-1" style="display:none"></span></td>
-                    <td><input type="checkbox" id="chkSL{{sl.id}}" onclick="SLCheck({{sl.id}})" {% if sl.active %} checked="checked" {% endif %}>&nbsp; &nbsp;</td>
-			        <td id="divSL{{sl.id}}" class="pr-1 {% if not sl.active %}start-list-scratched{% endif %}">{{sl.athlete.team.abbreviation}} - {{sl.athlete.name}} - {{sl.athlete.rotation}}</td>
-                    {% if sl.completed %}
-                    <td>Complete <a href="" onclick="ShowRoutineOptions({{sl.id}})" data-toggle="modal" data-target="#modalSecond"><i class="fa fa-cog"></i></td>
-                    {% elif not sl.secondary_judging %}
+            {% for key, sl in start_list.items %}
+                <tr class="{% if sl.sl.completed or sl.sl.secondary_judging %}start-list-completed{% else %}start-list-draggable{% endif %}" athid="{{sl.sl.id}}">
+                    <td class="pl-1"><span id="divAthleteDots{{sl.sl.athlete.id}}" class="status-dot-small mr-1 athlete-dot pt-1" style="display:none"></span></td>
+                    <td><input type="checkbox" id="chkSL{{sl.sl.id}}" onclick="SLCheck({{sl.sl.id}})" {% if sl.sl.active %} checked="checked" {% endif %}>&nbsp; &nbsp;</td>
+			        <td id="divSL{{sl.sl.id}}" class="pr-1 {% if not sl.sl.active %}start-list-scratched{% endif %}">{{sl.sl.athlete.team.abbreviation}} - {{sl.sl.athlete.name}} - {{sl.sl.athlete.rotation}}</td>
+                    <td>
+                        <div id="divSLBV{{sl.sl.athlete.id}}" class="sl-bv-indicator" {% if sl.bv == "yes" %}style="display:block"{% else %}style="display:none"{% endif %}>
+                            <i class="fa fa-video-camera pr-1" title="Backup Video Available"></i>
+                        </div>
+                    </td>
+                    {% if sl.sl.completed %}
+                    <td>Complete <a href="" onclick="ShowRoutineOptions({{sl.sl.id}})" data-toggle="modal" data-target="#modalSecond"><i class="fa fa-cog"></i></td>
+                    {% elif not sl.sl.secondary_judging %}
                     <td><a href="" title="Drag To Re-Order"><i class="fa fa-exchange fa-rotate-90 start-list-drag-handle"></i></a></td>
                     {% endif %}
 		        </tr>

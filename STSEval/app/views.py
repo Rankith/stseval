@@ -1360,13 +1360,22 @@ def athlete_start_list(request,event_name,team_id):
 def athlete_start_list_admin(request,event_name):
     session_id = request.session.get('session')
     start_list = StartList.objects.filter(session_id=session_id,event__name=event_name).order_by('-completed','-secondary_judging','order','athlete__rotation')
+    bvs = list(BackupVideo.objects.filter(session_id=session_id,event__name=event_name).values_list('athlete_id',flat=True))
+
     first_not_completed = start_list.filter(completed=False,active=True,secondary_judging=False).first()
     if first_not_completed != None:
         first_not_completed = first_not_completed.id
     else:
         first_not_completed = -1
+
+    sldict = {}
+    for sl in start_list:
+        if sl.athlete.id in bvs:
+            sldict[sl.id] = {'sl':sl,'bv':'yes'}
+        else:
+            sldict[sl.id] = {'sl':sl,'bv':'no'}
     context = {
-        'start_list':start_list,
+        'start_list':sldict,
         'first_not_completed':first_not_completed,
     }
     return render(request,'app/athlete_start_list_admin.html',context)
@@ -1879,7 +1888,8 @@ def backup_video_upload(request,session_id):
             if bv.video_file.name.endswith(".mp4"):
                 bv.converted = True
                 bv.save()
-                check_reset_athlete_for_backup(bv)
+                #check_reset_athlete_for_backup(bv)
+                app.firebase.set_backup_videos(bv.session.id,bv.event.name)
             return render(request, 'app/backup_video_upload.html', {'form': form,'session_id':session_id,'bv':bv})
         else:
             return render(request, 'app/backup_video_upload.html', {'form': form,'session_id':session_id})
@@ -1922,6 +1932,8 @@ def backup_video_list(request,session_id,team_restriction):
 def backup_video_delete(request,backup_video_id):
     bv = BackupVideo.objects.filter(pk=backup_video_id).first()
     routine = Routine.objects.filter(session=bv.session,video_file=bv.video_file).first()
+    s = bv.session.id
+    e = bv.event.name
     if routine != None:
         return JsonResponse({'status':'reviewed'})
     else:
@@ -1930,6 +1942,7 @@ def backup_video_delete(request,backup_video_id):
         except:
             pass
         bv.delete()
+        app.firebase.set_backup_videos(s,e)
         return JsonResponse({'status':'ok'})
 
 def backup_video_display(request,backup_video_id):
@@ -1946,6 +1959,14 @@ def check_backup_video_exists(request):
         resp = {'status':'exists'}
 
     return JsonResponse(resp)
+
+def check_backup_videos_available(request,session_id,event_name):
+    bvs = BackupVideo.objects.filter(session_id=session_id,event__name=event_name,reviewed=False)
+    if len(bvs) > 0:
+        return HttpResponse("yes")
+    else:
+        return HttpResponse("no")
+    
 
 def check_all_athletes_done(request,session_id):
     session = Session.objects.get(pk=session_id)

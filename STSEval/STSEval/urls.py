@@ -90,6 +90,7 @@ urlpatterns = [
     path('backup_video_delete/<int:backup_video_id>/', views.backup_video_delete, name='backup_video_delete'),
     path('backup_video_display/<int:backup_video_id>/', views.backup_video_display, name='backup_video_display'),
     path('check_backup_video_exists/', views.check_backup_video_exists, name='check_backup_video_exists'),
+    path('check_backup_videos_available/<int:session_id>/<str:event_name>/', views.check_backup_videos_available, name='check_backup_videos_available'),
     path('spectate/<int:session_id>/<str:display_type>/<str:event_name>/', views.spectate, name='spectate'),
     path('spectate/<int:session_id>/<str:display_type>/', views.spectate, name='spectate'),
     path('spectate_splash_start/<int:session_id>/', views.spectate_splash_start, name='spectate_splash_start'),
