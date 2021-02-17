@@ -661,3 +661,11 @@ tr.highlight td.jsgrid-cell {
 .spectate-splash-title {
     font-size:2rem;
 }
+.backup-video-alert {
+    background-color: #d6062f !important;
+    padding: .175rem .175rem !important;
+    font-size: .8rem;
+    color: white;
+    border-radius: .2rem;
+    cursor: pointer
+}
