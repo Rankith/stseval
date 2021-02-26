@@ -62,8 +62,10 @@
                 success: function data(data) {
                     if (data.status == "reviewed")
                         alert("This video has already been used for scoring and cannot be removed");
-                    else
+                    else {
                         FillBVs();
+                        $("#divBackupVideoPlay").empty();
+                    }
                 }
             });
         }

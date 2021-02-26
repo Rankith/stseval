@@ -30,6 +30,7 @@ class VideoUploadForm(ModelForm):
         self.fields["event"].widget.attrs['class'] = 'selectpicker management-input'
         self.fields["event"].widget.attrs['data-style'] = 'btn-main'
         self.fields['event'].label_from_instance = lambda obj: "%s" % (obj.full_name)
+        self.fields['event'].widget.attrs['onchange'] = 'ClearUploadInfo()'
 
         self.fields["athlete"].widget = forms.Select()
         if team != '':
@@ -40,5 +41,6 @@ class VideoUploadForm(ModelForm):
         self.fields["athlete"].widget.attrs['class'] = 'selectpicker management-input'
         self.fields["athlete"].widget.attrs['data-style'] = 'btn-main'
         self.fields['athlete'].label_from_instance = lambda obj: "%s - %s" % (obj.team.abbreviation, obj.name)
+        self.fields['athlete'].widget.attrs['onchange'] = 'ClearUploadInfo()'
 
 
