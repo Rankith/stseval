@@ -236,6 +236,7 @@
 
 {% block scripts %}
 <script type="module" src="{% static 'app/scripts/wowza/publish.js' %}?v=1.21"></script>
+<script src="{% static 'app/scripts/check_browser.js' %}?v=1.32"></script>
 <script type="text/javascript">
     $("#sdpURL").val('{{stream.sdp_url}}');
     $("#applicationName").val('{{stream.application_name}}');
@@ -251,7 +252,11 @@
                     droppedFrames = 0,
                     startTime = new Date().getTime(),
         initialTime = new Date().getTime();
-     calculateStats();
+    calculateStats();
+    if (!isSafari && !isChrome && !chromeAgent) {
+        alert("You must use Chrome on Android or PC, or Safari on IOS");
+        window.location = "/";
+    }
     CheckStreamStatus().then((state) => {
         if (state != "started") {
             $('#modalLoading').modal('show');
