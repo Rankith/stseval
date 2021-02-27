@@ -48,13 +48,17 @@
 <script type="text/javascript">
     var token = "{{ csrf_token }}";
 </script>
+<script src="{% static 'app/scripts/check_browser.js' %}?v=1.32"></script>
 <script type="text/javascript">
     var SelectedComp = -1;
     var SelectedDisc = -1;
     var SelectedSession = -1;
     var SelectedEvent = -1;
     var Changed = false;
-   
+   if (!isSafari && !isChrome && !chromeAgent) {
+        alert("You must use Chrome on Android or PC, or Safari on IOS");
+        window.location = "/";
+    }
 
     function btnNextClick() {
         if (SelectedSession != -1) {

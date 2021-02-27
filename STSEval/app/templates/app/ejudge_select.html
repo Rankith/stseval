@@ -1,6 +1,13 @@
 {% extends "app/layout.html" %}
 {% block content %}
 {% load staticfiles %}
+<script src="{% static 'app/scripts/check_browser.js' %}?v=1.32"></script>
+<script type="text/javascript">
+    if (!isSafari && !isChrome && !chromeAgent) {
+        alert("You must use Chrome on Android or PC, or Safari on IOS");
+        window.location = "/";
+    }
+</script>
 <div align="center">
     <h3>You will need both of these screens open to judge.</h3>
     <a href="/evideo/"><button id="btnVideoStream" name="btnVideoStream" type="button" class="btn btn-main mt-2" style="width:250px">Video Stream</button></a><br/><br/>
