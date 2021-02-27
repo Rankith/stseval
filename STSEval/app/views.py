@@ -98,7 +98,7 @@ def d1(request):
     simple_d = False
 
     if disc == "WAG":
-        if session.level == Session.WDP or session.level == Session.NCAA:
+        #if session.level == Session.WDP or session.level == Session.NCAA:
             #check if its a no E and limited D type of event
             simple_d = True
 
