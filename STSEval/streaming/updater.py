@@ -40,7 +40,10 @@ def convert_backup_video(bv):
     vidfile=bv.video_file.path
     conversionfile = os.path.splitext(vidfile)[0] + ".mp4"
     conversionfilename = os.path.splitext(bv.video_file.name)[0] + ".mp4"
-    if os.path.exists(vidfile):
+    if ".mp4" in vidfile.lower():
+        bv.converted = True
+        bv.save()
+    elif os.path.exists(vidfile):
         os.system("ffmpeg -threads 2 -y -i {0} -c:v libx264 -profile:v main -vf format=yuv420p -c:a aac -movflags +faststart  {1}".format(vidfile,conversionfile))
         bv.video_file.name = conversionfilename
         bv.converted = True
