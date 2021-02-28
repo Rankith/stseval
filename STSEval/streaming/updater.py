@@ -52,8 +52,8 @@ def convert_backup_video(bv):
         bv.save()
 
 def check_convert_video():
-        #for bv in BackupVideo.objects.filter(converted=False):
-            #convert_backup_video(bv)
+        for bv in BackupVideo.objects.filter(converted=False):
+            convert_backup_video(bv)
         routines = Routine.objects.filter(video_converted=False,video_saved=True,status=Routine.FINISHED)#.exclude(status=Routine.DELETED)
         for routine in routines:
             if ConversionSetting.objects.all().first().do_conversions:
