@@ -880,17 +880,19 @@ def accountability_report(request):
     return render(request,'app/accountability_report.html',context)
 
 def get_routines_by_SE(request):
-    vals = ['athlete__name','athlete__team__name','athlete__level__name','athlete__age__name','id','score_e1','score_e2','score_e3','score_e4','score_e','score_d','score_final','score_neutral']
+    vals = ['id','athlete__name','athlete__team__name','athlete__level__name','athlete__age__name','id','score_e1','score_e2','score_e3','score_e4','score_e','score_d','score_final','score_neutral']
     level_filter = request.POST.get('level','-1')
     age_filter = request.POST.get('age','-1')
     if level_filter != '-1':
         if age_filter != '-1':
-            routines = Routine.objects.values(*vals).filter(session_id=request.POST.get('Session'),event__name=request.POST.get('Ev'),status=Routine.FINISHED,athlete__level_id=level_filter,athlete__age_id=age_filter).order_by('id')
+            routines = Routine.objects.filter(session_id=request.POST.get('Session'),event__name=request.POST.get('Ev'),status=Routine.FINISHED,athlete__level_id=level_filter,athlete__age_id=age_filter).order_by('id')
         else:
-            routines = Routine.objects.values(*vals).filter(session_id=request.POST.get('Session'),event__name=request.POST.get('Ev'),status=Routine.FINISHED,athlete__level_id=level_filter).order_by('id')
+            routines = Routine.objects.filter(session_id=request.POST.get('Session'),event__name=request.POST.get('Ev'),status=Routine.FINISHED,athlete__level_id=level_filter).order_by('id')
     else:
-        routines = Routine.objects.values(*vals).filter(session_id=request.POST.get('Session'),event__name=request.POST.get('Ev'),status=Routine.FINISHED).order_by('id')
+        routines = Routine.objects.filter(session_id=request.POST.get('Session'),event__name=request.POST.get('Ev'),status=Routine.FINISHED).order_by('id')
 
+    routines.filter(score_final='nan').update(score_final=0)
+    routines = routines.values(*vals)
     return JsonResponse(list(routines),safe=False)
 
 def get_routines_aa(request):
@@ -1885,7 +1887,7 @@ def backup_video_upload(request,session_id):
                 og.video_file.delete()
                 og.delete()
             bv = form.save()
-            if bv.video_file.name.endswith(".mp4"):
+            if bv.video_file.name.lower().endswith(".mp4"):
                 bv.converted = True
                 bv.save()
                 #check_reset_athlete_for_backup(bv)
