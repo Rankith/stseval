@@ -14,8 +14,8 @@ class RoutineAdmin(ImportExportModelAdmin):
     list_filter = ('session','event','video_converted')
 
 class BackupVideoAdmin(ImportExportModelAdmin):
-    list_display=('id','session','event','athlete','reviewed','video_file')
-    list_editable=('reviewed',)
+    list_display=('id','session','event','athlete','converted','reviewed','video_file','job_id')
+    list_editable=('converted','reviewed')
     list_filter = ('session','event')
 
 class DJuryIndicatorAdmin(ImportExportModelAdmin):

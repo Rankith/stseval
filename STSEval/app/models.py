@@ -4,6 +4,7 @@ Definition of models.
 
 from django.db import models
 from management.models import Competition, Athlete, Judge, Session, Event
+import uuid
 
 # Create your models here.
 class Twitch(models.Model):
@@ -80,6 +81,7 @@ class Routine(models.Model):
     d_judge = models.CharField(max_length=2,default='D1')
     video_file= models.FileField(null=True,blank=True)
     video_from_backup = models.BooleanField(default=False)
+    job_id = models.CharField(max_length=255,blank=True)
     #stream = models.CharField(max_length=255)
     def routine_length(self):
         return self.athlete_done_time - self.start_time
@@ -117,7 +119,7 @@ class DJuryIndicator(models.Model):
 
 def backup_video_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
-    return 'routine_videos/{0}/{1}/bv_{2}_{3}'.format(instance.session.id, instance.event.name, instance.athlete.name.replace(" ",""),filename)
+    return 'routine_videos/{0}/{1}/bv_{2}_{3}_{4}'.format(instance.session.id, instance.event.name, instance.athlete.name.replace(" ",""),str(uuid.uuid4())[:6],filename)
 
 class BackupVideo(models.Model):
     session = models.ForeignKey(Session, on_delete=models.CASCADE,default=None,null=True)
@@ -126,7 +128,9 @@ class BackupVideo(models.Model):
     video_file= models.FileField(upload_to=backup_video_path, null=True)
     reviewed = models.BooleanField(default=False)
     converted = models.BooleanField(default=False)
+    job_id = models.CharField(max_length=255,blank=True)
 
 class ConversionSetting(models.Model):
     do_conversions = models.BooleanField(default=True) 
     e_dots_preview = models.BooleanField(default=True) 
+    endpoint_url = models.CharField(max_length=255,blank=True)

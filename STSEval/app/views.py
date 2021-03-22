@@ -27,6 +27,8 @@ from django.core.files import File
 from time import perf_counter 
 import csv
 import account.views
+from app.media_storage import MediaStorage
+from app.aws import AWS
 
 def valid_login_type(match=None):
     def decorator(func):
@@ -405,6 +407,9 @@ def routine_finished(request):
             routine.video_file.name = bv.video_file.name
             bv.reviewed = True
             bv.save()
+    else:
+        aws = AWS()
+        aws.start_conversion(conversion_target=routine)
     
     routine.save()
     app.firebase.routine_set_status(str(routine.session.id) ,routine.event.name,routine)
@@ -1651,17 +1656,8 @@ def athlete_mark_done_get_next(request,athlete_id):
 
 def save_video(request):
     routine = Routine.objects.get(pk=request.POST.get('video-filename').replace(".webm",""))
-    
-    vidfile = settings.MEDIA_ROOT + '/routine_videos/' + str(routine.session.id) + '/' + routine.event.name + '/' + routine.athlete.name.replace(" ","") + "_" + request.POST.get('video-filename')
-    os.makedirs(os.path.dirname(vidfile), exist_ok=True)
-    output = open(vidfile, 'wb+')
-    #output.write(request.FILES.get('video-blob').file.read())
-    for chunk in request.FILES['video-blob'].chunks():
-        output.write(chunk)
-    output.close()
-    routine.video_saved = True
-    routine.video_file.name = 'routine_videos/' + str(routine.session.id) + '/' + routine.event.name + '/' + routine.athlete.name.replace(" ","") + "_" + request.POST.get('video-filename')
-    routine.save()
+    aws = AWS()
+    aws.save_video(routine,request.FILES['video-blob'], request.POST.get('video-filename'))
     #os.system("ffmpeg -i {0} -c:v libx264 -profile:v main -vf format=yuv420p -c:a aac -movflags +faststart {1}".format(vidfile,vidfile.replace("webm","mp4")))
     #routine.video_converted = True
     #routine.save()
@@ -1892,6 +1888,9 @@ def backup_video_upload(request,session_id):
                 bv.save()
                 #check_reset_athlete_for_backup(bv)
                 app.firebase.set_backup_videos(bv.session.id,bv.event.name)
+            else:
+                aws = AWS()
+                aws.start_conversion(conversion_target=bv)
             return render(request, 'app/backup_video_upload.html', {'form': form,'session_id':session_id,'bv':bv})
         else:
             return render(request, 'app/backup_video_upload.html', {'form': form,'session_id':session_id})

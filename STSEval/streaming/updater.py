@@ -8,9 +8,12 @@ from django.conf import settings
 import os
 import sys, socket
 from django.db.models import Q
+from app.aws import AWS
 
 def start():
-    try: #stupid hack for not multiple schedulers running
+    #aws = AWS()
+    #aws.check_conversion_jobs()
+    try: #stupid for not multiple schedulers running
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         sock.bind(("127.0.0.1", 47200))
     except socket.error:
@@ -55,17 +58,10 @@ def convert_backup_video(bv):
         bv.save()
 
 def check_convert_video():
-        for bv in BackupVideo.objects.filter(converted=False):
-            convert_backup_video(bv)
-        routines = Routine.objects.filter(video_converted=False,video_saved=True,status=Routine.FINISHED)#.exclude(status=Routine.DELETED)
-        for routine in routines:
-            if ConversionSetting.objects.all().first().do_conversions:
-                vidfile=routine.video_file.path
-                if os.path.exists(vidfile):
-                    os.system("ffmpeg -threads 2 -y -i {0} -c:v libx264 -profile:v main -vf format=yuv420p -c:a aac -movflags +faststart {1}".format(vidfile,vidfile.replace("webm","mp4")))
-                    routine.video_converted = True
-                    routine.save()
-                    #os.remove(vidfile)
+    aws = AWS()
+    aws.check_conversion_jobs()
+    #for bv in BackupVideo.objects.filter(converted=False):
+        #convert_backup_video(bv)
 
 def check_update_wowza_player():
     streams = WowzaStream.objects.filter(wowza_player_code='')

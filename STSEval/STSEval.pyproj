@@ -48,10 +48,16 @@
     <Compile Include="account\backends.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="app\aws.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="app\firebase.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="app\forms.py" />
+    <Compile Include="app\media_storage.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="app\models.py" />
     <Compile Include="app\templatetags\templateextras.py">
       <SubType>Code</SubType>
