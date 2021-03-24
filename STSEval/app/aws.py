@@ -187,7 +187,6 @@ class AWS(object):
                     "FilterStrength": 0,
                     "DeblockFilter": "DISABLED",
                     "DenoiseFilter": "DISABLED",
-                    "InputScanType": "AUTO",
                     "TimecodeSource": "ZEROBASED",
                     "FileInput": vidfile
                   }
