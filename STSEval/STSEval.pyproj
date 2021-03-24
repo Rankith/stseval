@@ -55,7 +55,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="app\forms.py" />
-    <Compile Include="app\media_storage.py">
+    <Compile Include="app\custom_storages.py">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="app\models.py" />

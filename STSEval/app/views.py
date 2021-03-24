@@ -27,7 +27,7 @@ from django.core.files import File
 from time import perf_counter 
 import csv
 import account.views
-from app.media_storage import MediaStorage
+from app.custom_storages import MediaStorage
 from app.aws import AWS
 
 def valid_login_type(match=None):

@@ -2,7 +2,7 @@ import boto3, json
 from app.models import ConversionSetting,BackupVideo,Routine
 from django.conf import settings
 from django.core.files.storage import default_storage
-from app.media_storage import MediaStorage
+from app.custom_storages import MediaStorage
 import os
 from app import firebase
 
