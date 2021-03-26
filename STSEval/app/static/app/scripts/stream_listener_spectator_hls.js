@@ -14,16 +14,43 @@ var VideoPlayer = new Array();
 
 function CheckStream(doc,which) {
     console.log("Check Stream " + which);
-    if (doc.data().stream != Stream[which]) {
+    if (doc.data().video == -1) {
+        BackupVideo[which] = -1;
+        let vp = document.getElementById("video-playback" + which);
+        vp.pause();
+        $("#video-playback" + which).hide();
+        $("#player-video" + which).show();
+        if (doc.data().stream != Stream[which]) {
+            if (StreamListener[which] != undefined) {
+                //console.log("Release Stream Listener " + which);
+                StreamListener[which]();//release stream listener
+            }
+            Stream[which] = doc.data().stream;
+            console.log("Setting Stream Listener " + which + " To " + Stream[which]);
+            StreamListener[which] = db.collection("sessions").doc(Session).collection("streams").doc(Stream[which].toString()).onSnapshot(function (doc) {
+                HandleStreamChanges(doc, which);
+            });
+        }
+    }
+    else {
+        Stream[which] = '';
         if (StreamListener[which] != undefined) {
-            //console.log("Release Stream Listener " + which);
             StreamListener[which]();//release stream listener
         }
-        Stream[which] = doc.data().stream;
-        console.log("Setting Stream Listener " + which + " To " + Stream[which]);
-        StreamListener[which] = db.collection("sessions").doc(Session).collection("streams").doc(Stream[which].toString()).onSnapshot(function (doc) {
-            HandleStreamChanges(doc,which);
-        });
+        if (BackupVideo[which] != doc.data().video) {
+            //set video
+            BackupVideo[which] = doc.data().video;
+            let vp = document.getElementById("video-playback" + which);
+            vp.pause();
+            vp.currentTime = 0;
+            vp.src = BackupVideo[which];
+            vp.load();
+            $("#video-playback" + which).show();
+            $("#player-waiting" + which).hide();
+            $("#player-video" + which).hide();
+
+        }
+
     }
 }
 function HandleStreamChanges(doc,which) {

@@ -23,6 +23,7 @@
                     
                             <div id="player-waiting1" style="height:480px;display:flex" class="align-items-center"><div><h1>No Video at This Time</h1><h5>See Scoreboard for Completed Exercises</h5></div></div>
                             <video id="player-video1" class="live-video" style="display:none" controls autoplay muted></video>
+                            <video id="video-playback1"  class="live-video" style="display:none" controls muted></video>
                             <div id="divStartList1" align="center" class=" mt-1 spectate_start_list_container"></div>
                         </div>
                         
@@ -35,6 +36,7 @@
                             </div>
                             <div id="player-waiting1" style="height:480px;display:flex" class="align-items-center"><div><h1>No Video at This Time</h1><h5>See Scoreboard for Completed Exercises</h5></div></div>
                             <video id="player-video1" class="live-video" style="display:none" controls autoplay muted></video>
+                            <video id="video-playback1"  class="live-video" style="display:none" controls muted></video>
                             <div class="d-flex w-100">
                                 {% for ev in events %}
                                     <div class="flex-grow-1">
@@ -53,6 +55,7 @@
                             </div>
                             <div id="player-waiting2" style="height:480px;display:flex" class="align-items-center"><div><h1>No Video at This Time</h1><h5>See Scoreboard for Completed Exercises</h5></div></div>
                             <video id="player-video2" class="live-video" style="display:none" controls autoplay muted></video>
+                            <video id="video-playback2"  class="live-video" style="display:none" controls muted></video>
                             <div class="d-flex w-100">
                                 {% for ev in events %}
                                     <div class="flex-grow-1">
@@ -124,6 +127,9 @@
     var CurrentAthlete = new Array();
     CurrentAthlete[1] = -1;
     CurrentAthlete[2] = -1;
+    var BackupVideo = new Array();
+    BackupVideo[1] = -1;
+    BackupVideo[2] = -1;
     var ended = false;
     var test;
     var refs = new Array();
@@ -277,11 +283,17 @@
                 CheckStream(doc, which);
                 LoadStartList(doc, which);
             }
+            else if (BackupVideo[which] != doc.data().video)
+                CheckStream(doc, which);
             else {
                 SetStartListDot(doc, which);
                 if (doc.data().status == 'F') {
                     if (ScoreboardOverlay)
                         LoadScoreboard(which);
+                }
+                else if (doc.data().status == 'S' && doc.data().video != -1) {
+                    document.getElementById("video-playback" + which).currentTime = 0;
+                    document.getElementById("video-playback" + which).play();
                 }
             }
         }
