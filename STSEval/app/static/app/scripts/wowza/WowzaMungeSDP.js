@@ -13,8 +13,7 @@ let audioIndex;
 
 function addAudio(sdpStr, audioLine) {
   let sdpLines = sdpStr.split(/\r\n/);
-  let sdpSection = 'header';
-  let hitMID = false;
+  let sdpSection = '';
   let sdpStrRet = '';
   let done = false;
 
@@ -22,23 +21,30 @@ function addAudio(sdpStr, audioLine) {
     let sdpLine = sdpLines[sdpIndex];
 
     if (sdpLine.length <= 0)
-      continue;
+        continue;
+
+      if (sdpLine.indexOf('m=audio') === 0) {
+          sdpSection = 'audio';
+      }
+      else if (sdpLine.indexOf('m=video') === 0) {
+          sdpSection = 'video';
+      }
 
     sdpStrRet += sdpLine;
     sdpStrRet += '\r\n';
 
-    if ('a=rtcp-mux'.localeCompare(sdpLine) == 0 && done == false) {
-      sdpStrRet += audioLine;
-      done = true;
-    }
+      if (sdpSection === 'audio') {
+          if ('a=rtcp-mux'.localeCompare(sdpLine) == 0 && done == false) {
+              sdpStrRet += audioLine;
+              done = true;
+          }
+      }
   }
   return sdpStrRet;
 }
 
 function addVideo(sdpStr, videoLine,bitrate) {
   let sdpLines = sdpStr.split(/\r\n/);
-  let sdpSection = 'header';
-  let hitMID = false;
   let sdpStrRet = '';
   let done = false;
 
